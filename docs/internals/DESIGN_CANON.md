@@ -19,6 +19,8 @@ ux-dom is a **Python-first hypermedia UI stack**:
 * Ship **server-rendered HTML** that works with **HTMX / Alpine / custom elements**.
 * Keep a **single Document shell** as SSoT for head/body and runtimes.
 * Prefer **one copy** of library JS (from the installed package), not dual app copies.
+* Prefer **CLI automation** for ceremonial app files (create-app / add) over
+  hand-maintained boilerplate.
 
 It is **not**: a React/Vue client framework, a multiplayer realtime mesh, or a second ASGI framework.
 
@@ -128,7 +130,6 @@ document(*page)       # two-stage head/body composition
 Live control plane is **optional** and lives in a **separate** package.
 Do not mix its PyPI / import / CLI names into ux-dom brand lines.
 
-
 ## 8b. DX CLI intent (side effects)
 
 | Command | Writes? | Gate |
@@ -140,7 +141,20 @@ Do not mix its PyPI / import / CLI names into ux-dom brand lines.
 | `build` | Tailwind if present; **no** dual JS copy by default; `dist/` only with `--package`/`--archive` | flags |
 | `dev` | Only if `--tailwind` runs CSS build | does **not** copy `x_element.js` |
 
-See [CLI.md](../guides/CLI.md) · [DX.md](../guides/DX.md).
+### Automation-first (ceremonial code)
+
+Generators are the **default opt-in** path for app boilerplate. Hand-write
+only when extending features or making breaking contract changes.
+
+| Need | Automate | Hand-code |
+|------|----------|-----------|
+| Greenfield app | `uxdom create-app` | — |
+| Stubs (component/route/xelement) | `uxdom add` | After generate, for real logic |
+| UI kit copy-in | `uxdom add ui` | New primitives |
+| Integrity | `uxdom doctor` | — |
+
+See [CLI.md](../guides/CLI.md) · [DX.md](../guides/DX.md) ·
+[MAINTENANCE_CANON.md](../ship/MAINTENANCE_CANON.md) §5.5.
 
 ---
 
@@ -148,64 +162,18 @@ See [CLI.md](../guides/CLI.md) · [DX.md](../guides/DX.md).
 
 * **Per-root `RLock`** registry (weak-id map); multi-root locks ordered by `id` to avoid deadlock.
 * **`replace_children`** atomic under lock.
-* Reactive re-render: render-first + snapshot rollback on exception.
-* defHTML `escape=True`: blocklist script/iframe + strip `on*` / `javascript:`.
+* Reactive re-render is **fail-closed** (rollback fields + tree on render error).
+
+Details: [CONCURRENCY.md](CONCURRENCY.md) · [MEMORY_TREE.md](MEMORY_TREE.md).
 
 ---
 
-## 10. Public vs private
+## 10. Where to read next
 
-### Public (supported)
-
-Import from top-level `ux_dom`, `ux_dom.dom`, `ux_dom.runtime`, `ux_dom.routing`, `ux_dom.response`, `ux_dom.ui`, `ux_dom.cli` entry.
-
-Stability: prefer documented guides + this canon. Breaking changes require version bump + CHANGELOG.
-
-### Semi-public (advanced)
-
-`ux_dom.dom.htmlelement`, `ux_dom.dom.src.ext.Tags`, `ux_dom.plugins.*`, `ux_dom.slots` — used by scaffolds and power users; signatures follow MRO tests.
-
-### Private (may change without notice)
-
-* `ux_dom.dom.src.concurrency` internals (`_LOCKS`, `_LOCKS_GUARD`)
-* `ux_dom.cli.scaffold` templates strings
-* `_*` methods not listed in guides
-* `demosite/` — example app, not library API
-
-**Rule:** if a symbol is needed by apps, export it from a public package `__init__` and document it here or in API_SURFACE.
-
----
-
-## 11. Browser runtime contract
-
-File: `ux_dom/scripts/x_element.js`
-
-| Python | Browser |
-|--------|---------|
-| `x-tagname` on `<template>` | `customElements.define("x-"+name, …)` |
-| Host construct | `<x-name>` |
-| Light vs shadow | absence vs `shadowroot`/`shadowdom` |
-| Alpine | `Alpine.initTree` after clone when present |
-| HTMX | `htmx:afterSwap` → rescan |
-
-Global API: `UxDom.XElement.{scan,defineFrom,ATTR_TAG,…}`.  
-WS helpers on `document` (`setUpOrGetWebSocket`, `ux_domMessageHandler`, `ux_domWaitForConnection`).
-
----
-
-## 12. Versioning
-
-* Library version: `ux_dom.__version__` (0.1.0 line).
-* Docs assume 0.1 production cut (plugins, async render, DirectoryRouter, create-app).
-* No backward-compat shims for removed dual JS names / `x-component` attr.
-
----
-
-## 13. Testing canon
-
-Tests live under `tests/01_core` … `06_browser` (numeric order = discovery order).  
-Chaos / load / pen / live browser must stay green when changing render, XElement, or Document.
-
----
-
-*Last updated for 0.1.0 design freeze. Update this file in the same PR as any ownership or single-copy change.*
+| Goal | Doc |
+|------|-----|
+| Day-1 mental model | [START_HERE.md](../START_HERE.md) |
+| Layer ownership diagram | [ARCHITECTURE.md](ARCHITECTURE.md) |
+| Every package path | [MODULE_MAP.md](MODULE_MAP.md) |
+| Non-regression canon | [MAINTENANCE_CANON.md](../ship/MAINTENANCE_CANON.md) |
+| Brittle edges | [STABILITY.md](../ship/STABILITY.md) |

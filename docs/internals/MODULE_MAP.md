@@ -2,10 +2,28 @@
 
 Purpose of each tree under `ux_dom/`. Prefer this over guessing from file names.
 
+## Design overview
+
+```text
+ux_dom/
+  settings/     Document factory, WebAssets, paths
+  dom/          Tags, Component, serialize, XElement types
+  runtime/      Document-facing XElement / Htmx / Csp / Channel facades
+  plugins/      Host, routing helper, CSP, SafeStatic, hub
+  routing/      DirectoryRouter + StreamingRoute (FastAPI)
+  response/     HTML / streaming adapters
+  scripts/      x_element.js (package-mounted)
+  cli/          create-app, add, doctor, build (automation)
+  ui/           Optional copy-in kit
+```
+
+Public apps compose **Document + FastAPI + DirectoryRouting**. CLI generators
+keep ceremonial files aligned with this map ([DX.md](../guides/DX.md)).
+
 | Path | Role | Public? |
 |------|------|---------|
 | `ux_dom/__init__.py` | Version + re-exports Document, Component, runtime facades | **Public** |
-| `ux_dom/runtime.py` | Stable aliases: `XElement`, `Htmx`, `Csp`, `Channel` | **Public** |
+| `ux_dom/runtime/` | Stable aliases: `XElement`, `Htmx`, `Csp`, `Channel` | **Public** |
 | `ux_dom/create/` | Optional CreateAsgi / project helpers | Semi |
 | `ux_dom/compat/` | Runtime compat (e.g. valio PEP 649) | Private |
 | `ux_dom/diagnostics.py` | Error message builders for XElement checks | Private |
@@ -36,6 +54,7 @@ Purpose of each tree under `ux_dom/`. Prefer this over guessing from file names.
 | **`ux_dom/alpinejs/`** | Alpine sample widgets | Semi / demos |
 | **`ux_dom/reloader/`** | Dev hot-reload WebSocket server bits | Dev |
 | `ux_dom/web_io/` | Low-level web I/O helpers if present | Private |
+| `ux_dom/assets/` | Thin facade over plugin hub static | Semi |
 
 ## Docs layout
 
@@ -46,7 +65,7 @@ Purpose of each tree under `ux_dom/`. Prefer this over guessing from file names.
 | `docs/security/` | CSP, static, assets |
 | `docs/internals/` | Design, modules, concurrency |
 | `docs/ship/` | Deploy, stability, maintenance |
-| `docs/archive/` | Historical audits (not current API) |
+| `docs/archive/` | Historical notes (not current API) |
 
 ## Tests layout
 

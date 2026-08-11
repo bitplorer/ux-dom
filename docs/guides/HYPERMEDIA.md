@@ -35,7 +35,7 @@ class Toggle(AlpineComponent):
 ```
 
 **See:** `docs/XELEMENT.md`, `examples/xelement_kit/app/routes/alpine.py`,  
-`tests/test_xelement_runtime.py`, `tests/test_xelement_browser.py`.
+`tests/02_document_plugins/test_xelement_runtime.py`, `tests/06_browser/test_xelement_browser.py`.
 
 ## HTMX
 
@@ -68,7 +68,7 @@ tpl = For("name in names", li(Var("name")))
 html = tpl(names=["a", "b"])  # expanded HTML string/tree
 ```
 
-**See:** `tests/test_ux_dom.py::TestJinja`, kit `/jinja/JinjaDemo`.
+**See:** `tests/01_core/test_ux_dom.py::TestJinja`, kit `/jinja/JinjaDemo`.
 
 ## Slots
 
@@ -100,7 +100,7 @@ Full guide: [XELEMENT.md](XELEMENT.md).
 node tests/browser/x_element_harness.mjs
 
 # Live xelement_kit (pytest boots uvicorn)
-python -m pytest tests/test_kit_browser_deep.py -v
+python -m pytest tests/06_browser/test_kit_browser_deep.py -v
 # or manually:
 # KIT_URL=http://127.0.0.1:8766 node tests/browser/kit_browser_suite.mjs
 ```

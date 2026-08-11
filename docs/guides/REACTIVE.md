@@ -75,4 +75,4 @@ Concurrent mutations of one instance are **best-effort** (no full lock). Prefer
 one writer per instance; the suite load-tests for crashes, not sequential
 consistency under races.
 
-See tests: `tests/test_reactive_component.py`, `tests/test_reactive_stress_chaos.py`.
+See tests: `tests/01_core/test_reactive_component.py`, `tests/01_core/test_reactive_stress_chaos.py`.

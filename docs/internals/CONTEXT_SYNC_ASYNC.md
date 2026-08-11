@@ -89,5 +89,5 @@ Pretty stream may use a helper thread for layout: that worker only appends token
 ## Tests
 
 * Concurrent `async with` builders — chaos / concurrency suites  
-* `tests/test_context_async.py`  
-* Pipeline pairing — `tests/test_build_vs_render_pipeline.py`
+* `tests/01_core/test_context_async.py`  
+* Pipeline pairing — `tests/03_routing_cli/test_build_vs_render_pipeline.py`

@@ -10,5 +10,5 @@
 Run production tests:
 
 ```bash
-python -m pytest tests/test_standalone_apps_production.py -q
+python -m pytest tests/04_production/test_standalone_apps_production.py -q
 ```

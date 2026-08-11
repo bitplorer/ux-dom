@@ -144,9 +144,9 @@ Hosts **do** apply. CDNs in `script_hosts` are real allowlists.
 
 ## Tests
 
-- `tests/test_csp_nonce.py` — middleware + stamp  
-- `tests/test_csp_resolve_nonce.py` — read-agnostic resolve  
-- `tests/test_csp_policies.py` — presets, strict-dynamic docs locks, knobs  
+- `tests/02_document_plugins/test_csp_nonce.py` — middleware + stamp  
+- `tests/02_document_plugins/test_csp_resolve_nonce.py` — read-agnostic resolve  
+- `tests/02_document_plugins/test_csp_policies.py` — presets, strict-dynamic docs locks, knobs  
 
 
 ## Scaffold / create-app (low cognitive load)

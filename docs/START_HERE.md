@@ -1,6 +1,8 @@
 # Start here — ux-dom 0.1.0
 
-> Full feature encyclopedia: **[FEATURES.md](FEATURES.md)**.
+> Full feature encyclopedia: **[FEATURES.md](FEATURES.md)**.  
+> Design & architecture: **[internals/ARCHITECTURE.md](internals/ARCHITECTURE.md)** ·
+> **[internals/DESIGN_CANON.md](internals/DESIGN_CANON.md)**.
 
 
 ### Brand lines
@@ -16,6 +18,7 @@
 ```text
 Document  →  HTML shell (<head>/<body>) + .use(runtimes) + .mount(app)
 FastAPI   →  process, routes, servers
+CLI       →  create-app / add for ceremonial files (default)
 ```
 
 | Owns | Does **not** own |
@@ -34,6 +37,9 @@ cd myapp
 uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 # open /index/Index  ·  /health
 ```
+
+Prefer **`uxdom create-app` / `uxdom add`** for boilerplate — hand-code only when
+extending features or changing contracts ([DX.md](guides/DX.md)).
 
 Scaffold pattern:
 
@@ -83,6 +89,7 @@ pytest tests/ --cov=ux_dom
 ```
 
 - [Concurrency](internals/CONCURRENCY.md) — parallel render, tree locks
+- [Maintenance canon](ship/MAINTENANCE_CANON.md) — contracts + automation policy
 
 ## Profile (DX)
 

@@ -2,14 +2,22 @@
 
 **Audience:** maintainers and long-term design decisions.  
 **Status:** canonical — prefer this over scattered audit notes when they conflict.  
-**Related:** [ARCHITECTURE.md](../internals/ARCHITECTURE.md) · [RENDER_PHASES.md](../internals/RENDER_PHASES.md) · [DOCUMENT_TWO_STAGE.md](../guides/DOCUMENT_TWO_STAGE.md) · [MEMBERSHIP.md](../internals/MEMBERSHIP.md) · [MEMORY_TREE.md](../internals/MEMORY_TREE.md) · [BUGS_AUDIT.md](BUGS_AUDIT.md)
+**Related:** [ARCHITECTURE.md](../internals/ARCHITECTURE.md) ·
+[RENDER_PHASES.md](../internals/RENDER_PHASES.md) ·
+[DOCUMENT_TWO_STAGE.md](../guides/DOCUMENT_TWO_STAGE.md) ·
+[MEMBERSHIP.md](../internals/MEMBERSHIP.md) ·
+[MEMORY_TREE.md](../internals/MEMORY_TREE.md) ·
+[STABILITY.md](STABILITY.md) ·
+[DESIGN_CANON.md](../internals/DESIGN_CANON.md) ·
+[MODULE_MAP.md](../internals/MODULE_MAP.md)
 
-This document answers four questions:
+This document answers five questions:
 
 1. **What is the library for?** (intent that must not be diluted)
 2. **What structure must stay?** (layers and contracts)
 3. **What was broken and fixed?** (so we do not reintroduce bugs)
 4. **What may change, and when?** (safe touch map)
+5. **What is automated by default?** (ceremonial code vs hand work)
 
 ---
 
@@ -50,7 +58,7 @@ ux-dom is **not** a thin HTML string helper. It is a **Python-first hypermedia U
 ├─────────────────────────────────────────────────────────────┤
 │  plugins / assets / SafeStatic · WebAssets / package_mount  │  ← shipping JS
 ├─────────────────────────────────────────────────────────────┤
-│  FastAPI / Starlette (external) · optional uxchannel │  ← host / bridge
+│  FastAPI / Starlette (external) · optional uxchannel        │  ← host / bridge
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -71,13 +79,13 @@ ux-dom is **not** a thin HTML string helper. It is a **Python-first hypermedia U
 | `ux_dom/dom/src/component.py` | Build-time `render()`, Component transparency `_entry`, Reactive re-render |
 | `ux_dom/dom/htmlelement.py` | XElement / CustomElement / host-first `__new__`, registry |
 | `ux_dom/dom/htmldocument.py` | HtmlDocument shell, `__pre_render__` (defs, charset, …) |
-| `ux_dom/document.py` | Document factory, **two-stage** call, `.use()` runtimes |
+| `ux_dom/settings/document.py` | Document factory, **two-stage** call, `.use()` runtimes |
 | `ux_dom/routing/` | DirectoryRouter, path cleaning, `[id]` → `{id}` |
 | `ux_dom/runtime/` | XElement, Htmx, Channel, Csp adapters |
 | `ux_dom/create/` | CreateAsgi, CreateProject (scaffolds) |
 | `ux_dom/plugins/`, `ux_dom/assets/` | Pluggable contribution / SafeStatic |
 | `ux_dom/ui/` | Optional shadcn-style kit (variants, `cn`) — optional moat, not core |
-| `ux_dom/scripts/` | `x_element.js` / html_elements runtime (name-aligned with XElement) |
+| `ux_dom/scripts/` | `x_element.js` runtime (name-aligned with XElement) |
 
 ### 2.3 Three “apps” the user must always locate
 
@@ -89,9 +97,7 @@ Middleware →  document.mount(app) / app.add_middleware(...)
 
 No guesswork. If a feature blurs these, redesign the feature — do not invent a mega-`App.use()` that hides placement.
 
----
-
-## 2.4 Sync/async context (ContextVar)
+### 2.4 Sync/async context (ContextVar)
 
 Build stack and request vars use **`contextvars.ContextVar`** (one mechanism for
 sync threads and asyncio Tasks). Pair:
@@ -100,6 +106,8 @@ sync threads and asyncio Tasks). Pair:
 * `async with` → `__async_render__`
 
 Details: [CONTEXT_SYNC_ASYNC.md](../internals/CONTEXT_SYNC_ASYNC.md).
+
+---
 
 ## 3. Contracts that must not break (without a major version)
 
@@ -113,7 +121,7 @@ Details: [CONTEXT_SYNC_ASYNC.md](../internals/CONTEXT_SYNC_ASYNC.md).
 
 - `str(node)` **must not** re-call `Component.render`.
 - XElement **definition** `render` runs **once per class** (registry SSoT); hosts are templates.
-- Tests: `tests/test_render_phases.py`.
+- Tests: `tests/01_core/test_render_phases.py`.
 
 ### 3.2 Document two-stage placement
 
@@ -137,7 +145,7 @@ Callables in stage lists are **hooks** (e.g. nonce-aware tags) — filter with `
 
 - Dual **clean_attribute** (dialect vs emission) is a **design feature**, not a bug.
 - `in` / existence use **`_find` short-circuit** — never `len(get())` full lists.
-- Tests: `tests/test_membership_*`, `tests/test_find_lazy_membership.py`.
+- Tests: `tests/01_core/test_membership_*`, `tests/01_core/test_find_lazy_membership.py`.
 
 ### 3.4 DirectoryRouter path rules
 
@@ -180,14 +188,14 @@ Otherwise second `str()` / parent re-render corrupts layout. Control keys **neve
 
 ### 3.9 XElement / JS name alignment
 
-Python `XElement` / `x-tagname` ↔ browser runtime (`x_element.js` / html_elements) — **one conceptual name**.  
+Python `XElement` / `x-tagname` ↔ browser runtime (`x_element.js`) — **one conceptual name**.  
 Definition auto-collection in `__pre_render__` for **both** sync and async serialize.
 
 ---
 
 ## 4. Serious issues found and resolved
 
-Grouped by theme. IDs cross-ref [BUGS_AUDIT.md](BUGS_AUDIT.md) where applicable.
+Grouped by theme. Durable edges and residual risk live in [STABILITY.md](STABILITY.md).
 
 ### 4.1 DirectoryRouter (ship-blockers)
 
@@ -285,7 +293,7 @@ Grouped by theme. IDs cross-ref [BUGS_AUDIT.md](BUGS_AUDIT.md) where applicable.
 |------|-----|
 | New runtimes (Alpine CDN, analytics) | Implement runtime protocol → `document.use(...)` |
 | UI kit / shadcn-style | `ux_dom.ui` optional |
-| Scaffold templates | CreateProject only |
+| Scaffold templates | CreateProject / `cli/scaffold.py` only |
 | Doctor checks / build packaging | CLI layer |
 | Tailwind integration | Optional tool path; never block import |
 | Channel backend swap | Hypermedia bridge interface; Document tags only |
@@ -301,6 +309,34 @@ Grouped by theme. IDs cross-ref [BUGS_AUDIT.md](BUGS_AUDIT.md) where applicable.
 | Pretty stream uses helper thread + queue | Engineering trade for exact layout |
 | Private `_` route modules | Policy choice — document import rules |
 
+### 5.5 Automation-first (ceremonial vs hand-coded)
+
+**Default: automate.** Project files that are ceremonial, boring, or meant to
+stay in lockstep with library contracts are produced by the **`uxdom` CLI**.
+Maintainers and agents **opt into hand-coding only** when:
+
+1. Extending a real feature beyond the generator template, or
+2. Making an intentional **breaking** / contract change (with major version + docs).
+
+| Surface | Automate with | Hand-code when |
+|---------|---------------|----------------|
+| New app skeleton | `uxdom create-app` | Never for greenfield |
+| Route / component / XElement stubs | `uxdom add …` | Custom handlers after generate |
+| UI kit import | `uxdom add ui` | New primitive not in kit |
+| Deploy / Dockerfile hints | `uxdom deploy` / `build` | Host-specific packaging |
+| Scaffold integrity | `uxdom doctor` | — |
+| Core DOM / Document / router | — (library code) | Always with tests + this canon |
+
+**Anti-patterns:**
+
+- Hand-maintaining a second create-app layout that drifts from `cli/scaffold.py`
+- Copying `x_element.js` into app assets “just in case” (package mount is SSoT)
+- Documenting flat `docs/FOO.md` paths after docs moved into subfolders
+- Citing bare root-level test paths after suites moved into `tests/0N_*` packages
+
+When generators change, update **scaffold + adders + tests/03_routing_cli** in
+the same PR. Prefer regenerating consumer boilerplate over eternal manual patches.
+
 ---
 
 ## 6. How to change safely (checklist)
@@ -313,6 +349,7 @@ Before any core change:
 4. Confirm **`npm`/JS** only if runtime scripts changed; keep Python↔JS names aligned.
 5. Update **this file** + the specific deep doc (MEMBERSHIP, RENDER_PHASES, …).
 6. Prefer **plugin/runtime** over core if the change is optional capability.
+7. Prefer **CLI automation** over hand-edited ceremonial app files.
 
 ### Production defaults
 
@@ -322,6 +359,7 @@ Document           →  explicit ensure_csrf_token policy per app
 Static             →  package_mount / SafeStatic, not open StaticFiles of site-packages root
 CSP                →  document.use(Csp()); stamp scripts
 Routes             →  DirectoryRouter(package_dir=...) or explicit FastAPI
+Scaffold           →  uxdom create-app / add (not hand-rolled twins)
 ```
 
 ---
@@ -362,6 +400,7 @@ def home():
 ```
 
 Or pure FastAPI: `document.mount(app)` + explicit routes — same contracts.
+**Preferred for greenfield:** `uxdom create-app` (emits Document + mount + DirectoryRouting).
 
 ---
 
@@ -369,15 +408,15 @@ Or pure FastAPI: `document.mount(app)` + explicit routes — same contracts.
 
 | Concern | Tests (indicative) |
 |---------|-------------------|
-| Build vs serialize | `test_render_phases.py` |
-| Pretty/compact stream | `test_pretty_stream.py` |
-| Lazy membership | `test_find_lazy_membership.py`, membership_* |
-| Document stages | `test_document_two_stage.py` |
-| XElement defs async | `test_auto_xelement_definitions.py` |
-| Router cleaning | DirectoryRouter / v05 / chaos suites |
-| CSP / static | `test_csp_nonce.py`, `test_safe_static.py` |
-| Idempotent control | `test_production_hardening.py` |
-| Scaffold | `test_dx_cli.py`, package_static |
+| Build vs serialize | `tests/01_core/test_render_phases.py` |
+| Pretty/compact stream | `tests/01_core/test_pretty_stream.py` |
+| Lazy membership | `tests/01_core/test_find_lazy_membership.py`, `test_membership_*` |
+| Document stages | `tests/02_document_plugins/test_document_two_stage.py` |
+| XElement defs async | `tests/02_document_plugins/test_auto_xelement_definitions.py` |
+| Router cleaning | `tests/03_routing_cli/test_directory_router.py` + chaos suites |
+| CSP / static | `tests/02_document_plugins/test_csp_nonce.py`, `test_safe_static.py` |
+| Idempotent control | `tests/04_production/test_production_hardening.py` |
+| Scaffold | `tests/03_routing_cli/test_dx_cli.py`, `test_create_app_scaffold.py` |
 
 **Bar:** full `pytest` green before release; production build of create-app scaffold when DX changes.
 
@@ -395,12 +434,14 @@ Or pure FastAPI: `document.mount(app)` + explicit routes — same contracts.
 8. **CSP owned by channel runtime**.
 9. **Treating `[id]` routes as bugs**.
 10. **Renaming Component.render** without a decade-long migration plan.
+11. **Hand-maintained ceremonial scaffolds** that drift from `cli/scaffold.py`.
+12. **Stale docs** that still point at flat `docs/FOO.md` or pre-package test paths.
 
 ---
 
 ## 10. Open / residual risks (honest)
 
-Track in BUGS_AUDIT / STABILITY; do not pretend zero:
+Track in [STABILITY.md](STABILITY.md); do not pretend zero:
 
 - DirectoryRouter private-module import policy tightening.
 - True async *child* await inside tree build (async serialize is stream of built tree).
@@ -417,9 +458,14 @@ When in doubt: **preserve capability and usage pattern**; un-bloat only behind s
 ```text
 New capability?
   → Optional runtime/plugin?  document.use(X) + SafeStatic if JS
-  → Scaffold only?            CreateProject
+  → Scaffold only?            CreateProject / uxdom create-app · add
   → Tree semantics?           Extend dom_tag/Component with membership tests
   → HTTP?                     FastAPI route or DirectoryRouter — explicit
+
+Ceremonial file needed?
+  → Yes, boilerplate?         uxdom create-app / add  (default)
+  → Extending feature?        Hand-edit after generate
+  → Breaking contract?        Major version + migration + this doc
 
 Bug report “double render”?
   → Build or serialize?       See §3.1 — almost never double build
@@ -436,4 +482,15 @@ Breaking change needed?
 
 ---
 
-*Last consolidated for ux-dom 0.1.0 production line. Update this file whenever a §3 contract or §4 fix class changes.*
+## 12. Keep everything fresh (docs hygiene)
+
+| Rule | Why |
+|------|-----|
+| Nested docs paths only | Layout is `guides/`, `internals/`, `security/`, `ship/` |
+| Full test paths | Suites live in `tests/01_core` … `06_browser` |
+| Archive is not SSoT | [archive/](../archive/) for history only |
+| Same-PR doc updates | Contract change without docs = incomplete |
+| Link-check mental model | If you move a file, grep its basename across `*.md` |
+
+*Last consolidated for ux-dom 0.1.0 production line + automation-first policy.
+Update this file whenever a §3 contract, §5.5 automation surface, or §4 fix class changes.*

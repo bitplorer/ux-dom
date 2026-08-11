@@ -1,11 +1,15 @@
 # Architecture
 
-## Ownership (no guesswork)
+## Design overview
+
+ux-dom splits **HTML ownership** from **process ownership** so placement is never
+guesswork and the ASGI host stays debuggable:
 
 ```text
 ┌─────────────────────────────────────────────────────────┐
 │  Your app                                                │
 │    routes/*.py   document.py   main.py                   │
+│    (prefer: uxdom create-app / add for ceremonial files) │
 ├─────────────────────────────────────────────────────────┤
 │  Document (SSoT for HTML)                                │
 │    head/body · .use(runtimes) · .mount(app) · page()     │
@@ -28,7 +32,7 @@
 | **`DirectoryRouting`** | File-based routes onto FastAPI |
 | **`CreateProject` / CLI** | Filesystem scaffold only |
 | **`CreateAsgi`** | Optional one-liner sugar (not used by create-app) |
-| **`App` / `PluginHub`** | Legacy registry; tests/optional |
+| **`App` / `PluginHub`** | Optional registry; tests/advanced only |
 
 ## Canonical assembly
 
@@ -41,6 +45,9 @@ app = FastAPI(title="MyApp", debug=True)
 document.mount(app)
 DirectoryRouting(package_dir=PACKAGE, base_directory="routes").include(app)
 ```
+
+Greenfield: **`uxdom create-app`** emits this pattern. Hand-roll only when
+extending composition itself ([DX.md](../guides/DX.md)).
 
 ## Runtime placement defaults
 
@@ -59,6 +66,21 @@ See [DOCUMENT.md](../guides/DOCUMENT.md) and [DOCUMENT_TWO_STAGE.md](../guides/D
 <head>  [call-time head]  then  [common_head / runtimes]
 <body>  content  [call-time body]  placeholders  [common_body / HTMX]
 ```
+
+## Implementation map
+
+| Concern | Module |
+|---------|--------|
+| Document `.use` / `.mount` / stages | `ux_dom/settings/document.py` |
+| HtmlDocument pre-render | `ux_dom/dom/htmldocument.py` |
+| Component / Reactive | `ux_dom/dom/src/component.py` |
+| Serialize / attr dialects | `ux_dom/dom/src/ext.py` |
+| XElement host/definition | `ux_dom/dom/htmlelement.py` |
+| DirectoryRouter | `ux_dom/routing/fastapi.py` |
+| Package static | `ux_dom/plugins/safe_static.py`, `plugins/runtime.py` |
+| Scaffold / generators | `ux_dom/cli/scaffold.py`, `cli/adders.py` |
+
+Full path table: [MODULE_MAP.md](MODULE_MAP.md). Design intent: [DESIGN_CANON.md](DESIGN_CANON.md).
 
 ## Security surfaces
 

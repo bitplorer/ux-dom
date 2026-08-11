@@ -1,7 +1,63 @@
-# App composition (superseded)
+# App composition
 
-**Canonical assembly is Document + FastAPI**, not `App.web`.
+## Design overview
 
-See [ARCHITECTURE.md](../internals/ARCHITECTURE.md) and [START_HERE.md](../START_HERE.md).
+An ux-dom app is **three explicit pieces** — never a mega-hub that guesses
+where tags go:
 
-`ux_dom.plugins.App` remains for tests / optional hub registration. create-app does **not** use it.
+```text
+Document  →  HTML shell (<head>/<body>), .use(runtimes), .mount(app)
+FastAPI   →  process, routes, lifespan, servers
+Routes    →  DirectoryRouting (files) and/or explicit FastAPI handlers
+```
+
+| Piece | Owns | Does not own |
+|-------|------|--------------|
+| **Document** | Tag placement, runtime scripts, CSP stamp, static allowlist | ASGI process |
+| **FastAPI** | HTTP/WS lifecycle | Head/body order |
+| **DirectoryRouting** | File → path registration | Document head |
+
+## Canonical assembly
+
+```python
+from fastapi import FastAPI
+from ux_dom import Document
+from ux_dom.runtime import XElement, Htmx, Csp
+from ux_dom.plugins.routing import DirectoryRouting
+from app import PACKAGE  # package root for file routes
+
+document = Document(head=[], body=[], ensure_csrf_token=False).use(
+    XElement(),
+    Htmx(),
+    Csp.auto(),
+)
+
+app = FastAPI(title="MyApp")
+document.mount(app)
+DirectoryRouting(package_dir=PACKAGE, base_directory="routes").include(app)
+```
+
+This is exactly what **`uxdom create-app`** emits. Prefer the generator over
+hand-assembling the skeleton unless you are changing composition contracts.
+
+## Optional surfaces (not the document)
+
+| API | Role |
+|-----|------|
+| `CreateAsgi` | One-liner sugar around FastAPI + document |
+| `ux_dom.plugins.App` / PluginHub | Optional hub registration; **tests / advanced only** |
+| `document(*page)` | Per-request two-stage head/body (see [DOCUMENT_TWO_STAGE.md](DOCUMENT_TWO_STAGE.md)) |
+
+create-app does **not** use `App.web` as the document.
+
+## Implementation map
+
+| Concern | Module |
+|---------|--------|
+| Document factory + `.use` / `.mount` | `ux_dom/settings/document.py` |
+| Runtime facades | `ux_dom/runtime/` |
+| Directory routing helper | `ux_dom/plugins/routing/directory.py` |
+| Scaffold | `ux_dom/cli/scaffold.py` |
+
+**Further reading:** [DOCUMENT.md](DOCUMENT.md) · [ARCHITECTURE.md](../internals/ARCHITECTURE.md) ·
+[DOCUMENT_AND_APP.md](DOCUMENT_AND_APP.md) · [START_HERE.md](../START_HERE.md).

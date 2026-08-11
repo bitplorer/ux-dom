@@ -87,19 +87,26 @@ Requires **both** `x-tagname` and `x-data`. After upgrade, `x_element.js` calls 
 
 ## Loading the runtime
 
+**Default:** `document.use(XElement())` package-mounts library JS at
+`/ux-dom/static/x_element.js` (single copy from the installed package).
+
 ```python
+from ux_dom.runtime import XElement
 from ux_dom.dom import script
 from ux_dom.scripts import x_element_js
 
-# Prefer static file shipped by create-app:
-script(src="/assets/js/x_element.js", defer=None)
+document = Document(...).use(XElement())  # package mount — preferred
 
-# Or emit inline / save:
-# script(x_element_js())
+# Escape hatch only (edge hosts / offline dual-copy):
+# script(src="/assets/js/x_element.js", defer=None)
 # x_element_js().save(file_or_dir=assets_js_dir)
+
+# Or emit inline:
+# script(x_element_js())
 ```
 
-`create-app` always writes `assets/js/x_element.js` and links it from `document.py`.
+`create-app` wires `XElement()` via Document — it does **not** dual-copy library
+JS into app assets by default. See [WHY_JS_URL.md](../security/WHY_JS_URL.md).
 
 ## Class hierarchy
 
@@ -118,9 +125,9 @@ Component
 
 ## Tests
 
-* Unit / contract: `tests/test_xelement_runtime.py`
-* Headless Chromium: `tests/test_xelement_browser.py` + `tests/browser/x_element_harness.mjs`
-* create-app ships runtime: `tests/test_create_app_scaffold.py` / `tests/test_production_readiness.py`
+* Unit / contract: `tests/02_document_plugins/test_xelement_runtime.py`
+* Headless Chromium: `tests/06_browser/test_xelement_browser.py` + `tests/browser/x_element_harness.mjs`
+* create-app ships runtime: `tests/03_routing_cli/test_create_app_scaffold.py` / `tests/04_production/test_production_readiness.py`
 
 ## Related files
 

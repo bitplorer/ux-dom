@@ -1,6 +1,7 @@
 # Stability & brittle edges (0.1)
 
 This document records **edges that bit us**, what we hardened, and how to stay robust.
+It is also the live stand-in for a separate bugs audit (see [archive/](../archive/)).
 
 ## Hardened in this cut
 
@@ -28,24 +29,29 @@ This document records **edges that bit us**, what we hardened, and how to stay r
 
 ```bash
 python -m pytest tests/ -q
-python -m pytest tests/test_cli_route_maturity.py tests/test_dx_cli.py tests/test_build_deploy.py -q
+python -m pytest tests/03_routing_cli/test_cli_route_maturity.py \
+  tests/03_routing_cli/test_dx_cli.py tests/03_routing_cli/test_build_deploy.py -q
 node tests/browser/x_element_harness.mjs
-python -m pytest tests/test_kit_browser_deep.py -q   # needs playwright + network for CDNs
+python -m pytest tests/06_browser/test_kit_browser_deep.py -q   # needs playwright + network for CDNs
 uxdom doctor
 ```
 
 ## Authoring rules (keep sturdy)
 
-1. **XElement:** only `x-tagname`; light vs shadow base classes matter.  
-2. **Routes:** Components need `routes = ["get"]` + `get` classmethod; path params by name.  
-3. **`route.py`:** means “this folder’s index module” — class name appears in URL (`/users/{id}/Page`).  
-4. **Never** boolean HTML attrs that stringify to the attribute name for multi-value attrs (`shadowdom=True`).  
-5. **Document** always loads `/assets/js/x_element.js` for custom elements.
+1. **XElement:** only `x-tagname`; light vs shadow base classes matter.
+2. **Routes:** Components need `routes = ["get"]` + `get` classmethod; path params by name.
+3. **`route.py`:** means “this folder’s index module” — class name appears in URL (`/users/{id}/Page`).
+4. **Never** boolean HTML attrs that stringify to the attribute name for multi-value attrs (`shadowdom=True`).
+5. **Document** serves library JS from the **package mount** by default:
+   `/ux-dom/static/x_element.js` (not dual-copy under `/assets/js/` unless
+   `serve="webassets"` escape hatch).
+6. **Ceremonial files:** generate via `uxdom create-app` / `uxdom add` — hand-edit
+   only when extending features or changing contracts.
 
 ## DX command surface (stable)
 
-`create-app` · `dev` · `doctor` · `build` · `deploy` · `add` · `lint` · `templates` · `examples` · `plugins`
-
+`create-app` · `dev` · `doctor` · `build` · `deploy` · `add` · `lint` ·
+`templates` · `examples` · `plugins` · `profile` · `dashboard`
 
 ## UI kit stability (0.1+)
 
@@ -61,4 +67,6 @@ uxdom doctor
 | Copy imports | Regex rewrite `ux_dom.ui.*` → relative |
 | Channel bridge | Soft-import; stub attrs without uxchannel |
 
-Gates: `tests/test_ux_kit.py` · `tests/test_production_stability.py` · `tests/test_cli_route_maturity.py`
+Gates: `tests/02_document_plugins/test_ui_kit.py` ·
+`tests/04_production/test_production_stability.py` ·
+`tests/03_routing_cli/test_cli_route_maturity.py`

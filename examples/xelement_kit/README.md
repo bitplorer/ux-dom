@@ -40,9 +40,7 @@ PYTHONPATH=../..:. uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 - `app/components/light_dom.py` — CustomElement examples (commented)
 - `app/components/shadow_dom.py` — WebComponent examples (commented)
 - `app/components/x_widgets.py` — mixed kit widgets
-- Document loads `/assets/js/x_element.js`
+- Document serves **`/ux-dom/static/x_element.js`** via package mount (default)
 
-See also: `docs/XELEMENT.md` in the library root.
-
-
-Library docs: [`docs/XELEMENT.md`](../../docs/XELEMENT.md) · [`docs/HYPERMEDIA.md`](../../docs/HYPERMEDIA.md)
+Library docs: [`docs/guides/XELEMENT.md`](../../docs/guides/XELEMENT.md) ·
+[`docs/guides/HYPERMEDIA.md`](../../docs/guides/HYPERMEDIA.md)

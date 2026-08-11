@@ -6,7 +6,9 @@ control plane is a separate package (not part of these brand lines).
 
 > **Start here:** [docs/START_HERE.md](docs/START_HERE.md)  
 > **Full docs index:** [docs/README.md](docs/README.md)  
-> **Feature encyclopedia:** [docs/FEATURES.md](docs/FEATURES.md)
+> **Feature encyclopedia:** [docs/FEATURES.md](docs/FEATURES.md)  
+> **Architecture:** [docs/internals/ARCHITECTURE.md](docs/internals/ARCHITECTURE.md) ·
+> [docs/internals/DESIGN_CANON.md](docs/internals/DESIGN_CANON.md)
 
 ```bash
 poetry install --extras fastapi
@@ -37,10 +39,10 @@ uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 
 ## Mental model
 
-
 ```text
 Document  →  HTML shell (<head>/<body>) + .use(runtimes) + .mount(app)
 FastAPI   →  process, routes, servers
+CLI       →  create-app / add  (ceremonial files — prefer automation)
 ```
 
 ```python
@@ -63,6 +65,9 @@ def home():
     return document(div(h1("Hi")), page_title="Home")
 ```
 
+**Greenfield default:** `uxdom create-app` — do not hand-roll the skeleton unless
+you are extending features or changing contracts. See [docs/guides/DX.md](docs/guides/DX.md).
+
 ---
 
 ## Documentation
@@ -73,44 +78,44 @@ def home():
 |-----|--------|
 | [docs/START_HERE.md](docs/START_HERE.md) | One-page orientation |
 | [docs/INSTALL.md](docs/INSTALL.md) | Install & extras |
-| [docs/TUTORIAL.md](docs/TUTORIAL.md) | First app walkthrough |
-| [docs/CLI.md](docs/CLI.md) | create-app, doctor, add |
+| [docs/guides/TUTORIAL.md](docs/guides/TUTORIAL.md) | First app walkthrough |
+| [docs/guides/CLI.md](docs/guides/CLI.md) | create-app, doctor, add |
 
 ### Core
 
 | Doc | Topic |
 |-----|--------|
-| [docs/DOCUMENT.md](docs/DOCUMENT.md) | Document SSoT — head/body, `.use`, `.mount` |
-| [docs/COMPONENTS.md](docs/COMPONENTS.md) | Component, Fragment, membership |
-| [docs/REACTIVE.md](docs/REACTIVE.md) | ReactiveComponent (stateful re-render) |
-| [docs/ROUTING.md](docs/ROUTING.md) | DirectoryRouter (`[id]` → `{id}`) |
-| [docs/XELEMENT.md](docs/XELEMENT.md) | Custom elements + `x_element.js` |
-| [docs/CSP.md](docs/CSP.md) | Nonce CSP (`Csp.auto`) |
-| [docs/COOKBOOK.md](docs/COOKBOOK.md) | Short recipes |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Ownership diagram |
+| [docs/guides/DOCUMENT.md](docs/guides/DOCUMENT.md) | Document SSoT — head/body, `.use`, `.mount` |
+| [docs/guides/COMPONENTS.md](docs/guides/COMPONENTS.md) | Component, Fragment, membership |
+| [docs/guides/REACTIVE.md](docs/guides/REACTIVE.md) | ReactiveComponent (stateful re-render) |
+| [docs/guides/ROUTING.md](docs/guides/ROUTING.md) | DirectoryRouter (`[id]` → `{id}`) |
+| [docs/guides/XELEMENT.md](docs/guides/XELEMENT.md) | Custom elements + `x_element.js` |
+| [docs/security/CSP.md](docs/security/CSP.md) | Nonce CSP (`Csp.auto`) |
+| [docs/guides/COOKBOOK.md](docs/guides/COOKBOOK.md) | Short recipes |
+| [docs/internals/ARCHITECTURE.md](docs/internals/ARCHITECTURE.md) | Ownership diagram |
 
 ### Deep dives
 
 | Doc | Topic |
 |-----|--------|
-| [docs/HYPERMEDIA.md](docs/HYPERMEDIA.md) | HTMX, Alpine, slots |
-| [docs/SAFE_STATIC.md](docs/SAFE_STATIC.md) | Package static allowlist |
-| [docs/ASSETS.md](docs/ASSETS.md) | WebAssets / Tailwind |
-| [docs/RENDER_PHASES.md](docs/RENDER_PHASES.md) | Build vs serialize |
-| [docs/CONTEXT_SYNC_ASYNC.md](docs/CONTEXT_SYNC_ASYNC.md) | Sync/async `with` |
-| [docs/MEMBERSHIP.md](docs/MEMBERSHIP.md) | `get` / `in` / `matches` |
-| [docs/PRETTY_STREAM.md](docs/PRETTY_STREAM.md) | Pretty streaming |
-| [docs/CONCURRENCY.md](docs/CONCURRENCY.md) | Context stacks |
-| [docs/UI.md](docs/UI.md) | Optional UI kit |
-| [docs/DEPLOY.md](docs/DEPLOY.md) | Deploy |
-| [docs/DX.md](docs/DX.md) | DX overview |
-| [docs/COVERAGE.md](docs/COVERAGE.md) | Coverage policy |
-| [docs/PUBLISHING.md](docs/PUBLISHING.md) | Release notes |
-| [docs/PRODUCTION_READINESS.md](docs/PRODUCTION_READINESS.md) | Ship checklist |
-| [docs/MAINTENANCE_CANON.md](docs/MAINTENANCE_CANON.md) | What must not regress |
+| [docs/guides/HYPERMEDIA.md](docs/guides/HYPERMEDIA.md) | HTMX, Alpine, slots |
+| [docs/security/SAFE_STATIC.md](docs/security/SAFE_STATIC.md) | Package static allowlist |
+| [docs/security/ASSETS.md](docs/security/ASSETS.md) | WebAssets / Tailwind |
+| [docs/internals/RENDER_PHASES.md](docs/internals/RENDER_PHASES.md) | Build vs serialize |
+| [docs/internals/CONTEXT_SYNC_ASYNC.md](docs/internals/CONTEXT_SYNC_ASYNC.md) | Sync/async `with` |
+| [docs/internals/MEMBERSHIP.md](docs/internals/MEMBERSHIP.md) | `get` / `in` / `matches` |
+| [docs/internals/PRETTY_STREAM.md](docs/internals/PRETTY_STREAM.md) | Pretty streaming |
+| [docs/internals/CONCURRENCY.md](docs/internals/CONCURRENCY.md) | Context stacks |
+| [docs/guides/UI.md](docs/guides/UI.md) | Optional UI kit |
+| [docs/ship/DEPLOY.md](docs/ship/DEPLOY.md) | Deploy |
+| [docs/guides/DX.md](docs/guides/DX.md) | DX + automation-first |
+| [docs/ship/COVERAGE.md](docs/ship/COVERAGE.md) | Coverage policy |
+| [docs/ship/PUBLISHING.md](docs/ship/PUBLISHING.md) | Release notes |
+| [docs/ship/PRODUCTION_READINESS.md](docs/ship/PRODUCTION_READINESS.md) | Ship checklist |
+| [docs/ship/MAINTENANCE_CANON.md](docs/ship/MAINTENANCE_CANON.md) | What must not regress |
 | [CHANGELOG.md](CHANGELOG.md) | Version history |
 
-Archive (audits): [docs/archive/](docs/archive/)
+Archive (historical only): [docs/archive/](docs/archive/)
 
 ---
 

@@ -10,6 +10,28 @@
 
 **Entry:** `uxdom` (console script) · also `python -m ux_dom`.
 
+## Design overview
+
+The CLI is the **automation layer** for ceremonial project files. Core library
+code lives under `src/ux_dom`; the CLI keeps **apps** in lockstep with Document +
+FastAPI + DirectoryRouting contracts.
+
+```text
+create-app → dev → add → doctor/lint → build [--package] → deploy
+```
+
+| Command family | Role |
+|----------------|------|
+| **create-app** | Greenfield scaffold (default path for new apps) |
+| **add** | Generators: component, route, xelement, ui |
+| **doctor / lint** | Read-only integrity |
+| **build / deploy** | Assets + host hints |
+| **dev / profile / dashboard** | Local DX |
+
+**Policy:** generate ceremonial files by default; hand-code only when extending
+features or making breaking changes. See [DX.md](DX.md) ·
+[MAINTENANCE_CANON.md](../ship/MAINTENANCE_CANON.md) §5.5.
+
 ## create-app
 
 ```bash
@@ -83,7 +105,11 @@ uxdom build
 uxdom add component Card
 uxdom add route settings
 uxdom add xelement Badge --kind shadow
+uxdom add ui Dialog
 ```
+
+Prefer these over hand-writing stubs that must match DirectoryRouter / Document
+conventions.
 
 ## dev
 
@@ -108,5 +134,16 @@ sh scripts/quality.sh
 | add / deploy | Yes | Existing files require `--force` |
 | build | Optional CSS; dist only with `--package` | No dual-copy of `x_element.js` by default |
 | dev | Optional CSS if `--tailwind` | **Does not** copy library JS into static |
+
+## Implementation map
+
+| Module | Owns |
+|--------|------|
+| `ux_dom/cli/cli.py` | Typer entry + command wiring |
+| `ux_dom/cli/scaffold.py` | create-app templates |
+| `ux_dom/cli/adders.py` | add component/route/xelement/ui |
+| `ux_dom/cli/doctor.py` | Integrity checks |
+| `ux_dom/cli/build.py` / `deploy.py` | Ship helpers |
+| `ux_dom/cli/scaffold_check.py` | validate_scaffold |
 
 See [DESIGN_CANON.md](../internals/DESIGN_CANON.md) and [API_SURFACE.md](API_SURFACE.md).
