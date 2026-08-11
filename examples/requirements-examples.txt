@@ -1,0 +1,5 @@
+# Optional extras for examples/with_ux_channel/*
+# Install ux_dom (this package) first, then:
+ux-channel>=0.1.0
+# or editable:
+# -e /path/to/ux-channel-repo

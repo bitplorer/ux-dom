@@ -1,0 +1,39 @@
+/* UxDom showcase — lightweight fallback when Tailwind CLI is not run */
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;font-family:ui-sans-serif,system-ui,sans-serif;line-height:1.5}
+body{background:#f8fafc;color:#0f172a}
+.shell{min-height:100vh}
+.site-header{border-bottom:1px solid #e2e8f0;background:#fff;position:sticky;top:0;z-index:10}
+.nav{display:flex;flex-wrap:wrap;gap:.75rem 1rem;align-items:center;padding:.75rem 1rem;max-width:72rem;margin:0 auto}
+.brand{font-weight:700;color:#0f172a;text-decoration:none}
+.nav-link{color:#475569;text-decoration:none;font-size:.9rem}
+.nav-link:hover,.nav-link.active{color:#0284c7}
+.site-main{max-width:72rem;margin:0 auto;padding:1.25rem 1rem 3rem}
+.min-h-screen{min-height:100vh}
+.bg-slate-50{background:#f8fafc}
+.text-slate-900{color:#0f172a}
+.text-slate-600{color:#475569}
+.text-slate-700{color:#334155}
+.text-sky-600{color:#0284c7}
+.text-3xl{font-size:1.875rem;line-height:2.25rem}
+.text-xl{font-size:1.25rem}
+.text-lg{font-size:1.125rem}
+.text-sm{font-size:.875rem}
+.font-bold{font-weight:700}
+.font-semibold{font-weight:600}
+.mb-1{margin-bottom:.25rem}
+.mb-2{margin-bottom:.5rem}
+.mb-3{margin-bottom:.75rem}
+.mb-6{margin-bottom:1.5rem}
+.mb-8{margin-bottom:2rem}
+.max-w-xl{max-width:36rem}
+.grid{display:grid;gap:.75rem}
+@media(min-width:640px){.sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.card{background:#fff;border:1px solid #e2e8f0;border-radius:.75rem;padding:1rem;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+.list-disc{list-style:disc}
+.pl-6{padding-left:1.5rem}
+.space-y-2 > * + *{margin-top:.5rem}
+.underline{text-decoration:underline}
+a{color:#0284c7}
+button,.btn{cursor:pointer;border:1px solid #cbd5e1;background:#fff;border-radius:.5rem;padding:.4rem .75rem}
+button:hover{background:#f1f5f9}

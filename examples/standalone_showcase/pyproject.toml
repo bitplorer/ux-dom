@@ -1,0 +1,22 @@
+[project]
+name = "showcase"
+version = "0.1.0"
+description = "Showcase — UxDom app"
+requires-python = ">=3.10"
+dependencies = [
+  "ux-dom[fastapidev]>=0.5b0",
+  "fastapi>=0.103",
+  "uvicorn[standard]>=0.18",
+  "python-multipart>=0.0.6",
+]
+
+[project.optional-dependencies]
+channel = ["ux-channel>=0.1.0"]
+dev = ["pytest>=7.0", "httpx>=0.24"]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
