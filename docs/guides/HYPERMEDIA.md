@@ -34,7 +34,7 @@ class Toggle(AlpineComponent):
         )
 ```
 
-**See:** `docs/XELEMENT.md`, `examples/xelement_kit/app/routes/alpine.py`,  
+**See:** `docs/guides/XELEMENT.md`, `examples/xelement_kit/app/routes/alpine.py`,  
 `tests/02_document_plugins/test_xelement_runtime.py`, `tests/06_browser/test_xelement_browser.py`.
 
 ## HTMX

@@ -8,11 +8,12 @@
 import asyncio
 import logging
 import platform
+import shutil
 import subprocess
 from dataclasses import dataclass
 from pathlib import Path
 from textwrap import dedent
-from typing import cast, Optional, Union
+from typing import Optional, Union
 
 import valio
 
@@ -172,15 +173,18 @@ class TailwindCommand(object):
 
         Compatible with Tailwind CLI **v3** (``tailwindcss init``) and **v4**
         (no ``init`` subcommand — CSS-first ``@import "tailwindcss"``).
-        """
-        if not self.is_tailwindcss_available():
-            return
 
-        major = self._tailwind_major()
+        Scaffold files are written even when the CLI binary is missing so
+        create-app / doctor layouts stay complete. Running the compiler still
+        requires ``tailwindcss`` on PATH (or pytailwindcss).
+        """
+        available = self.is_tailwindcss_available()
+        # Default to v4 CSS-first scaffold when the binary is not present.
+        major = self._tailwind_major() if available else 4
         tailwind_config_js = self._root_dir / "tailwind.config.js"
 
         if major < 4:
-            if not tailwind_config_js.exists():
+            if available and not tailwind_config_js.exists():
                 logger.info("initialising Tailwindcss Config (v3)")
                 self.init_tailwind_config(init_dir=self._root_dir)
             if not tailwind_config_js.exists():
@@ -209,7 +213,7 @@ class TailwindCommand(object):
                 )
             if not tailwind_config_js.exists():
                 # optional; many v4 projects are CSS-only
-                logger.info("Tailwind v4 detected — skipping `tailwindcss init`")
+                logger.info("Tailwind v4 — CSS-first scaffold (no `tailwindcss init`)")
 
         if not self._output_file.exists():
             self._output_file.touch()
@@ -266,13 +270,17 @@ class TailwindCommand(object):
         )
 
     def is_tailwindcss_available(self) -> bool:
-        """Return True only when the tailwindcss binary is on PATH.
+        """Return True when the tailwindcss binary is resolvable.
 
+        Checks ``shutil.which`` first, then a ``which``/``where`` probe.
         Previous versions returned a ``CompletedProcess`` (always truthy),
         which made missing CLI look installed and broke setup branches.
         """
+        name = self._tw_bin()
+        if shutil.which(name):
+            return True
         output = subprocess.run(
-            ["which" if not IS_WINDOWS else "where", self._tw_bin()],
+            ["which" if not IS_WINDOWS else "where", name],
             cwd=str(self._root_dir),
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,

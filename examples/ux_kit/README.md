@@ -1,7 +1,7 @@
 # UxDom UI kit example
 
 Shadcn-inspired components from `ux_dom.ui` — pure server HTML + Tailwind utilities.
-Optional channel bridge documented in `docs/UI.md`.
+Optional channel bridge documented in `docs/guides/UI.md`.
 
 ```bash
 cd examples/ux_kit

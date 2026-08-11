@@ -383,7 +383,7 @@ def create_app_cmd(
         ux_dom_logger.info("  pip install 'ux-channel>=0.1.0'")
     ux_dom_logger.info("  uxdom doctor")
     ux_dom_logger.info("  uxdom dev app.main:app --port 8080")
-    ux_dom_logger.info("  # see QUICKSTART.md / docs/TUTORIAL.md")
+    ux_dom_logger.info("  # see docs/START_HERE.md · docs/guides/TUTORIAL.md")
 
 
 @app.command("templates")
@@ -455,7 +455,7 @@ def dev(
         sys.path.insert(0, cwd)
 
     ux_dom_logger.info(f"starting {app_import} on {host}:{port} reload={reload}")
-    ux_dom_logger.info("tip: uxdom doctor · uxdom build · docs: QUICKSTART.md")
+    ux_dom_logger.info("tip: uxdom doctor · uxdom build · docs: docs/START_HERE.md")
     uvicorn.run(app_import, host=host, port=port, reload=reload)
 
 
@@ -669,10 +669,11 @@ def build_cmd(
     name: str = Option(None, "--name", help="Package folder/archive name"),
     json_out: bool = Option(False, "--json"),
 ):
-    """Production build: sync static JS, Tailwind, import check, optional package.
+    """Production build: verify package static, Tailwind, import check, optional package.
 
-    Static JS model: x_element.js is copied from the installed ux_dom package into
-    assets/js/ and served at /assets/js/x_element.js (see docs/ASSETS.md).
+    Static JS model (single-copy): ``x_element.js`` is served from the installed
+    package at ``/ux-dom/static/x_element.js`` (see docs/security/ASSETS.md).
+    Build does not dual-copy library JS into app ``assets/`` by default.
 
     Examples::
 
@@ -783,7 +784,7 @@ def ui_cmd(
     for it in items:
         ch = " [channel]" if it["channel"] else ""
         ux_dom_logger.info(f"  · {it['name']:<16} {it['description']}{ch}")
-    ux_dom_logger.info("docs: docs/UI.md")
+    ux_dom_logger.info("docs: docs/guides/UI.md")
 
 
 @app.command()

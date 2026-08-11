@@ -78,4 +78,4 @@ Version: **0.1.0** (ux-dom production line).
 - [x] `markdown=` does not poison process
 - [x] CSRF policy per instance (no class race)
 
-See `docs/CONSISTENCY_REPORT.md` for last full audit.
+See `docs/ship/STABILITY.md` for last full audit.

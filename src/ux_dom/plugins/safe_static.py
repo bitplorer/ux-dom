@@ -11,7 +11,7 @@ Allowlists (three layers)
 Registration is always **file → URL** (one route per file). Directory mounts
 are intentionally unsupported.
 
-See docs/SAFE_STATIC.md for the investigation matrix.
+See docs/security/SAFE_STATIC.md for the investigation matrix.
 """
 
 from __future__ import annotations

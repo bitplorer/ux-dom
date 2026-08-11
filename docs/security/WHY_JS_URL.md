@@ -61,4 +61,4 @@ Exposing a **URL** must not mean exposing the **filesystem**.
 
 ux-dom registers **one route per allowlisted file** (e.g. only `x_element.js`).
 It does **not** mount the package directory. Requests for `__init__.py` or
-`../` paths return 404/403. See `ux_dom.plugins.safe_static` and `docs/ASSETS.md`.
+`../` paths return 404/403. See `ux_dom.plugins.safe_static` and `docs/security/ASSETS.md`.

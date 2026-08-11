@@ -21,7 +21,7 @@ Advanced helpers in this package:
 * ``Slots`` — multi named slots + optional CSS hrefs (WebComponent subclass)
 * ``WebComponentSlot`` / ``x_slot`` — Alpine-driven dynamic slot names
 
-Browser runtime: ``x_element.js`` (see ``docs/XELEMENT.md``, ``docs/HYPERMEDIA.md``).
+Browser runtime: ``x_element.js`` (see ``docs/guides/XELEMENT.md``, ``docs/guides/HYPERMEDIA.md``).
 """
 
 from .custom_element_slot import *  # isort: skip

@@ -10,7 +10,7 @@
     document.mount(app)
 
 ``App`` / ``PluginHub`` remain as optional registries (tests / advanced hubs).
-See ``docs/DOCUMENT.md``.
+See ``docs/guides/DOCUMENT.md``.
 """
 
 from ux_dom.plugins import protocols as protocols

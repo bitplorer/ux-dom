@@ -4,7 +4,7 @@
 
 ```bash
 pip install -e ".[fastapidev]"
-pip install pytest pytest-cov black ruff mypy
+pip install pytest pytest-cov black ruff mypy toml
 ```
 
 ## Quality gate (required)
@@ -38,6 +38,8 @@ under `docs/`. See [AGENTS.md](AGENTS.md) and [docs/guides/DX.md](docs/guides/DX
 
 - Product docs: `docs/` (index: `docs/README.md`)
 - Design / architecture: `docs/internals/ARCHITECTURE.md`, `DESIGN_CANON.md`, `MODULE_MAP.md`
+- Nested paths only (`guides/`, `internals/`, `security/`, `ship/`) — integrity gated by
+  `tests/04_production/test_docs_integrity.py`
 - Do not add new material only to `docs/archive/`
 - Keep Document + FastAPI + `document.mount` as the canonical story
 - Fix broken links and stale test paths in the same PR as the change

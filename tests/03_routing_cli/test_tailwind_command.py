@@ -65,14 +65,15 @@ class TestTailwindAvailability(unittest.TestCase):
     def test_available_returns_bool_false(self):
         with TemporaryDirectory() as td:
             tmp = Path(td)
-            with patch("ux_dom.settings.commands.subprocess.run") as run:
-                run.return_value = subprocess.CompletedProcess(
-                    args=["which", "tailwindcss"], returncode=1
-                )
-                cmd = object.__new__(TailwindCommand)
-                cmd.tailwindcss = "tailwindcss"
-                cmd._root_dir = tmp
-                result = TailwindCommand.is_tailwindcss_available(cmd)
+            with patch("ux_dom.settings.commands.shutil.which", return_value=None):
+                with patch("ux_dom.settings.commands.subprocess.run") as run:
+                    run.return_value = subprocess.CompletedProcess(
+                        args=["which", "tailwindcss"], returncode=1
+                    )
+                    cmd = object.__new__(TailwindCommand)
+                    cmd.tailwindcss = "tailwindcss"
+                    cmd._root_dir = tmp
+                    result = TailwindCommand.is_tailwindcss_available(cmd)
                 self.assertIs(result, False)
 
 
@@ -133,3 +134,22 @@ class TestTailwindV4Compat(unittest.TestCase):
             text[:200],
         )
         self.assertIn(cmd._tailwind_major(), (3, 4))
+
+
+class TestTailwindScaffoldWithoutBinary(unittest.TestCase):
+    def test_scaffold_writes_input_when_cli_missing(self):
+        """Input CSS must still be written if tailwindcss is not on PATH."""
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+
+        from ux_dom import WebAssets
+        from ux_dom.settings.commands import TailwindCommand
+
+        d = Path(tempfile.mkdtemp())
+        wa = WebAssets(base_dir=d, dry_run=False)
+        with patch.object(TailwindCommand, "is_tailwindcss_available", return_value=False):
+            cmd = TailwindCommand(file_path=d / "app.py", webassets=wa, minify=True)
+        self.assertTrue(cmd._input_file.exists(), "scaffold must write input CSS without CLI")
+        text = cmd._input_file.read_text(encoding="utf-8")
+        self.assertIn('@import "tailwindcss"', text)

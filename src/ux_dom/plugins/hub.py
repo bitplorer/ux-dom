@@ -359,7 +359,7 @@ class App:
         return self.use(HtmxControl(**kwargs))
 
     def csp(self, **kwargs: Any) -> "App":
-        """CSP nonces via middleware — see ``docs/CSP.md``."""
+        """CSP nonces via middleware — see ``docs/security/CSP.md``."""
         from ux_dom.plugins.csp import Csp
 
         return self.use(Csp(**kwargs))

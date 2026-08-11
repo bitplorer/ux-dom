@@ -357,7 +357,7 @@ class Document(object):
         1. ``served_files()`` → allowlisted static routes (``/ux-dom/static/…``)
         2. ``mount(app)`` → middleware (CSP, HTMX, …)
 
-        Call once after ``FastAPI()`` is created. See ``docs/DOCUMENT.md``.
+        Call once after ``FastAPI()`` is created. See ``docs/guides/DOCUMENT.md``.
         """
         if app is None:
             return app

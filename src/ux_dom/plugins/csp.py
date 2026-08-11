@@ -292,7 +292,7 @@ def build_csp_header(
 ) -> str:
     """Build a ``Content-Security-Policy`` value for one response.
 
-    See ``docs/CSP.md`` for how ``'strict-dynamic'`` interacts with host
+    See ``docs/security/CSP.md`` for how ``'strict-dynamic'`` interacts with host
     allowlists in modern vs legacy browsers.
     """
     if not nonce:

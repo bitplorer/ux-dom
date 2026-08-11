@@ -379,7 +379,7 @@ class CustomElement(XElement):
     --------
     * :class:`WebComponent` — isolated shadow tree + slots
     * ``examples/xelement_kit`` — full Light vs Shadow demos
-    * ``docs/XELEMENT.md`` — guide
+    * ``docs/guides/XELEMENT.md`` — guide
     """
 
     def __checks__(self, element):
@@ -445,7 +445,7 @@ class WebComponent(XElement):
     See also
     --------
     * :class:`CustomElement` — light DOM
-    * ``docs/XELEMENT.md``
+    * ``docs/guides/XELEMENT.md``
     """
 
     def __checks__(self, element):

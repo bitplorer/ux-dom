@@ -2,18 +2,26 @@
 
 ## Unreleased
 
+### Hardening
+
+- **Tailwind scaffold without CLI:** `TailwindCommand` still writes v4 input CSS when
+  `tailwindcss` is not on PATH (create-app / doctor layouts stay complete).
+- **Single-copy messaging:** CLI `uxdom build` help + `docs/ship/DEPLOY.md` match
+  package-mount `/ux-dom/static/x_element.js` (no dual-copy default).
+- **Doc path integrity:** source/docs pointers use nested paths
+  (`docs/guides/…`, `docs/security/…`, `docs/ship/…`); dead refs removed.
+- **Gates:** `tests/04_production/test_docs_integrity.py` (markdown links, flat-path
+  ban, single-copy messaging, XElement URL). `scripts/quality.sh` targets `src/ux_dom`.
+
 ### Docs / maintainership
 
 - **Automation-first policy:** ceremonial app files default to `uxdom create-app` /
   `uxdom add`; hand-code only when extending features or making breaking changes
   ([DX.md](docs/guides/DX.md), [MAINTENANCE_CANON.md](docs/ship/MAINTENANCE_CANON.md) §5.5,
   [AGENTS.md](AGENTS.md)).
-- **Freshness pass:** fixed nested doc links (guides/internals/security/ship),
-  full test package paths (`tests/0N_*`), removed dead `MIGRATION_0.1` / `BUGS_AUDIT`
-  references, restored [docs/archive/](docs/archive/) index, corrected package-mount
-  XElement URL in [STABILITY.md](docs/ship/STABILITY.md).
-- **Architecture overviews** at composition, routing, module map, design canon,
-  APP_COMPOSITION / DOCUMENT_AND_APP (no longer empty “superseded” stubs).
+- **Freshness pass:** fixed nested doc links, full test package paths, archive index,
+  package-mount XElement URL in [STABILITY.md](docs/ship/STABILITY.md).
+- **Architecture overviews** at composition, routing, module map, design canon.
 
 ## 0.1.0 — ux-dom (first public line)
 

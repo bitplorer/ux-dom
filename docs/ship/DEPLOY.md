@@ -9,18 +9,24 @@ There is no proprietary ux-dom cloud — `uxdom deploy` **prepares** host config
 
 ## Static JS shipping
 
-See **[ASSETS.md](../security/ASSETS.md)**. Short version: `x_element.js` is copied from the
-installed `ux_dom` package into `assets/js/` on every `uxdom build`, then served
-at `/assets/js/x_element.js`. Use `--package` to emit a runnable `dist/` tree.
+See **[ASSETS.md](../security/ASSETS.md)**. Short version (single-copy model):
+
+* `x_element.js` lives only in the **installed** `ux_dom` package
+* Browser URL: **`/ux-dom/static/x_element.js`** (package mount via `document.use(XElement())`)
+* `uxdom build` **verifies** the package file — it does **not** dual-copy into app `assets/`
+* Use `--package` to emit a runnable `dist/` tree (app code + requirements; pip supplies library JS)
+
+Escape hatch only: `XElementRuntime(serve="webassets")` materializes under `assets/js/`.
 
 ## `uxdom build`
 
 Runs from a **create-app** project root (`app/main.py`):
 
-1. Checks `app/main.py` + `assets/js/x_element.js`
-2. Runs `python -m app.tailwindcss` when present (production CSS)
-3. Imports `app.main:app` in a subprocess (fail closed)
-4. Soft `doctor --prod` notes (e.g. DEBUG still True)
+1. Checks `app/main.py` + installed package `x_element.js` contract
+2. Records package mount URLs (no dual-copy by default)
+3. Runs `python -m app.tailwindcss` when present (production CSS)
+4. Imports `app.main:app` in a subprocess (fail closed)
+5. Soft `doctor --prod` notes (e.g. DEBUG still True)
 
 ```bash
 cd myapp

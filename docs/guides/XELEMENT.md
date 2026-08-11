@@ -137,7 +137,7 @@ Component
 | `ux_dom/scripts/x_element.js` | Browser runtime |
 | `ux_dom/scripts/__init__.py` | `x_element_js` helper |
 | `examples/xelement_kit/` | Runnable demos |
-| `docs/PRODUCTION_READINESS.md` | Release gates |
+| `docs/ship/PRODUCTION_READINESS.md` | Release gates |
 
 
 Also: [HYPERMEDIA.md](HYPERMEDIA.md) — Alpine, Jinja, HTMX, Slots coverage map.
