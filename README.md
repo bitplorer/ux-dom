@@ -98,3 +98,32 @@ def home():
 | [docs/ASSETS.md](docs/ASSETS.md) | WebAssets / Tailwind |
 | [docs/RENDER_PHASES.md](docs/RENDER_PHASES.md) | Build vs serialize |
 | [docs/CONTEXT_SYNC_ASYNC.md](docs/CONTEXT_SYNC_ASYNC.md) | Sync/async `with` |
+| [docs/MEMBERSHIP.md](docs/MEMBERSHIP.md) | `get` / `in` / `matches` |
+| [docs/PRETTY_STREAM.md](docs/PRETTY_STREAM.md) | Pretty streaming |
+| [docs/CONCURRENCY.md](docs/CONCURRENCY.md) | Context stacks |
+| [docs/UI.md](docs/UI.md) | Optional UI kit |
+| [docs/DEPLOY.md](docs/DEPLOY.md) | Deploy |
+| [docs/DX.md](docs/DX.md) | DX overview |
+| [docs/COVERAGE.md](docs/COVERAGE.md) | Coverage policy |
+| [docs/PUBLISHING.md](docs/PUBLISHING.md) | Release notes |
+| [docs/PRODUCTION_READINESS.md](docs/PRODUCTION_READINESS.md) | Ship checklist |
+| [docs/MAINTENANCE_CANON.md](docs/MAINTENANCE_CANON.md) | What must not regress |
+| [CHANGELOG.md](CHANGELOG.md) | Version history |
+
+Archive (audits): [docs/archive/](docs/archive/)
+
+---
+
+## Quality
+
+```bash
+sh scripts/quality.sh
+# black · ruff · mypy ux_dom · pytest
+# coverage: pytest --cov=ux_dom  (fail_under=70)
+```
+
+---
+
+## License
+
+MIT
