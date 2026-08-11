@@ -1,0 +1,66 @@
+# Byte-compiled / caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+wheels/
+sdist/
+*.egg
+MANIFEST
+
+# Virtualenvs / env
+.venv/
+venv/
+ENV/
+.env
+.envrc
+.python-version.local
+
+# Test / coverage / type / lint caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.dmypy.json
+dmypy.json
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+.hypothesis/
+.tox/
+.nox/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+
+# Tooling local
+.pdm-python
+.pdm-build/
+__pypackages__/
+poetry.toml
+
+# Logs / local reports
+*.log
+logs/
+reports/
+
+# MkDocs / Sphinx
+/site
+docs/_build/
+
+# Local demo static materializations
+demosite/assets/static/
+
+# Test / harness outputs
+screenshots/
+reports/
