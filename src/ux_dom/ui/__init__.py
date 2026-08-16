@@ -26,24 +26,31 @@ from ux_dom.ui.card import (
     CardHeader,
     CardTitle,
 )
+from ux_dom.ui.carousel import Carousel
+from ux_dom.ui.chart import Chart
 from ux_dom.ui.checkbox import Checkbox
+from ux_dom.ui.datepicker import DatePicker
 from ux_dom.ui.dialog import Dialog
 from ux_dom.ui.input import Input, input_classes
 from ux_dom.ui.label import Label
 from ux_dom.ui.select import Select
 from ux_dom.ui.separator import Separator
 from ux_dom.ui.skeleton import Skeleton
+from ux_dom.ui.slider import Slider, slider_classes
 from ux_dom.ui.switch import Switch
 from ux_dom.ui.table import (
     Table,
     TableBody,
+    TableCaption,
     TableCell,
+    TableEmpty,
     TableHead,
     TableHeader,
     TableRow,
 )
 from ux_dom.ui.tabs import Tabs
 from ux_dom.ui.textarea import Textarea
+from ux_dom.ui.toast import ToastHost, ToastItem
 from ux_dom.ui.tokens import cn, focus_ring, radius, variants
 
 __all__ = [
@@ -75,12 +82,21 @@ __all__ = [
     "Checkbox",
     "Switch",
     "Select",
+    "Slider",
+    "slider_classes",
     "Table",
     "TableHeader",
     "TableBody",
     "TableRow",
     "TableHead",
     "TableCell",
+    "TableCaption",
+    "TableEmpty",
     "Tabs",
     "Dialog",
+    "Carousel",
+    "ToastHost",
+    "ToastItem",
+    "DatePicker",
+    "Chart",
 ]

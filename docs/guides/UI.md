@@ -34,17 +34,23 @@ CLI:
 uxdom ui list
 uxdom add ui Button          # copy into app/components/ui/ (edit freely)
 uxdom add ui Card --force
+uxdom add ui Slider
+uxdom add ui Carousel
 ```
 
 ## Components
 
-`Button` · `Input` · `Textarea` · `Label` · `Select` · `Checkbox` · `Switch`  
+`Button` · `Input` · `Textarea` · `Label` · `Select` · `Checkbox` · `Switch` · `Slider`  
 `Card` (+ Header/Title/Description/Content/Footer)  
 `Badge` · `Alert` · `Separator` · `Skeleton` · `Avatar`  
-`Table` (+ Header/Body/Row/Head/Cell)  
-`Tabs` (Alpine) · `Dialog` (Alpine)
+`Table` (+ Header/Body/Row/Head/Cell/Caption/Empty)  
+`Tabs` (Alpine) · `Dialog` (Alpine) · `Carousel` (Alpine)  
+`ToastHost` (morph-safe notices; server list is authority)  
+`DatePicker` (native `type=date`) · `Chart` (SVG sparkline / bar; no Chart.js)
 
 Tokens: `cn()`, `variants()`, `focus_ring`, `radius`.
+
+Every interactive composite ships empty / disabled / invalid states. `className` always overrides.
 
 ## Optional uxchannel bridge
 
@@ -55,6 +61,7 @@ from ux_dom.ui.channel_bridge import (
     live_button,
     to_fragment,
     action_button_attrs,
+    public_form,
 )
 
 # Morph target
@@ -62,40 +69,33 @@ stamp_region(Card(...), uid="Cart:panel")
 
 # Action control (signed caps when channel + host present)
 live_button("Refresh", action="Cart.refresh", target="Cart:panel")
+
+# Progressive form: HTML POST always; Channel attrs when peer present
+public_form(Input(name="sku"), action="cart.add", href="/actions/cart.add")
 ```
 
 Without `uxchannel` installed:
 
 - Kit still renders fully
 - `live_button` emits stub `data-channel-action` attrs
+- `public_form` remains a valid POST form
 - No hard dependency — optional power-up
 
 With channel: combine `ChannelComponent` / `ch.control` regions with ux-dom kit markup in slots (see uxchannel `AppShell` slots accepting ux-dom fragments via `to_html` / `to_fragment`).
+
+## Local chrome vs authority
+
+| Surface | Local (Alpine / native) | Authority (Action → Op) |
+|---------|-------------------------|-------------------------|
+| Tabs / Dialog / Carousel index | yes | no |
+| Toast list | no — morph of `#notices` | yes (`notify` or `ui.notice.push`) |
+| Search filter typeahead | `preview.filter` | commit Action |
+| Slider / DatePicker value | form field | submit Action |
+
+`x_element.js` is the only custom-element runtime. After `ui.dom.morph`, stock scan re-upgrades hosts. App code does not implement re-upgrade.
 
 ## Example gallery
 
 ```bash
 PYTHONPATH=.:examples/ux_kit uvicorn app.main:app --app-dir examples/ux_kit --port 8080
-```
-
-## Design rules
-
-1. **No React/Vue** — Components are ux-dom `Component` subclasses.
-2. **className variants** — strings only; no CSS-in-JS runtime.
-3. **Pass-through attrs** — `hx_*`, `x_*`, `data-*` work on roots.
-4. **Copy path** rewrites imports to relative (ownable fork).
-5. **Channel is a bridge**, not the default import surface.
-
-## Extending
-
-1. `uxdom add ui Button` → edit `app/components/ui/button.py`
-2. Or subclass:
-
-```python
-from ux_dom.ui import Button
-
-class PrimaryButton(Button):
-    def render(self, *a, **k):
-        k.setdefault("variant", "default")
-        return super().render(*a, **k)
 ```

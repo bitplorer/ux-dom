@@ -36,15 +36,22 @@ class Dialog(Component):
         **attrs: Any,
     ):
         open_btn = trigger or Button("Open dialog", variant="outline")
+        title_id = "dialog-title"
         panel_kids: list[Any] = []
         if title:
-            panel_kids.append(h2(title, className="text-lg font-semibold"))
+            panel_kids.append(
+                h2(title, id=title_id, className="text-lg font-semibold")
+            )
         if body is not None:
             panel_kids.append(div(body, className="mt-2 text-sm text-slate-600"))
         if footer is not None:
             panel_kids.append(div(footer, className="mt-4 flex justify-end gap-2"))
+        labelled = {"aria-labelledby": title_id} if title else {}
         panel = div(
             *panel_kids,
+            role="dialog",
+            **{"aria-modal": "true", "tabindex": "-1"},
+            **labelled,
             className=cn(
                 "relative z-50 w-full max-w-md rounded-xl border border-slate-200",
                 "bg-white p-6 shadow-lg",

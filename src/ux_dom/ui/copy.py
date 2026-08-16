@@ -22,6 +22,17 @@ _IMPORT_REWRITES = [
     (re.compile(r"from ux_dom\.ui import"), "from . import"),
 ]
 
+# stem → other catalog stems that must travel with a copy
+_DEPS: dict[str, tuple[str, ...]] = {
+    "dialog": ("button",),
+    "channel_bridge": ("button",),
+    "datepicker": ("input",),
+    "slider": (),
+    "carousel": (),
+    "toast": (),
+    "chart": (),
+}
+
 
 def copy_component(
     name: str,
@@ -59,11 +70,8 @@ def copy_component(
     if not tokens_dst.exists() or force:
         shutil.copy2(tokens_src, tokens_dst)
 
-    # Dialog depends on button — auto-copy dependency
-    if key == "dialog":
-        copy_component("button", dest_dir=dest_dir, force=force)
-    if key == "channel_bridge":
-        copy_component("button", dest_dir=dest_dir, force=force)
+    for dep in _DEPS.get(key, ()):
+        copy_component(dep, dest_dir=dest_dir, force=force)
 
     dest = dest_dir / src.name
     if dest.exists() and not force:

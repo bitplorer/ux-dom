@@ -1,5 +1,5 @@
 # Copyright (c) 2026 ux-dom
-"""Registry of ux-dom UI kit components (for CLI + docs)."""
+"""Registry of ux-dom UI kit components (for CLI + docs + doctor)."""
 
 from __future__ import annotations
 
@@ -114,6 +114,13 @@ CATALOG: dict[str, UiEntry] = {
         "description": "Native select styled",
         "channel": False,
     },
+    "slider": {
+        "name": "Slider",
+        "module": "ux_dom.ui.slider",
+        "exports": ["Slider", "slider_classes"],
+        "description": "Native range input",
+        "channel": False,
+    },
     "table": {
         "name": "Table",
         "module": "ux_dom.ui.table",
@@ -124,8 +131,10 @@ CATALOG: dict[str, UiEntry] = {
             "TableRow",
             "TableHead",
             "TableCell",
+            "TableCaption",
+            "TableEmpty",
         ],
-        "description": "Data table primitives",
+        "description": "Data table primitives + empty state",
         "channel": False,
     },
     "tabs": {
@@ -142,6 +151,34 @@ CATALOG: dict[str, UiEntry] = {
         "description": "Alpine modal dialog",
         "channel": False,
     },
+    "carousel": {
+        "name": "Carousel",
+        "module": "ux_dom.ui.carousel",
+        "exports": ["Carousel"],
+        "description": "Alpine slide carousel (empty state included)",
+        "channel": False,
+    },
+    "toast": {
+        "name": "Toast",
+        "module": "ux_dom.ui.toast",
+        "exports": ["ToastHost", "ToastItem"],
+        "description": "Morph-safe notices host — server list is authority",
+        "channel": False,
+    },
+    "datepicker": {
+        "name": "DatePicker",
+        "module": "ux_dom.ui.datepicker",
+        "exports": ["DatePicker"],
+        "description": "Native date input",
+        "channel": False,
+    },
+    "chart": {
+        "name": "Chart",
+        "module": "ux_dom.ui.chart",
+        "exports": ["Chart"],
+        "description": "SVG sparkline / bar shell (no Chart.js)",
+        "channel": False,
+    },
     "channel_bridge": {
         "name": "ChannelBridge",
         "module": "ux_dom.ui.channel_bridge",
@@ -151,10 +188,39 @@ CATALOG: dict[str, UiEntry] = {
             "action_button_attrs",
             "to_fragment",
             "live_button",
+            "public_form",
         ],
-        "description": "Optional ux-channel morph/action helpers",
+        "description": "Optional ux-channel morph/action helpers + progressive form",
         "channel": True,
     },
+}
+
+# Local runtime required for interactive chrome. None = pure server HTML.
+# Doctor (ux-app ui_health) fails production apps that use a composite
+# without declaring the matching Document.use plugin.
+RUNTIMES: dict[str, str | None] = {
+    "button": None,
+    "input": None,
+    "textarea": None,
+    "label": None,
+    "card": None,
+    "badge": None,
+    "alert": None,
+    "separator": None,
+    "skeleton": None,
+    "avatar": None,
+    "checkbox": None,
+    "switch": None,
+    "select": None,
+    "slider": None,
+    "table": None,
+    "tabs": "alpine",
+    "dialog": "alpine",
+    "carousel": "alpine",
+    "toast": None,
+    "datepicker": None,
+    "chart": None,
+    "channel_bridge": None,
 }
 
 
@@ -163,3 +229,7 @@ def list_components(*, channel: bool | None = None) -> list[UiEntry]:
     if channel is None:
         return items
     return [i for i in items if i["channel"] is channel]
+
+
+def runtime_for(name: str) -> str | None:
+    return RUNTIMES.get(name.strip().lower())

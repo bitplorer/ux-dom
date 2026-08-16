@@ -11,6 +11,8 @@ Patterns
 2. **LiveButton** — Button that carries signed action attrs when a registry/host
    is available (via ux_channel.components.primitive.region_button / action_attrs).
 3. **to_fragment** — coerce ux-dom nodes to HTML strings channel morph expects.
+4. **public_form** — progressive form: Channel Intent when peer present, HTML POST
+   when Channel is absent. No second protocol.
 
 ::
 
@@ -30,6 +32,7 @@ __all__ = [
     "action_button_attrs",
     "to_fragment",
     "live_button",
+    "public_form",
 ]
 
 
@@ -67,7 +70,7 @@ def stamp_region(node: Any, *, uid: str, **data_attrs: str) -> Any:
     """
     from ux_dom.dom import div
 
-    attrs = {f"data-channel-id": uid}
+    attrs = {"data-channel-id": uid}
     for k, v in data_attrs.items():
         key = k if k.startswith("data-") else f"data-{k.replace('_', '-')}"
         attrs[key] = v
@@ -137,3 +140,34 @@ def live_button(
     ch_attrs = action_button_attrs(action, host=host, trust=trust, target=target)
     merged = {**ch_attrs, **attrs}
     return Button(*children, variant=variant, size=size, **merged)
+
+
+def public_form(
+    *children: Any,
+    action: str,
+    href: str | None = None,
+    method: str = "post",
+    target: str | None = None,
+    className: str = "",
+    **attrs: Any,
+):
+    """
+    Progressive form for a public Action.
+
+    Always a valid HTML ``<form method=post>``. When Channel is present the
+    same form also carries signed action attrs. No second protocol.
+    """
+    from ux_dom.dom import form
+    from ux_dom.ui.tokens import cn
+
+    form_action = href or f"/actions/{action}"
+    extra = action_button_attrs(action, target=target)
+    extra["data-progressive"] = "form"
+    merged = {**extra, **attrs}
+    return form(
+        *children,
+        action=form_action,
+        method=method,
+        className=cn(className) if className else None,
+        **merged,
+    )

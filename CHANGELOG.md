@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### UI kit battery (Phase 1)
+
+- **Primitives:** `Slider` (native range, disabled/value). Checkbox invalid/disabled.
+  Switch thumb + disabled. Table `TableCaption` / `TableEmpty` + `aria-sort`.
+- **Composites:** `Carousel` (Alpine, empty state), `ToastHost` (morph-safe notices;
+  server list is authority), `DatePicker` (native `type=date`), `Chart` (SVG
+  sparkline/bar, no Chart.js).
+- **Dialog a11y:** `role="dialog"`, `aria-modal`, labelled title.
+- **Channel:** `public_form` progressive POST + optional Channel attrs.
+- **Catalog / copy:** new stems registered; DatePicker copies Input.
+- **Docs:** `docs/guides/UI.md` inventory + local-vs-authority table.
+- Tests: `tests/02_document_plugins/test_ui_battery.py`.
+
 ### Hardening
 
 - **Tailwind scaffold without CLI:** `TailwindCommand` still writes v4 input CSS when

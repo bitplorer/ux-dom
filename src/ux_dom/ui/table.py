@@ -8,10 +8,19 @@ from __future__ import annotations
 from typing import Any
 
 from ux_dom import Component
-from ux_dom.dom import table, tbody, td, th, thead, tr
+from ux_dom.dom import caption, table, tbody, td, th, thead, tr
 from ux_dom.ui.tokens import cn
 
-__all__ = ["Table", "TableHeader", "TableBody", "TableRow", "TableHead", "TableCell"]
+__all__ = [
+    "Table",
+    "TableHeader",
+    "TableBody",
+    "TableRow",
+    "TableHead",
+    "TableCell",
+    "TableCaption",
+    "TableEmpty",
+]
 
 
 class Table(Component):
@@ -50,13 +59,26 @@ class TableRow(Component):
 
 
 class TableHead(Component):
-    def render(self, *children: Any, className: str = "", **attrs: Any):
+    def render(
+        self,
+        *children: Any,
+        className: str = "",
+        sorted: str | None = None,
+        **attrs: Any,
+    ):
+        extra = ""
+        aria: dict[str, Any] = {}
+        if sorted in {"asc", "desc"}:
+            extra = "text-slate-900"
+            aria["aria-sort"] = "ascending" if sorted == "asc" else "descending"
         return th(
             *children,
             className=cn(
                 "h-12 px-4 text-left align-middle font-medium text-slate-500",
+                extra,
                 className,
             ),
+            **aria,
             **attrs,
         )
 
@@ -67,4 +89,37 @@ class TableCell(Component):
             *children,
             className=cn("p-4 align-middle", className),
             **attrs,
+        )
+
+
+class TableCaption(Component):
+    def render(self, *children: Any, className: str = "", **attrs: Any):
+        return caption(
+            *children,
+            className=cn("mt-4 text-sm text-slate-500", className),
+            **attrs,
+        )
+
+
+class TableEmpty(Component):
+    """Empty-state row. Span the full table width."""
+
+    def render(
+        self,
+        *children: Any,
+        col_span: int = 1,
+        className: str = "",
+        **attrs: Any,
+    ):
+        body = children or ("No rows",)
+        return tr(
+            td(
+                *body,
+                colSpan=col_span,
+                className=cn(
+                    "p-8 text-center text-sm text-slate-500",
+                    className,
+                ),
+                **attrs,
+            )
         )

@@ -17,23 +17,35 @@ from ux_dom.ui import (
     CardFooter,
     CardHeader,
     CardTitle,
+    Carousel,
+    Chart,
     Checkbox,
+    DatePicker,
     Dialog,
     Input,
     Label,
     Select,
     Separator,
     Skeleton,
+    Slider,
+    Switch,
     Table,
     TableBody,
     TableCell,
+    TableEmpty,
     TableHead,
     TableHeader,
     TableRow,
     Tabs,
     Textarea,
+    ToastHost,
 )
-from ux_dom.ui.channel_bridge import channel_available, live_button, stamp_region
+from ux_dom.ui.channel_bridge import (
+    channel_available,
+    live_button,
+    public_form,
+    stamp_region,
+)
 
 from app.document import page
 
@@ -69,7 +81,6 @@ class Index(Component):
                 ),
                 className="mb-10",
             ),
-            # Buttons
             section("Buttons", div(
                 Button("Default"),
                 Button("Secondary", variant="secondary"),
@@ -80,14 +91,15 @@ class Index(Component):
                 Button("Small", size="sm", variant="outline"),
                 className="flex flex-wrap gap-2",
             )),
-            # Form
             section("Form controls", div(
                 div(Label("Email"), Input(type="email", placeholder="you@example.com", className="mt-1.5"), className="max-w-sm"),
                 div(Label("Plan"), Select(options=[("free", "Free"), ("pro", "Pro")], className="mt-1.5 max-w-sm"), className="mt-4"),
                 div(Label("Bio"), Textarea(placeholder="About you", className="mt-1.5 max-w-sm"), className="mt-4"),
                 div(Checkbox(id="tos"), Label(" Accept terms", **{"for": "tos"}), className="mt-4 flex items-center gap-2"),
+                div(Label("Alerts"), Switch(checked=True, className="mt-1.5"), className="mt-4"),
+                div(Label("Volume"), Slider(name="vol", value=40, show_value=True, className="mt-1.5"), className="mt-4 max-w-sm"),
+                div(Label("Due"), DatePicker(name="due", value="2026-08-16", className="mt-1.5"), className="mt-4 max-w-sm"),
             )),
-            # Card + Badge + Alert
             section("Surfaces", div(
                 Card(
                     CardHeader(
@@ -118,6 +130,7 @@ class Index(Component):
                 TableBody(
                     TableRow(TableCell("Ada"), TableCell(Badge("active", variant="success")), TableCell("Admin")),
                     TableRow(TableCell("Lin"), TableCell(Badge("trial", variant="secondary")), TableCell("Member")),
+                    TableEmpty("Empty-state row ships with the kit", col_span=3),
                 ),
                 className="max-w-lg",
             )),
@@ -133,6 +146,15 @@ class Index(Component):
                 body=p("This is a lightweight Alpine modal — no React."),
                 footer=Button("Save", size="sm"),
             )),
+            section("Carousel (Alpine)", Carousel(
+                slides=[
+                    p("Slide one — local index only."),
+                    p("Slide two — authority stays on the Host."),
+                ],
+                label="Highlights",
+            )),
+            section("Toast host", ToastHost(items=[{"text": "Saved", "level": "success"}])),
+            section("Chart (SVG)", Chart(series=[4, 8, 6, 12, 9, 14], label="Revenue")),
             section("Avatar / Skeleton / Separator", div(
                 Avatar(AvatarFallback("SA")),
                 Separator(className="my-4"),
@@ -146,6 +168,11 @@ class Index(Component):
                     className="text-sm text-slate-600 mb-3 max-w-xl",
                 ),
                 live,
+                public_form(
+                    Button("Public submit", type="submit", size="sm", variant="outline"),
+                    action="Demo.ping",
+                    className="mt-3",
+                ),
                 div(region, className="mt-4 max-w-md"),
             )),
             className="max-w-3xl mx-auto px-4 py-12",
