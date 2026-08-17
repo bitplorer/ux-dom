@@ -49,6 +49,6 @@ Compose::
 
 ```bash
 uxdom create-app myapp
-uxdom dev myapp.api:api
+uxdom serve --port 8080
 uxdom plugins
 ```

@@ -16,17 +16,30 @@ The CLI is the **automation layer** for ceremonial project files. Core library
 code lives under `src/ux_dom`; the CLI keeps **apps** in lockstep with Document +
 FastAPI + DirectoryRouting contracts.
 
+Next.js-shaped day-1 surface:
+
 ```text
-create-app → dev → add → doctor/lint → build [--package] → deploy
+create-app ≈ create-next-app
+dev        ≈ next dev          (reload + Tailwind --watch)
+serve      ≈ next dev | start  (default dev; --prod for start)
+start      ≈ next start        (no reload, minify CSS)
+build      ≈ next build
+lint       ≈ next lint
+doctor / info ≈ next info
+```
+
+```text
+create-app → serve / dev → add → doctor/lint → build [--package] → start / deploy
 ```
 
 | Command family | Role |
 |----------------|------|
 | **create-app** | Greenfield scaffold (default path for new apps) |
 | **add** | Generators: component, route, xelement, ui |
-| **doctor / lint** | Read-only integrity |
+| **doctor / info / lint** | Read-only integrity |
 | **build / deploy** | Assets + host hints |
-| **dev / profile / dashboard** | Local DX |
+| **dev / serve / start** | Process runner + standalone Tailwind CLI |
+| **profile / dashboard** | Local DX |
 
 **Policy:** generate ceremonial files by default; hand-code only when extending
 features or making breaking changes. See [DX.md](DX.md) ·
@@ -58,6 +71,34 @@ myapp/
 
 Post-create integrity: `validate_scaffold` / `uxdom doctor`.
 
+## serve / dev / start
+
+```bash
+uxdom serve                 # dev: reload + Tailwind --watch
+uxdom serve --port 8080
+uxdom serve --prod          # production
+uxdom start                 # alias of serve --prod
+uxdom dev                   # alias of serve (dev)
+uxdom serve --no-tailwind --no-reload
+```
+
+**Standalone Tailwind CLI** (first hit wins):
+
+1. `UXDOM_TAILWIND` / `TAILWINDCSS`
+2. `tailwindcss` on PATH
+3. `pytailwindcss` extra (`pip install pytailwindcss`)
+4. local `node_modules` (`@tailwindcss/cli`)
+5. cached official binary under `$XDG_CACHE_HOME/ux-dom/`
+6. download official standalone (`v4.1.12`; disable with `UXDOM_TAILWIND_DOWNLOAD=0`)
+7. last resort: `npx --yes @tailwindcss/cli`
+
+`.env`, `.env.local`, `.env.development` / `.env.production` load automatically
+(process env wins). HMR is the create-app `WITH_HMR` lifespan plugin — `serve`
+does not copy library JS.
+
+When `serve` owns CSS it sets `UXDOM_TAILWIND_OWNED=1` so in-app `TailwindStyle`
+does not start a second watcher.
+
 ## dashboard
 
 Render p95 SVG graphs (no CDN):
@@ -84,20 +125,23 @@ Writes:
 * `reports/p95/latency.json` (p50/p95/p99)
 * `reports/p95/profile.speedscope.json` → open in https://www.speedscope.app
 
-## doctor
+## doctor / info
 
 ```bash
 uxdom doctor
 uxdom doctor --path .
+uxdom info                  # Next-style alias
 ```
 
-Checks: imports, Document shell, XElement runtime, CSP contract, scaffold files.
+Checks: imports, Document shell, XElement runtime, Tailwind CLI resolver, CSP contract, scaffold files.
 
 ## build / assets
 
 ```bash
 uxdom build
 ```
+
+Compiles CSS via the same standalone Tailwind resolver as `serve`.
 
 ## add (generators)
 
@@ -111,13 +155,6 @@ uxdom add ui Dialog
 Prefer these over hand-writing stubs that must match DirectoryRouter / Document
 conventions.
 
-## dev
-
-```bash
-uxdom dev
-uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
-```
-
 ## Quality (maintainers)
 
 ```bash
@@ -128,18 +165,22 @@ sh scripts/quality.sh
 
 | Command | Writes? | Notes |
 |---------|---------|--------|
-| templates, examples, ui, plugins, doctor, lint | No | Safe anytime |
+| templates, examples, ui, plugins, doctor, info, lint | No | Safe anytime |
 | profile | Yes (`reports/`) | Metrics only; never mutates app source |
 | create-app | Yes | `--yes` confirms only; **`--force` overwrites** |
 | add / deploy | Yes | Existing files require `--force` |
 | build | Optional CSS; dist only with `--package` | No dual-copy of `x_element.js` by default |
-| dev | Optional CSS if `--tailwind` | **Does not** copy library JS into static |
+| serve / dev | CSS via standalone Tailwind; no library JS copy | `--no-tailwind` to skip |
+| start | Minify CSS then serve | Production alias of `serve --prod` |
 
 ## Implementation map
 
 | Module | Owns |
 |--------|------|
 | `ux_dom/cli/cli.py` | Typer entry + command wiring |
+| `ux_dom/cli/serve.py` | `serve` / `dev` / `start` process runner |
+| `ux_dom/cli/tailwind.py` | Standalone Tailwind CLI resolver |
+| `ux_dom/cli/envfile.py` | Next-style `.env*` loading |
 | `ux_dom/cli/scaffold.py` | create-app templates |
 | `ux_dom/cli/adders.py` | add component/route/xelement/ui |
 | `ux_dom/cli/doctor.py` | Integrity checks |

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Next-style DX (`uxdom serve`)
+
+- **`uxdom serve` / `dev` / `start`:** process runner matching Next `dev` / `start`.
+  Standalone Tailwind CLI (PATH / pytailwindcss / cache / official download),
+  Next-style `.env*` loading, `UXDOM_TAILWIND_OWNED` so Document `TailwindStyle`
+  does not double-watch. `uxdom info` aliases `doctor`.
+- **`TailwindCommand`** and **`uxdom build` / `doctor`** share `cli/tailwind.py`.
+- Tests: `tests/03_routing_cli/test_serve_dx.py` (no download in CI).
+
 ### Channel-native design system
 
 - **Tokens:** L0–L3 `surface`, `ink`, `type_scale`, `target` (`min-h-11`), `density`,

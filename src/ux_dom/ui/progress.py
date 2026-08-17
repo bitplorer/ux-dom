@@ -20,7 +20,9 @@ class Progress(Component):
         className: str = "",
         **attrs: Any,
     ):
-        pct = 0.0 if max <= 0 else max(0.0, min(100.0, (float(value) / float(max)) * 100.0))
+        pct = 0.0 if max <= 0 else __import__("builtins").max(
+            0.0, min(100.0, (float(value) / float(max)) * 100.0)
+        )
         return div(
             div(
                 className="h-full rounded-full bg-emerald-500 transition-all",

@@ -13,7 +13,8 @@ It is also the live stand-in for a separate bugs audit (see [archive/](../archiv
 | `shadowdom=True` | Emitted `shadowdom="shadowdom"` | Use `shadowroot="true"` / string modes |
 | `uxdom build` css step | Soft step could flip ok incorrectly | Informational only; Tailwind step is authoritative |
 | Dockerfile CMD | Hard-coded port ignored host `PORT` | `uvicorn … --port ${PORT:-8080}` |
-| `uxdom dev` imports | `app` not on path | Prepend cwd to `PYTHONPATH` / `sys.path` |
+| `uxdom serve` / `dev` imports | `app` not on path | Prepend cwd to `PYTHONPATH` / `sys.path` |
+| Tailwind CLI missing | lifespan `[Errno 2] tailwindcss` | `cli/tailwind.py` resolver (PATH / pytailwindcss / cache / download) |
 | Dual JS names | Cognitive load | Single `x_element.js` / `x-tagname` |
 
 ## Still intentionally soft

@@ -187,7 +187,7 @@ class TestCliEntry(unittest.TestCase):
             cwd=str(ROOT),
             capture_output=True,
             text=True,
-            env={**os.environ, "PYTHONPATH": str(ROOT)},
+            env={**os.environ, "PYTHONPATH": str(ROOT / "src") + os.pathsep + str(ROOT)},
             timeout=30,
         )
         # typer may use different module path
@@ -202,7 +202,7 @@ class TestCliEntry(unittest.TestCase):
                 cwd=str(ROOT),
                 capture_output=True,
                 text=True,
-                env={**os.environ, "PYTHONPATH": str(ROOT)},
+                env={**os.environ, "PYTHONPATH": str(ROOT / "src") + os.pathsep + str(ROOT)},
                 timeout=30,
             )
             out = proc.stdout + proc.stderr

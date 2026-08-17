@@ -158,25 +158,28 @@ def run_doctor(
         Check("ux-channel", ch_ok, str(ch_detail), "info" if ch_ok else "warn")
     )
 
-    # Tailwind CLI optional
+    # Tailwind CLI — same resolver as uxdom serve (no download here)
     tw_ok = False
     tw_detail = "not found"
     try:
-        import pytailwindcss  # noqa: F401
+        from ux_dom.cli.tailwind import resolve_tailwind
 
-        tw_ok = True
-        tw_detail = "pytailwindcss importable"
-    except Exception:
-        import shutil
-
-        if shutil.which("tailwindcss"):
+        hit = resolve_tailwind(cwd=cwd, ensure=False)
+        if hit:
             tw_ok = True
-            tw_detail = "tailwindcss binary on PATH"
+            tw_detail = f"{hit.source}: {' '.join(hit.argv)}"
+    except Exception as e:
+        tw_detail = f"resolver error: {e}"
+    if not tw_ok:
+        tw_detail = (
+            "optional — pip install pytailwindcss  ·  "
+            "or let `uxdom serve` download the standalone CLI"
+        )
     report.checks.append(
         Check(
             "tailwind",
             tw_ok,
-            tw_detail if tw_ok else "optional — pip install pytailwindcss",
+            tw_detail,
             "info" if tw_ok else "warn",
         )
     )

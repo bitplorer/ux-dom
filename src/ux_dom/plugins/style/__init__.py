@@ -49,6 +49,12 @@ class TailwindStyle:
         self.minify = minify
         self._cmd = None
 
+    def _owned_by_cli(self) -> bool:
+        """``uxdom serve`` already runs the standalone CLI — skip a second watch."""
+        import os
+
+        return os.environ.get("UXDOM_TAILWIND_OWNED", "") in {"1", "true", "True"}
+
     def _command(self):
         if self._cmd is None:
             from ux_dom.settings.commands import TailwindCommand
@@ -66,6 +72,8 @@ class TailwindStyle:
         return f"/css/{self.output_css}"
 
     async def build(self, *, watch: bool = False) -> Any:
+        if self._owned_by_cli():
+            return None
         cmd = self._command()
         if watch and not self.minify:
             return await cmd.async_run(wait=False)

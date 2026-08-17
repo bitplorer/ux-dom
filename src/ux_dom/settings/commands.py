@@ -218,20 +218,37 @@ class TailwindCommand(object):
         if not self._output_file.exists():
             self._output_file.touch()
 
+    def _tw_argv(self) -> list[str]:
+        """Resolved Tailwind CLI argv (env / PATH / pytailwindcss / cache).
+
+        An explicit ``tailwindcss=`` other than the default name wins.
+        Does **not** download — ``uxdom serve`` is the ensure path.
+        """
+        explicit = self.tailwindcss
+        if isinstance(explicit, (list, tuple)) and explicit:
+            return [str(x) for x in explicit]
+        if isinstance(explicit, str) and explicit not in {"", "tailwindcss"}:
+            return [explicit]
+        try:
+            from ux_dom.cli.tailwind import resolve_tailwind_argv
+
+            cwd = getattr(self, "_root_dir", None)
+            hit = resolve_tailwind_argv(cwd=cwd, ensure=False)
+            if hit:
+                return hit
+        except Exception:
+            pass
+        return ["tailwindcss"]
+
     def _tw_bin(self) -> str:
-        """Resolved tailwindcss CLI path (always str for subprocess)."""
-        bin_ = self.tailwindcss
-        if isinstance(bin_, (list, tuple)):
-            return str(bin_[0])
-        if bin_ is None:
-            return "tailwindcss"
-        return str(bin_)
+        """Resolved tailwindcss CLI path (first argv token; tests / which)."""
+        return self._tw_argv()[0]
 
     def _tailwind_major(self) -> int:
         """Best-effort major version of the tailwindcss CLI (3 or 4)."""
         try:
             proc = subprocess.run(
-                [self._tw_bin(), "--help"],
+                [*self._tw_argv(), "--help"],
                 cwd=str(self._root_dir),
                 capture_output=True,
                 text=True,
@@ -272,16 +289,26 @@ class TailwindCommand(object):
     def is_tailwindcss_available(self) -> bool:
         """Return True when the tailwindcss binary is resolvable.
 
-        Checks ``shutil.which`` first, then a ``which``/``where`` probe.
-        Previous versions returned a ``CompletedProcess`` (always truthy),
-        which made missing CLI look installed and broke setup branches.
+        Resolution order matches ``uxdom serve`` (env / PATH / pytailwindcss /
+        node_modules / cache). Falls back to ``shutil.which`` + ``which``/``where``
+        so existing unit tests that patch those still work.
         """
+        try:
+            from ux_dom.cli.tailwind import resolve_tailwind_argv
+
+            cwd = getattr(self, "_root_dir", None)
+            explicit = self.tailwindcss
+            defaulted = explicit in (None, "tailwindcss")
+            if defaulted and resolve_tailwind_argv(cwd=cwd, ensure=False):
+                return True
+        except Exception:
+            pass
         name = self._tw_bin()
-        if shutil.which(name):
+        if Path(name).is_file() or shutil.which(name):
             return True
         output = subprocess.run(
             ["which" if not IS_WINDOWS else "where", name],
-            cwd=str(self._root_dir),
+            cwd=str(getattr(self, "_root_dir", Path.cwd())),
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
         )
@@ -297,7 +324,7 @@ class TailwindCommand(object):
         logger.info("trying to init tailwindcss config")
         try:
             output = subprocess.run(
-                [self._tw_bin(), "init"],
+                [*self._tw_argv(), "init"],
                 cwd=str(init_dir),
                 capture_output=True,
                 text=True,
@@ -318,7 +345,7 @@ class TailwindCommand(object):
         try:
             output = subprocess.run(
                 [
-                    self.tailwindcss,
+                    *self._tw_argv(),
                     "-i",
                     str(self._input_file.relative_to(self._root_dir)),
                     "-o",
@@ -351,8 +378,9 @@ class TailwindCommand(object):
         try:
             proc = getattr(self, "_tailwind_process", None)
             if proc is None or proc.returncode is not None:
+                argv = self._tw_argv()
                 self._tailwind_process = await asyncio.create_subprocess_exec(
-                    self._tw_bin(),
+                    *argv,
                     "-i",
                     str(self._input_file.relative_to(self._root_dir)),
                     "-o",

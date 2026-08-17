@@ -34,7 +34,8 @@ CLI       →  create-app / add for ceremonial files (default)
 pip install -e ".[fastapi]"
 uxdom create-app myapp
 cd myapp
-uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+uxdom serve --port 8080
+# or: uxdom dev    ·    uxdom start   (prod)
 # open /index/Index  ·  /health
 ```
 
@@ -79,7 +80,7 @@ Full index: [README.md](README.md)
 
 * Library JS: **`/ux-dom/static/x_element.js`** from installed `ux_dom` (not under `assets/js/` by default).
 * App files: **`/assets/*`** → project `assets/`.
-* `uxdom dev` does **not** create library JS copies. See DESIGN_CANON §2.
+* `uxdom serve` / `uxdom dev` do **not** create library JS copies. See DESIGN_CANON §2.
 
 ## Quality (maintainers)
 

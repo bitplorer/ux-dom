@@ -3,7 +3,8 @@
 ## Goals
 
 - **Low cognitive load:** one document model, one ASGI host.
-- **Scaffold parity** with Vue/CRA: `uxdom create-app`.
+- **Scaffold parity** with Vue/CRA / Next: `uxdom create-app`.
+- **Day-1 process** like Next: `uxdom serve` / `dev` / `start`.
 - **Batteries optional:** HTMX, XElement, CSP, Tailwind, uxchannel via flags.
 - **Automation-first for ceremonial code** (see below).
 
@@ -21,6 +22,8 @@ Hand-write it only when you are **extending a feature** or making a
 | New XElement | `uxdom add xelement` | Novel host/definition shape |
 | UI kit piece | `uxdom add ui` | New primitive not in kit |
 | Integrity check | `uxdom doctor` / `validate_scaffold` | — |
+| Run locally | `uxdom serve` / `uxdom dev` | Raw uvicorn only if you must |
+| Production process | `uxdom start` | Host-specific entry |
 | Deploy assets | `uxdom build` / `deploy` | Custom host packaging |
 
 Generators keep Document + FastAPI + `document.mount` + DirectoryRouting in
@@ -33,10 +36,29 @@ See [CLI.md](CLI.md) · [DESIGN_CANON.md](../internals/DESIGN_CANON.md) §8b.
 
 ```bash
 uxdom create-app myapp
-uvicorn app.main:app --reload
+cd myapp
+uxdom serve --port 8080
+# or: uxdom dev          (reload + Tailwind --watch)
+#     uxdom start        (prod, minify CSS)
 uxdom doctor
 uxdom add component Card
 ```
+
+`serve` loads `.env*` (process env wins) and drives the **standalone Tailwind
+CLI**. HMR is the create-app lifespan (`WITH_HMR`) — already first-class.
+
+## Next.js map
+
+| Next | uxdom |
+|------|-------|
+| `create-next-app` | `uxdom create-app` |
+| `next dev` | `uxdom dev` / `uxdom serve` |
+| `next start` | `uxdom start` / `uxdom serve --prod` |
+| `next build` | `uxdom build` |
+| `next lint` | `uxdom lint` |
+| `next info` | `uxdom doctor` / `uxdom info` |
+| Fast Refresh | Document HMR plugin (`WITH_HMR`) |
+| PostCSS / Tailwind | standalone Tailwind CLI (`cli/tailwind.py`) |
 
 ## What good DX looks like here
 
@@ -48,6 +70,7 @@ uxdom add component Card
 | Csp.auto | Zero-choice secure default |
 | Component + dataclass | Natural Python |
 | CLI generators | Ceremonial files stay fresh |
+| `uxdom serve` | One command: CSS + ASGI |
 
 ## Avoid
 
@@ -55,14 +78,15 @@ uxdom add component Card
 - Manual custom-element definition lists (auto-collect)
 - Copying library JS into `/assets` by hand (package static allowlist)
 - Hand-rewriting create-app / add templates just to rename symbols
+- Hand-rolling `uvicorn` + a custom CSS step when `uxdom serve` exists
 
 ## Architecture (one glance)
 
 ```text
-CLI (create-app / add)  →  app files on disk
-Document.use / .mount   →  HTML shell + static + middleware
-DirectoryRouting        →  FastAPI routes from files
-Component trees         →  serialize → HTML / stream
+CLI (create-app / serve / add)  →  app files + process
+Document.use / .mount           →  HTML shell + static + middleware
+DirectoryRouting                →  FastAPI routes from files
+Component trees                 →  serialize → HTML / stream
 ```
 
 Deep map: [ARCHITECTURE.md](../internals/ARCHITECTURE.md) ·

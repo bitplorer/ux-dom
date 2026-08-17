@@ -62,7 +62,8 @@ Version: **0.1.0** (ux-dom production line).
 - [x] Walk-stream `__async_render__` (compact open→children→close; pretty uses full engine)
 - [ ] watchfiles backend replace watchgod
 - [ ] `ux_dom[channel]` ControlPlugin package
-- [x] `uxdom dev` / `uxdom plugins` CLI
+- [x] `uxdom serve` / `uxdom dev` / `uxdom start` / `uxdom plugins` CLI
+- [x] Standalone Tailwind CLI resolver (`cli/tailwind.py`)
 - [x] DirectoryRouter `[id]` → `{id}` + private `_*.py` skip
 - [x] FastAPIHost + DirectoryRouting + control/style/hmr plugins
 
