@@ -57,13 +57,13 @@ uxdom doctor
 
 | Edge | Hardening |
 |------|-----------|
-| Tabs Alpine keys | Non-identifier keys → `tabN` (no JS break/XSS via quotes) |
+| Tabs keys | Non-identifier keys → `tabN` (no XSS via quotes) |
+| Dialog / Sheet | Channel-first `open=` render arg; no Alpine `x-data` default |
 | Tabs item shape | `ValueError` if not `(key,label,body)` |
 | Select selected | Only emit `selected` when true; value= honors option |
-| Dialog attrs | Preserve Alpine `x-data` unless caller overrides |
 | Dialog None parts | No `None` children |
 | Button disabled=False | Attribute omitted |
-| `uxdom add ui Dialog` | Auto-copies `button` + `tokens` dependency |
+| `uxdom add ui Dialog` | Copies `dialog` + `tokens` (no Button dep) |
 | Copy imports | Regex rewrite `ux_dom.ui.*` → relative |
 | Channel bridge | Soft-import; stub attrs without uxchannel |
 

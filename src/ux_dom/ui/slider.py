@@ -1,21 +1,20 @@
 # Copyright (c) 2026 ux-dom
-"""Slider — native range input, Tailwind tokens. No client runtime."""
-
+"""Slider — native range, operational tokens. No client runtime."""
 from __future__ import annotations
 
 from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import div, input_, span
-from ux_dom.ui.tokens import cn, focus_ring
+from ux_dom.ui.tokens import cn, focus_ring, ink
 
 __all__ = ["Slider", "slider_classes"]
 
 
 def slider_classes(*, className: str = "", disabled: bool = False) -> str:
     return cn(
-        "h-2 w-full cursor-pointer appearance-none rounded-full bg-slate-200",
-        "accent-slate-900",
+        "h-2 w-full cursor-pointer appearance-none rounded-full bg-stone-700",
+        "accent-emerald-500",
         focus_ring,
         "disabled:cursor-not-allowed disabled:opacity-50" if disabled else "",
         className,
@@ -23,13 +22,6 @@ def slider_classes(*, className: str = "", disabled: bool = False) -> str:
 
 
 class Slider(Component):
-    """
-    ::
-
-        Slider(name="volume", min=0, max=100, value=40)
-        Slider(name="gain", disabled=True, value=0)
-    """
-
     def render(
         self,
         *,
@@ -68,6 +60,6 @@ class Slider(Component):
         label = "" if value is None else str(value)
         return div(
             control,
-            span(label, className="ml-3 text-sm tabular-nums text-slate-600"),
+            span(label, className=cn("ml-3 text-sm tabular-nums", ink["muted"])),
             className="flex items-center gap-2",
         )

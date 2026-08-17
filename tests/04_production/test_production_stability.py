@@ -57,22 +57,23 @@ class TestUiEdges(unittest.TestCase):
         self.assertIn('value="b"', html)
 
     def test_dialog_body_only(self):
-        html = str(Dialog(body="only"))
+        html = str(Dialog(open=True, body="only"))
         self.assertIn("only", html)
-        self.assertIn("x-data", html)
+        self.assertNotIn("x-data", html)
+        self.assertIn('role="dialog"', html)
 
-    def test_copy_dialog_pulls_button(self):
+    def test_copy_dialog_is_self_contained(self):
         with tempfile.TemporaryDirectory() as td:
             d = Path(td) / "ui"
             copy_component("Dialog", dest_dir=d, force=True)
             self.assertTrue((d / "dialog.py").is_file())
-            self.assertTrue((d / "button.py").is_file())
             self.assertTrue((d / "tokens.py").is_file())
             for py in d.glob("*.py"):
                 compile(py.read_text(encoding="utf-8"), str(py), "exec")
             text = (d / "dialog.py").read_text()
-            self.assertIn("from .button import", text)
-            self.assertNotIn("from ux_dom.ui.button", text)
+            self.assertIn("from .tokens import", text)
+            self.assertNotIn("from ux_dom.ui.tokens", text)
+            self.assertNotIn("x-data", text)
 
 
 class TestScaffoldMatrix(unittest.TestCase):

@@ -1,5 +1,9 @@
 # Copyright (c) 2026 ux-dom
-"""Button — shadcn-inspired variants (pure ux-dom + Tailwind)."""
+"""Button — operational variants (pure ux-dom + Tailwind).
+
+Defaults raised to min-h-11 (44px) and semantic accents so Host desks
+no longer need local size hacks.
+"""
 
 from __future__ import annotations
 
@@ -7,24 +11,25 @@ from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import button as html_button
-from ux_dom.ui.tokens import cn, focus_ring
+from ux_dom.ui.tokens import cn, focus_ring, target
 
 __all__ = ["Button", "button_classes"]
 
 _VARIANTS = {
-    "default": "bg-slate-900 text-white hover:bg-slate-800",
-    "secondary": "bg-slate-100 text-slate-900 hover:bg-slate-200",
-    "outline": "border border-slate-200 bg-white hover:bg-slate-50 text-slate-900",
-    "ghost": "hover:bg-slate-100 text-slate-900",
-    "destructive": "bg-red-600 text-white hover:bg-red-700",
-    "link": "text-sky-600 underline-offset-4 hover:underline",
+    "default": "bg-stone-100 text-stone-950 hover:bg-white",
+    "secondary": "bg-stone-800 text-stone-100 hover:bg-stone-700 border border-stone-700",
+    "outline": "border border-stone-600 bg-transparent text-stone-100 hover:bg-stone-800/80",
+    "ghost": "hover:bg-stone-800/70 text-stone-200",
+    "destructive": "bg-red-600 text-white hover:bg-red-500",
+    "accent": "bg-emerald-600 text-white hover:bg-emerald-500",
+    "link": "text-emerald-400 underline-offset-4 hover:underline",
 }
 
 _SIZES = {
-    "sm": "h-8 px-3 text-xs",
-    "md": "h-10 px-4 text-sm",
-    "lg": "h-11 px-6 text-base",
-    "icon": "h-10 w-10",
+    "sm": target["sm"],
+    "md": target["md"],      # 44px default
+    "lg": target["lg"],
+    "icon": target["icon"],
 }
 
 
@@ -52,6 +57,7 @@ class Button(Component):
     ::
 
         Button("Save", type="submit", variant="default")
+        Button("Hold", variant="accent", size="md")
         Button("Cancel", variant="outline", hx_get="/x", hx_target="#panel")
     """
 

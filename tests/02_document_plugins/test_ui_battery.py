@@ -49,10 +49,15 @@ class TestBatteryRenders(unittest.TestCase):
         self.assertIn('data-carousel="empty"', empty)
         html = str(Carousel(slides=[div("One"), div("Two")], label="Highlights"))
         self.assertIn("One", html)
-        self.assertIn("Two", html)
-        self.assertIn("x-data", html)
+        self.assertIn("1 / 2", html)
+        self.assertNotIn("x-data", html)
         self.assertIn("Previous slide", html)
         self.assertIn("aria-roledescription", html)
+        self.assertIn('data-carousel="channel"', html)
+        # Channel-first renders the active slide only; page 2 arrives via select_region.
+        page2 = str(Carousel(slides=[div("One"), div("Two")], index=1, label="Highlights"))
+        self.assertIn("Two", page2)
+        self.assertIn("2 / 2", page2)
 
     def test_toast_host_empty_and_items(self):
         empty = str(ToastHost(items=[]))
@@ -96,10 +101,17 @@ class TestBatteryRenders(unittest.TestCase):
         self.assertIn("aria-sort", head)
 
     def test_dialog_a11y(self):
-        html = str(Dialog(title="Confirm", body="Are you sure?"))
+        html = str(Dialog(open=True, title="Confirm", body="Are you sure?"))
         self.assertIn('role="dialog"', html)
         self.assertIn("aria-modal", html)
         self.assertIn("Confirm", html)
+        self.assertNotIn("x-data", html)
+
+    def test_dialog_closed_is_morph_target(self):
+        html = str(Dialog(title="Confirm", body="hidden until open"))
+        self.assertNotIn("x-data", html)
+        self.assertIn('data-open="0"', html)
+        self.assertIn("overlay", html)
 
 
 class TestChannelOptional(unittest.TestCase):
@@ -120,10 +132,11 @@ class TestChannelOptional(unittest.TestCase):
             self.assertTrue(html)
 
     def test_stamp_and_live_and_public_form(self):
-        stamped = str(stamp_region(Dialog(body="inner"), uid="Checkout:dialog"))
+        stamped = str(stamp_region(Dialog(open=True, body="inner"), uid="Checkout:dialog"))
         self.assertIn("data-channel-id", stamped)
         self.assertIn("Checkout:dialog", stamped)
         self.assertIn("inner", stamped)
+        self.assertNotIn("x-data", stamped)
         btn = str(live_button("Pay", action="Checkout.pay", target="Checkout:dialog"))
         self.assertIn("Pay", btn)
         self.assertIn("data-channel-action", btn)
@@ -133,10 +146,9 @@ class TestChannelOptional(unittest.TestCase):
         self.assertIn("data-progressive", form)
 
     def test_morph_xelement_contract_markup(self):
-        # Carousel is Alpine local chrome. After morph, stock x_element.js
+        # Carousel is Channel-first. After morph, stock x_element.js
         # re-upgrades hosts; app code does not implement re-upgrade.
-        # This test locks the coexistence markup: stamped region keeps
-        # x-data (Alpine) + data-channel-id (morph target).
+        # Stamped region keeps data-channel-id; no Alpine x-data authority.
         html = str(
             stamp_region(
                 Carousel(slides=["Alpha", "Beta"], label="Hero"),
@@ -145,23 +157,37 @@ class TestChannelOptional(unittest.TestCase):
         )
         self.assertIn("data-channel-id", html)
         self.assertIn("Hero:carousel", html)
-        self.assertIn("x-data", html)
+        self.assertNotIn("x-data", html)
         self.assertIn("Alpha", html)
 
 
 class TestCatalogAndCopy(unittest.TestCase):
     def test_new_stems_in_catalog(self):
-        for key in ("slider", "carousel", "toast", "datepicker", "chart"):
+        for key in (
+            "slider",
+            "carousel",
+            "toast",
+            "datepicker",
+            "chart",
+            "sheet",
+            "command",
+            "breadcrumb",
+        ):
             self.assertIn(key, CATALOG)
             self.assertIn(key, RUNTIMES)
+        self.assertIsNone(RUNTIMES["dialog"])
+        self.assertIsNone(RUNTIMES["tabs"])
+        self.assertIsNone(RUNTIMES["carousel"])
 
-    def test_copy_datepicker_pulls_input(self):
+    def test_copy_datepicker_uses_tokens(self):
         with TemporaryDirectory() as td:
             dest = Path(td) / "ui"
             copy_component("DatePicker", dest_dir=dest, force=True)
             self.assertTrue((dest / "datepicker.py").is_file())
-            self.assertTrue((dest / "input.py").is_file())
             self.assertTrue((dest / "tokens.py").is_file())
+            text = (dest / "datepicker.py").read_text(encoding="utf-8")
+            self.assertIn("from .tokens import", text)
+            self.assertNotIn("from ux_dom.ui.tokens", text)
 
     def test_copy_carousel(self):
         with TemporaryDirectory() as td:

@@ -1,13 +1,16 @@
 # Copyright (c) 2026 ux-dom
-"""DatePicker — native date input (no Litepicker unless Document.use declares it)."""
+"""DatePicker — native type=date. No Litepicker injection.
 
+Uses elevated field_classes (44px) so date rows align with Input / Select.
+Keeps live states: invalid, disabled, empty, min/max, required.
+"""
 from __future__ import annotations
 
 from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import input_
-from ux_dom.ui.input import input_classes
+from ux_dom.ui.tokens import field_classes
 
 __all__ = ["DatePicker"]
 
@@ -38,6 +41,7 @@ class DatePicker(Component):
         **attrs: Any,
     ):
         kwargs = dict(attrs)
+        kwargs.setdefault("type", "date")
         if name is not None:
             kwargs.setdefault("name", name)
         if value:
@@ -57,7 +61,6 @@ class DatePicker(Component):
             kwargs.setdefault("data-empty", "true")
 
         return input_(
-            type="date",
-            className=input_classes(className=className, invalid=invalid),
+            className=field_classes(className=className, invalid=invalid),
             **kwargs,
         )

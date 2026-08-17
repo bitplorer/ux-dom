@@ -1,13 +1,16 @@
 # Copyright (c) 2026 ux-dom
-"""Carousel — Alpine local chrome. Empty state required. No authority kv."""
+"""Carousel — Channel-first slide index (no Alpine).
 
+Active index comes from the server (select_region). Renders one slide.
+``default=`` is accepted as an alias for ``index=`` (historical name).
+"""
 from __future__ import annotations
 
 from typing import Any, Sequence
 
 from ux_dom import Component
 from ux_dom.dom import button, div, span
-from ux_dom.ui.tokens import cn, focus_ring
+from ux_dom.ui.tokens import cn, focus_ring, surface, type_scale
 
 __all__ = ["Carousel"]
 
@@ -16,19 +19,21 @@ class Carousel(Component):
     """
     ::
 
-        Carousel(slides=[div("One"), div("Two")], label="Highlights")
+        Carousel(slides=[div("One"), div("Two")], label="Highlights", index=0)
         Carousel(slides=[])  # empty state
 
-    Local index is Alpine-only. Server authority uses stamp_region + live_button.
+    Index is a render argument — not client state. Advance via select_region.
     """
 
     def render(
         self,
         slides: Sequence[Any] = (),
         *,
-        default: int = 0,
+        index: int = 0,
+        default: int | None = None,
         label: str = "Carousel",
         empty: Any = None,
+        select_action: str | None = None,
         className: str = "",
         **attrs: Any,
     ):
@@ -36,85 +41,56 @@ class Carousel(Component):
         if not items:
             empty_body = empty if empty is not None else span(
                 "No slides",
-                className="text-sm text-slate-500",
+                className=cn(type_scale["caption"]),
             )
             return div(
                 empty_body,
                 role="region",
                 **{"aria-label": label, "data-carousel": "empty"},
                 className=cn(
-                    "flex min-h-[8rem] items-center justify-center rounded-xl",
-                    "border border-dashed border-slate-200 bg-slate-50 px-6 py-10",
+                    "flex min-h-[8rem] items-center justify-center rounded-xl p-6 text-center",
+                    surface["l1"],
                     className,
                 ),
                 **attrs,
             )
 
         n = len(items)
-        start = default if 0 <= int(default) < n else 0
-        track = []
-        dots = []
-        for i, slide in enumerate(items):
-            track.append(
-                div(
-                    slide,
-                    **{"x-show": f"i === {i}"},
-                    className="w-full",
-                )
-            )
-            dots.append(
-                button(
-                    span(str(i + 1), className="sr-only"),
-                    type="button",
-                    **{
-                        "@click": f"i = {i}",
-                        ":class": (
-                            f"i === {i} ? 'bg-slate-900' : 'bg-slate-300 hover:bg-slate-400'"
-                        ),
-                    },
-                    className=cn(
-                        "h-2.5 w-2.5 rounded-full transition-colors",
-                        focus_ring,
-                    ),
-                    **{"aria-label": f"Go to slide {i + 1}"},
-                )
+        start = index if default is None else default
+        idx = max(0, min(int(start), n - 1))
+        body = items[idx]
+
+        def nav_btn(visible: str, aria: str, target_idx: int, *, disabled: bool):
+            ba: dict[str, Any] = {"type": "button", "aria-label": aria}
+            if select_action and not disabled:
+                ba["data-channel-action"] = select_action
+                ba["data-args"] = f'{{"index":"{target_idx}"}}'
+            if disabled:
+                ba["disabled"] = True
+            return button(
+                visible,
+                className=cn(
+                    "min-h-9 rounded-md border border-stone-700 px-3 text-sm",
+                    focus_ring,
+                    "disabled:opacity-40",
+                ),
+                **ba,
             )
 
-        prev = button(
-            "‹",
-            type="button",
-            **{"@click": "i = (i - 1 + n) % n", "aria-label": "Previous slide"},
-            className=cn(
-                "inline-flex h-10 w-10 items-center justify-center rounded-full",
-                "border border-slate-200 bg-white text-lg text-slate-700",
-                "hover:bg-slate-50",
-                focus_ring,
-            ),
-        )
-        nxt = button(
-            "›",
-            type="button",
-            **{"@click": "i = (i + 1) % n", "aria-label": "Next slide"},
-            className=cn(
-                "inline-flex h-10 w-10 items-center justify-center rounded-full",
-                "border border-slate-200 bg-white text-lg text-slate-700",
-                "hover:bg-slate-50",
-                focus_ring,
-            ),
-        )
-
-        outer = {"x-data": f"{{ i: {start}, n: {n} }}", "data-carousel": "alpine"}
-        outer.update(attrs)
         return div(
+            div(body, className="min-h-[8rem]"),
             div(
-                prev,
-                div(*track, className="min-h-[8rem] flex-1"),
-                nxt,
-                className="flex items-center gap-3",
+                nav_btn("Prev", "Previous slide", idx - 1, disabled=idx <= 0),
+                div(f"{idx + 1} / {n}", className=cn("px-3", type_scale["caption"])),
+                nav_btn("Next", "Next slide", idx + 1, disabled=idx >= n - 1),
+                className="mt-3 flex items-center justify-center gap-2",
             ),
-            div(*dots, className="mt-3 flex justify-center gap-2"),
             role="region",
-            **{"aria-roledescription": "carousel", "aria-label": label},
-            className=cn("rounded-xl border border-slate-200 bg-white p-4", className),
-            **outer,
+            **{
+                "aria-label": label,
+                "aria-roledescription": "carousel",
+                "data-carousel": "channel",
+            },
+            className=cn(surface["l1"], "rounded-xl p-4", className),
+            **attrs,
         )

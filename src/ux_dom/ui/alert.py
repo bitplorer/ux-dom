@@ -1,23 +1,20 @@
 # Copyright (c) 2026 ux-dom
-"""UI kit component: alert.
-
-Optional Tailwind-styled building block. List with `uxdom ui`; copy with `uxdom add ui Alert` when applicable. Not required for core ux-dom apps.
-"""
+"""Alert — surface-aware callout."""
 from __future__ import annotations
 
 from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import div, h5, p
-from ux_dom.ui.tokens import cn
+from ux_dom.ui.tokens import cn, type_scale
 
 __all__ = ["Alert", "AlertTitle", "AlertDescription"]
 
 _VARIANTS = {
-    "default": "bg-white text-slate-950 border-slate-200",
-    "destructive": "border-red-200 text-red-900 bg-red-50",
-    "success": "border-emerald-200 text-emerald-900 bg-emerald-50",
-    "warning": "border-amber-200 text-amber-900 bg-amber-50",
+    "default": "border-stone-700 bg-stone-900/90 text-stone-100",
+    "destructive": "border-red-500/50 bg-red-950/40 text-red-200",
+    "warning": "border-amber-500/40 bg-amber-950/30 text-amber-100",
+    "success": "border-emerald-500/40 bg-emerald-950/30 text-emerald-100",
 }
 
 
@@ -45,11 +42,15 @@ class AlertTitle(Component):
     def render(self, *children: Any, className: str = "", **attrs: Any):
         return h5(
             *children,
-            className=cn("mb-1 font-medium leading-none tracking-tight", className),
+            className=cn(type_scale["subtitle"], "mb-1", className),
             **attrs,
         )
 
 
 class AlertDescription(Component):
     def render(self, *children: Any, className: str = "", **attrs: Any):
-        return p(*children, className=cn("text-sm opacity-90", className), **attrs)
+        return p(
+            *children,
+            className=cn(type_scale["body"], "opacity-90", className),
+            **attrs,
+        )

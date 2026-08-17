@@ -134,24 +134,27 @@ class Index(Component):
                 ),
                 className="max-w-lg",
             )),
-            section("Tabs (Alpine)", Tabs(
+            section("Tabs (Channel)", Tabs(
                 items=[
                     ("a", "Account", p("Make changes to your account here.")),
                     ("b", "Password", p("Change your password here.")),
                 ],
+                active="a",
+                select_action="nav.tab",
             )),
-            section("Dialog (Alpine)", Dialog(
-                trigger=Button("Open dialog", variant="outline"),
+            section("Dialog (Channel)", Dialog(
+                open=True,
                 title="Edit profile",
-                body=p("This is a lightweight Alpine modal — no React."),
-                footer=Button("Save", size="sm"),
+                body=p("Open/close is a session cell — use open_overlay / close_overlay."),
+                footer=live_button("Save", action="Demo.ping", size="sm"),
             )),
-            section("Carousel (Alpine)", Carousel(
+            section("Carousel (Channel)", Carousel(
                 slides=[
-                    p("Slide one — local index only."),
-                    p("Slide two — authority stays on the Host."),
+                    p("Slide one — index is a render argument."),
+                    p("Slide two — advance with select_region."),
                 ],
                 label="Highlights",
+                index=0,
             )),
             section("Toast host", ToastHost(items=[{"text": "Saved", "level": "success"}])),
             section("Chart (SVG)", Chart(series=[4, 8, 6, 12, 9, 14], label="Revenue")),

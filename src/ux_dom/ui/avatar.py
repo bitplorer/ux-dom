@@ -1,15 +1,12 @@
 # Copyright (c) 2026 ux-dom
-"""UI kit component: avatar.
-
-Optional Tailwind-styled building block. List with `uxdom ui`; copy with `uxdom add ui Avatar` when applicable. Not required for core ux-dom apps.
-"""
+"""Avatar — image + fallback initials."""
 from __future__ import annotations
 
 from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import div, img, span
-from ux_dom.ui.tokens import cn
+from ux_dom.ui.tokens import cn, surface
 
 __all__ = ["Avatar", "AvatarImage", "AvatarFallback"]
 
@@ -41,7 +38,8 @@ class AvatarFallback(Component):
         return span(
             *children,
             className=cn(
-                "flex h-full w-full items-center justify-center rounded-full bg-slate-100 text-sm",
+                "flex h-full w-full items-center justify-center rounded-full text-sm",
+                surface["l1"],
                 className,
             ),
             **attrs,

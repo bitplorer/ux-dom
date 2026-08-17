@@ -24,13 +24,18 @@ _IMPORT_REWRITES = [
 
 # stem → other catalog stems that must travel with a copy
 _DEPS: dict[str, tuple[str, ...]] = {
-    "dialog": ("button",),
+    "dialog": (),
+    "sheet": (),
     "channel_bridge": ("button",),
-    "datepicker": ("input",),
+    "datepicker": (),
     "slider": (),
     "carousel": (),
     "toast": (),
     "chart": (),
+    "command": (),
+    "popover": (),
+    "dropdown_menu": (),
+    "tabs": (),
 }
 
 

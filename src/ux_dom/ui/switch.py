@@ -1,47 +1,41 @@
 # Copyright (c) 2026 ux-dom
-"""Switch — Alpine-friendly toggle (no client framework required for static)."""
-
+"""Switch — checkbox with switch presentation classes."""
 from __future__ import annotations
 
 from typing import Any
 
 from ux_dom import Component
-from ux_dom.dom import button, span
+from ux_dom.dom import input_
 from ux_dom.ui.tokens import cn, focus_ring
 
 __all__ = ["Switch"]
 
 
 class Switch(Component):
-    """Uses Alpine when x-data parent provides `on`; otherwise pure button attrs."""
-
     def render(
         self,
         *,
+        className: str = "",
         checked: bool = False,
         disabled: bool = False,
-        className: str = "",
         **attrs: Any,
     ):
         kwargs = dict(attrs)
+        kwargs.setdefault("type", "checkbox")
+        kwargs.setdefault("role", "switch")
+        if checked:
+            kwargs["checked"] = True
+            kwargs["aria-checked"] = "true"
+        else:
+            kwargs["aria-checked"] = "false"
         if disabled:
             kwargs["disabled"] = True
-        return button(
-            span(
-                className=cn(
-                    "pointer-events-none block h-5 w-5 rounded-full bg-white shadow",
-                    "ring-0 transition-transform",
-                    "translate-x-5" if checked else "translate-x-0",
-                )
-            ),
-            type="button",
-            role="switch",
-            **{"aria-checked": "true" if checked else "false"},
+        return input_(
             className=cn(
-                "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full",
-                "border-2 border-transparent transition-colors",
+                "h-6 w-11 shrink-0 cursor-pointer appearance-none rounded-full",
+                "bg-stone-700 transition-colors accent-emerald-500",
+                "checked:bg-emerald-600",
                 focus_ring,
-                "bg-slate-900" if checked else "bg-slate-200",
                 "disabled:cursor-not-allowed disabled:opacity-50",
                 className,
             ),
