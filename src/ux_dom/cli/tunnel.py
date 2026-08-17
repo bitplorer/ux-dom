@@ -1,12 +1,14 @@
-"""Dev tunnel providers for ``uxdom serve --tunnel``.
+"""Public tunnel helpers for uxdom serve / dev / start.
 
 Providers (optional binaries on PATH):
 
-* ``ngrok``      — ``ngrok http <port>``; URL from local API ``:4040``
-* ``cloudflare`` — ``cloudflared tunnel --url http://127.0.0.1:<port>``
+* ``ngrok``      — ``ngrok http <target>``; URL from local API ``:4040``
+* ``cloudflare`` — ``cloudflared tunnel --url http://<probe-host>:<port>``
 
 Tunnel starts **after** local ``/health`` (or fallback) is green so the public
 URL is never advertised against a dead origin (the classic tunnel 502).
+
+Design / why / non-goals: ``docs/guides/TUNNEL.md``.
 """
 from __future__ import annotations
 
@@ -21,14 +23,13 @@ import urllib.request
 from dataclasses import dataclass
 from typing import Literal, Optional
 
-from ux_dom.utils.logger import ux_dom_logger
-
 Provider = Literal["none", "ngrok", "cloudflare"]
 
 __all__ = [
     "Provider",
     "TunnelHandle",
     "parse_provider",
+    "local_probe_host",
     "wait_for_health",
     "start_tunnel",
     "provider_available",
@@ -37,22 +38,25 @@ __all__ = [
 
 @dataclass
 class TunnelHandle:
-    provider: str
-    public_url: str
-    process: subprocess.Popen
+    """Running tunnel process + public URL (when known)."""
 
-    def close(self, timeout: float = 5.0) -> None:
-        if self.process.poll() is not None:
-            return
-        self.process.terminate()
-        try:
-            self.process.wait(timeout=timeout)
-        except Exception:
-            self.process.kill()
+    provider: Provider
+    process: subprocess.Popen
+    public_url: Optional[str] = None
+
+    def stop(self) -> None:
+        if self.process.poll() is None:
+            self.process.terminate()
+            try:
+                self.process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                self.process.kill()
 
 
 def parse_provider(value: Optional[str]) -> Provider:
-    raw = (value or "none").strip().lower()
+    if not value:
+        return "none"
+    raw = value.strip().lower()
     aliases = {
         "none": "none",
         "off": "none",
@@ -62,13 +66,27 @@ def parse_provider(value: Optional[str]) -> Provider:
         "cloudflare": "cloudflare",
         "cf": "cloudflare",
         "cloudflared": "cloudflare",
-        "trycloudflare": "cloudflare",
     }
     if raw not in aliases:
         raise ValueError(
-            f"unknown tunnel provider {value!r}; use none|ngrok|cloudflare"
+            f"unknown tunnel provider {value!r}; expected none|ngrok|cloudflare"
         )
     return aliases[raw]  # type: ignore[return-value]
+
+
+def local_probe_host(bind_host: str) -> str:
+    """Host a *client* uses to reach the origin on this machine.
+
+    Uvicorn may bind ``0.0.0.0`` / ``::`` (all interfaces). Those are not valid
+    connection targets, so we probe loopback. A concrete bind (``127.0.0.1``,
+    LAN IP, hostname) is used as-is.
+    """
+    h = (bind_host or "").strip().lower()
+    if not h or h in {"0.0.0.0", "::", "[::]", "*"}:
+        return "127.0.0.1"
+    if h.startswith("[") and h.endswith("]"):
+        return h[1:-1]
+    return bind_host.strip()
 
 
 def provider_available(provider: Provider) -> bool:
@@ -84,59 +102,62 @@ def provider_available(provider: Provider) -> bool:
 def wait_for_health(
     port: int,
     *,
+    host: str = "127.0.0.1",
     path: str = "/health",
     timeout: float = 30.0,
     interval: float = 0.25,
 ) -> str:
-    """Block until local origin answers. Tries ``path`` then ``/``.
+    """Block until origin answers on ``host:port``. Tries ``path`` then ``/``.
 
-    Returns the path that succeeded. Raises ``TimeoutError`` if the origin
-    never becomes ready — the usual root cause of tunnel/edge **502**.
+    ``host`` should be a *probe* address (see ``local_probe_host``), not a
+    wildcard bind. Raises ``TimeoutError`` if the origin never becomes ready —
+    the usual root cause of tunnel/edge **502**.
     """
-    paths = []
+    probe = local_probe_host(host)
+    paths: list[str] = []
     for p in (path, "/"):
         if p and p not in paths:
             paths.append(p)
-    deadline = time.monotonic() + max(timeout, 1.0)
+    deadline = time.monotonic() + timeout
     last_err: Optional[BaseException] = None
     while time.monotonic() < deadline:
         for p in paths:
-            url = f"http://127.0.0.1:{port}{p if p.startswith('/') else '/' + p}"
+            path_part = p if p.startswith("/") else "/" + p
+            host_part = (
+                f"[{probe}]" if ":" in probe and not probe.startswith("[") else probe
+            )
+            url = f"http://{host_part}:{port}{path_part}"
             try:
                 with urllib.request.urlopen(url, timeout=1.5) as resp:
                     if 200 <= getattr(resp, "status", 200) < 500:
                         return p
-            except (urllib.error.URLError, TimeoutError, OSError) as exc:
+            except BaseException as exc:
                 last_err = exc
         time.sleep(interval)
     raise TimeoutError(
-        f"origin http://127.0.0.1:{port} not healthy within {timeout:.0f}s "
+        f"origin http://{probe}:{port} not healthy within {timeout:.0f}s "
         f"(tried {', '.join(paths)}). Tunnel/edge 502 usually means this — "
         f"process down or still starting. last={last_err!r}"
     )
 
 
-def _ngrok_url_from_api(timeout: float = 20.0) -> str:
+def _ngrok_public_url(timeout: float = 15.0) -> Optional[str]:
+    """Poll ngrok local API for the public HTTPS URL."""
     deadline = time.monotonic() + timeout
-    last: Optional[BaseException] = None
     while time.monotonic() < deadline:
         try:
-            with urllib.request.urlopen(
-                "http://127.0.0.1:4040/api/tunnels", timeout=1.5
-            ) as resp:
-                data = json.loads(resp.read().decode("utf-8"))
+            with urllib.request.urlopen("http://127.0.0.1:4040/api/tunnels", timeout=1.5) as resp:
+                data = json.loads(resp.read().decode())
             for t in data.get("tunnels") or []:
-                pub = t.get("public_url") or ""
-                if pub.startswith("https://"):
-                    return pub
-            for t in data.get("tunnels") or []:
-                pub = t.get("public_url") or ""
-                if pub.startswith("http://"):
-                    return pub
-        except (urllib.error.URLError, TimeoutError, OSError, json.JSONDecodeError) as exc:
-            last = exc
-        time.sleep(0.25)
-    raise TimeoutError(f"ngrok API :4040 had no public_url ({last!r})")
+                url = t.get("public_url") or ""
+                if url.startswith("https://"):
+                    return url
+                if url.startswith("http://") and not url.startswith("http://127"):
+                    return url
+        except BaseException:
+            pass
+        time.sleep(0.3)
+    return None
 
 
 _CF_URL_RE = re.compile(
@@ -145,104 +166,80 @@ _CF_URL_RE = re.compile(
 )
 
 
-def _start_ngrok(port: int, token: Optional[str]) -> TunnelHandle:
-    bin_path = shutil.which("ngrok")
-    if not bin_path:
-        raise FileNotFoundError(
-            "ngrok not on PATH. Install: https://ngrok.com/download "
-            "or `brew install ngrok` / package manager."
-        )
-    env = os.environ.copy()
-    if token:
-        env["NGROK_AUTHTOKEN"] = token
-    elif not env.get("NGROK_AUTHTOKEN"):
-        ux_dom_logger.info(
-            "tunnel[ngrok]: NGROK_AUTHTOKEN not set — free accounts may need "
-            "`ngrok config add-authtoken …`"
-        )
-    proc = subprocess.Popen(
-        [bin_path, "http", str(port), "--log=stdout", "--log-format=logfmt"],
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL,
-        env=env,
-    )
-    try:
-        url = _ngrok_url_from_api()
-    except Exception:
-        proc.terminate()
-        try:
-            proc.wait(timeout=3)
-        except Exception:
-            proc.kill()
-        raise
-    return TunnelHandle(provider="ngrok", public_url=url, process=proc)
-
-
-def _start_cloudflare(port: int, token: Optional[str]) -> TunnelHandle:
-    bin_path = shutil.which("cloudflared")
-    if not bin_path:
-        raise FileNotFoundError(
-            "cloudflared not on PATH. Install: "
-            "https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/"
-        )
-    env = os.environ.copy()
-    if token:
-        env.setdefault("TUNNEL_TOKEN", token)
-    proc = subprocess.Popen(
-        [
-            bin_path,
-            "tunnel",
-            "--url",
-            f"http://127.0.0.1:{port}",
-            "--no-autoupdate",
-        ],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        env=env,
-        text=True,
-        bufsize=1,
-    )
-    deadline = time.monotonic() + 30.0
-    lines: list[str] = []
-    assert proc.stdout is not None
+def _cloudflare_public_url(proc: subprocess.Popen, timeout: float = 20.0) -> Optional[str]:
+    """Parse cloudflared stderr for the trycloudflare.com URL."""
+    deadline = time.monotonic() + timeout
+    buf = ""
     while time.monotonic() < deadline:
-        if proc.poll() is not None:
-            rest = proc.stdout.read() or ""
-            raise RuntimeError(
-                f"cloudflared exited {proc.returncode}: {rest or ''.join(lines[-20:])}"
-            )
-        line = proc.stdout.readline()
+        if proc.stderr is None:
+            break
+        line = proc.stderr.readline()
         if not line:
-            time.sleep(0.05)
+            if proc.poll() is not None:
+                break
+            time.sleep(0.1)
             continue
-        lines.append(line)
-        m = _CF_URL_RE.search(line)
+        if isinstance(line, bytes):
+            line = line.decode(errors="replace")
+        buf += line
+        m = _CF_URL_RE.search(buf)
         if m:
-            return TunnelHandle(
-                provider="cloudflare", public_url=m.group(0), process=proc
-            )
-    proc.terminate()
-    try:
-        proc.wait(timeout=3)
-    except Exception:
-        proc.kill()
-    raise TimeoutError(
-        "cloudflared did not print a trycloudflare.com URL in time. "
-        f"tail={''.join(lines[-10:])!r}"
-    )
+            return m.group(0)
+    m = _CF_URL_RE.search(buf)
+    return m.group(0) if m else None
 
 
 def start_tunnel(
     provider: Provider,
     port: int,
     *,
+    host: str = "127.0.0.1",
     token: Optional[str] = None,
-) -> Optional[TunnelHandle]:
-    """Start a public tunnel to ``127.0.0.1:port``. ``none`` → ``None``."""
+) -> TunnelHandle:
+    """Start tunnel process targeting probe host:port. Caller must have waited for health."""
     if provider == "none":
-        return None
+        raise ValueError("start_tunnel called with provider=none")
+    probe = local_probe_host(host)
+    target = f"{probe}:{port}"
+
     if provider == "ngrok":
-        return _start_ngrok(port, token)
+        if not shutil.which("ngrok"):
+            raise FileNotFoundError(
+                "ngrok binary not found on PATH. Install from https://ngrok.com/download "
+                "or set --tunnel none."
+            )
+        env = os.environ.copy()
+        if token:
+            env["NGROK_AUTHTOKEN"] = token
+        # ngrok http <addr>
+        cmd = ["ngrok", "http", target, "--log=stdout"]
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            env=env,
+            text=True,
+        )
+        public = _ngrok_public_url()
+        return TunnelHandle(provider="ngrok", process=proc, public_url=public)
+
     if provider == "cloudflare":
-        return _start_cloudflare(port, token)
-    raise ValueError(f"unknown tunnel provider {provider!r}")
+        if not shutil.which("cloudflared"):
+            raise FileNotFoundError(
+                "cloudflared binary not found on PATH. Install from "
+                "https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/ "
+                "or set --tunnel none."
+            )
+        # Prefer probing the same host the origin bound to when concrete.
+        url = f"http://{probe}:{port}"
+        cmd = ["cloudflared", "tunnel", "--url", url]
+        proc = subprocess.Popen(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        public = _cloudflare_public_url(proc)
+        return TunnelHandle(provider="cloudflare", process=proc, public_url=public)
+
+    raise ValueError(f"unsupported provider {provider!r}")
