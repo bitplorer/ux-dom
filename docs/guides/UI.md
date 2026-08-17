@@ -9,7 +9,7 @@ Optional **server-rendered** component library. Tailwind utility classes, Python
 | Runtime | Client React | **Server HTML** |
 | Styling | Tailwind | Tailwind (same utility language) |
 | Ownable | Copy into repo | `uxdom add ui Button` copies module |
-| Interactivity | Client state | HTMX attrs + Alpine + optional **ux-channel** |
+| Interactivity | Client state | HTMX attrs + **Channel macros** (Alpine last-resort) + optional **ux-channel** |
 | Bundle | npm | `pip install ux-dom` (kit included) |
 
 This is a **DX moat**: product UI speed without a JS SPA, still copy-ownable.
@@ -44,11 +44,13 @@ uxdom add ui Carousel
 `Card` (+ Header/Title/Description/Content/Footer)  
 `Badge` · `Alert` · `Separator` · `Skeleton` · `Avatar`  
 `Table` (+ Header/Body/Row/Head/Cell/Caption/Empty)  
-`Tabs` (Alpine) · `Dialog` (Alpine) · `Carousel` (Alpine)  
+`Tabs` (Channel-first) · `Dialog` (Channel-first) · `Sheet` · `Carousel` (Channel-first)  
+`Command` · `Popover` · `DropdownMenu`  
 `ToastHost` (morph-safe notices; server list is authority)  
-`DatePicker` (native `type=date`) · `Chart` (SVG sparkline / bar; no Chart.js)
+`DatePicker` (native `type=date`) · `Chart` (SVG sparkline / bar; no Chart.js)  
+`Breadcrumb` · `Pagination` · `Kbd` · `EmptyState` · `PageHeader` · `StatusStrip` · `FormSection`
 
-Tokens: `cn()`, `variants()`, `focus_ring`, `radius`.
+Tokens: `cn()`, `variants()`, `focus_ring`, `radius`, `surface`, `field_classes`, `target` (`min-h-11`).
 
 Every interactive composite ships empty / disabled / invalid states. `className` always overrides.
 
@@ -85,12 +87,14 @@ With channel: combine `ChannelComponent` / `ch.control` regions with ux-dom kit 
 
 ## Local chrome vs authority
 
-| Surface | Local (Alpine / native) | Authority (Action → Op) |
-|---------|-------------------------|-------------------------|
-| Tabs / Dialog / Carousel index | yes | no |
-| Toast list | no — morph of `#notices` | yes (`notify` or `ui.notice.push`) |
+| Surface | Local (perception) | Authority (Action → Op) |
+|---------|---------------------|-------------------------|
+| Tabs / Dialog / Sheet / Carousel | no — `open` / `active` / `index` are render args | yes (`open_overlay`, `select_region`) |
+| Toast list | no — morph of `#notices` | yes (`notify` or `form_result`) |
 | Search filter typeahead | `preview.filter` | commit Action |
 | Slider / DatePicker value | form field | submit Action |
+
+Alpine is last-resort perception only. Doctor fails alpine-for-open when a Channel path exists.
 
 `x_element.js` is the only custom-element runtime. After `ui.dom.morph`, stock scan re-upgrades hosts. App code does not implement re-upgrade.
 

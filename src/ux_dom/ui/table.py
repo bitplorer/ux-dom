@@ -1,15 +1,12 @@
 # Copyright (c) 2026 ux-dom
-"""UI kit component: table.
-
-Optional Tailwind-styled building block. List with `uxdom ui`; copy with `uxdom add ui Table` when applicable. Not required for core ux-dom apps.
-"""
+"""Table — operational dark surface hierarchy."""
 from __future__ import annotations
 
 from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import caption, table, tbody, td, th, thead, tr
-from ux_dom.ui.tokens import cn
+from ux_dom.ui.tokens import cn, ink, type_scale
 
 __all__ = [
     "Table",
@@ -27,14 +24,18 @@ class Table(Component):
     def render(self, *children: Any, className: str = "", **attrs: Any):
         return table(
             *children,
-            className=cn("w-full caption-bottom text-sm", className),
+            className=cn("w-full caption-bottom text-sm text-stone-100", className),
             **attrs,
         )
 
 
 class TableHeader(Component):
     def render(self, *children: Any, className: str = "", **attrs: Any):
-        return thead(*children, className=cn("[&_tr]:border-b", className), **attrs)
+        return thead(
+            *children,
+            className=cn("[&_tr]:border-b [&_tr]:border-stone-800", className),
+            **attrs,
+        )
 
 
 class TableBody(Component):
@@ -51,7 +52,7 @@ class TableRow(Component):
         return tr(
             *children,
             className=cn(
-                "border-b border-slate-100 transition-colors hover:bg-slate-50/80",
+                "border-b border-stone-800 transition-colors hover:bg-stone-800/50",
                 className,
             ),
             **attrs,
@@ -66,15 +67,16 @@ class TableHead(Component):
         sorted: str | None = None,
         **attrs: Any,
     ):
-        extra = ""
         aria: dict[str, Any] = {}
+        extra = ""
         if sorted in {"asc", "desc"}:
-            extra = "text-slate-900"
+            extra = "text-stone-100"
             aria["aria-sort"] = "ascending" if sorted == "asc" else "descending"
         return th(
             *children,
             className=cn(
-                "h-12 px-4 text-left align-middle font-medium text-slate-500",
+                "h-11 px-4 text-left align-middle font-medium",
+                ink["muted"],
                 extra,
                 className,
             ),
@@ -96,14 +98,12 @@ class TableCaption(Component):
     def render(self, *children: Any, className: str = "", **attrs: Any):
         return caption(
             *children,
-            className=cn("mt-4 text-sm text-slate-500", className),
+            className=cn("mt-4", type_scale["caption"], className),
             **attrs,
         )
 
 
 class TableEmpty(Component):
-    """Empty-state row. Span the full table width."""
-
     def render(
         self,
         *children: Any,
@@ -117,7 +117,8 @@ class TableEmpty(Component):
                 *body,
                 colSpan=col_span,
                 className=cn(
-                    "p-8 text-center text-sm text-slate-500",
+                    "p-8 text-center",
+                    type_scale["caption"],
                     className,
                 ),
                 **attrs,

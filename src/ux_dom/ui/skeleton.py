@@ -1,8 +1,5 @@
 # Copyright (c) 2026 ux-dom
-"""UI kit component: skeleton.
-
-Optional Tailwind-styled building block. List with `uxdom ui`; copy with `uxdom add ui Skeleton` when applicable. Not required for core ux-dom apps.
-"""
+"""Skeleton — loading placeholder on L1 surface language."""
 from __future__ import annotations
 
 from typing import Any
@@ -17,6 +14,9 @@ __all__ = ["Skeleton"]
 class Skeleton(Component):
     def render(self, *, className: str = "", **attrs: Any):
         return div(
-            className=cn("animate-pulse rounded-md bg-slate-200", className),
+            className=cn(
+                "animate-pulse rounded-md bg-stone-800",
+                className,
+            ),
             **attrs,
         )

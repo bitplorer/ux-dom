@@ -1,6 +1,21 @@
 # Copyright (c) 2026 ux-dom
-"""Tabs — Alpine.js powered (x-data). Falls back to first panel only without Alpine."""
+"""Tabs — Channel-first selection (no Alpine by default).
 
+Active tab comes from the server (select_region / session).
+Render only the active panel + tab list with live_button / action attrs.
+
+::
+
+    # Action
+    return select_region("tabs:main", tab)
+
+    # Render
+    Tabs(
+        items=[("a", "Alpha", body_a), ("b", "Beta", body_b)],
+        active=world.kv.get("ui.select.tabs.main") or "a",
+        select_action="nav.tab",  # optional: stamp action attrs on tab buttons
+    )
+"""
 from __future__ import annotations
 
 import re
@@ -8,7 +23,7 @@ from typing import Any, Sequence
 
 from ux_dom import Component
 from ux_dom.dom import button, div
-from ux_dom.ui.tokens import cn, focus_ring
+from ux_dom.ui.tokens import cn, focus_ring, surface
 
 __all__ = ["Tabs"]
 
@@ -17,35 +32,24 @@ _SAFE_KEY = re.compile(r"^[A-Za-z_][A-Za-z0-9_-]*$")
 
 def _safe_key(key: str, fallback: str) -> str:
     k = str(key)
-    if _SAFE_KEY.match(k):
-        return k
-    # deterministic safe token
-    return fallback
+    return k if _SAFE_KEY.match(k) else fallback
 
 
 class Tabs(Component):
-    """
-    ::
-
-        Tabs(
-            items=[("a", "Alpha", div("A body")), ("b", "Beta", div("B body"))],
-            default="a",
-        )
-
-    Keys must be simple identifiers (``[A-Za-z_][A-Za-z0-9_-]*``). Unsafe keys
-    are rewritten to ``tab0``, ``tab1``, … so Alpine bindings never break.
-    """
+    """Server-driven tabs. Active key is an argument — not client state."""
 
     def render(
         self,
         items: Sequence[tuple[str, str, Any]] = (),
         *,
+        active: str | None = None,
         default: str | None = None,
+        select_action: str | None = None,
         className: str = "",
         **attrs: Any,
     ):
         if not items:
-            return div(**({} if not className else {"className": className}), **attrs)
+            return div(**({"className": className} if className else {}), **attrs)
 
         normalized: list[tuple[str, str, Any]] = []
         for i, row in enumerate(items):
@@ -56,51 +60,51 @@ class Tabs(Component):
             key, label, body = row
             normalized.append((_safe_key(key, f"tab{i}"), label, body))
 
-        # Map default through same sanitizer when possible
         keyset = {k for k, _, _ in normalized}
-        if (
-            default is not None
-            and _SAFE_KEY.match(str(default))
-            and str(default) in keyset
-        ):
-            first = str(default)
-        else:
-            first = normalized[0][0]
+        chosen = active if active is not None else default
+        current = chosen if chosen in keyset else normalized[0][0]
 
         tab_btns = []
-        panels = []
+        active_body: Any = None
         for key, label, body in normalized:
+            is_active = key == current
+            btn_attrs: dict[str, Any] = {"type": "button"}
+            if select_action:
+                btn_attrs["data-channel-action"] = select_action
+                btn_attrs["data-args"] = f'{{"tab":"{key}"}}'
             tab_btns.append(
                 button(
                     label,
-                    type="button",
-                    **{
-                        "@click": f"tab = '{key}'",
-                        ":class": (
-                            f"tab === '{key}' ? 'bg-white shadow-sm' : 'text-slate-500'"
-                        ),
-                    },
                     className=cn(
-                        "inline-flex items-center justify-center whitespace-nowrap rounded-md",
+                        "inline-flex min-h-9 items-center justify-center whitespace-nowrap rounded-md",
                         "px-3 py-1.5 text-sm font-medium transition-all",
                         focus_ring,
+                        "bg-stone-800 text-stone-100 shadow-sm"
+                        if is_active
+                        else "text-stone-400 hover:text-stone-200",
                     ),
+                    **{"aria-selected": "true" if is_active else "false"},
+                    **{"data-tab": key},
+                    **btn_attrs,
                 )
             )
-            panels.append(
-                div(
-                    body,
-                    **{"x-show": f"tab === '{key}'"},
-                    className="mt-4 text-sm",
-                )
-            )
+            if is_active:
+                active_body = body
+
         return div(
             div(
                 *tab_btns,
-                className="inline-flex h-10 items-center rounded-lg bg-slate-100 p-1",
+                role="tablist",
+                className=cn(
+                    "inline-flex items-center rounded-lg p-1",
+                    surface["l1"],
+                ),
             ),
-            *panels,
-            **{"x-data": f"{{ tab: '{first}' }}"},
+            div(
+                active_body,
+                role="tabpanel",
+                className="mt-4 text-sm text-stone-200",
+            ),
             className=cn(className) if className else None,
             **attrs,
         )

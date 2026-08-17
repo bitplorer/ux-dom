@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+### Channel-native design system
+
+- **Tokens:** L0–L3 `surface`, `ink`, `type_scale`, `target` (`min-h-11`), `density`,
+  `overlay`, `color`, `field_classes`.
+- **Channel-first chrome:** Dialog / Sheet / Tabs / Carousel / Command / Popover /
+  DropdownMenu — no Alpine `x-data` as the open/selected path. `open` / `active` /
+  `index` are render arguments.
+- **New markup:** Breadcrumb, Pagination, Kbd, EmptyState, PageHeader, StatusStrip,
+  FormSection, RadioGroup, Progress, Sheet, Command, Popover, DropdownMenu.
+- **DatePicker / Input:** elevated 44px `field_classes`; DatePicker keeps
+  invalid / disabled / empty / min / max / required states.
+- **Catalog:** new stems registered; Dialog/Tabs/Carousel runtime is Channel (none).
+- Historical `Chart` + `channel_bridge` + `copy` + `catalog` stay in-tree.
+- Tests lock no-`x-data` on elevated composites.
+
 ### UI kit battery (Phase 1)
 
 - **Primitives:** `Slider` (native range, disabled/value). Checkbox invalid/disabled.
