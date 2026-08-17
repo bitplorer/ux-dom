@@ -63,7 +63,7 @@ Design & implementation maps:
 
 ## CLI spine
 
-`create-app → dev → add → doctor/lint → build [--package] → deploy`
+`create-app → serve / dev → add → doctor/lint → build [--package] → start / deploy`
 
 ## Keep docs fresh
 

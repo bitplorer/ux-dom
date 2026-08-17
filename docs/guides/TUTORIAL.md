@@ -31,7 +31,8 @@ A `Component` with `routes = ["get"]` and `get()` returning `page(...)`.
 ## 3. Run
 
 ```bash
-uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+uxdom serve --port 8080
+# or: uxdom dev
 ```
 
 - Visit `/index/Index`
@@ -76,7 +77,7 @@ uxdom add xelement Badge
 ## 7. Production posture
 
 ```bash
-DEBUG=0 uvicorn app.main:app --host 0.0.0.0 --port 8080
+uxdom start
 # Csp.auto() switches to prod policy
 uxdom doctor
 ```

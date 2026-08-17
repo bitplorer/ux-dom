@@ -18,12 +18,13 @@ Brand lines
 Console entry: ``uxdom <subcommand>`` · ``python -m ux_dom``.
 
 Side-effect policy:
-* Read-only: templates, examples, ui, plugins, doctor, lint
+* Read-only: templates, examples, ui, plugins, doctor, info, lint
 * profile: writes only under reports/p95/ (or --out); no app source changes
 * dashboard: writes reports/dx/ (graphs); no app source changes
 * create-app: --yes skips confirm only; overwrite requires --force
 * add/deploy: refuse overwrite without --force
-* dev: does not dual-copy x_element.js; --tailwind may write CSS
+* dev / serve: may compile CSS via standalone Tailwind CLI; no library JS copy
+* start: production serve (no reload, minify CSS)
 * build: single-copy verify; dist only with --package/--archive
 
 See docs/guides/CLI.md and docs/internals/DESIGN_CANON.md section 8.
@@ -382,7 +383,8 @@ def create_app_cmd(
     if opts.with_channel:
         ux_dom_logger.info("  pip install 'ux-channel>=0.1.0'")
     ux_dom_logger.info("  uxdom doctor")
-    ux_dom_logger.info("  uxdom dev app.main:app --port 8080")
+    ux_dom_logger.info("  uxdom serve --port 8080")
+    ux_dom_logger.info("  # or: uxdom dev   ·   uxdom start   (prod)")
     ux_dom_logger.info("  # see docs/START_HERE.md · docs/guides/TUTORIAL.md")
 
 
@@ -404,72 +406,130 @@ def dev(
     host: str = Option("0.0.0.0", "--host"),
     port: int = Option(8080, "--port"),
     no_reload: bool = Option(False, "--no-reload"),
+    no_tailwind: bool = Option(
+        False, "--no-tailwind", help="Do not start the standalone Tailwind CLI"
+    ),
     tailwind: bool = Option(
         False,
         "--tailwind",
-        help="Also run `python -m app.tailwindcss` once before start (if present)",
+        help="Deprecated: Tailwind watch is on by default (use --no-tailwind to skip)",
     ),
+    cwd: str = Option(None, "--cwd", help="App root (default: find app/main.py)"),
 ):
-    """Run a uxdom ASGI app (uvicorn) — day-1 local server.
+    """Day-1 server — Next ``next dev``.
+
+    Starts the ASGI app with reload, and the **standalone Tailwind CLI** in
+    ``--watch`` (PATH / pytailwindcss / official download). HMR is the
+    create-app lifespan plugin.
 
     Examples::
 
         cd myapp && uxdom dev
         uxdom dev app.main:app --port 8080
         uxdom dev --no-reload
-        uxdom dev --tailwind
+        uxdom dev --no-tailwind
     """
-    try:
-        import uvicorn
-    except ImportError as e:
-        ux_dom_logger.error(
-            "uvicorn is required for `uxdom dev`. "
-            "Install with: pip install 'ux-dom[fastapi]'"
+    from pathlib import Path as P
+
+    from ux_dom.cli.serve import ServeOptions, run_serve
+
+    run_serve(
+        ServeOptions(
+            app_import=app_import,
+            host=host,
+            port=port,
+            mode="dev",
+            reload=not no_reload,
+            tailwind=not no_tailwind,
+            cwd=P(cwd) if cwd else None,
         )
-        raise SystemExit(1) from e
-
-    if tailwind:
-        import subprocess
-        import sys
-        from pathlib import Path as P
-
-        tw = P("app/tailwindcss.py")
-        if tw.is_file():
-            ux_dom_logger.info("building Tailwind via app.tailwindcss …")
-            subprocess.run([sys.executable, "-m", "app.tailwindcss"], check=False)
-        else:
-            ux_dom_logger.warning("no app/tailwindcss.py — skip --tailwind")
-
-    reload = not no_reload
-    # Ensure project root is importable (create-app layout: app.main:app)
-    import os
-    from pathlib import Path as _P
-
-    cwd = str(_P.cwd().resolve())
-    os.environ["PYTHONPATH"] = (
-        cwd + os.pathsep + os.environ["PYTHONPATH"]
-        if os.environ.get("PYTHONPATH")
-        else cwd
     )
-    if cwd not in sys.path:
-        sys.path.insert(0, cwd)
 
-    ux_dom_logger.info(f"starting {app_import} on {host}:{port} reload={reload}")
-    ux_dom_logger.info("tip: uxdom doctor · uxdom build · docs: docs/START_HERE.md")
-    uvicorn.run(app_import, host=host, port=port, reload=reload)
+
+@app.command()
+def serve(
+    app_import: str = Option(
+        "app.main:app",
+        help="ASGI import path module:attr (create-app default: app.main:app)",
+    ),
+    host: str = Option("0.0.0.0", "--host"),
+    port: int = Option(8080, "--port"),
+    prod: bool = Option(False, "--prod", help="Production: no reload, minify CSS"),
+    no_reload: bool = Option(False, "--no-reload"),
+    no_tailwind: bool = Option(False, "--no-tailwind"),
+    cwd: str = Option(None, "--cwd", help="App root (default: find app/main.py)"),
+):
+    """Serve the app — Next ``next dev`` / ``next start``.
+
+    Calls the **standalone Tailwind CLI** (not a hand-rolled CSS step), then
+    uvicorn. Dev is the default; ``--prod`` matches ``uxdom start``.
+
+    Examples::
+
+        uxdom serve
+        uxdom serve --port 8080
+        uxdom serve --prod
+        uxdom serve --no-tailwind --no-reload
+    """
+    from pathlib import Path as P
+
+    from ux_dom.cli.serve import ServeOptions, run_serve
+
+    mode = "prod" if prod else "dev"
+    reload = False if (prod or no_reload) else None
+    run_serve(
+        ServeOptions(
+            app_import=app_import,
+            host=host,
+            port=port,
+            mode=mode,
+            reload=reload,
+            tailwind=not no_tailwind,
+            cwd=P(cwd) if cwd else None,
+        )
+    )
+
+
+@app.command()
+def start(
+    app_import: str = Option("app.main:app"),
+    host: str = Option("0.0.0.0", "--host"),
+    port: int = Option(8080, "--port"),
+    no_tailwind: bool = Option(False, "--no-tailwind"),
+    cwd: str = Option(None, "--cwd", help="App root (default: find app/main.py)"),
+):
+    """Production server — Next ``next start`` (alias of ``uxdom serve --prod``)."""
+    from pathlib import Path as P
+
+    from ux_dom.cli.serve import ServeOptions, run_serve
+
+    run_serve(
+        ServeOptions(
+            app_import=app_import,
+            host=host,
+            port=port,
+            mode="prod",
+            reload=False,
+            tailwind=not no_tailwind,
+            cwd=P(cwd) if cwd else None,
+        )
+    )
 
 
 @app.command("doctor")
 def doctor_cmd(
+    path: str = Option(None, "--path", help="Project root (default: cwd)"),
     port: int = Option(8080, "--port", help="Port to probe for availability"),
     prod: bool = Option(False, "--prod", help="Extra production checks"),
     json_out: bool = Option(False, "--json", help="Machine-readable report"),
 ):
     """Check Python, deps, x_element.js, and current project health."""
     import json as _json
+    from pathlib import Path as P
+
     from ux_dom.cli.doctor import format_report, run_doctor
 
-    report = run_doctor(port=port, prod=prod)
+    report = run_doctor(cwd=P(path) if path else None, port=port, prod=prod)
     if json_out:
         print(_json.dumps(report.to_dict(), indent=2))
     else:
@@ -477,6 +537,15 @@ def doctor_cmd(
     raise SystemExit(0 if report.ok else 1)
 
 
+@app.command("info")
+def info_cmd(
+    path: str = Option(None, "--path", help="Project root (default: cwd)"),
+    port: int = Option(8080, "--port", help="Port to probe for availability"),
+    prod: bool = Option(False, "--prod", help="Extra production checks"),
+    json_out: bool = Option(False, "--json", help="Machine-readable report"),
+):
+    """Environment report — Next ``next info`` (alias of ``uxdom doctor``)."""
+    doctor_cmd(path=path, port=port, prod=prod, json_out=json_out)
 
 
 @app.command("dashboard")

@@ -302,8 +302,9 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 {{channel_install}}
 {{tailwind_hint}}
-uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
-# or: uxdom dev app.main:app --port 8080
+uxdom serve --port 8080
+# or: uxdom dev          (reload + Tailwind --watch)
+#     uxdom start        (prod)
 ```
 
 Open http://127.0.0.1:8080/
@@ -468,7 +469,8 @@ _MAIN = '''\
 """
 ASGI entry — FastAPI is the process; Document owns the DOM.
 
-    uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+    uxdom serve --port 8080
+    # or: uxdom dev   ·   uxdom start
 
 Assembly (no hidden builder)::
 

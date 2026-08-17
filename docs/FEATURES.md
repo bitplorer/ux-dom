@@ -299,8 +299,9 @@ Includes `channel_bridge` helpers for channel-aware UI pieces when peer is prese
 
 | Command area | Role | Implements |
 |--------------|------|------------|
-| **create-app / scaffold** | New project | `cli/scaffold.py`, `cli/templates/`, `create/` |
-| **doctor** | Environment diagnostics | `cli/doctor.py` |
+| **create-app / scaffold** | New project | `cli/scaffold.py`, `create/` |
+| **serve / dev / start** | Next-style process + standalone Tailwind | `cli/serve.py`, `cli/tailwind.py`, `cli/envfile.py` |
+| **doctor / info** | Environment diagnostics | `cli/doctor.py` |
 | **build** | Production asset/build | `cli/build.py` |
 | **lint** | Lint helpers | `cli/lint.py` |
 | **profile** | Profiling DX | `cli/profile.py`, `profiling.py` |
@@ -311,6 +312,7 @@ Includes `channel_bridge` helpers for channel-aware UI pieces when peer is prese
 
 ```bash
 uxdom create-app myapp
+uxdom serve --port 8080
 uxdom doctor
 uxdom --help
 ```

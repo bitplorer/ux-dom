@@ -13,7 +13,7 @@ ux_dom/
   routing/      DirectoryRouter + StreamingRoute (FastAPI)
   response/     HTML / streaming adapters
   scripts/      x_element.js (package-mounted)
-  cli/          create-app, add, doctor, build (automation)
+  cli/          create-app, serve/dev/start, add, doctor, build (automation)
   ui/           Optional copy-in kit
 ```
 
@@ -46,7 +46,7 @@ keep ceremonial files aligned with this map ([DX.md](../guides/DX.md)).
 | **`ux_dom/routing/`** | DirectoryRouter, StreamingRoute (FastAPI) | **Public** |
 | **`ux_dom/response/`** | HTMLResponse, StreamingResponse | **Public** |
 | **`ux_dom/scripts/`** | `x_element.js` + `x_element_js` embed helper | **Public** helper |
-| **`ux_dom/cli/`** | Typer DX: create-app, dev, doctor, build, … | CLI |
+| **`ux_dom/cli/`** | Typer DX: create-app, serve/dev/start, doctor, build, … | CLI |
 | **`ux_dom/ui/`** | Optional Tailwind UI kit (copy-in) | Optional public |
 | **`ux_dom/slots/`** | Slot helpers for WebComponent | Semi |
 | **`ux_dom/elements/`** | Typed form field components | Semi |

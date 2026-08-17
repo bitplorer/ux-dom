@@ -134,12 +134,13 @@ Do not mix its PyPI / import / CLI names into ux-dom brand lines.
 
 | Command | Writes? | Gate |
 |---------|---------|------|
-| `templates` `examples` `ui` `plugins` `doctor` `lint` | No | — |
+| `templates` `examples` `ui` `plugins` `doctor` `info` `lint` | No | — |
 | `create-app` | Yes | confirm / `--yes`; **overwrite only `--force`** (`--yes` ≠ force) |
 | `add` | Yes | refuse existing unless `--force` |
 | `deploy` | Yes | skip existing unless `--force` |
-| `build` | Tailwind if present; **no** dual JS copy by default; `dist/` only with `--package`/`--archive` | flags |
-| `dev` | Only if `--tailwind` runs CSS build | does **not** copy `x_element.js` |
+| `build` | Tailwind via standalone CLI; **no** dual JS copy by default; `dist/` only with `--package`/`--archive` | flags |
+| `serve` / `dev` | Standalone Tailwind watch (default); no library JS copy | `--no-tailwind` |
+| `start` | Minify CSS then serve | production alias of `serve --prod` |
 
 ### Automation-first (ceremonial code)
 
