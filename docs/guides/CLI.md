@@ -80,7 +80,13 @@ uxdom serve --prod          # production
 uxdom start                 # alias of serve --prod
 uxdom dev                   # alias of serve (dev)
 uxdom serve --no-tailwind --no-reload
+
+# Public tunnel only after local health is green (avoids edge 502)
+uxdom serve --tunnel ngrok
+uxdom serve --tunnel cloudflare
 ```
+
+**Tunnel DX:** `--tunnel none|ngrok|cloudflare` waits for local health before a public URL. Design: [TUNNEL.md](TUNNEL.md).
 
 **Standalone Tailwind CLI** (first hit wins):
 
@@ -179,6 +185,7 @@ sh scripts/quality.sh
 |--------|------|
 | `ux_dom/cli/cli.py` | Typer entry + command wiring |
 | `ux_dom/cli/serve.py` | `serve` / `dev` / `start` process runner |
+| `ux_dom/cli/tunnel.py` | optional `--tunnel` providers + health gate |
 | `ux_dom/cli/tailwind.py` | Standalone Tailwind CLI resolver |
 | `ux_dom/cli/envfile.py` | Next-style `.env*` loading |
 | `ux_dom/cli/scaffold.py` | create-app templates |

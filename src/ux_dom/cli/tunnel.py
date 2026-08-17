@@ -2,11 +2,13 @@
 
 Providers (optional binaries on PATH):
 
-* ``ngrok``      — ``ngrok http <port>``; URL from local API ``:4040``
-* ``cloudflare`` — ``cloudflared tunnel --url http://127.0.0.1:<port>``
+* ``ngrok``      — ``ngrok http <target>``; URL from local API ``:4040``
+* ``cloudflare`` — ``cloudflared tunnel --url http://<probe-host>:<port>``
 
 Tunnel starts **after** local ``/health`` (or fallback) is green so the public
 URL is never advertised against a dead origin (the classic tunnel 502).
+
+Design / why / non-goals: ``docs/guides/TUNNEL.md``.
 """
 from __future__ import annotations
 
@@ -29,6 +31,7 @@ __all__ = [
     "Provider",
     "TunnelHandle",
     "parse_provider",
+    "local_probe_host",
     "wait_for_health",
     "start_tunnel",
     "provider_available",
@@ -71,6 +74,21 @@ def parse_provider(value: Optional[str]) -> Provider:
     return aliases[raw]  # type: ignore[return-value]
 
 
+def local_probe_host(bind_host: str) -> str:
+    """Host a *client* uses to reach the origin on this machine.
+
+    Uvicorn may bind ``0.0.0.0`` / ``::`` (all interfaces). Those are not valid
+    connection targets, so we probe loopback. A concrete bind (``127.0.0.1``,
+    LAN IP, hostname) is used as-is.
+    """
+    h = (bind_host or "").strip().lower()
+    if not h or h in {"0.0.0.0", "::", "[::]", "*"}:
+        return "127.0.0.1"
+    if h.startswith("[") and h.endswith("]"):
+        return h[1:-1]
+    return bind_host.strip()
+
+
 def provider_available(provider: Provider) -> bool:
     if provider == "none":
         return True
@@ -84,16 +102,19 @@ def provider_available(provider: Provider) -> bool:
 def wait_for_health(
     port: int,
     *,
+    host: str = "127.0.0.1",
     path: str = "/health",
     timeout: float = 30.0,
     interval: float = 0.25,
 ) -> str:
-    """Block until local origin answers. Tries ``path`` then ``/``.
+    """Block until origin answers on ``host:port``. Tries ``path`` then ``/``.
 
-    Returns the path that succeeded. Raises ``TimeoutError`` if the origin
-    never becomes ready — the usual root cause of tunnel/edge **502**.
+    ``host`` should be a *probe* address (see ``local_probe_host``), not a
+    wildcard bind. Raises ``TimeoutError`` if the origin never becomes ready —
+    the usual root cause of tunnel/edge **502**.
     """
-    paths = []
+    probe = local_probe_host(host)
+    paths: list[str] = []
     for p in (path, "/"):
         if p and p not in paths:
             paths.append(p)
@@ -101,7 +122,11 @@ def wait_for_health(
     last_err: Optional[BaseException] = None
     while time.monotonic() < deadline:
         for p in paths:
-            url = f"http://127.0.0.1:{port}{p if p.startswith('/') else '/' + p}"
+            path_part = p if p.startswith("/") else "/" + p
+            host_part = (
+                f"[{probe}]" if ":" in probe and not probe.startswith("[") else probe
+            )
+            url = f"http://{host_part}:{port}{path_part}"
             try:
                 with urllib.request.urlopen(url, timeout=1.5) as resp:
                     if 200 <= getattr(resp, "status", 200) < 500:
@@ -110,7 +135,7 @@ def wait_for_health(
                 last_err = exc
         time.sleep(interval)
     raise TimeoutError(
-        f"origin http://127.0.0.1:{port} not healthy within {timeout:.0f}s "
+        f"origin http://{probe}:{port} not healthy within {timeout:.0f}s "
         f"(tried {', '.join(paths)}). Tunnel/edge 502 usually means this — "
         f"process down or still starting. last={last_err!r}"
     )
@@ -145,7 +170,9 @@ _CF_URL_RE = re.compile(
 )
 
 
-def _start_ngrok(port: int, token: Optional[str]) -> TunnelHandle:
+def _start_ngrok(
+    port: int, token: Optional[str], *, target_host: str = "127.0.0.1"
+) -> TunnelHandle:
     bin_path = shutil.which("ngrok")
     if not bin_path:
         raise FileNotFoundError(
@@ -160,8 +187,10 @@ def _start_ngrok(port: int, token: Optional[str]) -> TunnelHandle:
             "tunnel[ngrok]: NGROK_AUTHTOKEN not set — free accounts may need "
             "`ngrok config add-authtoken …`"
         )
+    probe = local_probe_host(target_host)
+    target = str(port) if probe in {"127.0.0.1", "localhost"} else f"{probe}:{port}"
     proc = subprocess.Popen(
-        [bin_path, "http", str(port), "--log=stdout", "--log-format=logfmt"],
+        [bin_path, "http", target, "--log=stdout", "--log-format=logfmt"],
         stdout=subprocess.DEVNULL,
         stderr=subprocess.DEVNULL,
         env=env,
@@ -178,22 +207,26 @@ def _start_ngrok(port: int, token: Optional[str]) -> TunnelHandle:
     return TunnelHandle(provider="ngrok", public_url=url, process=proc)
 
 
-def _start_cloudflare(port: int, token: Optional[str]) -> TunnelHandle:
+def _start_cloudflare(
+    port: int, token: Optional[str], *, target_host: str = "127.0.0.1"
+) -> TunnelHandle:
     bin_path = shutil.which("cloudflared")
     if not bin_path:
         raise FileNotFoundError(
             "cloudflared not on PATH. Install: "
-            "https://developers.cloudflare.com/cloudflare-one/connections/connect-apps/install-and-setup/installation/"
+            "https://developers.cloudflare.com/cloudflare-one/connections/"
+            "connect-apps/install-and-setup/installation/"
         )
     env = os.environ.copy()
     if token:
         env.setdefault("TUNNEL_TOKEN", token)
+    probe = local_probe_host(target_host)
     proc = subprocess.Popen(
         [
             bin_path,
             "tunnel",
             "--url",
-            f"http://127.0.0.1:{port}",
+            f"http://{probe}:{port}",
             "--no-autoupdate",
         ],
         stdout=subprocess.PIPE,
@@ -237,12 +270,17 @@ def start_tunnel(
     port: int,
     *,
     token: Optional[str] = None,
+    host: str = "127.0.0.1",
 ) -> Optional[TunnelHandle]:
-    """Start a public tunnel to ``127.0.0.1:port``. ``none`` → ``None``."""
+    """Start a public tunnel to the local origin. ``none`` → ``None``.
+
+    ``host`` is the uvicorn bind host; wildcards map to loopback via
+    ``local_probe_host`` so the tunnel targets a reachable address.
+    """
     if provider == "none":
         return None
     if provider == "ngrok":
-        return _start_ngrok(port, token)
+        return _start_ngrok(port, token, target_host=host)
     if provider == "cloudflare":
-        return _start_cloudflare(port, token)
+        return _start_cloudflare(port, token, target_host=host)
     raise ValueError(f"unknown tunnel provider {provider!r}")

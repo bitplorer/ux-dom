@@ -259,5 +259,38 @@ class TestDoctorReportsResolver(unittest.TestCase):
         self.assertIn("tailwind", result.output)
 
 
+
+class TestTunnelOptions(unittest.TestCase):
+    def test_parse_provider_aliases(self):
+        from ux_dom.cli.tunnel import parse_provider
+        self.assertEqual(parse_provider("none"), "none")
+        self.assertEqual(parse_provider("ngrok"), "ngrok")
+        self.assertEqual(parse_provider("cf"), "cloudflare")
+        with self.assertRaises(ValueError):
+            parse_provider("tailscale")
+
+    def test_local_probe_host_wildcards(self):
+        from ux_dom.cli.tunnel import local_probe_host
+        self.assertEqual(local_probe_host("0.0.0.0"), "127.0.0.1")
+        self.assertEqual(local_probe_host("::"), "127.0.0.1")
+        self.assertEqual(local_probe_host("192.168.1.10"), "192.168.1.10")
+
+    def test_serve_options_tunnel_normalized(self):
+        opts = ServeOptions(mode="dev", tunnel="CF")
+        self.assertEqual(opts.tunnel, "cloudflare")
+
+    def test_serve_help_lists_tunnel(self):
+        runner = CliRunner()
+        result = runner.invoke(cli_app, ["serve", "--help"])
+        self.assertEqual(result.exit_code, 0, result.output)
+        self.assertIn("--tunnel", result.output)
+
+    def test_wait_for_health_timeout(self):
+        from ux_dom.cli.tunnel import wait_for_health
+        with self.assertRaises(TimeoutError) as ctx:
+            wait_for_health(59999, path="/health", timeout=0.4, interval=0.1)
+        self.assertIn("502", str(ctx.exception))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -115,7 +115,9 @@ def _run_tailwind(root: Path, *, minify: bool, watch: bool) -> Optional[subproce
 
 def _banner(opts: ServeOptions, root: Path, tw: str, public_url: Optional[str] = None) -> None:
     mode = "prod" if opts.mode == "prod" else "dev"
-    local = f"http://127.0.0.1:{opts.port}"
+    from ux_dom.cli.tunnel import local_probe_host
+
+    local = f"http://{local_probe_host(opts.host)}:{opts.port}"
     ux_dom_logger.info(f"uxdom {mode}  ·  {opts.app_import}")
     ux_dom_logger.info(f"  local     {local}")
     ux_dom_logger.info(f"  network   http://{opts.host}:{opts.port}")
@@ -162,6 +164,7 @@ def _serve_with_tunnel(
         try:
             healthy_path = wait_for_health(
                 opts.port,
+                host=opts.host,
                 path=opts.health_path,
                 timeout=opts.health_timeout,
             )
@@ -177,6 +180,7 @@ def _serve_with_tunnel(
                 token=opts.tunnel_token
                 or os.environ.get("NGROK_AUTHTOKEN")
                 or os.environ.get("TUNNEL_TOKEN"),
+                host=opts.host,
             )
         except FileNotFoundError as exc:
             ux_dom_logger.error(str(exc))

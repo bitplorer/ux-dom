@@ -301,6 +301,7 @@ Includes `channel_bridge` helpers for channel-aware UI pieces when peer is prese
 |--------------|------|------------|
 | **create-app / scaffold** | New project | `cli/scaffold.py`, `create/` |
 | **serve / dev / start** | Next-style process + standalone Tailwind | `cli/serve.py`, `cli/tailwind.py`, `cli/envfile.py` |
+| **tunnel** | Optional public URL after local health (ngrok / cloudflare) | `cli/tunnel.py` · [TUNNEL](guides/TUNNEL.md) |
 | **doctor / info** | Environment diagnostics | `cli/doctor.py` |
 | **build** | Production asset/build | `cli/build.py` |
 | **lint** | Lint helpers | `cli/lint.py` |
@@ -317,7 +318,7 @@ uxdom doctor
 uxdom --help
 ```
 
-**Docs:** [CLI](guides/CLI.md) · [DX](guides/DX.md)
+**Docs:** [CLI](guides/CLI.md) · [DX](guides/DX.md) · [TUNNEL](guides/TUNNEL.md)
 
 ---
 

@@ -80,6 +80,13 @@ CLI**. HMR is the create-app lifespan (`WITH_HMR`) — already first-class.
 - Hand-rewriting create-app / add templates just to rename symbols
 - Hand-rolling `uvicorn` + a custom CSS step when `uxdom serve` exists
 
+## Tunnel / public URL (share local dev)
+
+Edge **502** almost always means the **origin** was down while the tunnel was up.
+`uxdom serve --tunnel ngrok|cloudflare` waits for local `/health` (then `/`) before advertising a public URL.
+Bind vs probe: `0.0.0.0` → `127.0.0.1`; concrete `--host` as-is.
+Full design: **[TUNNEL.md](TUNNEL.md)**.
+
 ## Architecture (one glance)
 
 ```text

@@ -415,6 +415,26 @@ def dev(
         help="Deprecated: Tailwind watch is on by default (use --no-tailwind to skip)",
     ),
     cwd: str = Option(None, "--cwd", help="App root (default: find app/main.py)"),
+    tunnel: str = Option(
+        "none",
+        "--tunnel",
+        help="Public tunnel after local health is green: none|ngrok|cloudflare",
+    ),
+    tunnel_token: str = Option(
+        None,
+        "--tunnel-token",
+        help="Optional token (NGROK_AUTHTOKEN / TUNNEL_TOKEN env also work)",
+    ),
+    health_path: str = Option(
+        "/health",
+        "--health-path",
+        help="Local path probed before advertising a tunnel URL",
+    ),
+    health_timeout: float = Option(
+        30.0,
+        "--health-timeout",
+        help="Seconds to wait for origin health before failing (avoids tunnel 502)",
+    ),
 ):
     """Day-1 server — Next ``next dev``.
 
@@ -442,6 +462,10 @@ def dev(
             reload=not no_reload,
             tailwind=not no_tailwind,
             cwd=P(cwd) if cwd else None,
+            tunnel=tunnel,
+            tunnel_token=tunnel_token,
+            health_path=health_path,
+            health_timeout=health_timeout,
         )
     )
 
@@ -458,6 +482,26 @@ def serve(
     no_reload: bool = Option(False, "--no-reload"),
     no_tailwind: bool = Option(False, "--no-tailwind"),
     cwd: str = Option(None, "--cwd", help="App root (default: find app/main.py)"),
+    tunnel: str = Option(
+        "none",
+        "--tunnel",
+        help="Public tunnel after local health is green: none|ngrok|cloudflare",
+    ),
+    tunnel_token: str = Option(
+        None,
+        "--tunnel-token",
+        help="Optional token (NGROK_AUTHTOKEN / TUNNEL_TOKEN env also work)",
+    ),
+    health_path: str = Option(
+        "/health",
+        "--health-path",
+        help="Local path probed before advertising a tunnel URL",
+    ),
+    health_timeout: float = Option(
+        30.0,
+        "--health-timeout",
+        help="Seconds to wait for origin health before failing (avoids tunnel 502)",
+    ),
 ):
     """Serve the app — Next ``next dev`` / ``next start``.
 
@@ -470,6 +514,8 @@ def serve(
         uxdom serve --port 8080
         uxdom serve --prod
         uxdom serve --no-tailwind --no-reload
+        uxdom serve --tunnel ngrok
+        uxdom serve --tunnel cloudflare
     """
     from pathlib import Path as P
 
@@ -486,6 +532,10 @@ def serve(
             reload=reload,
             tailwind=not no_tailwind,
             cwd=P(cwd) if cwd else None,
+            tunnel=tunnel,
+            tunnel_token=tunnel_token,
+            health_path=health_path,
+            health_timeout=health_timeout,
         )
     )
 
@@ -497,6 +547,26 @@ def start(
     port: int = Option(8080, "--port"),
     no_tailwind: bool = Option(False, "--no-tailwind"),
     cwd: str = Option(None, "--cwd", help="App root (default: find app/main.py)"),
+    tunnel: str = Option(
+        "none",
+        "--tunnel",
+        help="Public tunnel after local health is green: none|ngrok|cloudflare",
+    ),
+    tunnel_token: str = Option(
+        None,
+        "--tunnel-token",
+        help="Optional token (NGROK_AUTHTOKEN / TUNNEL_TOKEN env also work)",
+    ),
+    health_path: str = Option(
+        "/health",
+        "--health-path",
+        help="Local path probed before advertising a tunnel URL",
+    ),
+    health_timeout: float = Option(
+        30.0,
+        "--health-timeout",
+        help="Seconds to wait for origin health before failing (avoids tunnel 502)",
+    ),
 ):
     """Production server — Next ``next start`` (alias of ``uxdom serve --prod``)."""
     from pathlib import Path as P
@@ -512,6 +582,10 @@ def start(
             reload=False,
             tailwind=not no_tailwind,
             cwd=P(cwd) if cwd else None,
+            tunnel=tunnel,
+            tunnel_token=tunnel_token,
+            health_path=health_path,
+            health_timeout=health_timeout,
         )
     )
 
