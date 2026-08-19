@@ -41,7 +41,7 @@ class ToastItem(Component):
 
 
 class ToastHost(Component):
-    """Morph-safe notices region. Items from Host Ops (notify / form_result)."""
+    """Morph-safe notices region. Items from Host Ops (ux-behavior ``notify``)."""
 
     def render(
         self,

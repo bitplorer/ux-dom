@@ -179,6 +179,15 @@ class TestCatalogAndCopy(unittest.TestCase):
         self.assertIsNone(RUNTIMES["tabs"])
         self.assertIsNone(RUNTIMES["carousel"])
 
+    def test_catalog_covers_every_ui_module(self):
+        from pathlib import Path
+
+        ui_dir = Path(__file__).resolve().parents[2] / "src" / "ux_dom" / "ui"
+        skip = {"__init__", "catalog", "copy", "tokens"}
+        on_disk = {p.stem for p in ui_dir.glob("*.py") if p.stem not in skip}
+        self.assertEqual(on_disk, set(CATALOG), on_disk.symmetric_difference(CATALOG))
+        self.assertEqual(set(CATALOG), set(RUNTIMES))
+
     def test_copy_datepicker_uses_tokens(self):
         with TemporaryDirectory() as td:
             dest = Path(td) / "ui"

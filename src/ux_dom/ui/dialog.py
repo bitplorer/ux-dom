@@ -1,14 +1,14 @@
 # Copyright (c) 2026 ux-dom
 """Dialog — Channel-first overlay panel (no Alpine by default).
 
-Open/close is driven by session cells set from ux-app macros
-(open_overlay / close_overlay). This module only *renders* markup.
-It must not import ux_app or construct Ops.
+Open/close is a render argument (`open=`). Author macros live in
+ux-behavior (`open` / `close`) or the Host — this module only *renders*
+markup. It must not import ux_behavior / ux_app or construct Ops.
 
 ::
 
-    # Action side — in ux-app / Host, not here
-    # return open_overlay("dialog", key="lot", lot_id=lot_id)
+    # Action side — in ux-behavior / Host, not here
+    # return open("dialog", key="lot", lot_id=lot_id)
 
     # Render side
     Dialog(

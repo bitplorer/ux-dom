@@ -145,13 +145,13 @@ class Index(Component):
             section("Dialog (Channel)", Dialog(
                 open=True,
                 title="Edit profile",
-                body=p("Open/close is a session cell — use open_overlay / close_overlay."),
+                body=p("Open/close is a session cell — use ux-behavior open() / close()."),
                 footer=live_button("Save", action="Demo.ping", size="sm"),
             )),
             section("Carousel (Channel)", Carousel(
                 slides=[
                     p("Slide one — index is a render argument."),
-                    p("Slide two — advance with select_region."),
+                    p("Slide two — advance with ux-behavior select()."),
                 ],
                 label="Highlights",
                 index=0,

@@ -1,7 +1,7 @@
 # Copyright (c) 2026 ux-dom
 """Carousel — Channel-first slide index (no Alpine).
 
-Active index comes from the server (select_region). Renders one slide.
+Active index comes from the server (ux-behavior ``select``). Renders one slide.
 ``default=`` is accepted as an alias for ``index=`` (historical name).
 """
 from __future__ import annotations
@@ -22,7 +22,7 @@ class Carousel(Component):
         Carousel(slides=[div("One"), div("Two")], label="Highlights", index=0)
         Carousel(slides=[])  # empty state
 
-    Index is a render argument — not client state. Advance via select_region.
+    Index is a render argument — not client state. Advance via ux-behavior ``select``.
     """
 
     def render(

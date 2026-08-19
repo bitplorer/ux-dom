@@ -1,5 +1,5 @@
 # Copyright (c) 2026 ux-dom
-"""Command — palette shell. Open via open_overlay('command').
+"""Command — palette shell. Open via ux-behavior ``open("command")``.
 
 Markup only. Filtering/commit are Host Actions + preview, not client state.
 """

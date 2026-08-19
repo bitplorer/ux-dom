@@ -89,8 +89,8 @@ With channel: combine `ChannelComponent` / `ch.control` regions with ux-dom kit 
 
 | Surface | Local (perception) | Authority (Action → Op) |
 |---------|---------------------|-------------------------|
-| Tabs / Dialog / Sheet / Carousel | no — `open` / `active` / `index` are render args | yes (`open_overlay`, `select_region`) |
-| Toast list | no — morph of `#notices` | yes (`notify` or `form_result`) |
+| Tabs / Dialog / Sheet / Carousel | no — `open` / `active` / `index` are render args | yes (`open`, `select`) |
+| Toast list | no — morph of `#notices` | yes (`notify`) |
 | Search filter typeahead | `preview.filter` | commit Action |
 | Slider / DatePicker value | form field | submit Action |
 

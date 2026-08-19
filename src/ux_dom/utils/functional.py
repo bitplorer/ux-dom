@@ -177,11 +177,6 @@ def map_r(func, iterables):
     return (map_recursive(func, iterable) for iterable in iterables)
 
 
-def zip_recursive(iterables):
-    # TODO make this function
-    pass
-
-
 #
 # def _test_dict_map():
 #     return map_recursive(

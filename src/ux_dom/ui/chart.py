@@ -8,7 +8,7 @@ from typing import Any, Sequence
 
 from ux_dom import Component
 from ux_dom.dom import div, raw, span
-from ux_dom.ui.tokens import cn
+from ux_dom.ui.tokens import cn, ink, surface
 
 __all__ = ["Chart"]
 
@@ -65,7 +65,7 @@ class Chart(Component):
         if not vals:
             empty_body = empty if empty is not None else span(
                 "No data",
-                className="text-sm text-slate-500",
+                className=cn("text-sm", ink["muted"]),
             )
             return div(
                 empty_body,
@@ -73,7 +73,7 @@ class Chart(Component):
                 **{"aria-label": f"{label} (empty)", "data-chart": "empty"},
                 className=cn(
                     "flex items-center justify-center rounded-xl border border-dashed",
-                    "border-slate-200 bg-slate-50",
+                    "border-stone-700 bg-stone-900/40",
                     className,
                 ),
                 **{"style": f"width:{width}px;height:{height}px"},
@@ -107,12 +107,13 @@ class Chart(Component):
         svg = (
             f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" '
             f'viewBox="0 0 {width} {height}" role="img" aria-label="{safe_label}" '
-            f'data-chart="{kind_token}" class="text-slate-900">{inner}</svg>'
+            f'data-chart="{kind_token}" class="text-stone-100">{inner}</svg>'
         )
         return div(
             raw(svg),
             className=cn(
-                "overflow-hidden rounded-xl border border-slate-200 bg-white p-2",
+                "overflow-hidden rounded-xl border p-2",
+                surface["l1"],
                 className,
             ),
             **{"data-chart-shell": kind_token},

@@ -8,6 +8,8 @@
   Standalone Tailwind CLI (PATH / pytailwindcss / cache / official download),
   Next-style `.env*` loading, `UXDOM_TAILWIND_OWNED` so Document `TailwindStyle`
   does not double-watch. `uxdom info` aliases `doctor`.
+- **`--tunnel none|ngrok|cloudflare`:** health-gated public URL so the tunnel is
+  never advertised against a dead origin (see [TUNNEL.md](docs/guides/TUNNEL.md)).
 - **`TailwindCommand`** and **`uxdom build` / `doctor`** share `cli/tailwind.py`.
 - Tests: `tests/03_routing_cli/test_serve_dx.py` (no download in CI).
 
@@ -38,6 +40,16 @@
 - **Catalog / copy:** new stems registered; DatePicker copies Input.
 - **Docs:** `docs/guides/UI.md` inventory + local-vs-authority table.
 - Tests: `tests/02_document_plugins/test_ui_battery.py`.
+
+### Completeness (2026-08-19)
+
+- Chart tokens aligned to stone surfaces (leftover slate after the Channel-native restyle).
+- UI kit comments, catalog, gallery copy, and UI.md use ux-behavior verbs
+  (`open` / `close` / `select` / `notify`) instead of historical `open_overlay`.
+- `uxdom build` import check puts the installed/source `ux_dom` on PYTHONPATH;
+  import-error tails are no longer clipped to 300 characters.
+- Unused `zip_recursive` stub removed.
+- Catalog completeness test: every `ux_dom.ui` module is registered.
 
 ### Hardening
 

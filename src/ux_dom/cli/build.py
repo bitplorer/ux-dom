@@ -241,7 +241,16 @@ def run_build(
         report.steps.append(BuildStep("import", True, "skipped"))
     else:
         env = os.environ.copy()
-        env["PYTHONPATH"] = os.pathsep.join([str(root), env.get("PYTHONPATH", "")])
+        path_bits = [str(root)]
+        try:
+            import ux_dom as _ux
+
+            path_bits.append(str(Path(_ux.__file__).resolve().parents[1]))
+        except Exception:
+            pass
+        if env.get("PYTHONPATH"):
+            path_bits.append(env["PYTHONPATH"])
+        env["PYTHONPATH"] = os.pathsep.join(path_bits)
         code = (
             "import importlib; "
             "m = importlib.import_module('app.main'); "
@@ -256,7 +265,7 @@ def run_build(
             timeout=60,
             env=env,
         )
-        detail = (proc.stdout or proc.stderr or "").strip()[:300]
+        detail = (proc.stdout or proc.stderr or "").strip()[:2000]
         report.steps.append(
             BuildStep(
                 "import:app.main:app",

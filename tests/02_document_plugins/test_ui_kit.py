@@ -130,7 +130,8 @@ class TestGalleryApp(unittest.TestCase):
             self.assertEqual(r.status_code, 200, r.text[:300])
             self.assertIn("UxDom UI kit", r.text)
             self.assertIn("Button", r.text or "Default")
-            self.assertIn("bg-slate-900", r.text)
+            self.assertIn("bg-stone-900", r.text)
+            self.assertIn("data-channel-id", r.text)
         finally:
             for k in list(sys.modules):
                 if k == "app" or k.startswith("app."):

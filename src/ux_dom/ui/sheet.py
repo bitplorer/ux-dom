@@ -1,7 +1,7 @@
 # Copyright (c) 2026 ux-dom
 """Sheet — Channel-first bottom/side panel (no Alpine).
 
-Open via open_overlay("sheet", ...). Render with open= from session.
+Open via ux-behavior ``open("sheet", ...)``. Render with ``open=`` from session.
 """
 from __future__ import annotations
 

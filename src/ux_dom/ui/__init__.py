@@ -2,7 +2,7 @@
 """
 ux-dom UI kit — Channel-first, shadcn-inspired (optional, Tailwind utilities).
 
-Ownership: markup + tokens only. No Op construction. No ux_app imports.
+Ownership: markup + tokens only. No Op construction. No ux_behavior / ux_app imports.
 
 Pure server HTML. Works **without** ux-channel. For live morph / signed actions::
 

@@ -1,6 +1,7 @@
 # Council Decision — Where Design-System Elements Live
 
 **Date:** 2026-08-17  
+**Note (2026-08-19):** the author-layer seat is now **ux-behavior** (verbs `open` / `close` / `select` / `notify`). This record still names `ux-app` as the historical owner of Op macros.  
 **Question:** For a multi-year stable design system on ux-app / ux-dom / Channel, which elements live in which package — and which never move?  
 **Strategy:** halt-or-patch · primary sources · adversary stress  
 **Outcome:** Binding placement matrix + non-negotiable rules

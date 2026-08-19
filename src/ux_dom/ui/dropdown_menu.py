@@ -1,7 +1,7 @@
 # Copyright (c) 2026 ux-dom
 """DropdownMenu — server-rendered menu when open=True (Channel-first).
 
-Use select_region or open_overlay for open state. No Alpine.
+Use ux-behavior ``select`` / ``open`` for open state. No Alpine.
 """
 from __future__ import annotations
 

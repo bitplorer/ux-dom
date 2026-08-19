@@ -148,7 +148,7 @@ CATALOG: dict[str, UiEntry] = {
         "name": "Dialog",
         "module": "ux_dom.ui.dialog",
         "exports": ["Dialog"],
-        "description": "Channel-first overlay panel (open via ux_app.overlay macros)",
+        "description": "Channel-first overlay panel (open via ux-behavior open())",
         "channel": False,
     },
     "sheet": {
