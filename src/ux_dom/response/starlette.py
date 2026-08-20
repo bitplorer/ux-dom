@@ -24,12 +24,22 @@ __all__ = ["HTMLResponse", "html_response", "StreamingResponse", "streaming_resp
 CallableType = T.TypeVar("CallableType", bound=T.Callable[..., T.Any])
 
 
+def _is_html_renderable(content: T.Any) -> bool:
+    """dom_tag trees or any object exposing ``__render__`` (e.g. Compose Component)."""
+    return isinstance(content, dom_tag.dom_tag) or hasattr(content, "__render__")
+
+
+def _is_stream_renderable(content: T.Any) -> bool:
+    """dom_tag trees or any object exposing ``__async_render__``."""
+    return isinstance(content, dom_tag.dom_tag) or hasattr(content, "__async_render__")
+
+
 class HTMLResponse(StarletteHTMLResponse):
     media_type = "text/html"
 
     def __init__(
         self,
-        html_content: dom_tag.dom_tag,
+        html_content: T.Any,
         status_code: int = 200,
         headers: T.Optional[dict] = None,
         media_type: T.Optional[str] = None,
@@ -69,7 +79,7 @@ def html_response(
             @wraps(endpoint)
             async def decorated(*args, **kwargs) -> HTMLResponse:
                 content = await endpoint(*args, **kwargs)
-                if isinstance(content, dom_tag.dom_tag):
+                if _is_html_renderable(content):
                     return HTMLResponse(content)
                 return content
 
@@ -78,7 +88,7 @@ def html_response(
             @wraps(endpoint)
             def decorated(*args, **kwargs) -> HTMLResponse:
                 content = endpoint(*args, **kwargs)
-                if isinstance(content, dom_tag.dom_tag):
+                if _is_html_renderable(content):
                     return HTMLResponse(content)
                 return content
 
@@ -93,6 +103,7 @@ class StreamingResponse(StarletteStreamingResponse):
 
     Accepts:
     * ``dom_tag`` — ``__async_render__(pretty=False)`` token stream (preferred)
+    * object with ``__async_render__`` (e.g. Compose Component)
     * ``str`` / ``bytes`` / ``bytearray`` — single-chunk body
     * async iterator / async generator — passed through
     """
@@ -130,7 +141,7 @@ def _coerce_streaming_body(html_content):
     if html_content is None:
         return _async_str_chunks("")
 
-    # Prefer dom_tag async stream
+    # Prefer dom_tag async stream, or any object with __async_render__
     if isinstance(html_content, dom_tag.dom_tag) or hasattr(
         html_content, "__async_render__"
     ):
@@ -157,8 +168,8 @@ def _coerce_streaming_body(html_content):
         return html_content
 
     raise TypeError(
-        "StreamingResponse expects a dom_tag, str, bytes, or async iterator; "
-        f"got {type(html_content)!r}"
+        "StreamingResponse expects a dom_tag, object with __async_render__, "
+        f"str, bytes, or async iterator; got {type(html_content)!r}"
     )
 
 
@@ -171,7 +182,7 @@ def streaming_response(
             @wraps(endpoint)
             async def decorated(*args, **kwargs) -> StreamingResponse:
                 content = await endpoint(*args, **kwargs)
-                if isinstance(content, dom_tag.dom_tag):
+                if _is_stream_renderable(content):
                     return StreamingResponse(content)
                 return content
 
@@ -180,7 +191,7 @@ def streaming_response(
             @wraps(endpoint)
             def decorated(*args, **kwargs) -> StreamingResponse:
                 content = endpoint(*args, **kwargs)
-                if isinstance(content, dom_tag.dom_tag):
+                if _is_stream_renderable(content):
                     return StreamingResponse(content)
                 return content
 
