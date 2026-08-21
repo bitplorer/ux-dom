@@ -1,11 +1,38 @@
-# Copyright (c) 2023 ux-dom — MIT
-"""DirectoryRouter: generic RouterHooks, module↔class page unit, fail-closed."""
-from __future__ import annotations
+# Copyright (c) 2023 ux-dom
+#
+# This software is released under the MIT License.
+# https://opensource.org/licenses/MIT
+
+
+"""FastAPI DirectoryRouter and streaming HTML route classes.
+
+DirectoryRouter maps app/routes file paths to URLs; streaming helpers serialize
+ux-dom trees for responses.
+
+Path law (fixed, not flags):
+* URL = filesystem only (folder + file stem). Class name never in path.
+* route.py / index.py → folder prefix (or "/").
+
+Page unit (default product path):
+* Exports from ``__all__`` when present (Python-native allow-list).
+* Page type = class whose name matches the module stem (cart.py → Cart).
+* Ambiguous page picks fail closed (no silent guess).
+* GET: explicit ``get`` method if present, else serve page unit via render.
+* Other HTTP verbs only when explicit methods exist (advanced opt-in).
+
+Generic hooks (optional, no host-specific types):
+* resolve_unit(cls, path, name) → instance or None (None → cls())
+* accept_symbol(name, obj, module) → bool
+* on_route(record) → None
+"""
+__all__ = ["HTMLRoute", "StreamingRoute", "DirectoryRouter", "RouterHooks", "DirectoryRouterError"]
+
 
 import importlib
 import logging
 import re
 import sys
+from ux_dom import diagnostics as _ux_dom_diag
 from collections import defaultdict
 from enum import Enum
 from pathlib import Path
@@ -18,27 +45,23 @@ from starlette.responses import JSONResponse, Response
 from starlette.routing import BaseRoute
 from starlette.types import ASGIApp, Lifespan
 
-from ux_dom import diagnostics as _ux_dom_diag
 from ux_dom.response.starlette import html_response, streaming_response
 
-__all__ = [
-    "HTMLRoute",
-    "StreamingRoute",
-    "DirectoryRouter",
-    "RouterHooks",
-    "DirectoryRouterError",
-]
-
 logger = logging.getLogger("ux_dom.routing")
+
 _HTTP_VERBS = ("get", "post", "put", "patch", "delete", "head", "options")
 
 
 class DirectoryRouterError(RuntimeError):
-    """Fail-closed routing errors."""
+    """Fail-closed routing errors (ambiguous page, invalid export, etc.)."""
 
 
 class RouterHooks:
-    """Generic extension sockets. Hosts pass hooks; ux-dom imports no host types."""
+    """Generic extension sockets for DirectoryRouter.
+
+    All callables optional. Any host may pass hooks; ux-dom never imports
+    host-specific types. With hooks=None, page GET uses ``cls()``.
+    """
 
     __slots__ = ("resolve_unit", "accept_symbol", "on_route")
 
@@ -85,6 +108,7 @@ def _pick_page_type(
     accept_symbol: Optional[Callable[..., bool]] = None,
     fail_closed: bool = True,
 ):
+    """Page unit = renderable class in exports whose name matches module stem."""
     mod_name = getattr(route_file, "__name__", "")
     stem = file_stem.lower()
     matches = []
@@ -123,13 +147,14 @@ def _pick_page_type(
 
 
 def _explicit_http_handlers(klass: type) -> dict:
+    """Advanced opt-in: real HTTP handlers declared on the class."""
     found = {}
     for verb in _HTTP_VERBS:
         if verb in getattr(klass, "__dict__", {}):
             attr = klass.__dict__[verb]
-            if isinstance(attr, staticmethod):
+            if staticmethod is not None and isinstance(attr, staticmethod):
                 attr = attr.__func__
-            if isinstance(attr, classmethod):
+            if classmethod is not None and isinstance(attr, classmethod):
                 attr = attr.__func__
             if callable(attr):
                 found[verb] = getattr(klass, verb)
@@ -143,6 +168,8 @@ def _page_get_endpoint(
     name: str,
     resolve_unit: Optional[Callable[..., Any]] = None,
 ):
+    """GET page serve via resolve_unit or Klass() — not a synthetic class method."""
+
     def _endpoint():
         unit = None
         if resolve_unit is not None:
@@ -162,11 +189,14 @@ def _page_get_endpoint(
 
 
 def _import_route_module(module: str, file: Path):
+    """Import a route file; fall back to file-location load for non-identifier dirs."""
     try:
         return importlib.import_module(module)
     except Exception:
         pass
-    safe = module.replace("/", ".").replace("\\", ".").replace("-", "_").replace(" ", "_")
+    safe = (
+        module.replace("/", ".").replace("\\", ".").replace("-", "_").replace(" ", "_")
+    )
     safe_name = "_".join(safe.split("."))
     if not safe_name.isidentifier():
         safe_name = "ux_dom_route_" + str(abs(hash(str(file))))
@@ -498,7 +528,7 @@ class DirectoryRouter(routing.APIRouter):
                         name = f"{module}.{klass_name}.{_method}"
                         mlow = _method.lower()
                         if mlow in self._METHODS:
-                            if file.stem in (self.route_file_name, "index"):
+                            if file.stem == self.route_file_name or file.stem == "index":
                                 _route_ = "/"
                             elif not file.stem.startswith("_"):
                                 _route_ = f"/{file.stem}"
@@ -506,7 +536,7 @@ class DirectoryRouter(routing.APIRouter):
                                 _route_ = "/"
                             methods = [mlow]
                         else:
-                            if file.stem in (self.route_file_name, "index"):
+                            if file.stem == self.route_file_name or file.stem == "index":
                                 _route_ = f"/{mlow}"
                             elif not file.stem.startswith("_"):
                                 _route_ = f"/{file.stem}/{mlow}"
@@ -602,7 +632,12 @@ class DirectoryRouter(routing.APIRouter):
 
     @property
     def route_table(self) -> List[dict]:
+        """Deterministic list of registered routes (CI / doctor)."""
         return list(self._route_table)
+
+    def _find_braces_or_brackets(self, string):
+        pattern = re.compile(r"\{[^}]*\}|\[[^\]]*\]")
+        return re.findall(pattern=pattern, string=string)
 
     @property
     def base_directory(self):
