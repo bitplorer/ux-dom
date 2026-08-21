@@ -5,10 +5,14 @@ from typing import Any, Callable, Optional, Type
 
 
 class DirectoryRouting:
-    """Plugin wrapper around ``DirectoryRouter`` (Next.js-like file routes).
+    """Plugin wrapper around ``DirectoryRouter``.
 
-    Sacred DX: ``app/**/*.py`` with optional ``routes = [...]`` on Components,
-    or ``route.py``. Renderable units can synthesize GET when methods missing.
+    Path law (DirectoryRouter SSoT):
+    * URL = filesystem only (folder + file stem). No ClassName segment.
+    * Renderable unit always registers GET.
+    * ``routes=`` only for extra verbs / subpaths.
+
+    Extension: ``on_unit(klass, prefix, file)``.
     """
 
     plugin_kind = "routing"
@@ -23,8 +27,6 @@ class DirectoryRouting:
         route_class: Optional[Type[Any]] = None,
         package_dir: Any = None,
         on_unit: Optional[Callable[..., Any]] = None,
-        synthesize_missing: bool = True,
-        class_in_path: bool = True,
     ):
         self.base_directory = base_directory
         self.route_file_name = route_file_name
@@ -32,8 +34,6 @@ class DirectoryRouting:
         self.route_class = route_class
         self.package_dir = package_dir
         self.on_unit = on_unit
-        self.synthesize_missing = synthesize_missing
-        self.class_in_path = class_in_path
         self._router = None
 
     def include(self, app: Any, **kwargs: Any) -> Any:
@@ -47,8 +47,6 @@ class DirectoryRouting:
             route_class=route_class,
             package_dir=self.package_dir,
             on_unit=self.on_unit,
-            synthesize_missing=self.synthesize_missing,
-            class_in_path=self.class_in_path,
         )
         if hasattr(app, "include_router"):
             app.include_router(self._router)
