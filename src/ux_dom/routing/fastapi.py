@@ -9,11 +9,13 @@
 DirectoryRouter maps app/routes file paths to URLs; streaming helpers serialize
 ux-dom trees for responses.
 
-Enhancements:
-* synthesize_missing: default GET for renderable units without get()
-* class_in_path: when False, URL is /file not /file/Class
-* on_unit: callback(klass, prefix, file) extension seam
-* route_table: deterministic registered routes for CI/doctor
+Path law (fixed, not flags):
+* URL = filesystem only (folder + file stem). Class name never in path.
+* route.py / index.py → folder prefix (or "/").
+* Renderable unit always gets GET (fresh instance).
+* routes= only for extra HTTP verbs or non-verb subpaths.
+
+Extension: on_unit(klass, prefix, file); route_table for CI/doctor.
 """
 __all__ = ["HTMLRoute", "StreamingRoute", "DirectoryRouter"]
 
@@ -127,8 +129,8 @@ def _is_renderable_unit(klass: type) -> bool:
     )
 
 
-def _synthesize_get_endpoint(klass: type):
-    """Default page GET: return a fresh instance (stream via __async_render__/__render__)."""
+def _default_get_endpoint(klass: type):
+    """Page GET: return a fresh instance (stream via __async_render__/__render__)."""
 
     def _endpoint():
         return klass()
@@ -216,9 +218,7 @@ class DirectoryRouter(routing.APIRouter):
         self._route_file_name = route_file_name
         self._package_dir = Path(package_dir).resolve() if package_dir else None
         self._seen_routes: Set[tuple] = set()
-        self._on_unit = kwargs.pop("on_unit", None)
-        self._synthesize_missing = bool(kwargs.pop("synthesize_missing", True))
-        self._class_in_path = bool(kwargs.pop("class_in_path", True))
+        self._on_unit = kwargs.pop("on_unit", None)  # extension only
         self._route_table: List[dict] = []
         super_kwargs = dict(
             prefix=prefix,
@@ -306,12 +306,8 @@ class DirectoryRouter(routing.APIRouter):
                         for mthd in klass.routes:
                             if hasattr(klass, mthd):
                                 class_map[klass_name][mthd] = getattr(klass, mthd)
-                            elif (
-                                self._synthesize_missing
-                                and str(mthd).lower() == "get"
-                                and _is_renderable_unit(klass)
-                            ):
-                                class_map[klass_name][mthd] = _synthesize_get_endpoint(klass)
+                            elif str(mthd).lower() == "get" and _is_renderable_unit(klass):
+                                class_map[klass_name][mthd] = _default_get_endpoint(klass)
                 if class_map:
                     route_methods = class_map
                     kind = "component"
@@ -346,11 +342,7 @@ class DirectoryRouter(routing.APIRouter):
                             continue
                         if isinstance(obj, type) and getattr(obj, "routes", None):
                             exported.append(r)
-                        elif (
-                            isinstance(obj, type)
-                            and self._synthesize_missing
-                            and _is_renderable_unit(obj)
-                        ):
+                        elif isinstance(obj, type) and _is_renderable_unit(obj):
                             exported.append(r)
                         elif (
                             r.lower() in self._METHODS
@@ -367,30 +359,24 @@ class DirectoryRouter(routing.APIRouter):
                     routes_attr = getattr(klass, "routes", None)
                     if routes_attr:
                         for mthd in routes_attr:
-                            if not hasattr(klass, mthd):
-                                if (
-                                    self._synthesize_missing
-                                    and str(mthd).lower() == "get"
-                                    and isinstance(klass, type)
-                                    and _is_renderable_unit(klass)
-                                ):
-                                    class_map[klass_name][mthd] = _synthesize_get_endpoint(
-                                        klass
-                                    )
-                                else:
-                                    logger.error(
-                                        "DirectoryRouter: %s.routes lists %r but method missing",
-                                        klass_name,
-                                        mthd,
-                                    )
-                                    continue
-                            else:
+                            if hasattr(klass, mthd):
                                 class_map[klass_name][mthd] = getattr(klass, mthd)
+                            elif (
+                                str(mthd).lower() == "get"
+                                and isinstance(klass, type)
+                                and _is_renderable_unit(klass)
+                            ):
+                                class_map[klass_name][mthd] = _default_get_endpoint(klass)
+                            else:
+                                logger.error(
+                                    "DirectoryRouter: %s.routes lists %r but method missing",
+                                    klass_name,
+                                    mthd,
+                                )
                     elif callable(klass) and not isinstance(klass, type):
                         file_fns[klass_name] = klass
-                    elif isinstance(klass, type):
-                        if self._synthesize_missing and _is_renderable_unit(klass):
-                            class_map[klass_name]["get"] = _synthesize_get_endpoint(klass)
+                    elif isinstance(klass, type) and _is_renderable_unit(klass):
+                        class_map[klass_name]["get"] = _default_get_endpoint(klass)
                 if class_map:
                     route_methods = class_map
                     kind = "component"
@@ -445,51 +431,22 @@ class DirectoryRouter(routing.APIRouter):
                         _method_attr = _set_endpoint_name(_method_attr, name)
                         mlow = _method.lower()
                         if mlow in self._METHODS:
-                            if not self._class_in_path:
-                                if file.stem == self.route_file_name or file.stem == "index":
-                                    _route_ = "/"
-                                elif not file.stem.startswith("_"):
-                                    _route_ = f"/{file.stem}"
-                                else:
-                                    _route_ = "/"
-                            elif file.stem == self.route_file_name:
-                                _route_ = (
-                                    f"/{klass_name}"
-                                    if not klass_name.startswith("_")
-                                    else "/"
-                                )
+                            # Path law: filesystem only — ClassName never in URL
+                            if file.stem == self.route_file_name or file.stem == "index":
+                                _route_ = "/"
                             elif not file.stem.startswith("_"):
-                                _route_ = (
-                                    f"/{file.stem}/{klass_name}"
-                                    if not klass_name.startswith("_")
-                                    else f"/{file.stem}"
-                                )
+                                _route_ = f"/{file.stem}"
                             else:
-                                _route_ = (
-                                    f"/{klass_name}"
-                                    if not klass_name.startswith("_")
-                                    else "/"
-                                )
+                                _route_ = "/"
                             methods = [mlow]
                         else:
-                            if not self._class_in_path:
-                                _route_ = (
-                                    f"/{file.stem}/{mlow}"
-                                    if not file.stem.startswith("_")
-                                    else f"/{mlow}"
-                                )
+                            # Non-verb routes= entry → GET subpath under file stem
+                            if file.stem == self.route_file_name or file.stem == "index":
+                                _route_ = f"/{mlow}"
                             elif not file.stem.startswith("_"):
-                                _route_ = (
-                                    f"/{file.stem}/{klass_name}/{mlow}"
-                                    if not klass_name.startswith("_")
-                                    else f"/{file.stem}/{mlow}"
-                                )
+                                _route_ = f"/{file.stem}/{mlow}"
                             else:
-                                _route_ = (
-                                    f"/{klass_name}/{mlow}"
-                                    if not klass_name.startswith("_")
-                                    else f"/{mlow}"
-                                )
+                                _route_ = f"/{mlow}"
                             methods = ["get"]
                         self._add(_router, _route_, _method_attr, name, methods)
             elif kind == "file_fns":
