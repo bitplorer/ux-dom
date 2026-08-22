@@ -142,7 +142,12 @@ def _pick_page_type(
     accept_symbol: Optional[Callable[..., bool]] = None,
     fail_closed: bool = True,
 ):
-    """Page unit = renderable class in exports whose name matches module stem."""
+    """Select the page unit: renderable class whose name matches the file stem.
+
+    Exactly one match is required when fail_closed. Zero matches → None.
+    Multiple matches → DirectoryRouterError (or None if fail_closed=False).
+    accept_symbol may filter candidates before the stem check.
+    """
     mod_name = getattr(route_file, "__name__", "")
     stem = file_stem.lower()
     matches = []
@@ -181,7 +186,10 @@ def _pick_page_type(
 
 
 def _explicit_http_handlers(klass: type) -> dict:
-    """Advanced opt-in: real HTTP handlers declared on the class."""
+    """Explicit HTTP verbs declared on the class body (not inherited blanks).
+
+    These bypass resolve_unit and are registered as-is (advanced opt-in).
+    """
     found = {}
     for verb in _HTTP_VERBS:
         if verb in getattr(klass, "__dict__", {}):
@@ -352,6 +360,28 @@ def _to_fastapi_path_params(prefix: str) -> str:
 
 
 class DirectoryRouter(routing.APIRouter):
+    """Filesystem → URL router with page-unit convention and generic hooks.
+
+    Path law (fixed):
+      * URL = folder + file stem only. Class name never appears in the path.
+      * ``route.py`` / ``index.py`` map to the folder prefix (or ``/``).
+
+    Page unit (default product path):
+      * Prefer ``__all__``; otherwise define-in-module classes only.
+      * Page type = renderable class whose name matches the module stem
+        (``cart.py`` → ``Cart``). Ambiguity fails closed.
+      * GET: explicit ``get`` on the class if present, else synthetic page
+        GET via ``resolve_unit`` / ``cls()``.
+      * Other verbs only when explicit methods exist (advanced opt-in).
+
+    Hooks (optional, host-agnostic):
+      * ``hooks=RouterHooks(...)`` — see ``RouterHooks``.
+      * ``fail_closed=True`` (default) raises ``DirectoryRouterError`` on
+        ambiguity, duplicates, and hook failures.
+
+    Standalone-safe: with ``hooks=None`` the synthetic page GET uses ``cls()``.
+    """
+
     _METHODS = list(_HTTP_VERBS)
 
     def __init__(
@@ -670,7 +700,10 @@ class DirectoryRouter(routing.APIRouter):
 
     @property
     def route_table(self) -> List[dict]:
-        """Deterministic list of registered routes (CI / doctor)."""
+        """Deterministic list of registered routes for CI, doctor, and hosts.
+
+        Each record: ``{"method": [...], "path": "...", "name": "..."}``.
+        """
         return list(self._route_table)
 
     def _find_braces_or_brackets(self, string):
