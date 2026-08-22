@@ -39,16 +39,22 @@ class DirectoryRouterError(RuntimeError):
 
 @runtime_checkable
 class ResolveUnit(Protocol):
-    def __call__(self, cls: type, record: dict) -> Any: ...
+    """(cls, path, name) → instance | None. None → caller falls back to cls()."""
+
+    def __call__(self, cls: type, path: str, name: str) -> Any: ...
 
 
 @runtime_checkable
 class AcceptSymbol(Protocol):
-    def __call__(self, name: str, obj: Any, route_file: Any) -> bool: ...
+    """(name, obj, module) → bool. False skips the symbol; raise → error."""
+
+    def __call__(self, name: str, obj: Any, module: Any) -> bool: ...
 
 
 @runtime_checkable
 class OnRoute(Protocol):
+    """(record) → None. record = {method, path, name}. Raise → error if fail_closed."""
+
     def __call__(self, record: dict) -> None: ...
 
 
@@ -171,7 +177,7 @@ class DirectoryRoutes:
 
         core = DirectoryRoutes(package_dir, hooks=hooks)
         records = core.discover()
-        # adapter.mount(records, asgi_app)
+        # adapter.mount(core, asgi_app)
     """
 
     package_dir: Path
