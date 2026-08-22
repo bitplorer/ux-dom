@@ -1,6 +1,7 @@
-"""Starlette/FastAPI response adapters for ux-dom trees.
+"""Starlette/FastAPI response **adapter** for ux-dom trees.
 
-HTMLResponse buffers; StreamingResponse uses compact token walk (pretty=False).
+Domain prepare lives in ``ux_dom.response.serialize`` (no framework imports).
+This module only wraps Starlette response classes.
 """
 import inspect
 
@@ -18,6 +19,12 @@ from starlette.responses import HTMLResponse as StarletteHTMLResponse
 from starlette.responses import StreamingResponse as StarletteStreamingResponse
 
 from ux_dom.dom.src import dom_tag
+from ux_dom.response.serialize import (
+    is_html_renderable,
+    is_stream_renderable,
+    prepare_html_body,
+    prepare_html_stream,
+)
 
 __all__ = ["HTMLResponse", "html_response", "StreamingResponse", "streaming_response"]
 
@@ -25,13 +32,11 @@ CallableType = T.TypeVar("CallableType", bound=T.Callable[..., T.Any])
 
 
 def _is_html_renderable(content: T.Any) -> bool:
-    """dom_tag trees or any object exposing ``__render__`` (e.g. Compose Component)."""
-    return isinstance(content, dom_tag.dom_tag) or hasattr(content, "__render__")
+    return is_html_renderable(content)
 
 
 def _is_stream_renderable(content: T.Any) -> bool:
-    """dom_tag trees or any object exposing ``__async_render__``."""
-    return isinstance(content, dom_tag.dom_tag) or hasattr(content, "__async_render__")
+    return is_stream_renderable(content)
 
 
 class HTMLResponse(StarletteHTMLResponse):
@@ -48,25 +53,8 @@ class HTMLResponse(StarletteHTMLResponse):
         super().__init__(html_content, status_code, headers, media_type, background)
 
     def render(self, content: T.Any) -> bytes:
-        # CSP: if middleware set a request nonce, stamp script/style in the tree
-        try:
-            from ux_dom.plugins.csp import get_nonce, resolve_nonce, stamp_tree
-
-            n = resolve_nonce()
-            if n and content is not None:
-                stamp_tree(content, n)  # bake nonce — serialize is read-agnostic
-        except Exception:
-            pass
-        if hasattr(content, "__render__"):
-            content = content.__render__()
-        elif isinstance(content, str):
-            try:
-                from ux_dom.plugins.csp import get_nonce, stamp_nonce
-
-                if get_nonce():
-                    content = stamp_nonce([content])[0]
-            except Exception:
-                pass
+        # Domain prepare (CSP + __render__) — no framework logic here
+        content = prepare_html_body(content)
         return super().render(content=content)  # type: ignore[return-value]
 
 
@@ -128,49 +116,9 @@ class StreamingResponse(StarletteStreamingResponse):
         )
 
 
-async def _async_bytes_chunks(data: bytes):
-    yield data
-
-
-async def _async_str_chunks(data: str):
-    yield data
-
-
 def _coerce_streaming_body(html_content):
-    """Normalize constructor input to an async iterable body."""
-    if html_content is None:
-        return _async_str_chunks("")
-
-    # Prefer dom_tag async stream, or any object with __async_render__
-    if isinstance(html_content, dom_tag.dom_tag) or hasattr(
-        html_content, "__async_render__"
-    ):
-        try:
-            from ux_dom.plugins.csp import resolve_nonce, stamp_tree
-
-            n = resolve_nonce()
-            if n:
-                # Bake on request Task BEFORE any pretty/worker stream.
-                # After this, tree attributes carry the nonce (read-agnostic).
-                stamp_tree(html_content, n)
-        except Exception:
-            pass
-        return html_content.__async_render__(pretty=False)
-
-    if isinstance(html_content, (bytes, bytearray, memoryview)):
-        return _async_bytes_chunks(bytes(html_content))
-
-    if isinstance(html_content, str):
-        return _async_str_chunks(html_content)
-
-    # Already an async iterator / generator?
-    if hasattr(html_content, "__aiter__"):
-        return html_content
-
-    raise TypeError(
-        "StreamingResponse expects a dom_tag, object with __async_render__, "
-        f"str, bytes, or async iterator; got {type(html_content)!r}"
-    )
+    """Adapter thin wrap — domain prepare lives in serialize.prepare_html_stream."""
+    return prepare_html_stream(html_content)
 
 
 def streaming_response(
