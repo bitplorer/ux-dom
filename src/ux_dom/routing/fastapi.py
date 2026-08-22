@@ -10,9 +10,12 @@ Public re-export. Full implementation: ``ux_dom.routing._directory_router_impl``
 from __future__ import annotations
 
 from ux_dom.routing._directory_router_impl import (  # noqa: F401
+    AcceptSymbol,
     DirectoryRouter,
     DirectoryRouterError,
     HTMLRoute,
+    OnRoute,
+    ResolveUnit,
     RouterHooks,
     StreamingRoute,
 )
@@ -23,4 +26,7 @@ __all__ = [
     "DirectoryRouter",
     "DirectoryRouterError",
     "RouterHooks",
+    "ResolveUnit",
+    "AcceptSymbol",
+    "OnRoute",
 ]
