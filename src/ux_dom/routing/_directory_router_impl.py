@@ -24,6 +24,12 @@ Generic hooks (optional, no host-specific types):
 * resolve_unit(cls, path, name) → instance or None (None → cls())
 * accept_symbol(name, obj, module) → bool
 * on_route(record) → None
+
+Note on resolve_unit:
+* Only the synthetic page GET (the default when no explicit ``get`` exists)
+  goes through resolve_unit. Explicit HTTP methods declared on the class
+  (get/post/put/...) are used as-is and do not call resolve_unit.
+* Hosts typically key live instances by ``cls.id`` or ``cls.__name__.lower()``.
 """
 __all__ = ["HTMLRoute", "StreamingRoute", "DirectoryRouter", "RouterHooks", "DirectoryRouterError"]
 
@@ -36,7 +42,7 @@ from ux_dom import diagnostics as _ux_dom_diag
 from collections import defaultdict
 from enum import Enum
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Sequence, Set, Type, Union
+from typing import Any, Callable, Dict, List, Optional, Protocol, Sequence, Set, Type, Union, runtime_checkable
 
 from fastapi import params, routing
 from fastapi.datastructures import Default
@@ -52,6 +58,21 @@ logger = logging.getLogger("ux_dom.routing")
 _HTTP_VERBS = ("get", "post", "put", "patch", "delete", "head", "options")
 
 
+@runtime_checkable
+class ResolveUnit(Protocol):
+    def __call__(self, cls: type, path: str, name: str) -> Any: ...
+
+
+@runtime_checkable
+class AcceptSymbol(Protocol):
+    def __call__(self, name: str, obj: Any, module: Any) -> bool: ...
+
+
+@runtime_checkable
+class OnRoute(Protocol):
+    def __call__(self, record: dict) -> None: ...
+
+
 class DirectoryRouterError(RuntimeError):
     """Fail-closed routing errors (ambiguous page, invalid export, etc.)."""
 
@@ -61,15 +82,21 @@ class RouterHooks:
 
     All callables optional. Any host may pass hooks; ux-dom never imports
     host-specific types. With hooks=None, page GET uses ``cls()``.
+
+    resolve_unit is used only for the synthetic page GET endpoint.
+    Explicit get/post/put/... methods declared on the class are used as-is
+    and do not go through resolve_unit.
+
+    Hosts typically key live instances by ``cls.id`` or ``cls.__name__.lower()``.
     """
 
     __slots__ = ("resolve_unit", "accept_symbol", "on_route")
 
     def __init__(
         self,
-        resolve_unit: Optional[Callable[..., Any]] = None,
-        accept_symbol: Optional[Callable[..., bool]] = None,
-        on_route: Optional[Callable[..., None]] = None,
+        resolve_unit: Optional[ResolveUnit] = None,
+        accept_symbol: Optional[AcceptSymbol] = None,
+        on_route: Optional[OnRoute] = None,
     ):
         self.resolve_unit = resolve_unit
         self.accept_symbol = accept_symbol
