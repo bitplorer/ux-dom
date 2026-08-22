@@ -3,32 +3,67 @@
 ## Design overview
 
 File-based routing maps a **directory tree of Python modules** onto FastAPI
-paths — same idea as Next.js app router, but Python-native:
+paths — Python-native, filesystem-first:
 
 ```text
 app/routes/
-  index.py              →  /index/Index  (or class routes=)
-  shop/list.py          →  /shop/list/…
-  users/[id]/route.py  →  /users/{id}/…   ([id] is intentional)
+  hello.py                 →  GET /hello     (page unit: class Hello)
+  shop/cart.py             →  GET /shop/cart (page unit: class Cart)
+  users/[id]/profile.py   →  GET /users/{id}/profile
+  index.py                 →  GET /          (folder prefix)
 ```
 
 | Layer | Role |
 |-------|------|
 | **On disk** | Package layout under `base_directory` (default `routes`) |
-| **Discovery** | `DirectoryRouter` / `DirectoryRouting` walks modules |
-| **HTTP** | FastAPI routes registered from Component `routes=` or bare `get()` |
+| **Discovery** | `DirectoryRouter` walks modules; prefers `__all__` |
+| **Page unit** | Renderable class whose **name matches the module stem** (`cart.py` → `Cart`) |
+| **HTTP** | Synthetic page GET via `resolve_unit` / `cls()`, or explicit `get`/`post`/… on the class |
 | **URL cleaning** | Strip package root; map `[id]` → `{id}`; drop private `_` segments |
 
-Canonical assembly (scaffold default):
+### Path law (fixed)
+
+* URL = **filesystem only** (folder + file stem). **Class name never appears in the path.**
+* `route.py` / `index.py` → folder prefix (or `/`).
+
+### Page unit (default product path)
+
+* Exports from `__all__` when present (Python-native allow-list).
+* Page type = class whose name matches the module stem.
+* Ambiguous page picks **fail closed** (`DirectoryRouterError`).
+* GET: explicit `get` on the class if present, else synthetic page GET.
+* Other HTTP verbs only when explicit methods exist (advanced opt-in).
+
+### Generic hooks (host-agnostic)
 
 ```python
-from ux_dom.plugins.routing import DirectoryRouting
+from ux_dom.routing.fastapi import DirectoryRouter, RouterHooks, StreamingRoute
 
-DirectoryRouting(
-    package_dir=PACKAGE,          # app package root
+hooks = RouterHooks(
+    resolve_unit=lambda cls, path, name: registry.get(
+        str(getattr(cls, "id", None) or cls.__name__.lower())
+    ),
+    # accept_symbol=..., on_route=...,
+)
+router = DirectoryRouter(
     base_directory="routes",
-).include(app)
+    package_dir=PACKAGE,
+    route_class=StreamingRoute,
+    hooks=hooks,
+    fail_closed=True,
+)
+app.include_router(router)
 ```
+
+| Hook | Role |
+|------|------|
+| `resolve_unit(cls, path, name)` | Request-time instance for the **synthetic page GET** only. `None` → `cls()`. Explicit `get`/`post`/… bypass it. |
+| `accept_symbol(name, obj, module)` | Filter during discovery / page pick |
+| `on_route(record)` | Called after a route is accepted |
+
+Hosts typically key live instances by `cls.id` or `cls.__name__.lower()` (soft contract).
+
+ux-compose `app.mount(...)` / `mount_surfaces(...)` wire `resolve_unit` automatically from `unit_registry`.
 
 See [ARCHITECTURE.md](../internals/ARCHITECTURE.md) · [CLI.md](CLI.md).
 
@@ -39,64 +74,66 @@ Python cannot use `{id}` as a folder name. Folders named `[id]` **are a feature*
 | On disk | FastAPI path |
 |---------|--------------|
 | `routes/users/[id]/` | `/users/{id}/…` |
-| `routes/users/[id]/route.py` | class name appears in URL path |
+| `routes/users/[id]/profile.py` | `/users/{id}/profile` (stem `profile` → class `Profile`) |
 
 Do **not** “fix” brackets by stripping them without converting to `{id}`.
 
-## Component routes
+## Page unit example
 
 ```python
-from ux_dom import Component
-from ux_dom.dom import div, h1
+# routes/hello.py
+from ux_compose import Component, MorphState, action, control
 
-class Settings(Component):
-    routes = ["get"]
+class Hello(Component):
+    id = "hello"
+    n = MorphState(0)
 
-    @classmethod
-    def get(cls):
-        return div(h1("Settings"))
+    def render(self):
+        attrs = control("inc")
+        attr_str = " ".join(f'{k}="{v}"' for k, v in attrs.items())
+        return f'<div id="hello"><span>{self.n}</span><button {attr_str}>+1</button></div>'
+
+    @action(caps=())
+    def inc(self):
+        self.n = int(self.n) + 1
 ```
 
-Path params must be **named** on the handler (not a catch-all `**path_params`):
+Stem match: `hello.py` → `Hello`. No class name in the URL (`/hello`).
+
+## Explicit HTTP methods (advanced opt-in)
 
 ```python
-class Page(Component):
-    routes = ["get"]
+class Cart:
+    def render(self):
+        return "<div>cart</div>"
 
-    @classmethod
-    def get(cls, id: str):
-        return div(h1(f"User {id}"))
+    def get(self):
+        return self.render()
+
+    def post(self):
+        ...
 ```
 
-Scaffold `main.py` does this after `document.mount(app)`.
+Explicit methods are registered as-is and **do not** go through `resolve_unit`.
 
 ## Cleaning rules
 
 - Package root stripped (`app/routes/users/[id]` → `/users/{id}`).
 - Path traversal segments rejected/cleaned.
+- Underscore-prefixed files/folders skipped.
 - See tests: `tests/03_routing_cli/test_directory_router.py`.
 
-## Partial HTMX endpoints
-
-Return a Component or fragment **without** full `page()` for swaps:
+## Compose product path
 
 ```python
-class Partial(Component):
-    routes = ["get"]
+from pathlib import Path
+from fastapi import FastAPI
+from ux_compose import App
 
-    @classmethod
-    def get(cls):
-        return div("fragment only")
+api = FastAPI()
+app = App.boot("Shop", level=1)
+bundle = app.mount(Path(__file__).parent, asgi_app=api, base="routes")
+# bundle.route_table / bundle.unit_registry available for doctor / CI
 ```
 
-## Implementation map
-
-| Module | Owns |
-|--------|------|
-| `ux_dom/routing/fastapi.py` | DirectoryRouter, StreamingRoute, path cleaning |
-| `ux_dom/plugins/routing/directory.py` | `DirectoryRouting` scaffold helper |
-| `ux_dom/cli/adders.py` | `uxdom add route` generator |
-| `ux_dom/cli/scaffold.py` | create-app wires DirectoryRouting |
-
-**Automation:** prefer `uxdom add route …` for new route modules — hand-edit only
-to extend handlers or change URL contracts.
+Scaffold (`uxcompose create-app`) emits this layout by default.
