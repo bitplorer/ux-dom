@@ -9,8 +9,8 @@ Core path-law / page-unit discovery lives in ``ux_dom.routing.core``
 (no FastAPI imports). This module materializes an ``APIRouter`` from that
 model. Swap hosts later via additional adapters without changing page units.
 
-Public re-export. Full FastAPI implementation: ``_directory_router_impl``.
-Pure core: ``ux_dom.routing.core``.
+* Full-featured adapter: ``DirectoryRouter`` (StreamingRoute, [id] paths, …)
+* Thin materialize path: ``ux_dom.routing.adapters.fastapi.mount(core, app)``
 """
 from __future__ import annotations
 
@@ -29,6 +29,11 @@ from ux_dom.routing._directory_router_impl import (  # noqa: F401
     StreamingRoute,
 )
 
+try:
+    from ux_dom.routing.adapters.fastapi import materialize, mount  # noqa: F401
+except ImportError:  # pragma: no cover
+    materialize = mount = None  # type: ignore
+
 __all__ = [
     "HTMLRoute",
     "StreamingRoute",
@@ -40,4 +45,6 @@ __all__ = [
     "ResolveUnit",
     "AcceptSymbol",
     "OnRoute",
+    "materialize",
+    "mount",
 ]
