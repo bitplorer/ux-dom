@@ -44,7 +44,6 @@ hooks = RouterHooks(
     resolve_unit=lambda cls, path, name: registry.get(
         str(getattr(cls, "id", None) or cls.__name__.lower())
     ),
-    # accept_symbol=..., on_route=...,
 )
 router = DirectoryRouter(
     base_directory="routes",
@@ -56,53 +55,51 @@ router = DirectoryRouter(
 app.include_router(router)
 ```
 
-| Hook | Role |
-|------|------|
-| `resolve_unit(cls, path, name)` | Request-time instance for the **synthetic page GET** only. `None` → `cls()`. Explicit `get`/`post`/… bypass it. |
-| `accept_symbol(name, obj, module)` | Filter during discovery / page pick |
-| `on_route(record)` | Called after a route is accepted |
-
-Hosts typically key live instances by `cls.id` or `cls.__name__.lower()` (soft contract).
-
-ux-compose `app.mount(...)` / `mount_surfaces(...)` wire `resolve_unit` automatically from `unit_registry`.
-
 ## Core + adapter (no host lock-in)
 
 | Module | Role |
 |--------|------|
 | `ux_dom.routing.core` | Path law, page unit, `RouterHooks`, `DirectoryRoutes.discover()`, `RouteRecord` — **no FastAPI imports** |
-| `ux_dom.routing.fastapi` | FastAPI **adapter**: `DirectoryRouter(APIRouter)` materializes routes |
+| `ux_dom.routing.adapters.fastapi` | Thin **materialize/mount** from core records → APIRouter |
+| `ux_dom.routing.fastapi.DirectoryRouter` | Full-featured FastAPI path (StreamingRoute, `[id]`, route modules) |
 
 ```python
 from ux_dom.routing.core import DirectoryRoutes, RouterHooks
+from ux_dom.routing.adapters.fastapi import mount
 
-core = DirectoryRoutes(package_dir=PACKAGE, hooks=hooks, fail_closed=True)
-records = core.discover()          # pure route table
-# FastAPI (current adapter):
-from ux_dom.routing.fastapi import DirectoryRouter
-app.include_router(DirectoryRouter(...))
+core = DirectoryRoutes(PACKAGE, hooks=hooks, fail_closed=True)
+mount(core, api)  # include_router under the hood
 ```
 
-Future hosts implement an adapter over `DirectoryRoutes` / `RouteRecord` —
-page units and path law stay unchanged.
+`DirectoryRouter` remains the full-featured FastAPI path. Both share path law +
+page unit + `RouterHooks`. Starlette adapter can land later without page-unit changes.
+
+## Control plane (related)
+
+| Plugin | Role |
+|--------|------|
+| `ChannelControl` | Day-1 default — semantic `data-ux-*` attrs |
+| `HtmxControl` | **Opt-in** HTMX |
+| `NullControl` | Tests / static |
+
+```python
+from ux_dom.plugins.control import ChannelControl, HtmxControl
+document.use(ChannelControl())   # preferred
+# document.use(HtmxControl())    # opt-in only
+```
 
 See [ARCHITECTURE.md](../internals/ARCHITECTURE.md) · [CLI.md](CLI.md).
 
 ## `[id]` path segments
 
-Python cannot use `{id}` as a folder name. Folders named `[id]` **are a feature**:
-
 | On disk | FastAPI path |
 |---------|--------------|
 | `routes/users/[id]/` | `/users/{id}/…` |
-| `routes/users/[id]/profile.py` | `/users/{id}/profile` (stem `profile` → class `Profile`) |
-
-Do **not** “fix” brackets by stripping them without converting to `{id}`.
+| `routes/users/[id]/profile.py` | `/users/{id}/profile` |
 
 ## Page unit example
 
 ```python
-# routes/hello.py — Document trees + Tailwind className
 from ux_compose import Component, MorphState, action, control, div, span, button
 
 class Hello(Component):
@@ -122,31 +119,6 @@ class Hello(Component):
         self.n = int(self.n) + 1
 ```
 
-Stem match: `hello.py` → `Hello`. No class name in the URL (`/hello`).
-
-## Explicit HTTP methods (advanced opt-in)
-
-```python
-class Cart:
-    def render(self):
-        return "<div>cart</div>"
-
-    def get(self):
-        return self.render()
-
-    def post(self):
-        ...
-```
-
-Explicit methods are registered as-is and **do not** go through `resolve_unit`.
-
-## Cleaning rules
-
-- Package root stripped (`app/routes/users/[id]` → `/users/{id}`).
-- Path traversal segments rejected/cleaned.
-- Underscore-prefixed files/folders skipped.
-- See tests: `tests/03_routing_cli/test_directory_router.py`.
-
 ## Compose product path
 
 ```python
@@ -155,10 +127,8 @@ from fastapi import FastAPI
 from ux_compose import App
 
 api = FastAPI()
-app = App.boot("Shop", level="auto")  # channel/motion when installed
+app = App.boot("Shop", level="auto")
 bundle = app.mount(Path(__file__).parent, asgi_app=api, base="routes")
-# bundle.route_table / bundle.unit_registry available for doctor / CI
 ```
 
-Scaffold (`uxcompose create-app`) emits this layout by default. HTMX is **opt-in**
-(`Document.use(Htmx())`), not a hard dependency.
+Scaffold (`uxcompose create-app`) emits this layout. HTMX is **opt-in**, not a hard dependency.
