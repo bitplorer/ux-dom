@@ -2,8 +2,9 @@
 
 ## Design overview
 
-File-based routing maps a **directory tree of Python modules** onto FastAPI
-paths — Python-native, filesystem-first:
+File-based routing maps a **directory tree of Python modules** onto URL
+paths — Python-native, filesystem-first. **Core is host-agnostic**; FastAPI is
+one adapter:
 
 ```text
 app/routes/
@@ -16,7 +17,7 @@ app/routes/
 | Layer | Role |
 |-------|------|
 | **On disk** | Package layout under `base_directory` (default `routes`) |
-| **Discovery** | `DirectoryRouter` walks modules; prefers `__all__` |
+| **Discovery** | `DirectoryRoutes` / `DirectoryRouter` walks modules; prefers `__all__` |
 | **Page unit** | Renderable class whose **name matches the module stem** (`cart.py` → `Cart`) |
 | **HTTP** | Synthetic page GET via `resolve_unit` / `cls()`, or explicit `get`/`post`/… on the class |
 | **URL cleaning** | Strip package root; map `[id]` → `{id}`; drop private `_` segments |
@@ -65,6 +66,26 @@ Hosts typically key live instances by `cls.id` or `cls.__name__.lower()` (soft c
 
 ux-compose `app.mount(...)` / `mount_surfaces(...)` wire `resolve_unit` automatically from `unit_registry`.
 
+## Core + adapter (no host lock-in)
+
+| Module | Role |
+|--------|------|
+| `ux_dom.routing.core` | Path law, page unit, `RouterHooks`, `DirectoryRoutes.discover()`, `RouteRecord` — **no FastAPI imports** |
+| `ux_dom.routing.fastapi` | FastAPI **adapter**: `DirectoryRouter(APIRouter)` materializes routes |
+
+```python
+from ux_dom.routing.core import DirectoryRoutes, RouterHooks
+
+core = DirectoryRoutes(package_dir=PACKAGE, hooks=hooks, fail_closed=True)
+records = core.discover()          # pure route table
+# FastAPI (current adapter):
+from ux_dom.routing.fastapi import DirectoryRouter
+app.include_router(DirectoryRouter(...))
+```
+
+Future hosts implement an adapter over `DirectoryRoutes` / `RouteRecord` —
+page units and path law stay unchanged.
+
 See [ARCHITECTURE.md](../internals/ARCHITECTURE.md) · [CLI.md](CLI.md).
 
 ## `[id]` path segments
@@ -81,17 +102,20 @@ Do **not** “fix” brackets by stripping them without converting to `{id}`.
 ## Page unit example
 
 ```python
-# routes/hello.py
-from ux_compose import Component, MorphState, action, control
+# routes/hello.py — Document trees + Tailwind className
+from ux_compose import Component, MorphState, action, control, div, span, button
 
 class Hello(Component):
     id = "hello"
     n = MorphState(0)
 
     def render(self):
-        attrs = control("inc")
-        attr_str = " ".join(f'{k}="{v}"' for k, v in attrs.items())
-        return f'<div id="hello"><span>{self.n}</span><button {attr_str}>+1</button></div>'
+        return div(
+            span(str(self.n), className="text-2xl font-semibold"),
+            button("+1", type="button", className="rounded-full px-4 py-2", **control("hello.inc")),
+            id=self.id,
+            className="flex items-center gap-3",
+        )
 
     @action(caps=())
     def inc(self):
@@ -131,9 +155,10 @@ from fastapi import FastAPI
 from ux_compose import App
 
 api = FastAPI()
-app = App.boot("Shop", level=1)
+app = App.boot("Shop", level="auto")  # channel/motion when installed
 bundle = app.mount(Path(__file__).parent, asgi_app=api, base="routes")
 # bundle.route_table / bundle.unit_registry available for doctor / CI
 ```
 
-Scaffold (`uxcompose create-app`) emits this layout by default.
+Scaffold (`uxcompose create-app`) emits this layout by default. HTMX is **opt-in**
+(`Document.use(Htmx())`), not a hard dependency.
