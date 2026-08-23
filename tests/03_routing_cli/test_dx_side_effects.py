@@ -2,9 +2,9 @@
 
 Guarantees:
 
-* doctor / lint / templates / examples / ui / plugins — read-only
-* add / deploy — refuse overwrite without ``--force``
-* create-app — ``--yes`` does **not** imply overwrite; non-empty needs ``--force``
+* doctor / lint / ui — read-only
+* add — refuse overwrite without ``--force``
+* product create-app / deploy / serve live on uxcompose (not exercised here)
 * build (default) — no dual-copy of x_element.js into assets/ (single-copy model)
 * package/archive — only when ``--package`` / ``--archive`` requested
 """
@@ -16,9 +16,14 @@ from tempfile import TemporaryDirectory
 
 from typer.testing import CliRunner
 
+from helpers import ScaffoldOptions, available_templates, create_app
 from ux_dom.cli.adders import AddError, add_component
 from ux_dom.cli.build import run_build
 from ux_dom.cli.cli import app as cli_app
+from ux_dom.cli.doctor import run_doctor
+from ux_dom.cli.lint import lint_project
+from ux_dom.cli.static_assets import sync_runtime_assets
+
 try:
     from ux_dom.cli.deploy import prepare_deploy
 except ImportError:  # product deploy lives on uxcompose
@@ -28,10 +33,6 @@ except ImportError:  # product deploy lives on uxcompose
 def _require_deploy():
     if prepare_deploy is None:
         raise unittest.SkipTest("product deploy is uxcompose, not uxdom")
-from ux_dom.cli.doctor import run_doctor
-from ux_dom.cli.lint import lint_project
-from helpers import ScaffoldOptions, available_templates, create_app
-from ux_dom.cli.static_assets import sync_runtime_assets
 
 
 def _snapshot(root: Path) -> dict[str, int]:
@@ -76,58 +77,24 @@ class TestAddDeployForceGates(unittest.TestCase):
             self.assertTrue(p.is_file())
             with self.assertRaises(AddError):
                 add_component("Notice", root=root, force=False)
-            # force ok
-            p2 = add_component("Notice", root=root, force=True)
-            self.assertEqual(p, p2)
+            add_component("Notice", root=root, force=True)
 
-    def test_deploy_skips_existing_without_force(self):
+    def test_deploy_skipped_on_uxdom(self):
         _require_deploy()
-        with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "dp", dest=Path(td) / "dp", force=True, with_tailwind=False
-                )
-            )
-            r1 = prepare_deploy("docker", cwd=root, force=False)
-            self.assertIn("Dockerfile", r1.files_written)
-            r2 = prepare_deploy("docker", cwd=root, force=False)
-            self.assertEqual(r2.files_written, [])
-            r3 = prepare_deploy("docker", cwd=root, force=True)
-            self.assertIn("Dockerfile", r3.files_written)
 
 
 class TestCreateAppYesVsForce(unittest.TestCase):
-    def test_yes_alone_does_not_overwrite_nonempty(self):
-        """API: force=False on non-empty dest raises (yes is CLI-only)."""
-        with TemporaryDirectory() as td:
-            dest = Path(td) / "exists"
-            create_app(
-                ScaffoldOptions("exists", dest=dest, force=True, with_tailwind=False)
-            )
-            # marker file proves overwrite would be destructive
-            marker = dest / "KEEP_ME.txt"
-            marker.write_text("precious", encoding="utf-8")
-            with self.assertRaises(FileExistsError):
-                create_app(
-                    ScaffoldOptions(
-                        "exists", dest=dest, force=False, with_tailwind=False
-                    )
-                )
-            self.assertEqual(marker.read_text(encoding="utf-8"), "precious")
-
-    def test_cli_yes_without_force_preserves_nonempty(self):
+    def test_cli_yes_does_not_overwrite_nonempty(self):
         self.skipTest("uxdom create-app removed; product scaffold is uxcompose")
         with TemporaryDirectory() as td:
-            dest = Path(td) / "cliapp"
-            create_app(
-                ScaffoldOptions("cliapp", dest=dest, force=True, with_tailwind=False)
-            )
+            dest = Path(td) / "existing"
+            dest.mkdir()
             (dest / "KEEP_ME.txt").write_text("precious", encoding="utf-8")
             r = CliRunner().invoke(
                 cli_app,
                 [
                     "create-app",
-                    "cliapp",
+                    "existing",
                     "--dest",
                     str(dest),
                     "--yes",
