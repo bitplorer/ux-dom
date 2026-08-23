@@ -1,4 +1,4 @@
-"""CLI + DirectoryRouter maturity: dynamic routes, add, build, deploy edges."""
+"""CLI + DirectoryRoutes maturity: dynamic routes, add, build edges."""
 from __future__ import annotations
 
 import os
@@ -9,8 +9,12 @@ from tempfile import TemporaryDirectory
 
 from fastapi.testclient import TestClient
 
+from helpers import ScaffoldOptions, create_app
 from ux_dom.cli.adders import AddError, add_route, add_xelement
 from ux_dom.cli.build import run_build
+from ux_dom.dom import div, template
+from ux_dom.dom.htmlelement import CustomElement
+
 try:
     from ux_dom.cli.deploy import prepare_deploy
 except ImportError:  # product deploy lives on uxcompose
@@ -20,9 +24,6 @@ except ImportError:  # product deploy lives on uxcompose
 def _require_deploy():
     if prepare_deploy is None:
         raise unittest.SkipTest("product deploy is uxcompose, not uxdom")
-from helpers import ScaffoldOptions, create_app
-from ux_dom.dom import div, template
-from ux_dom.dom.htmlelement import CustomElement
 
 
 class TestDynamicRouteMaturity(unittest.TestCase):
