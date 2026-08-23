@@ -1,73 +1,39 @@
 # Stability & brittle edges (0.1)
 
-This document records **edges that bit us**, what we hardened, and how to stay robust.
-It is also the live stand-in for a separate bugs audit (see [archive/](../archive/)).
+## Ownership
 
-## Hardened in this cut
+| Layer | CLI |
+|-------|-----|
+| **Product** lifecycle | `uxcompose create-app \| serve \| deploy \| doctor` |
+| **Pure-dom** tooling | `uxdom doctor \| lint \| build \| profile \| add` |
 
-| Edge | Failure mode | Fix |
-|------|--------------|-----|
-| `route.py` + Component | `uxdom add route users/[id]` wrote Component; DirectoryRouter only registered bare `get()` functions → **404** | DirectoryRouter discovers **Components with `routes=` inside `route.py`**; URL is `/{Class}` not `/route/{Class}` |
-| `get(cls, **path_params)` | FastAPI treats `path_params` as required **query** → **422** | Generated `get(cls, id: str)` named params |
-| Nested packages | Missing `users/__init__.py` | `_ensure_route_packages` writes all `__init__.py` |
-| `shadowdom=True` | Emitted `shadowdom="shadowdom"` | Use `shadowroot="true"` / string modes |
-| `uxdom build` css step | Soft step could flip ok incorrectly | Informational only; Tailwind step is authoritative |
-| Dockerfile CMD | Hard-coded port ignored host `PORT` | `uvicorn … --port ${PORT:-8080}` |
-| `uxdom serve` / `dev` imports | `app` not on path | Prepend cwd to `PYTHONPATH` / `sys.path` |
-| Tailwind CLI missing | lifespan `[Errno 2] tailwindcss` | `cli/tailwind.py` resolver (PATH / pytailwindcss / cache / download) |
-| Dual JS names | Cognitive load | Single `x_element.js` / `x-tagname` |
+## Hardened edges (render / routing)
 
-## Still intentionally soft
-
-| Item | Why |
+| Edge | Fix |
 |------|-----|
-| uxchannel tests skipped without package | Optional companion |
-| Tailwind in Docker | Best-effort; CDN apps skip CLI |
-| `uxdom deploy` no cloud upload | No secrets in CLI; host CLI publishes |
-| Advanced `WebComponentSlot` | Prefer plain WebComponent + `slot()` |
+| `route.py` + Component | DirectoryRouter discovers Components with `routes=` |
+| Path params as query | Named path params in generated `get` |
+| Nested packages | `_ensure_route_packages` writes `__init__.py` |
+| Dual JS names | Single `x_element.js` / `x-tagname` |
+| Tailwind missing | `cli/tailwind.py` resolver |
 
 ## Stability gates
 
 ```bash
 python -m pytest tests/ -q
-python -m pytest tests/03_routing_cli/test_cli_route_maturity.py \
-  tests/03_routing_cli/test_dx_cli.py tests/03_routing_cli/test_build_deploy.py -q
-node tests/browser/x_element_harness.mjs
-python -m pytest tests/06_browser/test_kit_browser_deep.py -q   # needs playwright + network for CDNs
 uxdom doctor
+uxcompose doctor .   # product apps
 ```
 
-## Authoring rules (keep sturdy)
+## Authoring rules
 
-1. **XElement:** only `x-tagname`; light vs shadow base classes matter.
-2. **Routes:** Components need `routes = ["get"]` + `get` classmethod; path params by name.
-3. **`route.py`:** means “this folder’s index module” — class name appears in URL (`/users/{id}/Page`).
-4. **Never** boolean HTML attrs that stringify to the attribute name for multi-value attrs (`shadowdom=True`).
-5. **Document** serves library JS from the **package mount** by default:
-   `/ux-dom/static/x_element.js` (not dual-copy under `/assets/js/` unless
-   `serve="webassets"` escape hatch).
-6. **Ceremonial files:** generate via `uxdom create-app` / `uxdom add` — hand-edit
-   only when extending features or changing contracts.
+1. **XElement:** `x-tagname`; light vs shadow base classes.
+2. **Routes (pure-dom):** Components need `routes = ["get"]` + classmethod.
+3. **Product apps:** `uxcompose create-app` + routes under composition root.
+4. **Document** serves library JS from package mount `/ux-dom/static/x_element.js`.
+5. Do not treat `plugins.App.web` or `FastAPIHost` as the product path.
 
-## DX command surface (stable)
+## DX surface (stable)
 
-`create-app` · `dev` · `doctor` · `build` · `deploy` · `add` · `lint` ·
-`templates` · `examples` · `plugins` · `profile` · `dashboard`
-
-## UI kit stability (0.1+)
-
-| Edge | Hardening |
-|------|-----------|
-| Tabs keys | Non-identifier keys → `tabN` (no XSS via quotes) |
-| Dialog / Sheet | Channel-first `open=` render arg; no Alpine `x-data` default |
-| Tabs item shape | `ValueError` if not `(key,label,body)` |
-| Select selected | Only emit `selected` when true; value= honors option |
-| Dialog None parts | No `None` children |
-| Button disabled=False | Attribute omitted |
-| `uxdom add ui Dialog` | Copies `dialog` + `tokens` (no Button dep) |
-| Copy imports | Regex rewrite `ux_dom.ui.*` → relative |
-| Channel bridge | Soft-import; stub attrs without uxchannel |
-
-Gates: `tests/02_document_plugins/test_ui_kit.py` ·
-`tests/04_production/test_production_stability.py` ·
-`tests/03_routing_cli/test_cli_route_maturity.py`
+**uxcompose:** create-app · serve · deploy · doctor  
+**uxdom:** doctor · lint · build · profile · dashboard · add · ui
