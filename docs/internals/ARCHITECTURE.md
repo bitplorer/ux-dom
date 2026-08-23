@@ -79,9 +79,10 @@ See [DOCUMENT.md](../guides/DOCUMENT.md) and [DOCUMENT_TWO_STAGE.md](../guides/D
 | Component / Reactive | `ux_dom/dom/src/component.py` |
 | Serialize / attr dialects | `ux_dom/dom/src/ext.py` |
 | XElement host/definition | `ux_dom/dom/htmlelement.py` |
-| DirectoryRouter | `ux_dom/routing/fastapi.py` |
+| DirectoryRoutes + adapters | `ux_dom/routing/core.py`, `routing/adapters/` |
+| DirectoryRouter (batteries) | `ux_dom/routing/fastapi.py` |
 | Package static | `ux_dom/plugins/safe_static.py`, `plugins/runtime.py` |
-| Scaffold / generators | `ux_dom/cli/scaffold.py`, `cli/adders.py` |
+| Pure-dom generators | `ux_dom/cli/adders.py` (scaffold teaches uxcompose) |
 
 Full path table: [MODULE_MAP.md](MODULE_MAP.md). Design intent: [DESIGN_CANON.md](DESIGN_CANON.md).
 
