@@ -1,5 +1,7 @@
 # Contributing
 
+**First-time:** [START_HERE.md](START_HERE.md). **Map:** [docs/INDEX.md](docs/INDEX.md). **Agent contract:** [AGENTS.md](AGENTS.md).
+
 ## Setup
 
 Python **3.14**. Package layout: `src/ux_dom` (Poetry).

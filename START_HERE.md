@@ -1,11 +1,11 @@
-# Start here — ux-dom 0.1.0
+# Start here — ux-dom
 
 **Audience:** first-time users of this package.
 **Promise:** one rendered document in five minutes, then the ownership map.
 **Time:** ~5 minutes.
 
 Longer mental model: [docs/START_HERE.md](docs/START_HERE.md).
-Full map: [docs/INDEX.md](docs/INDEX.md).
+**Map:** [docs/INDEX.md](docs/INDEX.md).
 
 Python **3.14** required (`pyproject.toml`).
 

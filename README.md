@@ -1,11 +1,12 @@
-# ux-dom 0.1.0
+# ux-dom
 
-**Python HTML for hypermedia apps** — server-rendered DOM, pure page discovery,
-HTMX / Alpine / Web Components (`XElement` + `x_element.js`).
+**Python HTML for hypermedia apps** — server-rendered DOM, Document shell, pure page discovery.
+Optional runtimes: HTMX, Alpine, `XElement`.
 
 > **New here?** [START_HERE.md](START_HERE.md) (5 minutes).
+> **Map:** [docs/INDEX.md](docs/INDEX.md)
+> **Contributor / agent:** [CONTRIBUTING.md](CONTRIBUTING.md) · [AGENTS.md](AGENTS.md)
 > **Boundary:** [docs/internals/SYSTEM.md](docs/internals/SYSTEM.md)
-> **Docs map:** [docs/INDEX.md](docs/INDEX.md)
 > **Product apps:** [ux-compose](https://github.com/bitplorer/ux-compose) (`uxcompose create-app | serve | deploy`)
 
 This layer **renders**. It does not own Intent, Caps, Result ops, product state
@@ -26,6 +27,7 @@ uxcompose serve app:asgi --port 8080
 | **Import** | `ux_dom` |
 | **CLI** | **`uxdom`** (pure-dom tooling) |
 | **Product CLI** | **`uxcompose`** |
+| **Version** | `0.1.0` |
 
 ### Ownership
 

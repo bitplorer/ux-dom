@@ -1,7 +1,7 @@
 # ux-dom documentation index
 
-**Version 0.1.0** · HEAD teaching paths as of Phase 1 (2026-08-24).
-**Start:** [../START_HERE.md](../START_HERE.md) · longer: [START_HERE.md](START_HERE.md)
+**Version 0.1.0**
+**Start:** [../START_HERE.md](../START_HERE.md) · mental model: [START_HERE.md](START_HERE.md)
 
 This file is the map. It does not replace the guides.
 
@@ -130,3 +130,6 @@ Dead names (must not reappear as live teaching): `docs/CONSISTENCY_REPORT.md`,
 | [ux-behavior](https://github.com/bitplorer/ux-behavior) | Product behavior → Ops |
 | [ux-motion](https://github.com/bitplorer/ux-motion) | Presence / transition plans |
 | [ux-compose](https://github.com/bitplorer/ux-compose) | Composition + product CLI |
+
+Do not flatten these layers into this repo.
+
