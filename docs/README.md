@@ -20,7 +20,7 @@ This layer **renders**. Product lifecycle is **ux-compose**.
 
 | Doc | Purpose |
 |-----|--------|
-| **[FEATURES.md](FEATURES.md)** | **Complete feature encyclopedia** |
+| **[reference/FEATURES.md](reference/FEATURES.md)** | **Complete feature encyclopedia** |
 | **[INDEX.md](INDEX.md)** | **Audience + Diátaxis map of every remaining doc** |
 
 ## Audiences
@@ -29,15 +29,15 @@ This layer **renders**. Product lifecycle is **ux-compose**.
 |----------|--------|
 | **New to ux-dom** | [../START_HERE.md](../START_HERE.md) |
 | **Building product apps** | [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md) + [guides/TUTORIAL.md](guides/TUTORIAL.md) |
-| **Pure Document / components** | [guides/DOCUMENT.md](guides/DOCUMENT.md) → [guides/COMPONENTS.md](guides/COMPONENTS.md) |
+| **Pure Document / components** | [reference/DOCUMENT.md](reference/DOCUMENT.md) → [reference/COMPONENTS.md](reference/COMPONENTS.md) |
 | **Maintainer / architecture** | [internals/SYSTEM.md](internals/SYSTEM.md) · [internals/ARCHITECTURE.md](internals/ARCHITECTURE.md) |
 | **Contributor / agent** | [../CONTRIBUTING.md](../CONTRIBUTING.md) · [../AGENTS.md](../AGENTS.md) |
 
 ## Learning path
 
 ```text
-START_HERE → INSTALL → guides/TUTORIAL → guides/DOCUMENT → guides/COMPONENTS
-         → guides/XELEMENT → security/CSP → guides/COOKBOOK → internals/ARCHITECTURE
+START_HERE → INSTALL → guides/TUTORIAL → reference/DOCUMENT → reference/COMPONENTS
+         → reference/XELEMENT → security/CSP → guides/COOKBOOK → internals/ARCHITECTURE
 ```
 
 Diátaxis grouping (tutorial / how-to / reference / explanation): **[INDEX.md](INDEX.md)**.
@@ -52,26 +52,28 @@ Diátaxis grouping (tutorial / how-to / reference / explanation): **[INDEX.md](I
 | [START_HERE.md](START_HERE.md) | Mental model + day-1 |
 | [INSTALL.md](INSTALL.md) | Install & verify |
 
-## Guides (`guides/`)
+## How-to (`guides/`) and reference (`reference/`)
+
+How-to stays in `guides/`. API/facts moved to `reference/` (stubs remain in `guides/`).
 
 | Doc | Description |
 |-----|-------------|
 | [TUTORIAL.md](guides/TUTORIAL.md) | Product path + pure Document |
 | [CLI.md](guides/CLI.md) | pure-dom doctor · lint · build · add |
-| [DOCUMENT.md](guides/DOCUMENT.md) | Document SSoT |
-| [DOCUMENT_TWO_STAGE.md](guides/DOCUMENT_TWO_STAGE.md) | Head/body stages |
-| [COMPONENTS.md](guides/COMPONENTS.md) | Component / Fragment |
-| [REACTIVE.md](guides/REACTIVE.md) | ReactiveComponent |
-| [ROUTING.md](guides/ROUTING.md) | DirectoryRoutes + thin adapter |
-| [XELEMENT.md](guides/XELEMENT.md) | Custom elements |
-| [XELEMENT_AUTO_DEFINITIONS.md](guides/XELEMENT_AUTO_DEFINITIONS.md) | Auto defs |
-| [HYPERMEDIA.md](guides/HYPERMEDIA.md) | HTMX / Alpine / slots |
-| [UI.md](guides/UI.md) | Optional UI kit |
+| [DOCUMENT.md](reference/DOCUMENT.md) | Document SSoT |
+| [DOCUMENT_TWO_STAGE.md](reference/DOCUMENT_TWO_STAGE.md) | Head/body stages |
+| [COMPONENTS.md](reference/COMPONENTS.md) | Component / Fragment |
+| [REACTIVE.md](reference/REACTIVE.md) | ReactiveComponent |
+| [ROUTING.md](reference/ROUTING.md) | DirectoryRoutes + thin adapter |
+| [XELEMENT.md](reference/XELEMENT.md) | Custom elements |
+| [XELEMENT_AUTO_DEFINITIONS.md](reference/XELEMENT_AUTO_DEFINITIONS.md) | Auto defs |
+| [HYPERMEDIA.md](reference/HYPERMEDIA.md) | HTMX / Alpine / slots |
+| [UI.md](reference/UI.md) | Optional UI kit |
 | [COOKBOOK.md](guides/COOKBOOK.md) | Recipes |
 | [DX.md](guides/DX.md) | DX principles |
-| [API_SURFACE.md](guides/API_SURFACE.md) | Public vs private APIs |
-| [APP_COMPOSITION.md](guides/APP_COMPOSITION.md) | App composition |
-| [DOCUMENT_AND_APP.md](guides/DOCUMENT_AND_APP.md) | Document ↔ App |
+| [API_SURFACE.md](reference/API_SURFACE.md) | Public vs private APIs |
+| [APP_COMPOSITION.md](internals/APP_COMPOSITION.md) | App composition |
+| [DOCUMENT_AND_APP.md](internals/DOCUMENT_AND_APP.md) | Document ↔ App |
 | [TUNNEL.md](guides/TUNNEL.md) | Tunnel is uxcompose, not ux-dom |
 
 ## Security & assets (`security/`)
@@ -118,9 +120,9 @@ Diátaxis grouping (tutorial / how-to / reference / explanation): **[INDEX.md](I
 
 | Doc | Description |
 |-----|-------------|
-| [STACK.md](STACK.md) | Stack map |
-| [FEATURES.md](FEATURES.md) | Feature encyclopedia |
+| [STACK.md](reference/STACK.md) | Stack map |
+| [FEATURES.md](reference/FEATURES.md) | Feature encyclopedia |
 | [resilience/MATRIX.md](resilience/MATRIX.md) | Resilience matrix |
-| [design/DESIGN_DECISIONS.md](design/DESIGN_DECISIONS.md) | Design decisions |
-| [design/OWNERSHIP_COUNCIL.md](design/OWNERSHIP_COUNCIL.md) | Ownership council |
+| [adr/DESIGN_DECISIONS.md](adr/DESIGN_DECISIONS.md) | Design decisions |
+| [adr/OWNERSHIP_COUNCIL.md](adr/OWNERSHIP_COUNCIL.md) | Ownership council |
 | [archive/README.md](archive/README.md) | Historical (do not cite as law) |

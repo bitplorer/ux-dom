@@ -1,5 +1,8 @@
 # Tunnel / public share
 
+> **Diátaxis:** how-to · **Canonical:** `docs/guides/TUNNEL.md` · **Layer:** ux-dom  
+> Map: [INDEX.md](../INDEX.md).
+
 Product serve lives on **uxcompose**. Expose with host tooling:
 
 ```bash

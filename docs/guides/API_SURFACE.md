@@ -1,73 +1,9 @@
-# Public & private API surface (0.1.0)
+# Moved (Phase 2 Diátaxis)
 
-### Brand lines
+- **Original path:** `docs/guides/API_SURFACE.md`
+- **Date:** 2026-08-24
+- **Why:** Phase 2 Diátaxis — public/private API is reference, not a how-to.
+- **Successor:** [docs/reference/API_SURFACE.md](../reference/API_SURFACE.md)
+- **Do not cite this stub as the canonical page.**
 
-| Layer | Name |
-|-------|------|
-| **PyPI / pip** | `ux-dom` |
-| **Import** | `ux_dom` |
-| **CLI** | **`uxdom`** (pure-dom tooling only) |
-
-Product lifecycle CLI: **`uxcompose`** (`create-app` · `serve` · `deploy` · `doctor`).
-
----
-
-## Top-level (`import ux_dom`)
-
-| Symbol | Kind | Notes |
-|--------|------|--------|
-| `__version__` | str | e.g. `"0.1.0"` |
-| `Document` | class | HTML shell SSoT |
-| `Component` / `Fragment` / `ReactiveComponent` | class | Trees |
-| `XElement` / `Htmx` / `Csp` / `Channel` | facades | `ux_dom.runtime` |
-| `WebAssets` / `TailwindCommand` | settings | Assets & CSS |
-
----
-
-## DOM (`from ux_dom.dom import …`)
-
-HTML tags, parse helpers, serialize via `node.__render__` / `__async_render__`.
-
----
-
-## Document shell
-
-```python
-document = Document(...).use(XElement(), Htmx(), Csp.auto())
-html = str(document(page_content))  # or tree.__render__()
-```
-
-Product HTTP delivery / host strategy: **ux-compose**, not Document.use.
-
----
-
-## Discovery (host-free)
-
-| API | Module |
-|-----|--------|
-| `DirectoryRoutes` + `RouterHooks` | `ux_dom.routing.core` |
-
-Thin FastAPI batteries may exist; product mount path is **ux-compose**.
-
----
-
-## CLI (`uxdom` — pure-dom only)
-
-| Command | Role |
-|---------|------|
-| `doctor` / `info` | Package / Document health |
-| `lint` | Conventions |
-| `build` | Tailwind / static verify |
-| `profile` / `dashboard` | Render p95 |
-| `add` | component \| xelement \| ui |
-| `ui` | List UI kit |
-
-**Not on uxdom:** create-app · serve · deploy → use **uxcompose**.
-
----
-
-## Private / do not depend on
-
-* Underscored render internals
-* `docs/archive/*`
-* `plugins.App` / `FastAPIHost` as product composition (use ux-compose)
+Canonical content lives at the successor. This path is kept so existing links resolve.

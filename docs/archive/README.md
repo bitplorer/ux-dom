@@ -5,7 +5,8 @@ Historical audits, migration notes, and one-off investigation dumps live here.
 **Rules:**
 
 - Not product docs — current contracts live under `docs/guides/`,
-  `docs/internals/`, `docs/security/`, and `docs/ship/`.
+  `docs/reference/`, `docs/internals/`, `docs/examples/`, `docs/adr/`,
+  `docs/security/`, and `docs/ship/`.
 - Never the only source of truth for a shipping API.
 - Prefer summarizing durable lessons into
   [MAINTENANCE_CANON.md](../ship/MAINTENANCE_CANON.md) or
