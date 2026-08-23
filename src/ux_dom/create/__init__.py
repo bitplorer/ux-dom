@@ -1,10 +1,9 @@
 # Copyright (c) 2026 ux-dom
-"""Project helpers.
+"""Legacy helpers — **not** the product scaffold path.
 
-* **CreateProject** — filesystem scaffold (``uxdom create-app``)
-* **CreateAsgi** — *optional* thin sugar that only wraps
-  ``FastAPI`` + ``document.mount`` + DirectoryRouter. Prefer writing that
-  wiring yourself (scaffold does).
+Product applications: ``uxcompose create-app`` (ux-compose).
+
+``CreateProject`` / ``CreateAsgi`` remain for tests and pure-dom experiments only.
 """
 
 from ux_dom.create.asgi import CreateAsgi
