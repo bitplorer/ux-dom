@@ -249,7 +249,7 @@ def run_doctor(
                 or "XElement(" in mtxt
                 or "xelement=True" in mtxt
                 or "document.mount" in mtxt
-                or "App.web(" in mtxt
+                # App.web is not the product path — do not treat as runtime success
             )
             # document.py may own runtimes
             dtxt = ""
