@@ -1,11 +1,11 @@
-"""Next-style DX: ``uxdom serve`` / ``dev`` / ``start`` + standalone Tailwind.
+"""Pure-dom DX residuals: Tailwind resolver + envfile + doctor.
 
-Tests never download the official binary (UXDOM_TAILWIND_DOWNLOAD=0).
+Product lifecycle (create-app / serve / dev / start / tunnel / deploy) lives on
+uxcompose only. This module locks that absence and keeps pure-dom tooling tests.
 """
 from __future__ import annotations
 
 import os
-import sys
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -15,7 +15,6 @@ from typer.testing import CliRunner
 
 from ux_dom.cli.cli import app as cli_app
 from ux_dom.cli.envfile import env_files_for, load_env_files, parse_env_text
-from ux_dom.cli.serve import ServeOptions, find_app_root
 from ux_dom.cli.tailwind import (
     argv_with_io,
     discover_css_io,
@@ -26,64 +25,33 @@ from ux_dom.cli.tailwind import (
 
 ROOT = Path(__file__).resolve().parents[2]
 
+_PRODUCT_CMDS = ("create-app", "serve", "dev", "start", "deploy", "templates")
 
-class TestServeHelp(unittest.TestCase):
-    def test_root_help_lists_next_commands(self):
+
+class TestProductCliAbsent(unittest.TestCase):
+    def test_root_help_is_pure_dom_only(self):
         runner = CliRunner()
         result = runner.invoke(cli_app, ["--help"])
         self.assertEqual(result.exit_code, 0, result.output)
         out = result.output
-        for name in ("create-app", "dev", "serve", "start", "doctor", "info", "build"):
+        for name in ("doctor", "info", "build", "lint", "profile", "add"):
             self.assertIn(name, out, out)
+        for name in _PRODUCT_CMDS:
+            self.assertNotIn(f"  {name}", out, out)
 
-    def test_serve_help(self):
+    def test_product_commands_rejected(self):
         runner = CliRunner()
-        result = runner.invoke(cli_app, ["serve", "--help"])
-        self.assertEqual(result.exit_code, 0, result.output)
-        self.assertIn("--prod", result.output)
-        self.assertIn("--no-tailwind", result.output)
-        self.assertIn("--cwd", result.output)
+        for name in ("create-app", "serve", "dev", "start", "deploy"):
+            result = runner.invoke(cli_app, [name, "--help"])
+            self.assertNotEqual(result.exit_code, 0, name)
 
-    def test_start_help_is_prod(self):
-        runner = CliRunner()
-        result = runner.invoke(cli_app, ["start", "--help"])
-        self.assertEqual(result.exit_code, 0, result.output)
-        self.assertIn("next start", result.output.lower() or result.output)
-
-    def test_doctor_path_option(self):
-        runner = CliRunner()
-        result = runner.invoke(cli_app, ["doctor", "--help"])
-        self.assertEqual(result.exit_code, 0, result.output)
-        self.assertIn("--path", result.output)
-
-
-class TestFindAppRoot(unittest.TestCase):
-    def test_finds_create_app_layout(self):
-        with TemporaryDirectory() as td:
-            root = Path(td) / "shop"
-            (root / "app").mkdir(parents=True)
-            (root / "app" / "main.py").write_text("app = None\n")
-            self.assertEqual(find_app_root(root / "app"), root.resolve())
-
-    def test_missing_raises(self):
-        with TemporaryDirectory() as td:
-            with self.assertRaises(FileNotFoundError):
-                find_app_root(Path(td))
-
-
-class TestServeOptions(unittest.TestCase):
-    def test_dev_reloads_by_default(self):
-        opts = ServeOptions(mode="dev")
-        self.assertTrue(opts.reload)
-        self.assertTrue(opts.tailwind)
-
-    def test_prod_no_reload(self):
-        opts = ServeOptions(mode="prod")
-        self.assertFalse(opts.reload)
-
-    def test_bad_mode(self):
-        with self.assertRaises(ValueError):
-            ServeOptions(mode="staging")
+    def test_deleted_modules_gone(self):
+        with self.assertRaises(ImportError):
+            from ux_dom.cli.serve import ServeOptions  # noqa: F401
+        with self.assertRaises(ImportError):
+            from ux_dom.cli.tunnel import parse_provider  # noqa: F401
+        with self.assertRaises(ImportError):
+            from ux_dom.cli.deploy import prepare_deploy  # noqa: F401
 
 
 class TestTailwindResolver(unittest.TestCase):
@@ -116,7 +84,6 @@ class TestTailwindResolver(unittest.TestCase):
             "ux_dom.cli.tailwind._cached_binary", return_value=None
         ):
             self.assertIsNone(resolve_tailwind(ensure=False))
-            # ensure + download disabled → last resort npx only if present
             hit = resolve_tailwind(ensure=True)
             if hit is not None:
                 self.assertEqual(hit.source, "npx")
@@ -174,7 +141,6 @@ class TestTailwindResolver(unittest.TestCase):
     def test_cwd_accepts_str(self):
         with TemporaryDirectory() as td:
             os.environ["UXDOM_TAILWIND"] = str(Path(td) / "missing-bin")
-            # must not raise AttributeError on str cwd
             resolve_tailwind(cwd=td, ensure=False)
             os.environ.pop("UXDOM_TAILWIND", None)
 
@@ -182,7 +148,7 @@ class TestTailwindResolver(unittest.TestCase):
 class TestEnvFiles(unittest.TestCase):
     def test_parse_and_load_does_not_clobber(self):
         parsed = parse_env_text(
-            "# c\nexport FOO=bar\nQUOTED=\"x y\"\nEMPTY=\nNOPE\n=bad\n"
+            '# c\nexport FOO=bar\nQUOTED="x y"\nEMPTY=\nNOPE\n=bad\n'
         )
         self.assertEqual(parsed["FOO"], "bar")
         self.assertEqual(parsed["QUOTED"], "x y")
@@ -196,7 +162,7 @@ class TestEnvFiles(unittest.TestCase):
             (root / ".env.development").write_text("C=dev\n")
             env = {"A": "process"}
             read = load_env_files(root, mode="dev", environ=env)
-            self.assertEqual(env["A"], "process")  # process wins
+            self.assertEqual(env["A"], "process")
             self.assertEqual(env["B"], "local")
             self.assertEqual(env["C"], "dev")
             self.assertGreaterEqual(len(read), 2)
@@ -254,42 +220,14 @@ class TestDoctorReportsResolver(unittest.TestCase):
         result = runner.invoke(
             cli_app, ["doctor", "--path", str(ROOT), "--port", "59989"]
         )
-        # python version may warn but should not hard-fail
         self.assertIn("uxdom doctor", result.output)
         self.assertIn("tailwind", result.output)
 
-
-
-class TestTunnelOptions(unittest.TestCase):
-    def test_parse_provider_aliases(self):
-        from ux_dom.cli.tunnel import parse_provider
-        self.assertEqual(parse_provider("none"), "none")
-        self.assertEqual(parse_provider("ngrok"), "ngrok")
-        self.assertEqual(parse_provider("cf"), "cloudflare")
-        with self.assertRaises(ValueError):
-            parse_provider("tailscale")
-
-    def test_local_probe_host_wildcards(self):
-        from ux_dom.cli.tunnel import local_probe_host
-        self.assertEqual(local_probe_host("0.0.0.0"), "127.0.0.1")
-        self.assertEqual(local_probe_host("::"), "127.0.0.1")
-        self.assertEqual(local_probe_host("192.168.1.10"), "192.168.1.10")
-
-    def test_serve_options_tunnel_normalized(self):
-        opts = ServeOptions(mode="dev", tunnel="CF")
-        self.assertEqual(opts.tunnel, "cloudflare")
-
-    def test_serve_help_lists_tunnel(self):
+    def test_doctor_path_option_in_help(self):
         runner = CliRunner()
-        result = runner.invoke(cli_app, ["serve", "--help"])
+        result = runner.invoke(cli_app, ["doctor", "--help"])
         self.assertEqual(result.exit_code, 0, result.output)
-        self.assertIn("--tunnel", result.output)
-
-    def test_wait_for_health_timeout(self):
-        from ux_dom.cli.tunnel import wait_for_health
-        with self.assertRaises(TimeoutError) as ctx:
-            wait_for_health(59999, path="/health", timeout=0.4, interval=0.1)
-        self.assertIn("502", str(ctx.exception))
+        self.assertIn("--path", result.output)
 
 
 if __name__ == "__main__":
