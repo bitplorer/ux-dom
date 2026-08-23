@@ -12,8 +12,18 @@ from pathlib import Path
 
 from fastapi.testclient import TestClient
 
+from helpers import ScaffoldOptions, available_templates, create_app
 from ux_dom.cli.adders import add_route, add_xelement
 from ux_dom.cli.build import run_build
+from ux_dom.cli.doctor import run_doctor
+from ux_dom.cli.lint import lint_project
+from ux_dom.dom import div, template
+from ux_dom.dom.htmlelement import CustomElement, WebComponent, XElement
+from ux_dom.ui import Button, Card, CardContent, Dialog, Input, Select, Tabs
+from ux_dom.ui.catalog import CATALOG
+from ux_dom.ui.channel_bridge import live_button, stamp_region, to_fragment
+from ux_dom.ui.copy import copy_component
+
 try:
     from ux_dom.cli.deploy import prepare_deploy
 except ImportError:  # product deploy lives on uxcompose
@@ -23,15 +33,7 @@ except ImportError:  # product deploy lives on uxcompose
 def _require_deploy():
     if prepare_deploy is None:
         raise unittest.SkipTest("product deploy is uxcompose, not uxdom")
-from ux_dom.cli.doctor import run_doctor
-from ux_dom.cli.lint import lint_project
-from helpers import ScaffoldOptions, available_templates, create_app
-from ux_dom.dom import div, template
-from ux_dom.dom.htmlelement import CustomElement, WebComponent, XElement
-from ux_dom.ui import Button, Card, CardContent, Dialog, Input, Select, Tabs
-from ux_dom.ui.catalog import CATALOG
-from ux_dom.ui.channel_bridge import live_button, stamp_region, to_fragment
-from ux_dom.ui.copy import copy_component
+
 
 REPO = Path(__file__).resolve().parents[2]
 
