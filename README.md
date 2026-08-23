@@ -3,13 +3,17 @@
 **Python HTML for hypermedia apps** — server-rendered DOM, pure page discovery,
 HTMX / Alpine / Web Components (`XElement` + `x_element.js`).
 
-> **Boundary:** [docs/internals/SYSTEM.md](docs/internals/SYSTEM.md)  
-> **Product apps:** use **[ux-compose](https://github.com/bitplorer/ux-compose)** (`uxcompose create-app | serve | deploy`)  
-> **Feature map:** [docs/FEATURES.md](docs/FEATURES.md)
+> **New here?** [START_HERE.md](START_HERE.md) (5 minutes).
+> **Boundary:** [docs/internals/SYSTEM.md](docs/internals/SYSTEM.md)
+> **Docs map:** [docs/INDEX.md](docs/INDEX.md)
+> **Product apps:** [ux-compose](https://github.com/bitplorer/ux-compose) (`uxcompose create-app | serve | deploy`)
+
+This layer **renders**. It does not own Intent, Caps, Result ops, product state
+machines, motion IR, or author-facing composition.
 
 ```bash
 pip install ux-dom
-# Product app (composition + delivery):
+# Product app (composition + delivery) — not this package:
 uxcompose create-app myapp && cd myapp
 uxcompose serve app:asgi --port 8080
 ```
@@ -22,6 +26,27 @@ uxcompose serve app:asgi --port 8080
 | **Import** | `ux_dom` |
 | **CLI** | **`uxdom`** (pure-dom tooling) |
 | **Product CLI** | **`uxcompose`** |
+
+### Ownership
+
+| Owns | Does **not** own |
+|------|------------------|
+| HTML/CSS/JS trees, `Document` shell, serialize | Intent / Cap / Result ops (`ux-channel`) |
+| Pure `DirectoryRoutes` + `RouterHooks` | Product state machines (`ux-behavior`) |
+| Package static (`/ux-dom/static/…`) | Motion IR (`ux-motion`) |
+| Pure-dom CLI: `doctor` · `lint` · `build` · `profile` · `add` | Product scaffold / serve / deploy (`ux-compose`) |
+
+---
+
+## Audience
+
+| You are… | Start |
+|----------|--------|
+| **New** | [START_HERE.md](START_HERE.md) |
+| **Pure Document author** | [docs/guides/DOCUMENT.md](docs/guides/DOCUMENT.md) |
+| **Product builder** | [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md) |
+| **Contributor / agent** | [CONTRIBUTING.md](CONTRIBUTING.md) · [AGENTS.md](AGENTS.md) |
+| **Need a map** | [docs/INDEX.md](docs/INDEX.md) |
 
 ---
 
@@ -72,6 +97,8 @@ See [docs/guides/CLI.md](docs/guides/CLI.md) · [docs/guides/DX.md](docs/guides/
 
 | Doc | Topic |
 |-----|--------|
+| [START_HERE.md](START_HERE.md) | 5-minute path |
+| [docs/INDEX.md](docs/INDEX.md) | Audience + Diátaxis map |
 | [SYSTEM.md](docs/internals/SYSTEM.md) | Render boundary |
 | [DOCUMENT.md](docs/guides/DOCUMENT.md) | Document SSoT |
 | [COMPONENTS.md](docs/guides/COMPONENTS.md) | Component / Fragment |

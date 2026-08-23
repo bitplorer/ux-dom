@@ -1,6 +1,6 @@
 # ux-dom documentation
 
-**Version 0.1.0** · **Start:** [START_HERE.md](START_HERE.md)
+**Version 0.1.0** · **Start:** [../START_HERE.md](../START_HERE.md) · **Map:** [INDEX.md](INDEX.md)
 
 ### Brand lines
 
@@ -10,6 +10,7 @@
 | **Import** | `ux_dom` |
 | **CLI** | **`uxdom`** |
 
+This layer **renders**. Product lifecycle is **ux-compose**.
 
 ---
 
@@ -18,15 +19,17 @@
 | Doc | Purpose |
 |-----|--------|
 | **[FEATURES.md](FEATURES.md)** | **Complete feature encyclopedia** |
+| **[INDEX.md](INDEX.md)** | **Audience + Diátaxis map of every remaining doc** |
 
 ## Audiences
 
 | You are… | Start |
 |----------|--------|
-| **New to ux-dom** | [START_HERE.md](START_HERE.md) |
+| **New to ux-dom** | [../START_HERE.md](../START_HERE.md) |
 | **Building product apps** | [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md) + [guides/TUTORIAL.md](guides/TUTORIAL.md) |
 | **Pure Document / components** | [guides/DOCUMENT.md](guides/DOCUMENT.md) → [guides/COMPONENTS.md](guides/COMPONENTS.md) |
 | **Maintainer / architecture** | [internals/SYSTEM.md](internals/SYSTEM.md) · [internals/ARCHITECTURE.md](internals/ARCHITECTURE.md) |
+| **Contributor / agent** | [../CONTRIBUTING.md](../CONTRIBUTING.md) · [../AGENTS.md](../AGENTS.md) |
 
 ## Learning path
 
@@ -35,12 +38,15 @@ START_HERE → INSTALL → guides/TUTORIAL → guides/DOCUMENT → guides/COMPON
          → guides/XELEMENT → security/CSP → guides/COOKBOOK → internals/ARCHITECTURE
 ```
 
+Diátaxis grouping (tutorial / how-to / reference / explanation): **[INDEX.md](INDEX.md)**.
+
 ---
 
 ## Start
 
 | Doc | Description |
 |-----|-------------|
+| [../START_HERE.md](../START_HERE.md) | 5-minute path (root) |
 | [START_HERE.md](START_HERE.md) | Mental model + day-1 |
 | [INSTALL.md](INSTALL.md) | Install & verify |
 
@@ -64,6 +70,7 @@ START_HERE → INSTALL → guides/TUTORIAL → guides/DOCUMENT → guides/COMPON
 | [API_SURFACE.md](guides/API_SURFACE.md) | Public vs private APIs |
 | [APP_COMPOSITION.md](guides/APP_COMPOSITION.md) | App composition |
 | [DOCUMENT_AND_APP.md](guides/DOCUMENT_AND_APP.md) | Document ↔ App |
+| [TUNNEL.md](guides/TUNNEL.md) | Tunnel is uxcompose, not ux-dom |
 
 ## Security & assets (`security/`)
 
@@ -114,3 +121,4 @@ START_HERE → INSTALL → guides/TUTORIAL → guides/DOCUMENT → guides/COMPON
 | [resilience/MATRIX.md](resilience/MATRIX.md) | Resilience matrix |
 | [design/DESIGN_DECISIONS.md](design/DESIGN_DECISIONS.md) | Design decisions |
 | [design/OWNERSHIP_COUNCIL.md](design/OWNERSHIP_COUNCIL.md) | Ownership council |
+| [archive/README.md](archive/README.md) | Historical (do not cite as law) |
