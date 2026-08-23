@@ -2,15 +2,22 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-"""Response boundary.
+"""Response boundary (optional adapters around domain serialize).
 
-Domain (no framework)::
+**Serialize SSoT is the tree dunders** — not this package::
 
-    from ux_dom.response import prepare_html_body, to_html_bytes, prepare_html_stream
+    html = tree.__render__()
+    async for token in tree.__async_render__(pretty=False):
+        ...
 
-Starlette/FastAPI adapter (optional extra)::
+Pure helpers (framework-free) that *call* those dunders may live here for
+CSP stamp + bytes convenience. They are not a second body owner.
 
-    from ux_dom.response import HTMLResponse, StreamingResponse
+Starlette/FastAPI response classes are **optional adapters**. Product HTTP
+delivery and host strategy belong in **ux-compose**. Pure-dom scripts may still
+import adapters when needed.
+
+See ``docs/internals/SYSTEM.md``.
 """
 
 from ux_dom.response.serialize import (
