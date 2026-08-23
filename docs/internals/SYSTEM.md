@@ -27,19 +27,15 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 | HMR process | ux-compose (with serve) |
 | Channel transport | ux-compose `wire/` |
 
-## CLI hard cut
+## CLI
 
 ```bash
-# Product (only)
 uxcompose create-app myapp
 uxcompose serve app:asgi
 uxcompose deploy --provider docker
 
-# Pure-dom
 uxdom doctor | lint | build | profile
 ```
-
-`uxdom create-app|serve|dev|start|deploy` exit with pointer to uxcompose.
 
 ## Document.use
 
