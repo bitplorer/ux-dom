@@ -2,7 +2,7 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-"""ux-dom 0.1.0 — Python hypermedia UI (HTMX, Alpine, Web Components).
+"""ux-dom — Python hypermedia **render** layer (tree → HTML / stream).
 
 Brand lines
 -----------
@@ -12,25 +12,29 @@ Brand lines
 | **Import** | ``ux_dom`` |
 | **CLI** | ``uxdom`` |
 
-Ontology (public layers)
-------------------------
+Ownership (residual-free)
+-------------------------
+**ux-dom renders.** Product delivery, host strategy, HMR process, and product
+scaffold live in **ux-compose**.
+
 | Layer | Package | Role |
 |-------|---------|------|
-| **Shell** | ``Document`` | HTML head/body SSoT, ``.use`` / ``.mount`` |
-| **Core** | ``Component``, ``Fragment``, ``ReactiveComponent`` | Build & render trees |
-| **DOM** | ``ux_dom.dom`` | Tags, parse, serialize |
-| **Runtime** | ``ux_dom.runtime`` | ``XElement``, ``Htmx``, ``Csp``, ``Channel`` |
-| **Plugins** | ``ux_dom.plugins`` | Host, routing, style, hub, contributions |
-| **Routing** | ``ux_dom.routing`` | DirectoryRouter / StreamingRoute |
-| **Response** | ``ux_dom.response`` | HTML / streaming adapters |
+| **Shell** | ``Document`` | HTML head/body SSoT — ``.use`` (control, runtime tags, CSP stamp) |
+| **Core** | ``Component``, ``Fragment``, ``ReactiveComponent`` | Build trees |
+| **DOM** | ``ux_dom.dom`` | Tags, parse, ``__render__`` / ``__async_render__`` |
+| **Discovery** | ``ux_dom.routing.core`` | Pure ``DirectoryRoutes`` + ``RouterHooks`` (host-free) |
 | **UI kit** | ``ux_dom.ui`` | Optional copy-in components |
-| **CLI** | ``ux_dom.cli`` | create-app, doctor, build |
 
-Quick start
------------
-::
+Serialize SSoT: ``tree.__render__()`` / ``tree.__async_render__()``.
+Optional HTTP adapters under ``ux_dom.response`` are **not** the product path.
 
-    from fastapi import FastAPI
+Product apps::
+
+    uxcompose create-app myapp
+    # composition root + delivery + HMR(dev) — see ux-compose docs/FLOW.md
+
+Pure document (no product host)::
+
     from ux_dom import Document, Component
     from ux_dom.runtime import XElement, Htmx, Csp
     from ux_dom.dom import div
@@ -38,10 +42,8 @@ Quick start
     document = Document(head=[], body=[]).use(
         XElement(), Htmx(), Csp.auto()
     )
-    app = FastAPI(title="App")
-    document.mount(app)
 
-See ``docs/START_HERE.md``, ``docs/FEATURES.md``, and ``docs/internals/ARCHITECTURE.md``.
+See ``docs/internals/SYSTEM.md`` and ux-compose ``docs/FLOW.md``.
 """
 
 from .compat.valio_pep649 import ensure_valio_pep649_compat
@@ -49,7 +51,7 @@ from .compat.valio_pep649 import ensure_valio_pep649_compat
 ensure_valio_pep649_compat()
 
 from .settings import *  # Document, WebAssets, TailwindCommand, paths…  # isort: skip
-from .slots import *  # Slots, WebComponentSlot, …  # isort: skip
+from .slots import *  #Slots, WebComponentSlot, …  # isort: skip
 
 from ux_dom.dom.src.component import (  # noqa: E402
     Component as Component,

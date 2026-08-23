@@ -2,15 +2,24 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-"""Plugin registry (optional hub) and shared contribution helpers.
+"""Document contributions and optional advanced hub.
 
 **Document is the single source of truth** for the HTML shell::
 
     document = Document(...).use(XElement(), Htmx(), Csp.auto())
-    document.mount(app)
+    document.mount(app)  # attaches contribution middleware to *caller*'s app
 
-``App`` / ``PluginHub`` remain as optional registries (tests / advanced hubs).
-See ``docs/guides/DOCUMENT.md``.
+``Document.use`` owns shell meaning: control dialect, runtime script tags,
+CSP stamp/policy, style tags.
+
+**Not product composition:** ``App`` / ``PluginHub`` remain for tests and
+advanced hubs only. Product applications use **ux-compose** ``App`` and
+``uxcompose create-app``. Do not treat ``plugins.App.web`` as the product path.
+
+HMR process (file watch + WebSocket) is **dev delivery** — product path is
+ux-compose; ``HotReload`` here is not a first-class Document.use product API.
+
+See ``docs/internals/SYSTEM.md`` and ux-compose ``docs/FLOW.md``.
 """
 
 from ux_dom.plugins import protocols as protocols

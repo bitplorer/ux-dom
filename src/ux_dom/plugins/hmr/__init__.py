@@ -2,14 +2,21 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-"""HMR contribution wiring for dev reload (pairs with reloader)."""
+"""HMR contribution wiring (dev) — pairs with ``reloader``.
+
+**Not a Document.use product API.** File watch + WebSocket is **dev delivery**.
+Product applications should take HMR from **ux-compose** (owns package_dir +
+ASGI bind). This module remains for pure-dom / legacy scaffolds only.
+
+See ``docs/internals/SYSTEM.md`` and ux-compose ``docs/FLOW.md``.
+"""
 from __future__ import annotations
 
 from typing import Any, Optional, Sequence
 
 
 class HotReload:
-    """HmrPlugin around ``HotReloadWebSocketRoute``."""
+    """HmrPlugin around ``HotReloadWebSocketRoute`` (non-product / advanced)."""
 
     plugin_kind = "hmr"
     name = "hotreload"
