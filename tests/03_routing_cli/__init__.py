@@ -1,1 +1,1 @@
-"""03_routing_cli — DirectoryRouter, scaffold, CLI, build, deploy."""
+"""03_routing_cli — DirectoryRoutes/DirectoryRouter, pure-dom CLI, build edges."""
