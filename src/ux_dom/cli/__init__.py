@@ -1,18 +1,7 @@
 # Copyright (c) 2023–2026 UX-DOM
-"""uxdom CLI entry.
+"""uxdom CLI entry — pure Document/render tooling.
 
-Brand lines
------------
-| Layer | Name |
-|-------|------|
-| **PyPI / pip** | ``ux-dom`` |
-| **Import** | ``ux_dom`` |
-| **CLI** | ``uxdom`` (console script → ``ux_dom.cli:app``) |
-
-Public surface
---------------
-* ``app`` — Typer application (``uxdom`` console script)
-* ``ux_dom`` — alias of ``app`` (programmatic use)
+Product lifecycle: ``uxcompose create-app | serve | deploy``.
 """
 
 from .cli import app as app
