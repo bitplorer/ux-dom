@@ -7,7 +7,9 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from helpers import ScaffoldOptions, create_app
 from ux_dom.cli.build import run_build
+
 try:
     from ux_dom.cli.deploy import prepare_deploy
 except ImportError:  # product deploy lives on uxcompose
@@ -17,7 +19,6 @@ except ImportError:  # product deploy lives on uxcompose
 def _require_deploy():
     if prepare_deploy is None:
         raise unittest.SkipTest("product deploy is uxcompose, not uxdom")
-from helpers import ScaffoldOptions, create_app
 
 
 class TestBuild(unittest.TestCase):
