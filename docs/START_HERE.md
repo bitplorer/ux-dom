@@ -1,9 +1,8 @@
 # Start here — ux-dom 0.1.0
 
-> Full feature encyclopedia: **[FEATURES.md](FEATURES.md)**.  
-> Design & architecture: **[internals/ARCHITECTURE.md](internals/ARCHITECTURE.md)** ·
-> **[internals/DESIGN_CANON.md](internals/DESIGN_CANON.md)**.
-
+> **Boundary:** [internals/SYSTEM.md](internals/SYSTEM.md)  
+> **Product apps:** [ux-compose](https://github.com/bitplorer/ux-compose) — `uxcompose create-app | serve | deploy`  
+> **Features:** [FEATURES.md](FEATURES.md)
 
 ### Brand lines
 
@@ -11,95 +10,77 @@
 |-------|------|
 | **PyPI / pip** | `ux-dom` |
 | **Import** | `ux_dom` |
-| **CLI** | **`uxdom`** |
+| **CLI** | **`uxdom`** (pure-dom tooling) |
+| **Product CLI** | **`uxcompose`** |
 
-## Mental model (memorize this)
+## Mental model
 
 ```text
-Document  →  HTML shell (<head>/<body>) + .use(runtimes) + .mount(app)
-FastAPI   →  process, routes, servers
-CLI       →  create-app / add for ceremonial files (default)
+ux-dom       RENDER     trees → __render__ / __async_render__
+             Document   shell (.use: control, runtime, CSP stamp)
+             discovery  pure DirectoryRoutes + RouterHooks
+
+ux-compose   PRODUCT    create-app · serve · deploy · App · delivery
 ```
 
-| Owns | Does **not** own |
-|------|------------------|
-| **Document** — tag placement, runtime scripts, middleware attach | ASGI process |
-| **FastAPI** — routes, lifespan, static mounts | Head/body order |
+| Owns (ux-dom) | Does **not** own |
+|---------------|------------------|
+| Document shell, serialize, pure discovery | Product scaffold / serve / deploy |
+| Pure-dom doctor / lint / build | Host strategy / product App |
 
-**Not** the document: `App`, `CreateAsgi` (optional sugar only).
-
-## Day-1
+## Day-1 (product app)
 
 ```bash
-pip install -e ".[fastapi]"
-uxdom create-app myapp
-cd myapp
-uxdom serve --port 8080
-# or: uxdom dev    ·    uxdom start   (prod)
-# open /index/Index  ·  /health
+pip install ux-compose ux-dom
+uxcompose create-app myapp && cd myapp
+uxcompose serve app:asgi --port 8080
 ```
 
-Prefer **`uxdom create-app` / `uxdom add`** for boilerplate — hand-code only when
-extending features or changing contracts ([DX.md](guides/DX.md)).
-
-Scaffold pattern:
+## Pure Document
 
 ```python
-# app/document.py
-document = Document(...).use(XElement(), Htmx(), Csp.auto())
+from ux_dom import Document
+from ux_dom.runtime import XElement, Htmx, Csp
+from ux_dom.dom import div, h1
 
-# app/main.py
-app = FastAPI(...)
-document.mount(app)
-DirectoryRouting(package_dir=PACKAGE, base_directory="routes").include(app)
+document = Document(head=[], body=[]).use(
+    XElement(), Htmx(), Csp.auto()
+)
+html = document(div(h1("Hi"))).__render__()
+```
+
+```bash
+uxdom doctor
+uxdom lint
+uxdom build
+uxdom profile
 ```
 
 ## Core concepts
 
 | Piece | Role |
 |-------|------|
-| **`Component`** | `render()` → DOM tree; `@dataclass` fields OK |
-| **`ReactiveComponent`** | Field mutation re-renders on `str()` / serialize |
-| **`with div():` / `async with`** | Build tree (ContextVar-isolated) |
-| **`document(*content)`** | Two-stage head/body (page then common) |
-| **`DirectoryRouter`** | `routes/users/[id].py` → `/users/{id}` |
-| **`XElement`** | Custom element + auto definitions |
+| **`Component`** | `render()` → DOM tree |
+| **`ReactiveComponent`** | Field mutation re-renders on serialize |
+| **`document(*content)`** | HTML shell SSoT |
+| **`DirectoryRoutes`** | Host-free path discovery |
+| **`XElement`** | Custom element + definitions |
 
 ## Next reading
 
-1. [INSTALL.md](INSTALL.md)  
-2. [TUTORIAL.md](guides/TUTORIAL.md)  
-3. [DOCUMENT.md](guides/DOCUMENT.md)  
-4. [REACTIVE.md](guides/REACTIVE.md) · [COMPONENTS.md](guides/COMPONENTS.md)  
-5. [COOKBOOK.md](guides/COOKBOOK.md) · [ARCHITECTURE.md](internals/ARCHITECTURE.md)  
-6. [DESIGN_CANON.md](internals/DESIGN_CANON.md) · [API_SURFACE.md](guides/API_SURFACE.md) · [MODULE_MAP.md](internals/MODULE_MAP.md)  
+1. [SYSTEM.md](internals/SYSTEM.md)  
+2. [DOCUMENT.md](guides/DOCUMENT.md)  
+3. [CLI.md](guides/CLI.md) · [DX.md](guides/DX.md)  
+4. ux-compose `docs/FLOW.md`
 
-Full index: [README.md](README.md)
+## Assets
 
-## Assets model (do not dual-copy)
+* Library JS: `/ux-dom/static/x_element.js` from installed package  
+* App files: `/assets/*` → project `assets/`
 
-* Library JS: **`/ux-dom/static/x_element.js`** from installed `ux_dom` (not under `assets/js/` by default).
-* App files: **`/assets/*`** → project `assets/`.
-* `uxdom serve` / `uxdom dev` do **not** create library JS copies. See DESIGN_CANON §2.
-
-## Quality (maintainers)
+## Quality
 
 ```bash
 sh scripts/quality.sh
-pytest tests/ --cov=ux_dom
+uxdom doctor
 ```
-
-- [Concurrency](internals/CONCURRENCY.md) — parallel render, tree locks
-- [Maintenance canon](ship/MAINTENANCE_CANON.md) — contracts + automation policy
-
-## Profile (DX)
-
-```bash
-uxdom profile
-```
-
-- [Stack with ux-channel](STACK.md)
-
-## Testing
-
-See [ship/TESTING.md](ship/TESTING.md) and [tests/README.md](../tests/README.md).
