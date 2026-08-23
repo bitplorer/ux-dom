@@ -22,8 +22,8 @@ def home():
 ## Scaffold app
 
 ```bash
-uxdom create-app shop --template shop
-cd shop && uvicorn app.main:app --reload
+uxcompose create-app shop --host auto --level auto
+cd shop && uxcompose serve app:asgi --port 8080
 ```
 
 ## HTMX partial

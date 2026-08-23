@@ -1,10 +1,14 @@
-# DirectoryRouter / file-based routing
+# File-based routing (DirectoryRoutes)
 
 ## Design overview
 
 File-based routing maps a **directory tree of Python modules** onto URL
 paths — Python-native, filesystem-first. **Core is host-agnostic**; FastAPI is
-one adapter:
+one adapter.
+
+**Preferred bind (composition roots including ux-compose):**
+`DirectoryRoutes` + thin adapter. `DirectoryRouter` is batteries-only.
+
 
 ```text
 app/routes/
@@ -36,6 +40,29 @@ app/routes/
 * Other HTTP verbs only when explicit methods exist (advanced opt-in).
 
 ### Generic hooks (host-agnostic)
+
+Preferred:
+
+```python
+from ux_dom.routing.core import DirectoryRoutes, RouterHooks
+from ux_dom.routing.adapters.fastapi import mount
+
+hooks = RouterHooks(
+    resolve_unit=lambda cls, path, name: registry.get(
+        str(getattr(cls, "id", None) or cls.__name__.lower())
+    ),
+)
+core = DirectoryRoutes(
+    PACKAGE,
+    base_directory="routes",
+    hooks=hooks,
+    fail_closed=True,
+)
+core.discover()
+mount(core, app)
+```
+
+Batteries (standalone FastAPI users of ux-dom only):
 
 ```python
 from ux_dom.routing.fastapi import DirectoryRouter, RouterHooks, StreamingRoute

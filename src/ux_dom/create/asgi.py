@@ -1,13 +1,18 @@
 # Copyright (c) 2026 ux-dom
-"""CreateAsgi — *optional* sugar for FastAPI + ``document.mount``.
+"""CreateAsgi — optional sugar for FastAPI + ``document.mount``.
 
-Prefer the explicit pattern (what ``uxdom create-app`` emits)::
+Not the product composition root. Product apps: ``uxcompose create-app`` /
+``ux_compose.build``. This helper is for compact tests and pure-dom scripts.
+
+Preferred explicit pattern::
 
     app = FastAPI(...)
     document.mount(app)
-    DirectoryRouting(...).include(app)
-
-``CreateAsgi`` is only a short helper; it is not required and not a second framework.
+    from ux_dom.routing.core import DirectoryRoutes
+    from ux_dom.routing.adapters.fastapi import mount
+    core = DirectoryRoutes(package_dir, base_directory="routes")
+    core.discover()
+    mount(core, app)
 """
 
 from __future__ import annotations
@@ -22,8 +27,8 @@ from typing import Any
 class CreateAsgi:
     """Optional helper — same as writing FastAPI + ``document.mount`` yourself.
 
-    Prefer explicit ``main.py`` (scaffold default). This class exists for
-    compact tests / scripts only.
+    HMR is **not** a product API. Pass a HotReload contribution only for
+    advanced pure-dom experiments; product HMR is ``uxcompose serve --hmr``.
     """
 
     title: str = "ux-dom"
@@ -99,7 +104,6 @@ class CreateAsgi:
         if app is None:
             app = FastAPI(title=self.title, debug=debug, lifespan=lifespan)
 
-        # StreamingRoute when available
         try:
             from ux_dom.routing.fastapi import StreamingRoute
 
@@ -113,13 +117,16 @@ class CreateAsgi:
             doc.mount(app)
 
         for package_dir, base_directory, prefix in self._route_packages:
-            from ux_dom.plugins.routing import DirectoryRouting
+            from ux_dom.routing.core import DirectoryRoutes
+            from ux_dom.routing.adapters.fastapi import mount as mount_routes
 
-            DirectoryRouting(
-                package_dir=package_dir,
+            core = DirectoryRoutes(
+                Path(package_dir).resolve(),
                 base_directory=base_directory,
-                prefix=prefix,
-            ).include(app)
+            )
+            core.discover()
+            if hasattr(app, "include_router"):
+                mount_routes(core, app, prefix=prefix)
 
         for url_path, directory in self._static_mounts:
             if directory.exists():

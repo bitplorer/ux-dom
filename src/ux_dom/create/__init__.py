@@ -3,10 +3,11 @@
 
 Product applications: ``uxcompose create-app`` (ux-compose).
 
-``CreateProject`` / ``CreateAsgi`` remain for tests and pure-dom experiments only.
+``CreateProject.write()`` fails closed with a teaching error.
+``CreateAsgi`` remains for tests and pure-dom scripts only.
 """
 
 from ux_dom.create.asgi import CreateAsgi
-from ux_dom.create.project import CreateProject
+from ux_dom.create.project import CreateProject, ProductScaffoldMoved
 
-__all__ = ["CreateAsgi", "CreateProject"]
+__all__ = ["CreateAsgi", "CreateProject", "ProductScaffoldMoved"]

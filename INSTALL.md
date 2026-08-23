@@ -33,13 +33,14 @@ python -c "from ux_dom import __version__; print(__version__)"
 ## Create an app
 
 ```bash
-poetry run uxdom create-app myapp --yes
+pip install ux-compose ux-dom
+uxcompose create-app myapp
 cd myapp
-pip install -r requirements.txt
-uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+uxcompose serve app:asgi --host 0.0.0.0 --port 8080
 ```
 
-Templates: `minimal` · `shop` · `live` (`uxdom templates`).
+Pure-dom health: `uxdom doctor`.
+
 
 ## Showcase example
 

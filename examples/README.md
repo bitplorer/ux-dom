@@ -1,7 +1,7 @@
 # UxDom production examples
 
-> Prefer **`uxdom create-app myapp`** for greenfield projects (Tailwind, HTMX, optional ux-channel).
-> Ceremonial app files should stay generator-backed — see [DX.md](../docs/guides/DX.md).
+> Prefer **`uxcompose create-app myapp`** for greenfield product apps.
+> These folders are **ux-dom-only** render demos — see [DX.md](../docs/guides/DX.md).
 
 Runnable, production-shaped apps demonstrating **ux_dom alone** and **ux_dom + ux-channel**.
 

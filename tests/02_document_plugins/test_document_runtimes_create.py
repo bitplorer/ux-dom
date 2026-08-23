@@ -49,43 +49,17 @@ class TestDocumentUse(unittest.TestCase):
 
 
 class TestCreateProject(unittest.TestCase):
-    def test_writes_fastapi_document_mount_scaffold(self):
+    def test_write_teaches_uxcompose(self):
+        from ux_dom.create import ProductScaffoldMoved
+
         with TemporaryDirectory() as td:
-            root = (
+            builder = (
                 CreateProject("s", dest=Path(td) / "s")
                 .force()
                 .with_tailwind(False)
-                .write()
             )
-            main = (root / "app/main.py").read_text()
-            doc = (root / "app/document.py").read_text()
-            self.assertIn("FastAPI", main)
-            self.assertIn("document.mount", main)
-            self.assertNotIn("CreateAsgi", main)
-            self.assertIn("XElement()", doc)
-            self.assertIn(".use(", doc)
-            import sys
-
-            sys.path.insert(0, str(root))
-            for k in list(sys.modules):
-                if k == "app" or k.startswith("app."):
-                    del sys.modules[k]
-            try:
-                from app.main import app
-                from app.document import document
-
-                c = TestClient(app)
-                self.assertEqual(c.get("/health").status_code, 200)
-                self.assertEqual(c.get(XELEMENT_JS_URL).status_code, 200)
-                body = c.get("/health").json()
-                self.assertIn("ux_dom.xelement", body.get("runtimes", []))
-            finally:
-                if str(root) in sys.path:
-                    sys.path.remove(str(root))
-                for k in list(sys.modules):
-                    if k == "app" or k.startswith("app."):
-                        del sys.modules[k]
+            with self.assertRaises(ProductScaffoldMoved) as ctx:
+                builder.write()
+            self.assertIn("uxcompose create-app", str(ctx.exception))
 
 
-if __name__ == "__main__":
-    unittest.main()

@@ -164,7 +164,7 @@ def add_cmd(
         elif kind == "route":
             ux_dom_logger.info(
                 "product page units prefer ux-compose routes/; "
-                "writing pure-dom DirectoryRouter stub only"
+                "writing a pure-dom DirectoryRoutes stub only"
             )
             path = add_route(name, force=force, methods=methods)
         elif kind in ("xelement", "xe", "x-element"):

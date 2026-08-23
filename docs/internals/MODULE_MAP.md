@@ -10,21 +10,21 @@ ux_dom/
   dom/          Tags, Component, serialize, XElement types
   runtime/      Document-facing XElement / Htmx / Csp / Channel facades
   plugins/      Host, routing helper, CSP, SafeStatic, hub
-  routing/      DirectoryRouter + StreamingRoute (FastAPI)
+  routing/      DirectoryRoutes (core) + adapters + DirectoryRouter batteries
   response/     HTML / streaming adapters
   scripts/      x_element.js (package-mounted)
-  cli/          create-app, serve/dev/start, add, doctor, build (automation)
+  cli/          doctor, lint, build, profile, add, dashboard (pure-dom)
   ui/           Optional copy-in kit
 ```
 
-Public apps compose **Document + FastAPI + DirectoryRouting**. CLI generators
-keep ceremonial files aligned with this map ([DX.md](../guides/DX.md)).
+Public apps compose **Document + DirectoryRoutes + thin adapter**. Product
+scaffold is **uxcompose** ([DX.md](../guides/DX.md)).
 
 | Path | Role | Public? |
 |------|------|---------|
 | `ux_dom/__init__.py` | Version + re-exports Document, Component, runtime facades | **Public** |
 | `ux_dom/runtime/` | Stable aliases: `XElement`, `Htmx`, `Csp`, `Channel` | **Public** |
-| `ux_dom/create/` | Optional CreateAsgi / project helpers | Semi |
+| `ux_dom/create/` | CreateAsgi (tests) · CreateProject.write() fails closed | Semi |
 | `ux_dom/compat/` | Runtime compat (e.g. valio PEP 649) | Private |
 | `ux_dom/diagnostics.py` | Error message builders for XElement checks | Private |
 | **`ux_dom/dom/`** | Tag constructors, Document HTML helpers, parse | **Public** |
@@ -43,10 +43,10 @@ keep ceremonial files aligned with this map ([DX.md](../guides/DX.md)).
 | **`ux_dom/plugins/`** | Hub, contributions, host, routing, CSP, control | Semi / **Public** facades |
 | `ux_dom/plugins/runtime.py` | XElementRuntime, UxChannelRuntime — package static | Semi |
 | `ux_dom/plugins/safe_static.py` | Allowlisted file mounts | Semi |
-| **`ux_dom/routing/`** | DirectoryRouter, StreamingRoute (FastAPI) | **Public** |
+| **`ux_dom/routing/`** | DirectoryRoutes + adapters; DirectoryRouter batteries | **Public** |
 | **`ux_dom/response/`** | HTMLResponse, StreamingResponse | **Public** |
 | **`ux_dom/scripts/`** | `x_element.js` + `x_element_js` embed helper | **Public** helper |
-| **`ux_dom/cli/`** | Typer DX: create-app, serve/dev/start, doctor, build, … | CLI |
+| **`ux_dom/cli/`** | Typer DX: doctor, lint, build, profile, add (not product scaffold) | CLI |
 | **`ux_dom/ui/`** | Optional Tailwind UI kit (copy-in) | Optional public |
 | **`ux_dom/slots/`** | Slot helpers for WebComponent | Semi |
 | **`ux_dom/elements/`** | Typed form field components | Semi |

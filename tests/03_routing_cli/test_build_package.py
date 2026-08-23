@@ -11,7 +11,7 @@ from tempfile import TemporaryDirectory
 from fastapi.testclient import TestClient
 
 from ux_dom.cli.build import run_build
-from ux_dom.cli.scaffold import ScaffoldOptions, create_app
+from helpers import ScaffoldOptions, create_app
 from ux_dom.cli.static_assets import sync_runtime_assets, write_runnable_package
 from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.runtime import XELEMENT_JS_URL, XElementRuntime
@@ -72,7 +72,7 @@ class TestRunnablePackage(unittest.TestCase):
                 r = c.get(XELEMENT_JS_URL)
                 self.assertEqual(r.status_code, 200)
                 self.assertIn("x-tagname", r.text)
-                page = c.get("/index/Index")
+                page = c.get("/index")
                 self.assertIn(XELEMENT_JS_URL.lstrip("/").split("/")[0], page.text)
                 self.assertIn("x_element.js", page.text)
             finally:

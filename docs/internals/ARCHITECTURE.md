@@ -9,7 +9,7 @@ guesswork and the ASGI host stays debuggable:
 ┌─────────────────────────────────────────────────────────┐
 │  Your app                                                │
 │    routes/*.py   document.py   main.py                   │
-│    (prefer: uxdom create-app / add for ceremonial files) │
+│    (prefer: uxcompose create-app for product files)      │
 ├─────────────────────────────────────────────────────────┤
 │  Document (SSoT for HTML)                                │
 │    head/body · .use(runtimes) · .mount(app) · page()     │
@@ -29,24 +29,27 @@ guesswork and the ASGI host stays debuggable:
 |-------|----------------|
 | **`Document`** | Where tags go; runtime attach; `mount` static/middleware |
 | **`FastAPI`** | HTTP/WS process |
-| **`DirectoryRouting`** | File-based routes onto FastAPI |
-| **`CreateProject` / CLI** | Filesystem scaffold only |
-| **`CreateAsgi`** | Optional one-liner sugar (not used by create-app) |
-| **`App` / `PluginHub`** | Optional registry; tests/advanced only |
+| **`DirectoryRoutes`** | Host-free file discovery + RouterHooks |
+| **`CreateProject` / CLI** | `write()` fails closed — product scaffold is uxcompose |
+| **`CreateAsgi`** | Optional one-liner sugar (tests / pure-dom scripts) |
+| **`App` / `PluginHub`** | Optional registry; tests/advanced only — not product |
 
 ## Canonical assembly
 
 ```python
 from fastapi import FastAPI
-from ux_dom.plugins.routing import DirectoryRouting
+from ux_dom.routing.core import DirectoryRoutes
+from ux_dom.routing.adapters.fastapi import mount
 from app.document import document
 
 app = FastAPI(title="MyApp", debug=True)
 document.mount(app)
-DirectoryRouting(package_dir=PACKAGE, base_directory="routes").include(app)
+core = DirectoryRoutes(PACKAGE, base_directory="routes")
+core.discover()
+mount(core, app)
 ```
 
-Greenfield: **`uxdom create-app`** emits this pattern. Hand-roll only when
+Greenfield: **`uxcompose create-app`**. Hand-roll this render bind only when
 extending composition itself ([DX.md](../guides/DX.md)).
 
 ## Runtime placement defaults

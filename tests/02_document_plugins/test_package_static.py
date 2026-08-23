@@ -13,7 +13,7 @@ from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.package_static import PackageStaticContribution, PackagedFile
 from ux_dom.plugins.runtime import XELEMENT_JS_URL, UxChannelRuntime
-from ux_dom.cli.scaffold import ScaffoldOptions, create_app
+from helpers import ScaffoldOptions, create_app
 from ux_dom.cli.build import run_build
 import sys
 
@@ -88,7 +88,7 @@ class TestScaffoldSingleCopy(unittest.TestCase):
                 c = TestClient(app)
                 r = c.get(XELEMENT_JS_URL)
                 self.assertEqual(r.status_code, 200)
-                page = c.get("/index/Index")
+                page = c.get("/index")
                 self.assertEqual(page.status_code, 200)
                 self.assertIn("ux-dom/static/x_element.js", page.text)
             finally:

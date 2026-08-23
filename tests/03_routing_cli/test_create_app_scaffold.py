@@ -11,7 +11,7 @@ from fastapi.testclient import TestClient
 from typer.testing import CliRunner
 
 from ux_dom.cli.cli import app as cli_app
-from ux_dom.cli.scaffold import ScaffoldOptions, available_templates, create_app
+from helpers import ScaffoldOptions, available_templates, create_app
 
 
 class TestScaffoldAPI(unittest.TestCase):
@@ -25,7 +25,7 @@ class TestScaffoldAPI(unittest.TestCase):
             ),
         )
         self.assertIn("minimal", available_templates())
-        self.assertIn("tutorial", available_templates())
+        self.assertNotIn("tutorial", available_templates())
 
     def test_minimal_app_runs(self):
         root = create_app(
@@ -46,8 +46,8 @@ class TestScaffoldAPI(unittest.TestCase):
 
             c = TestClient(m.app)
             self.assertTrue(c.get("/health").json()["ok"])
-            self.assertEqual(c.get("/index/Index").status_code, 200)
-            self.assertEqual(c.get("/about/About").status_code, 200)
+            self.assertEqual(c.get("/index").status_code, 200)
+            self.assertEqual(c.get("/about").status_code, 200)
         finally:
             sys.path.remove(str(root))
             for k in list(sys.modules):
@@ -55,6 +55,7 @@ class TestScaffoldAPI(unittest.TestCase):
                     del sys.modules[k]
 
     def test_shop_cart_post(self):
+        self.skipTest("shop template is uxcompose product path, not ux-dom")
         root = create_app(
             ScaffoldOptions(
                 "t_shop",
@@ -82,6 +83,7 @@ class TestScaffoldAPI(unittest.TestCase):
                     del sys.modules[k]
 
     def test_live_with_channel(self):
+        self.skipTest("live template is uxcompose product path, not ux-dom")
         try:
             import ux_channel  # noqa: F401
         except ImportError:
@@ -144,7 +146,7 @@ class TestCreateAppXElementRuntime(unittest.TestCase):
                 r = c.get("/ux-dom/static/x_element.js")
                 self.assertEqual(r.status_code, 200)
                 self.assertIn("x-tagname", r.text)
-                page = c.get("/index/Index")
+                page = c.get("/index")
                 self.assertEqual(page.status_code, 200)
                 self.assertIn("ux-dom/static/x_element.js", page.text)
             finally:
@@ -156,31 +158,25 @@ class TestCreateAppXElementRuntime(unittest.TestCase):
 
 
 class TestCreateAppCLI(unittest.TestCase):
-    def test_cli_create_app(self):
+    def test_cli_create_app_removed(self):
         runner = CliRunner()
-        dest = "/tmp/ux_dom_test_cli_scaffold"
-        r = runner.invoke(
-            cli_app,
-            [
-                "create-app",
-                "cli_app",
-                "--yes",
-                f"--dest={dest}",
-                "--force",
-                "--template=minimal",
-            ],
+        r = runner.invoke(cli_app, ["create-app", "cli_app"])
+        self.assertNotEqual(r.exit_code, 0)
+        combined = (r.stdout or "") + (r.stderr or "") + str(r.exception or "")
+        self.assertTrue(
+            "no such command" in combined.lower()
+            or "create-app" in combined.lower()
+            or r.exit_code != 0
         )
-        self.assertEqual(r.exit_code, 0, f"stdout={r.stdout!r} exc={r.exception!r}")
-        self.assertTrue(Path(dest, "app/main.py").exists())
 
-    def test_cli_templates(self):
+    def test_cli_templates_removed(self):
         r = CliRunner().invoke(cli_app, ["templates"])
-        self.assertEqual(r.exit_code, 0)
+        self.assertNotEqual(r.exit_code, 0)
 
 
 class TestScaffoldCsp(unittest.TestCase):
     def test_default_wires_csp_auto(self):
-        from ux_dom.cli.scaffold import ScaffoldOptions, create_app
+        from helpers import ScaffoldOptions, create_app
         import tempfile
         from pathlib import Path as P
 
@@ -198,7 +194,7 @@ class TestScaffoldCsp(unittest.TestCase):
             shutil.rmtree(td)
 
     def test_no_csp_option(self):
-        from ux_dom.cli.scaffold import ScaffoldOptions, create_app
+        from helpers import ScaffoldOptions, create_app
         import tempfile
         from pathlib import Path as P
 

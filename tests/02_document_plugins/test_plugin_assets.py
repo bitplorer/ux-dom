@@ -10,7 +10,7 @@ from tempfile import TemporaryDirectory
 from fastapi.testclient import TestClient
 
 from ux_dom.assets import compose_document_parts, register_js
-from ux_dom.cli.scaffold import ScaffoldOptions, create_app
+from helpers import ScaffoldOptions, create_app
 from ux_dom.plugins import App, XElementRuntime, shell_fragments
 from ux_dom.plugins.control import HtmxControl
 from ux_dom.plugins.hub import PluginHub, set_hub
@@ -73,7 +73,7 @@ class TestScaffoldServesPackageJs(unittest.TestCase):
 
                 c = TestClient(app)
                 self.assertEqual(c.get(XELEMENT_JS_URL).status_code, 200)
-                page = c.get("/index/Index")
+                page = c.get("/index")
                 self.assertEqual(page.status_code, 200)
                 self.assertIn("ux-dom/static/x_element.js", page.text)
             finally:

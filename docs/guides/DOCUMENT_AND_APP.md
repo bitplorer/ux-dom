@@ -26,7 +26,7 @@ process plus your routes — not a second document factory.
 document = Document(...).use(XElement(), Htmx(), Csp.auto())
 app = FastAPI(...)
 document.mount(app)
-# then DirectoryRouting(...).include(app) or explicit routes
+# then DirectoryRoutes + adapter, or explicit routes
 ```
 
 ## What `App` means in code
@@ -35,15 +35,16 @@ document.mount(app)
 |------|---------|
 | Everyday “app” | FastAPI instance + routes + Document |
 | `ux_dom.plugins.App` | Optional plugin hub registry (tests / advanced) — **not** the HTML shell |
-| `CreateAsgi` | Optional sugar; create-app uses plain FastAPI |
+| `CreateAsgi` | Optional sugar; tests / pure-dom scripts only |
 
 ## Automation
 
 Scaffold and keep composition via:
 
 ```bash
-uxdom create-app myapp
-uxdom doctor
+uxcompose create-app myapp
+uxcompose doctor .
+uxdom doctor          # pure Document health
 ```
 
 Do not hand-reintroduce a parallel “App owns head/body” path.

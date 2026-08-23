@@ -158,7 +158,7 @@ def run_doctor(
         Check("ux-channel", ch_ok, str(ch_detail), "info" if ch_ok else "warn")
     )
 
-    # Tailwind CLI — same resolver as uxdom serve (no download here)
+    # Tailwind CLI — same resolver as uxdom build (no download here)
     tw_ok = False
     tw_detail = "not found"
     try:
@@ -173,7 +173,7 @@ def run_doctor(
     if not tw_ok:
         tw_detail = (
             "optional — pip install pytailwindcss  ·  "
-            "or let `uxdom serve` download the standalone CLI"
+            "or pip install pytailwindcss / set UXDOM_TAILWIND"
         )
     report.checks.append(
         Check(
@@ -286,21 +286,15 @@ def run_doctor(
                     "warn" if not has_shell else "info",
                 )
             )
-        # Hardened scaffold integrity (files, syntax, CSP, placeholders)
-        try:
-            from ux_dom.cli.scaffold_check import doctor_checks_from_scaffold
-
-            for item in doctor_checks_from_scaffold(root):
-                report.checks.append(
-                    Check(
-                        item["name"],
-                        item["ok"],
-                        item["detail"],
-                        item.get("level", "info"),
-                    )
-                )
-        except Exception as e:
-            report.checks.append(Check("scaffold:integrity", False, str(e), "warn"))
+        # Product scaffold is uxcompose. Leftover .ux_dom-scaffold.json is info only.
+        report.checks.append(
+            Check(
+                "product-scaffold",
+                True,
+                "product apps: uxcompose create-app (uxdom does not scaffold)",
+                "info",
+            )
+        )
 
         # Optional dual-copy file is NOT required
         xjs = root / "assets" / "js" / "x_element.js"

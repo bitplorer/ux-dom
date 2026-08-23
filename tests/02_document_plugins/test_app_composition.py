@@ -8,7 +8,7 @@ from tempfile import TemporaryDirectory
 
 from fastapi.testclient import TestClient
 
-from ux_dom.cli.scaffold import ScaffoldOptions, create_app
+from helpers import ScaffoldOptions, create_app
 from ux_dom.plugins import App, Csp, XElementRuntime
 from ux_dom.plugins.control import HtmxControl
 from ux_dom.plugins.hub import PluginHub, set_hub
@@ -95,7 +95,7 @@ class TestDocumentIsSSoT(unittest.TestCase):
         from pathlib import Path as P
         from tempfile import TemporaryDirectory
 
-        from ux_dom.cli.scaffold import ScaffoldOptions, create_app
+        from helpers import ScaffoldOptions, create_app
 
         with TemporaryDirectory() as td:
             root = create_app(ScaffoldOptions("ssot", dest=P(td) / "ssot", force=True))

@@ -1,4 +1,4 @@
-"""Resolve the Tailwind standalone CLI for ``uxdom serve`` / ``dev`` / ``build``.
+"""Resolve the Tailwind standalone CLI for ``uxdom build`` (and compose serve).
 
 Order (first hit wins):
 

@@ -14,10 +14,18 @@ from fastapi.testclient import TestClient
 
 from ux_dom.cli.adders import add_route, add_xelement
 from ux_dom.cli.build import run_build
-from ux_dom.cli.deploy import prepare_deploy
+try:
+    from ux_dom.cli.deploy import prepare_deploy
+except ImportError:  # product deploy lives on uxcompose
+    prepare_deploy = None
+
+
+def _require_deploy():
+    if prepare_deploy is None:
+        raise unittest.SkipTest("product deploy is uxcompose, not uxdom")
 from ux_dom.cli.doctor import run_doctor
 from ux_dom.cli.lint import lint_project
-from ux_dom.cli.scaffold import ScaffoldOptions, available_templates, create_app
+from helpers import ScaffoldOptions, available_templates, create_app
 from ux_dom.dom import div, template
 from ux_dom.dom.htmlelement import CustomElement, WebComponent, XElement
 from ux_dom.ui import Button, Card, CardContent, Dialog, Input, Select, Tabs
@@ -109,7 +117,7 @@ class TestScaffoldMatrix(unittest.TestCase):
                             from app.main import app
 
                             c = TestClient(app)
-                            r = c.get("/index/Index")
+                            r = c.get("/index")
                             self.assertEqual(r.status_code, 200, tmpl)
                             self.assertIn("x_element.js", r.text)
                     finally:
@@ -154,6 +162,7 @@ class TestDynamicRoutes(unittest.TestCase):
 
 class TestBuildDeployDoctor(unittest.TestCase):
     def test_pipeline(self):
+        _require_deploy()
         with tempfile.TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
@@ -217,7 +226,7 @@ class TestUiGallery(unittest.TestCase):
             from app.main import app
 
             c = TestClient(app)
-            r = c.get("/index/Index")
+            r = c.get("/index")
             self.assertEqual(r.status_code, 200)
             self.assertIn("data-channel-id", r.text)
             self.assertIn("Gallery:card", r.text)

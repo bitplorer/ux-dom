@@ -21,7 +21,7 @@ Document(head=…, body=…)     Stage A chrome  →  common_head / common_body
 |---------|--------|
 | `<head>` / `<body>` order | `Document` + `HtmlDocument.render` |
 | HTTP routes, middleware | FastAPI (`document.mount(app)` wires runtimes) |
-| Scaffold | `uxdom create-app` → FastAPI + `document.mount` + DirectoryRouting |
+| Scaffold | `uxcompose create-app` → composition root + `DirectoryRoutes` adapter |
 
 ---
 

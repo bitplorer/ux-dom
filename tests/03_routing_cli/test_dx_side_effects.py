@@ -19,10 +19,18 @@ from typer.testing import CliRunner
 from ux_dom.cli.adders import AddError, add_component
 from ux_dom.cli.build import run_build
 from ux_dom.cli.cli import app as cli_app
-from ux_dom.cli.deploy import prepare_deploy
+try:
+    from ux_dom.cli.deploy import prepare_deploy
+except ImportError:  # product deploy lives on uxcompose
+    prepare_deploy = None
+
+
+def _require_deploy():
+    if prepare_deploy is None:
+        raise unittest.SkipTest("product deploy is uxcompose, not uxdom")
 from ux_dom.cli.doctor import run_doctor
 from ux_dom.cli.lint import lint_project
-from ux_dom.cli.scaffold import ScaffoldOptions, available_templates, create_app
+from helpers import ScaffoldOptions, available_templates, create_app
 from ux_dom.cli.static_assets import sync_runtime_assets
 
 
@@ -73,6 +81,7 @@ class TestAddDeployForceGates(unittest.TestCase):
             self.assertEqual(p, p2)
 
     def test_deploy_skips_existing_without_force(self):
+        _require_deploy()
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
@@ -107,6 +116,7 @@ class TestCreateAppYesVsForce(unittest.TestCase):
             self.assertEqual(marker.read_text(encoding="utf-8"), "precious")
 
     def test_cli_yes_without_force_preserves_nonempty(self):
+        self.skipTest("uxdom create-app removed; product scaffold is uxcompose")
         with TemporaryDirectory() as td:
             dest = Path(td) / "cliapp"
             create_app(
@@ -130,6 +140,7 @@ class TestCreateAppYesVsForce(unittest.TestCase):
             )
 
     def test_cli_noninteractive_without_yes_aborts(self):
+        self.skipTest("uxdom create-app removed; product scaffold is uxcompose")
         with TemporaryDirectory() as td:
             dest = Path(td) / "fresh"
             # CliRunner is non-TTY → must require --yes

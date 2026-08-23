@@ -58,4 +58,4 @@ Open http://127.0.0.1:8080/
 
 ## Scaffold origin
 
-Generated with `uxdom create-app` (shop template) and extended for SSE/stream demos.
+Historical demo tree (pre product-CLI hard cut). Product apps: `uxcompose create-app`.

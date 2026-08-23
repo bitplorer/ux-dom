@@ -15,7 +15,7 @@ ux-dom                          ux-channel
 ────────                        ──────────
 Document / Component            Intent → Action → Result(ops)
 XElement + x_element.js         caps · morph · bridges · regions
-DirectoryRouter / SSR           /ux-channel/action  +  /ux-channel/static/*
+DirectoryRoutes / Document      /ux-channel/action  +  /ux-channel/static/*
 CSP · SafeStaticFile            CSRF header X-Channel
 ```
 

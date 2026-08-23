@@ -8,8 +8,16 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from ux_dom.cli.build import run_build
-from ux_dom.cli.deploy import prepare_deploy
-from ux_dom.cli.scaffold import ScaffoldOptions, create_app
+try:
+    from ux_dom.cli.deploy import prepare_deploy
+except ImportError:  # product deploy lives on uxcompose
+    prepare_deploy = None
+
+
+def _require_deploy():
+    if prepare_deploy is None:
+        raise unittest.SkipTest("product deploy is uxcompose, not uxdom")
+from helpers import ScaffoldOptions, create_app
 
 
 class TestBuild(unittest.TestCase):
@@ -35,6 +43,7 @@ class TestBuild(unittest.TestCase):
 
 class TestDeploy(unittest.TestCase):
     def test_docker_files(self):
+        _require_deploy()
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions("dapp", dest=Path(td) / "dapp", force=True)
@@ -45,6 +54,7 @@ class TestDeploy(unittest.TestCase):
             self.assertIn("uvicorn", (root / "Dockerfile").read_text())
 
     def test_checklist_no_files(self):
+        _require_deploy()
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions("capp", dest=Path(td) / "capp", force=True)
@@ -54,6 +64,7 @@ class TestDeploy(unittest.TestCase):
             self.assertTrue(any("uxdom build" in i for i in res.instructions))
 
     def test_fly_and_vps(self):
+        _require_deploy()
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions("fapp", dest=Path(td) / "fapp", force=True)

@@ -11,7 +11,7 @@
 
 | Edge | Fix |
 |------|-----|
-| `route.py` + Component | DirectoryRouter discovers Components with `routes=` |
+| `route.py` + Component | DirectoryRoutes discovers Components with `routes=` |
 | Path params as query | Named path params in generated `get` |
 | Nested packages | `_ensure_route_packages` writes `__init__.py` |
 | Dual JS names | Single `x_element.js` / `x-tagname` |

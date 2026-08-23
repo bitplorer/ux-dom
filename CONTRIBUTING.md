@@ -22,14 +22,14 @@ Coverage: `pytest --cov=ux_dom` (fail_under=70).
 
 ## Automation-first
 
-Ceremonial app files (scaffolds, route stubs, component stubs, UI copy-ins)
-are produced by **`uxdom` CLI** — not hand-typed from memory.
+Ceremonial **product** files are produced by **`uxcompose`**. Pure-dom stubs
+(`add component|xelement|ui`) stay on **`uxdom`**.
 
 | Do | Don't |
 |----|-------|
-| `uxdom create-app` / `uxdom add …` for boilerplate | Re-handwrite create-app layouts |
-| Extend generated files for real feature work | Copy-paste drift from examples as a second scaffold |
-| Update generators when the *template* should change | Patch only one example and leave CLI stale |
+| `uxcompose create-app` for product apps | Re-handwrite a second product scaffold in ux-dom |
+| `uxdom add component\|ui\|xelement` | Copy-paste drift from examples as a second scaffold |
+| Update compose generators when the *product template* should change | Patch only one example and leave CLI stale |
 
 Core library changes (`src/ux_dom`) always need tests + the matching guide
 under `docs/`. See [AGENTS.md](AGENTS.md) and [docs/guides/DX.md](docs/guides/DX.md).

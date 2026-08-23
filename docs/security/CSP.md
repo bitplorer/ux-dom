@@ -151,12 +151,10 @@ Hosts **do** apply. CDNs in `script_hosts` are real allowlists.
 
 ## Scaffold / create-app (low cognitive load)
 
-`uxdom create-app` wires CSP for you::
+`uxcompose create-app` wires CSP on the Document shell (`Csp.auto()`).
+Pure Document::
 
-    # app/document.py (generated)
-    document.use(XElement(), Htmx(...))
-    if settings.WITH_CSP:
-        document.use(Csp.auto(debug=settings.DEBUG))
+    document.use(XElement(), Htmx(...), Csp.auto())
 
 | DEBUG | Policy |
 |-------|--------|
@@ -167,8 +165,7 @@ No extra mental model: same place as other runtimes (``document.use``),
 middleware attaches on ``document.mount(app)``.
 
 ```bash
-uxdom create-app myapp           # CSP on (auto)
-uxdom create-app myapp --no-csp  # opt out
+uxcompose create-app myapp
 ```
 
 Override without fighting the scaffold::

@@ -50,7 +50,7 @@ class TailwindStyle:
         self._cmd = None
 
     def _owned_by_cli(self) -> bool:
-        """``uxdom serve`` already runs the standalone CLI — skip a second watch."""
+        """Compose/CLI already runs the standalone Tailwind — skip a second watch."""
         import os
 
         return os.environ.get("UXDOM_TAILWIND_OWNED", "") in {"1", "true", "True"}

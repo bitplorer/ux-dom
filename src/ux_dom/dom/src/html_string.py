@@ -93,7 +93,7 @@ def _sanitize_attrs_when_escape(attrs: dict) -> dict:
 
 @dataclass
 class StringToHTML(object):
-    # TODO convert DOM object instance to Code Object for AST conversion to python code.
+    # AST round-trip (HTML ↔ Python code object) is not implemented.
     # from https://stackoverflow.com/questions/68577587/how-to-find-the-ast-assignment-node-related-to-the-instance-creation
     # this.ast_object can be easily used to create python code for any html object
     # https://stackoverflow.com/a/68584740 for parsing a python object into an ast_object

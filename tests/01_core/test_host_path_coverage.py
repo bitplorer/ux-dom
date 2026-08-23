@@ -216,8 +216,8 @@ class TestParseEscape(unittest.TestCase):
 class TestCLIModulesImport(unittest.TestCase):
     def test_imports(self):
         import ux_dom.cli.build  # noqa: F401
-        import ux_dom.cli.deploy  # noqa: F401
         import ux_dom.cli.lint  # noqa: F401
+        import ux_dom.cli.scaffold  # noqa: F401  teaching stub
 
 
 class TestReloaderSmoke(unittest.TestCase):

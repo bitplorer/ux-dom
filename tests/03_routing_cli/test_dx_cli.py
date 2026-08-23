@@ -13,7 +13,7 @@ from tempfile import TemporaryDirectory
 from ux_dom.cli.adders import AddError, add_component, add_route, add_xelement
 from ux_dom.cli.doctor import run_doctor
 from ux_dom.cli.lint import lint_project
-from ux_dom.cli.scaffold import ScaffoldOptions, available_templates, create_app
+from helpers import ScaffoldOptions, available_templates, create_app
 from ux_dom.dom import div, template
 from ux_dom.dom.htmlelement import CustomElement, WebComponent, XElement
 
@@ -21,12 +21,16 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class TestTemplates(unittest.TestCase):
-    def test_tutorial_listed(self):
-        self.assertIn("tutorial", available_templates())
+    def test_product_templates_not_on_uxdom(self):
+        import ux_dom.cli.scaffold as sc
+        with self.assertRaises(ImportError) as ctx:
+            sc.available_templates()
+        self.assertIn("uxcompose create-app", str(ctx.exception))
 
 
 class TestTutorialScaffold(unittest.TestCase):
     def test_creates_guided_routes(self):
+        self.skipTest("tutorial template is uxcompose product path, not ux-dom")
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(

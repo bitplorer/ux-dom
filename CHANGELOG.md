@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+### Residual-free ownership (hard cut)
+
+- **Product lifecycle is uxcompose only:** `create-app` / `serve` / `deploy`.
+  `CreateProject.write()` raises `ProductScaffoldMoved`. `ux_dom.cli.scaffold`
+  fails closed with a teaching import error. Doctor no longer runs scaffold
+  integrity as if ux-dom owned product trees.
+- **Preferred routing bind:** `DirectoryRoutes` + thin adapter.
+  `DirectoryRouter` remains batteries-only for standalone FastAPI users.
+- Historical `uxdom serve` / `create-app` notes below are **pre-cut**.
+
+## Previously
+
 ### Next-style DX (`uxdom serve`)
 
 - **`uxdom serve` / `dev` / `start`:** process runner matching Next `dev` / `start`.

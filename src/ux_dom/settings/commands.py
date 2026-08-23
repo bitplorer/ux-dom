@@ -222,7 +222,7 @@ class TailwindCommand(object):
         """Resolved Tailwind CLI argv (env / PATH / pytailwindcss / cache).
 
         An explicit ``tailwindcss=`` other than the default name wins.
-        Does **not** download — ``uxdom serve`` is the ensure path.
+        Does **not** download — ``uxdom build`` / compose serve is the ensure path.
         """
         explicit = self.tailwindcss
         if isinstance(explicit, (list, tuple)) and explicit:
@@ -289,7 +289,7 @@ class TailwindCommand(object):
     def is_tailwindcss_available(self) -> bool:
         """Return True when the tailwindcss binary is resolvable.
 
-        Resolution order matches ``uxdom serve`` (env / PATH / pytailwindcss /
+        Resolution order matches ``uxdom build`` (env / PATH / pytailwindcss /
         node_modules / cache). Falls back to ``shutil.which`` + ``which``/``where``
         so existing unit tests that patch those still work.
         """

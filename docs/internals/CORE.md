@@ -48,7 +48,12 @@ Compose::
 ## CLI
 
 ```bash
-uxdom create-app myapp
-uxdom serve --port 8080
-uxdom plugins
+uxcompose create-app myapp
+uxcompose serve app:asgi --port 8080
+
+uxdom doctor
+uxdom lint
+uxdom build
 ```
+
+`plugins.App.use(FastAPIHost)` is **not** the product path. See [SYSTEM.md](SYSTEM.md).

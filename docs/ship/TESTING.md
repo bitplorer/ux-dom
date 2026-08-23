@@ -23,7 +23,7 @@ Layout: [`tests/README.md`](../../tests/README.md).
 |------|--------|-----------|
 | Core | `01_core/` | Component, Fragment, render, reactive |
 | Document | `02_document_plugins/` | Document, CSP, XElement, package static |
-| CLI / routes | `03_routing_cli/` | DirectoryRouter, create-app, doctor |
+| CLI / routes | `03_routing_cli/` | DirectoryRoutes, doctor, add (no product scaffold) |
 | Production | `04_production/` | Readiness + **0.1 lock** |
 | Chaos | `05_chaos/` | Parse / race / pentest |
 | Browser | `06_browser/` | Live Chromium when available |

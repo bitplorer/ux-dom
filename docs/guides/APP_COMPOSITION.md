@@ -8,14 +8,14 @@ where tags go:
 ```text
 Document  →  HTML shell (<head>/<body>), .use(runtimes), .mount(app)
 FastAPI   →  process, routes, lifespan, servers
-Routes    →  DirectoryRouting (files) and/or explicit FastAPI handlers
+Routes    →  DirectoryRoutes (files) + thin adapter, or explicit FastAPI handlers
 ```
 
 | Piece | Owns | Does not own |
 |-------|------|--------------|
 | **Document** | Tag placement, runtime scripts, CSP stamp, static allowlist | ASGI process |
 | **FastAPI** | HTTP/WS lifecycle | Head/body order |
-| **DirectoryRouting** | File → path registration | Document head |
+| **DirectoryRoutes** | File → path discovery | Document head |
 
 ## Canonical assembly
 
@@ -23,7 +23,8 @@ Routes    →  DirectoryRouting (files) and/or explicit FastAPI handlers
 from fastapi import FastAPI
 from ux_dom import Document
 from ux_dom.runtime import XElement, Htmx, Csp
-from ux_dom.plugins.routing import DirectoryRouting
+from ux_dom.routing.core import DirectoryRoutes
+from ux_dom.routing.adapters.fastapi import mount
 from app import PACKAGE  # package root for file routes
 
 document = Document(head=[], body=[], ensure_csrf_token=False).use(
@@ -34,11 +35,13 @@ document = Document(head=[], body=[], ensure_csrf_token=False).use(
 
 app = FastAPI(title="MyApp")
 document.mount(app)
-DirectoryRouting(package_dir=PACKAGE, base_directory="routes").include(app)
+core = DirectoryRoutes(PACKAGE, base_directory="routes")
+core.discover()
+mount(core, app)
 ```
 
-This is exactly what **`uxdom create-app`** emits. Prefer the generator over
-hand-assembling the skeleton unless you are changing composition contracts.
+Greenfield product apps: **`uxcompose create-app`**. Hand-assemble this
+render + host pattern only when extending composition contracts.
 
 ## Optional surfaces (not the document)
 

@@ -156,7 +156,7 @@ class TestScaffoldProductionArtifacts(unittest.TestCase):
     def test_create_app_ships_runtime_not_old_names(self):
         from tempfile import TemporaryDirectory
 
-        from ux_dom.cli.scaffold import ScaffoldOptions, create_app
+        from helpers import ScaffoldOptions, create_app
 
         with TemporaryDirectory() as td:
             root = create_app(
@@ -192,9 +192,8 @@ class TestScaffoldProductionArtifacts(unittest.TestCase):
                 or "XElement" in (root / "app/document.py").read_text()
             )
             self.assertNotIn("html_elements", doc)
-            # package meta
-            meta = (root / ".ux_dom-scaffold.json").read_text(encoding="utf-8")
-            self.assertIn("create-app", meta)
+            # product scaffold metadata is uxcompose, not ux-dom
+            self.assertFalse((root / ".ux_dom-scaffold.json").exists())
 
 
 if __name__ == "__main__":

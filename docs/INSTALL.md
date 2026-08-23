@@ -6,7 +6,8 @@
 |-------|------|
 | **PyPI / pip** | `ux-dom` |
 | **Import** | `ux_dom` |
-| **CLI** | **`uxdom`** |
+| **CLI** | **`uxdom`** (pure-dom tooling) |
+| **Product CLI** | **`uxcompose`** |
 
 ## From this source tree (0.1.0)
 
@@ -33,9 +34,15 @@ pip install 'ux-dom[fastapi]'
 ## CLI
 
 ```bash
+# Product apps (composition + delivery):
+uxcompose create-app myapp
+uxcompose serve app:asgi --port 8080
+
+# Pure Document tooling:
 uxdom --help
-uxdom create-app myapp
 uxdom doctor
+uxdom lint
+uxdom build
 ```
 
 ## Import

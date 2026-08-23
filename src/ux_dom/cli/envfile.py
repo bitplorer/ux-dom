@@ -1,4 +1,4 @@
-"""Next-style ``.env`` loading for ``uxdom serve`` / ``dev`` / ``start``.
+"""Next-style ``.env`` loading for Document/tooling processes.
 
 Load order (later files override earlier; process env always wins)::
 

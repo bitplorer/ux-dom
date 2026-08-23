@@ -23,10 +23,11 @@ Version: **0.1.0** (ux-dom production line).
 ## Host / routing (HOST)
 
 - [x] `StreamingRoute` + `HTMLRoute`
-- [x] **`DirectoryRouter`** file-based routes (Next-like `app/`)
+- [x] **`DirectoryRoutes`** + thin adapters (preferred product bind)
+- [x] **`DirectoryRouter`** convenience batteries (standalone FastAPI only)
 - [x] Component `routes = [...]` convention
-- [x] Plugin wrapper `plugins.routing.DirectoryRouting`
-- [x] Static mount pattern preserved in CLI scaffold
+- [x] Plugin wrapper `plugins.routing.DirectoryRouting` (non-product)
+- [x] Static mount pattern preserved in experiment trees (tests)
 
 ## Control (CTRL)
 
@@ -62,10 +63,10 @@ Version: **0.1.0** (ux-dom production line).
 - [x] Walk-stream `__async_render__` (compact open→children→close; pretty uses full engine)
 - [ ] watchfiles backend replace watchgod
 - [ ] `ux_dom[channel]` ControlPlugin package
-- [x] `uxdom serve` / `uxdom dev` / `uxdom start` / `uxdom plugins` CLI
+- [x] Product CLI moved: `uxcompose create-app | serve | deploy` (not uxdom)
 - [x] Standalone Tailwind CLI resolver (`cli/tailwind.py`)
-- [x] DirectoryRouter `[id]` → `{id}` + private `_*.py` skip
-- [x] FastAPIHost + DirectoryRouting + control/style/hmr plugins
+- [x] DirectoryRoutes `[id]` → `{id}` + private `_*.py` skip
+- [x] FastAPIHost + DirectoryRouting + control/style/hmr plugins (quarantined, not product)
 
 
 ## Idempotency gates (0.1+)

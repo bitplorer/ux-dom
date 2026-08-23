@@ -11,8 +11,16 @@ from fastapi.testclient import TestClient
 
 from ux_dom.cli.adders import AddError, add_route, add_xelement
 from ux_dom.cli.build import run_build
-from ux_dom.cli.deploy import prepare_deploy
-from ux_dom.cli.scaffold import ScaffoldOptions, create_app
+try:
+    from ux_dom.cli.deploy import prepare_deploy
+except ImportError:  # product deploy lives on uxcompose
+    prepare_deploy = None
+
+
+def _require_deploy():
+    if prepare_deploy is None:
+        raise unittest.SkipTest("product deploy is uxcompose, not uxdom")
+from helpers import ScaffoldOptions, create_app
 from ux_dom.dom import div, template
 from ux_dom.dom.htmlelement import CustomElement
 
@@ -44,7 +52,7 @@ class TestDynamicRouteMaturity(unittest.TestCase):
                 from app.main import app
 
                 c = TestClient(app)
-                self.assertEqual(c.get("/index/Index").status_code, 200)
+                self.assertEqual(c.get("/index").status_code, 200)
                 r = c.get("/users/42/Page")
                 self.assertEqual(r.status_code, 200, r.text)
                 self.assertIn("42", r.text)  # title f-string
@@ -133,6 +141,7 @@ class TestBuildDeployHardening(unittest.TestCase):
             self.assertTrue(rep.ok, rep.steps)
 
     def test_deploy_dockerfile_uses_port_env(self):
+        _require_deploy()
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
