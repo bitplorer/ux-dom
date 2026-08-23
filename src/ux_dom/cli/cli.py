@@ -4,11 +4,8 @@
 # https://opensource.org/licenses/MIT
 """uxdom CLI — pure Document / render tooling only.
 
-Hard cut (SoC + locality):
-  Product lifecycle → **uxcompose** only (create-app | serve | deploy | doctor)
-  This CLI → doctor | lint | build | profile | dashboard | add | ui
-
-See docs/internals/SYSTEM.md and ux-compose docs/FLOW.md.
+Product lifecycle (create-app · serve · deploy) lives on **uxcompose** only.
+See docs/internals/SYSTEM.md and ux-compose docs/FLOW.md / docs/CLI.md.
 """
 from pathlib import Path
 
@@ -23,49 +20,6 @@ app = Typer(
     ),
     no_args_is_help=True,
 )
-
-
-def _product_moved(cmd: str) -> None:
-    target = "serve" if cmd in ("dev", "start", "serve") else cmd
-    if cmd == "create-app":
-        target = "create-app"
-    ux_dom_logger.error(
-        f"`uxdom {cmd}` is not the product path. "
-        f"Use: uxcompose {target}"
-    )
-    raise SystemExit(2)
-
-
-@app.command("create-app")
-def create_app_cmd(
-    app_name: str = Option("", help="ignored — use uxcompose create-app"),
-):
-    """Removed from product path — use uxcompose create-app."""
-    _product_moved("create-app")
-
-
-@app.command()
-def serve():
-    """Removed from product path — use uxcompose serve."""
-    _product_moved("serve")
-
-
-@app.command()
-def dev():
-    """Removed from product path — use uxcompose serve."""
-    _product_moved("dev")
-
-
-@app.command()
-def start():
-    """Removed from product path — use uxcompose serve."""
-    _product_moved("start")
-
-
-@app.command()
-def deploy():
-    """Removed from product path — use uxcompose deploy."""
-    _product_moved("deploy")
 
 
 @app.command("doctor")
