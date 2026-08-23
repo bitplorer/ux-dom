@@ -74,6 +74,16 @@ mount(core, api)  # include_router under the hood
 `DirectoryRouter` remains the full-featured FastAPI path. Both share path law +
 page unit + `RouterHooks`. Starlette adapter can land later without page-unit changes.
 
+### Ownership (composition roots)
+
+Composition roots (**ux-compose** and others) **must** use pure `DirectoryRoutes` + thin adapters
+(`routing.adapters.fastapi.mount` / `adapters.asgi`).
+
+`DirectoryRouter` is a **convenience batteries path for standalone FastAPI users of ux-dom only**.
+It is **not** the primary integration contract for any author or composition layer.
+
+See ux-compose `docs/FLOW.md` for the full residual-free ownership map.
+
 ## Control plane (related)
 
 | Plugin | Role |
