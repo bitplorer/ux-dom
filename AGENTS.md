@@ -1,6 +1,8 @@
-# AGENTS.md — ux-dom 0.1
+# AGENTS.md — ux-dom
 
 Orientation for humans and agents continuing this package.
+
+**First-time:** [START_HERE.md](START_HERE.md). **Map:** [docs/INDEX.md](docs/INDEX.md).
 
 Read [START_HERE.md](START_HERE.md) then [docs/INDEX.md](docs/INDEX.md) then
 [docs/internals/SYSTEM.md](docs/internals/SYSTEM.md).
@@ -11,10 +13,10 @@ The UX stack is a **layered system of specialists**, not a monolith.
 
 | Layer | Owns | Must **not** own |
 |-------|------|------------------|
-| **ux-dom** (this repo) | HTML/CSS/JS trees, `Document` shell, serialize (`__render__` / `__async_render__`), pure `DirectoryRoutes` + `RouterHooks`, package static, pure-dom CLI | Intent, Cap, Result ops, product state machines, motion IR, author-facing composition, product serve/deploy |
+| **ux-dom** (this repo) | HTML/CSS/JS trees, `Document`, serialize, pure discovery, `uxdom` | Intent, Cap, Result ops, MorphState, motion IR, product CLI |
 | **ux-channel** | Intent / Result / Cap / wire / peers / host runtime | HTML trees, CSS |
-| **ux-behavior** | Product behavior, Morph/Ref state, `@action`, validation | Raw HTML construction, wire codecs |
-| **ux-motion** | Presence / transition plans as data | Product behavior, DOM construction |
+| **ux-behavior** | Product behavior, Morph/Ref, `@action`, validation | Raw HTML construction, wire codecs |
+| **ux-motion** | Presence / transition plans as data (IR v1) | Product behavior, DOM construction |
 | **ux-compose** | Author composition + product CLI (`uxcompose`) | Re-implementing any specialist |
 
 Do not invent a sixth product (`ux-app` is retired; see ux-behavior `KILL_UX_APP.md`).
