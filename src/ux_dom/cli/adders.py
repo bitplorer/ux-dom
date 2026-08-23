@@ -100,12 +100,12 @@ def add_route(
     force: bool = False,
     methods: str = "get",
 ) -> Path:
-    """Create ``app/routes/...`` DirectoryRouter Component.
+    """Create ``app/routes/...`` DirectoryRoutes page unit.
 
     * ``about`` → ``routes/about.py`` class ``About``
     * ``admin/dashboard`` → ``routes/admin/dashboard.py``
     * ``users/[id]`` → ``routes/users/[id]/route.py`` class ``Page``
-      (DirectoryRouter: ``[id]`` → ``{{id}}``; Components in ``route.py`` supported)
+      (``[id]`` → ``{{id}}``; Components in ``route.py`` supported)
     """
     if not name or not str(name).strip():
         raise AddError("empty name")
@@ -142,7 +142,6 @@ def add_route(
     params = _path_params_from_route_name(name)
     if params:
         get_sig = "".join(f", {p}: str" for p in params)
-        # Source in generated file: page_title=f"Page ({id})"
         title_bits = ", ".join("{" + p + "}" for p in params)
         page_title_src = 'f"' + cls + " (" + title_bits + ')"'
     else:
@@ -167,7 +166,7 @@ class {cls}(Component):
 
     def render(self, *args, **kwargs):
         return div(
-            a("← Home", href="/index/Index", className="text-sm text-sky-600"),
+            a("← Home", href="/", className="text-sm text-sky-600"),
             h1("{cls}", className="text-2xl font-bold mt-4 mb-2"),
             p("Edit this file under app/routes/.", className="text-slate-600"),
             className="max-w-2xl mx-auto px-4 py-10",
@@ -175,7 +174,6 @@ class {cls}(Component):
 
     @classmethod
     def get(cls{get_sig}):
-        # FastAPI injects path params by name (never **kwargs)
         return page(cls(), page_title={page_title_src})
 '''
     path.write_text(content, encoding="utf-8")
