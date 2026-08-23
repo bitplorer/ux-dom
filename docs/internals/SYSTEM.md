@@ -1,79 +1,59 @@
-# ux-dom System Boundary (residual-free)
+# ux-dom System Boundary (hard cut)
 
-> Companion to ux-compose `docs/FLOW.md`. Start there for the full stack.
-
----
+> Companion to ux-compose `docs/FLOW.md`.
 
 ## One rule
 
-**ux-dom renders. It does not own product delivery.**
+**ux-dom renders. Product lifecycle is ux-compose only.**
 
 ```text
 IN  → tag trees / Document / pure discovery
-OUT → HTML string | bytes | async token stream  (+ Document shell meaning)
+OUT → HTML string | bytes | async token stream (+ Document shell)
 ```
-
-Everything after that (HTTP boxes on an ASGI app, host choice, HMR process,
-product scaffold, channel) is **ux-compose**.
-
----
 
 ## Owns
 
-| Concern | Location |
-|---------|----------|
-| Tag tree, Component | `dom/` |
-| `__render__` / `__async_render__` | `dom_tag` (serialize SSoT) |
-| Pure body helpers (no FastAPI) | optional helpers calling dunders |
-| Document shell | Document + contributions |
-| control dialect | via `Document.use` |
-| runtime script tags | via `Document.use` |
-| **CSP stamp + policy** | via `Document.use` |
-| style tags/href | style contributions |
-| Pure page discovery | `routing/core` DirectoryRoutes + RouterHooks |
+- Tag trees, `__render__` / `__async_render__`
+- Document shell: control, runtime tags, **CSP stamp**, style
+- Pure DirectoryRoutes + RouterHooks
+- Pure-dom CLI: `doctor` | `lint` | `build` | `profile` | `dashboard` | `add` | `ui`
 
----
+## Does not own
 
-## Does **not** own (product path)
+| Concern | Home |
+|---------|------|
+| create-app / serve / deploy | **uxcompose only** |
+| Host strategy / product App | ux-compose |
+| HMR process | ux-compose (with serve) |
+| Channel transport | ux-compose `wire/` |
 
-| Concern | Correct home |
-|---------|----------------|
-| Product HTTP delivery story | ux-compose |
-| Host strategy / which ASGI app | ux-compose Invisible |
-| HMR watch + WebSocket | ux-compose (dev) |
-| Product `create-app` | **`uxcompose create-app` only** |
-| Second product App (`plugins.App.web`) | Forbidden as product path |
-| Channel / Intent transport | ux-compose `wire/` |
+## CLI hard cut
 
-Thin FastAPI helpers that may still exist in-tree are **not** the product
-narrative. Product authors use ux-compose.
+```bash
+# Product (only)
+uxcompose create-app myapp
+uxcompose serve app:asgi
+uxcompose deploy --provider docker
 
----
+# Pure-dom
+uxdom doctor | lint | build | profile
+```
+
+`uxdom create-app|serve|dev|start|deploy` exit with pointer to uxcompose.
 
 ## Document.use
 
-Allowed: control, runtime tags, CSP, style tags.
+Allowed: control, runtime, CSP, style.  
+Not: HMR process, FastAPIHost, product App.
 
-**Not** a product API for HMR process or FastAPIHost app assembly.
+## Plugins
 
----
-
-## Scaffold
-
-| CLI | Role |
-|-----|------|
-| `uxcompose create-app` | **Sole product scaffold** |
-| `uxdom create-app` | Not promoted for product apps |
-
----
+`plugins.App` / `PluginHub` / `plugins.host` are **not** the product path.
+Product composition root: **ux_compose.App** / `build()`.
 
 ## Forbidden residuals
 
-- Recommending `ux_dom.plugins.App.web` as the app entry
-- Treating HMR as a Document.use requirement
-- Moving CSP **stamp** ownership to a FastAPI host package
-- Importing FastAPI inside serialize/dunder path
-
----
-
-See ux-compose `docs/FLOW.md` for end-to-end mount, channel, and HMR flows.
+- Dual product CLI on uxdom
+- Recommending plugins.App.web as app entry
+- CSP stamp owned by host package
+- FastAPI inside dunder serialize path

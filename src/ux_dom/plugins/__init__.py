@@ -2,24 +2,17 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-"""Document contributions and optional advanced hub.
+"""Document contributions (shell SSoT).
 
-**Document is the single source of truth** for the HTML shell::
+**Document.use** owns shell meaning: control, runtime tags, CSP stamp, style.
 
-    document = Document(...).use(XElement(), Htmx(), Csp.auto())
-    document.mount(app)  # attaches contribution middleware to *caller*'s app
+**Not product composition.** ``App`` / ``PluginHub`` / host factories remain for
+tests and advanced hubs only. Product applications use **ux-compose**
+(``App`` / ``build`` / ``uxcompose create-app``).
 
-``Document.use`` owns shell meaning: control dialect, runtime script tags,
-CSP stamp/policy, style tags.
+HMR process is dev delivery on ux-compose, not a Document.use product API.
 
-**Not product composition:** ``App`` / ``PluginHub`` remain for tests and
-advanced hubs only. Product applications use **ux-compose** ``App`` and
-``uxcompose create-app``. Do not treat ``plugins.App.web`` as the product path.
-
-HMR process (file watch + WebSocket) is **dev delivery** — product path is
-ux-compose; ``HotReload`` here is not a first-class Document.use product API.
-
-See ``docs/internals/SYSTEM.md`` and ux-compose ``docs/FLOW.md``.
+See ``docs/internals/SYSTEM.md``.
 """
 
 from ux_dom.plugins import protocols as protocols
