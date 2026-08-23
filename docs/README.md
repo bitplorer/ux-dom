@@ -16,8 +16,17 @@
 ## Feature map
 
 | Doc | Purpose |
-|-----|---------|
+|-----|--------|
 | **[FEATURES.md](FEATURES.md)** | **Complete feature encyclopedia** |
+
+## Audiences
+
+| You are… | Start |
+|----------|--------|
+| **New to ux-dom** | [START_HERE.md](START_HERE.md) |
+| **Building product apps** | [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md) + [guides/TUTORIAL.md](guides/TUTORIAL.md) |
+| **Pure Document / components** | [guides/DOCUMENT.md](guides/DOCUMENT.md) → [guides/COMPONENTS.md](guides/COMPONENTS.md) |
+| **Maintainer / architecture** | [internals/SYSTEM.md](internals/SYSTEM.md) · [internals/ARCHITECTURE.md](internals/ARCHITECTURE.md) |
 
 ## Learning path
 
@@ -62,43 +71,46 @@ START_HERE → INSTALL → guides/TUTORIAL → guides/DOCUMENT → guides/COMPON
 |-----|-------------|
 | [CSP.md](security/CSP.md) | Nonce CSP |
 | [SAFE_STATIC.md](security/SAFE_STATIC.md) | Package static |
-| [SCRIPT_INJECTION.md](security/SCRIPT_INJECTION.md) | Script inject / dedupe |
-| [ASSETS.md](security/ASSETS.md) | WebAssets / Tailwind |
-| [WHY_JS_URL.md](security/WHY_JS_URL.md) | Why JS needs a URL |
+| [SCRIPT_INJECTION.md](security/SCRIPT_INJECTION.md) | Script injection |
+| [ASSETS.md](security/ASSETS.md) | Asset policy |
+| [WHY_JS_URL.md](security/WHY_JS_URL.md) | JS URL policy |
 
 ## Internals (`internals/`)
 
 | Doc | Description |
 |-----|-------------|
-| [ARCHITECTURE.md](internals/ARCHITECTURE.md) | Layers & ownership |
-| [DESIGN_CANON.md](internals/DESIGN_CANON.md) | **All design choices & intent** |
-| [MODULE_MAP.md](internals/MODULE_MAP.md) | Every package path explained |
-| [CONCEPTS.md](internals/CONCEPTS.md) | Core concepts |
-| [CORE.md](internals/CORE.md) | Core surface |
-| [RENDER_PHASES.md](internals/RENDER_PHASES.md) | Build vs serialize |
-| [CONTEXT_SYNC_ASYNC.md](internals/CONTEXT_SYNC_ASYNC.md) | Context stacks |
-| [MEMBERSHIP.md](internals/MEMBERSHIP.md) | Tree membership |
-| [PRETTY_STREAM.md](internals/PRETTY_STREAM.md) | Pretty streaming |
+| [SYSTEM.md](internals/SYSTEM.md) | Render boundary |
+| [ARCHITECTURE.md](internals/ARCHITECTURE.md) | Architecture |
+| [MODULE_MAP.md](internals/MODULE_MAP.md) | Module map |
+| [CONCEPTS.md](internals/CONCEPTS.md) | Concepts |
+| [CORE.md](internals/CORE.md) | Core |
+| [DESIGN_CANON.md](internals/DESIGN_CANON.md) | Design canon |
+| [RENDER_PHASES.md](internals/RENDER_PHASES.md) | Render phases |
 | [CONCURRENCY.md](internals/CONCURRENCY.md) | Concurrency |
-| [MEMORY_TREE.md](internals/MEMORY_TREE.md) | Memory / tree |
+| [CONTEXT_SYNC_ASYNC.md](internals/CONTEXT_SYNC_ASYNC.md) | Context |
+| [MEMORY_TREE.md](internals/MEMORY_TREE.md) | Memory tree |
+| [MEMBERSHIP.md](internals/MEMBERSHIP.md) | Membership |
+| [PRETTY_STREAM.md](internals/PRETTY_STREAM.md) | Pretty stream |
 
-## Ship & maintain (`ship/`)
+## Ship (`ship/`)
 
 | Doc | Description |
 |-----|-------------|
-| [DEPLOY.md](ship/DEPLOY.md) | Deploy |
-| [PRODUCTION_READINESS.md](ship/PRODUCTION_READINESS.md) | Checklist |
-| [PUBLISHING.md](ship/PUBLISHING.md) | Release |
-| [COVERAGE.md](ship/COVERAGE.md) | Coverage policy |
+| [CAPABILITIES.md](ship/CAPABILITIES.md) | Capabilities |
+| [TESTING.md](ship/TESTING.md) | Testing |
 | [STABILITY.md](ship/STABILITY.md) | Stability |
-| [CAPABILITIES.md](ship/CAPABILITIES.md) | Capability matrix |
-| [MAINTENANCE_CANON.md](ship/MAINTENANCE_CANON.md) | Non-regression canon |
-| [../CHANGELOG.md](../CHANGELOG.md) | Changelog |
+| [PRODUCTION_READINESS.md](ship/PRODUCTION_READINESS.md) | Production |
+| [PUBLISHING.md](ship/PUBLISHING.md) | Publishing |
+| [DEPLOY.md](ship/DEPLOY.md) | Deploy |
+| [COVERAGE.md](ship/COVERAGE.md) | Coverage |
+| [MAINTENANCE_CANON.md](ship/MAINTENANCE_CANON.md) | Maintenance |
 
-## Archive
+## Stack & design
 
-Historical audits live under [archive/](archive/) — not product docs.
-
-## Tests
-
-See [../tests/README.md](../tests/README.md) for the parallel test ontology.
+| Doc | Description |
+|-----|-------------|
+| [STACK.md](STACK.md) | Stack map |
+| [FEATURES.md](FEATURES.md) | Feature encyclopedia |
+| [resilience/MATRIX.md](resilience/MATRIX.md) | Resilience matrix |
+| [design/DESIGN_DECISIONS.md](design/DESIGN_DECISIONS.md) | Design decisions |
+| [design/OWNERSHIP_COUNCIL.md](design/OWNERSHIP_COUNCIL.md) | Ownership council |
