@@ -1,6 +1,7 @@
 # ux-dom documentation
 
 **Version 0.1.0** · **Start:** [../START_HERE.md](../START_HERE.md) · **Map:** [INDEX.md](INDEX.md)
+GitHub renders this file when you open `docs/`. The Diátaxis audience+mode map is [INDEX.md](INDEX.md).
 
 ### Brand lines
 
