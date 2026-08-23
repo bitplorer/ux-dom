@@ -1,5 +1,8 @@
 # DX map
 
+> **Diátaxis:** how-to · **Canonical:** `docs/guides/DX.md` · **Layer:** ux-dom  
+> Map: [INDEX.md](../INDEX.md).
+
 ## Product (uxcompose only)
 
 | Need | Command |

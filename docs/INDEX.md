@@ -5,6 +5,21 @@
 
 This file is the map. It does not replace the guides.
 
+## Folder contract (Phase 2)
+
+| Folder | Diátaxis mode | May contain | Must not contain |
+|--------|---------------|-------------|------------------|
+| `docs/guides/` | how-to | Goal-oriented recipes | Conceptual essays as primary form |
+| `docs/reference/` | reference | Facts, signatures, tables | Learning narrative as primary form |
+| `docs/internals/` | explanation | Why, architecture, C4 | Step lists as primary form |
+| `docs/examples/` | examples | Worked recipes / pointers | Law |
+| `docs/adr/` | ADR | Decisions (or an index of them) | Mixed how-to |
+
+Specialized folders (`security/`, `ship/`, `design/`, `tutorial/`, `patterns/`, `archive/`) stay.
+`docs/INDEX.md` is the map. Do not add a second competing map.
+
+Old paths keep a 5-line stub. Do not cite stubs as canonical.
+
 ### Brand lines
 
 | Layer | Name |
@@ -24,7 +39,7 @@ behavior, motion IR, or product lifecycle.
 | You are… | Start (≤ 2 clicks from repo root) |
 |----------|-----------------------------------|
 | **New** | [../START_HERE.md](../START_HERE.md) |
-| **Pure Document / components** | [guides/DOCUMENT.md](guides/DOCUMENT.md) → [guides/COMPONENTS.md](guides/COMPONENTS.md) |
+| **Pure Document / components** | [reference/DOCUMENT.md](reference/DOCUMENT.md) → [reference/COMPONENTS.md](reference/COMPONENTS.md) |
 | **Product builder** | [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md) + [guides/TUTORIAL.md](guides/TUTORIAL.md) |
 | **Maintainer** | [../AGENTS.md](../AGENTS.md) · [internals/SYSTEM.md](internals/SYSTEM.md) |
 | **Agent** | [../AGENTS.md](../AGENTS.md) |
@@ -50,6 +65,7 @@ behavior, motion IR, or product lifecycle.
 | [guides/COOKBOOK.md](guides/COOKBOOK.md) | Recipes |
 | [guides/DX.md](guides/DX.md) | DX principles |
 | [guides/TUNNEL.md](guides/TUNNEL.md) | Tunnel is **uxcompose**, not ux-dom |
+| [examples/README.md](examples/README.md) | Example slot → repo `examples/` |
 | [ship/DEPLOY.md](ship/DEPLOY.md) | Deploy notes |
 | [ship/PUBLISHING.md](ship/PUBLISHING.md) | Publishing |
 | [ship/TESTING.md](ship/TESTING.md) | Testing |
@@ -58,17 +74,17 @@ behavior, motion IR, or product lifecycle.
 
 | Doc | Description |
 |-----|-------------|
-| [FEATURES.md](FEATURES.md) | Feature encyclopedia |
-| [guides/API_SURFACE.md](guides/API_SURFACE.md) | Public vs private APIs |
-| [guides/DOCUMENT.md](guides/DOCUMENT.md) | Document SSoT |
-| [guides/DOCUMENT_TWO_STAGE.md](guides/DOCUMENT_TWO_STAGE.md) | Head/body stages |
-| [guides/COMPONENTS.md](guides/COMPONENTS.md) | Component / Fragment |
-| [guides/REACTIVE.md](guides/REACTIVE.md) | ReactiveComponent |
-| [guides/ROUTING.md](guides/ROUTING.md) | DirectoryRoutes + thin adapter |
-| [guides/XELEMENT.md](guides/XELEMENT.md) | Custom elements |
-| [guides/XELEMENT_AUTO_DEFINITIONS.md](guides/XELEMENT_AUTO_DEFINITIONS.md) | Auto defs |
-| [guides/HYPERMEDIA.md](guides/HYPERMEDIA.md) | HTMX / Alpine / slots |
-| [guides/UI.md](guides/UI.md) | Optional UI kit |
+| [reference/FEATURES.md](reference/FEATURES.md) | Feature encyclopedia |
+| [reference/API_SURFACE.md](reference/API_SURFACE.md) | Public vs private APIs |
+| [reference/DOCUMENT.md](reference/DOCUMENT.md) | Document SSoT |
+| [reference/DOCUMENT_TWO_STAGE.md](reference/DOCUMENT_TWO_STAGE.md) | Head/body stages |
+| [reference/COMPONENTS.md](reference/COMPONENTS.md) | Component / Fragment |
+| [reference/REACTIVE.md](reference/REACTIVE.md) | ReactiveComponent |
+| [reference/ROUTING.md](reference/ROUTING.md) | DirectoryRoutes + thin adapter |
+| [reference/XELEMENT.md](reference/XELEMENT.md) | Custom elements |
+| [reference/XELEMENT_AUTO_DEFINITIONS.md](reference/XELEMENT_AUTO_DEFINITIONS.md) | Auto defs |
+| [reference/HYPERMEDIA.md](reference/HYPERMEDIA.md) | HTMX / Alpine / slots |
+| [reference/UI.md](reference/UI.md) | Optional UI kit |
 | [security/CSP.md](security/CSP.md) | Nonce CSP |
 | [security/SAFE_STATIC.md](security/SAFE_STATIC.md) | Package static |
 | [security/SCRIPT_INJECTION.md](security/SCRIPT_INJECTION.md) | Script injection |
@@ -77,13 +93,14 @@ behavior, motion IR, or product lifecycle.
 | [ship/CAPABILITIES.md](ship/CAPABILITIES.md) | Capabilities |
 | [ship/STABILITY.md](ship/STABILITY.md) | Stability |
 | [ship/COVERAGE.md](ship/COVERAGE.md) | Coverage |
-| [STACK.md](STACK.md) | Stack map |
+| [reference/STACK.md](reference/STACK.md) | Stack map |
 | [../CHANGELOG.md](../CHANGELOG.md) | History (not current teaching) |
 
 ### Explanation
 
 | Doc | Description |
 |-----|-------------|
+| [internals/c4.md](internals/c4.md) | C4-style context / containers |
 | [internals/SYSTEM.md](internals/SYSTEM.md) | Render boundary |
 | [internals/ARCHITECTURE.md](internals/ARCHITECTURE.md) | Architecture |
 | [internals/MODULE_MAP.md](internals/MODULE_MAP.md) | Module map |
@@ -96,8 +113,8 @@ behavior, motion IR, or product lifecycle.
 | [internals/MEMORY_TREE.md](internals/MEMORY_TREE.md) | Memory tree |
 | [internals/MEMBERSHIP.md](internals/MEMBERSHIP.md) | Membership |
 | [internals/PRETTY_STREAM.md](internals/PRETTY_STREAM.md) | Pretty stream |
-| [guides/APP_COMPOSITION.md](guides/APP_COMPOSITION.md) | App composition |
-| [guides/DOCUMENT_AND_APP.md](guides/DOCUMENT_AND_APP.md) | Document ↔ App |
+| [internals/APP_COMPOSITION.md](internals/APP_COMPOSITION.md) | App composition |
+| [internals/DOCUMENT_AND_APP.md](internals/DOCUMENT_AND_APP.md) | Document ↔ App |
 | [ship/PRODUCTION_READINESS.md](ship/PRODUCTION_READINESS.md) | Production |
 | [ship/MAINTENANCE_CANON.md](ship/MAINTENANCE_CANON.md) | Maintenance |
 | [resilience/MATRIX.md](resilience/MATRIX.md) | Resilience matrix |
@@ -106,8 +123,9 @@ behavior, motion IR, or product lifecycle.
 
 | Doc | Description |
 |-----|-------------|
-| [design/DESIGN_DECISIONS.md](design/DESIGN_DECISIONS.md) | Design decisions |
-| [design/OWNERSHIP_COUNCIL.md](design/OWNERSHIP_COUNCIL.md) | Ownership council |
+| [adr/README.md](adr/README.md) | ADR index |
+| [adr/DESIGN_DECISIONS.md](adr/DESIGN_DECISIONS.md) | Design decisions |
+| [adr/OWNERSHIP_COUNCIL.md](adr/OWNERSHIP_COUNCIL.md) | Ownership council |
 
 ---
 

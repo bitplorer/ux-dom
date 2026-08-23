@@ -1,5 +1,8 @@
 # Tutorial — first render + product app
 
+> **Diátaxis:** how-to · **Canonical:** `docs/guides/TUTORIAL.md` · **Layer:** ux-dom  
+> Map: [INDEX.md](../INDEX.md).
+
 Product lifecycle is **ux-compose**. This page is the render-layer walkthrough.
 
 ## 1. Product path (recommended)

@@ -1,5 +1,8 @@
 # Cookbook
 
+> **Diátaxis:** how-to · **Canonical:** `docs/guides/COOKBOOK.md` · **Layer:** ux-dom  
+> Map: [INDEX.md](../INDEX.md).
+
 ## Minimal Document + FastAPI
 
 ```python

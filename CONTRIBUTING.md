@@ -58,14 +58,18 @@ Layer law (what a file may contain):
 | `README.md` | Gate: definition, ownership, install, one example, links | Full API, long tutorials, ADR bodies |
 | `START_HERE.md` | 5-minute first success | Exhaustive reference |
 | `docs/guides/` | Goal-oriented recipes | Conceptual essays as primary form |
-| `docs/internals/` | Why / architecture | Step lists as primary form |
+| `docs/reference/` | Facts, signatures, tables | Learning narrative as primary form |
+| `docs/internals/` | Why / architecture / C4 | Step lists as primary form |
+| `docs/examples/` | Worked recipes | Law |
+| `docs/adr/` | Architecture decisions | Mixed how-to |
+| `docs/INDEX.md` | Audience + Diátaxis routing | Duplicate of every page |
 | `CHANGELOG.md` | History | Current teaching of deleted APIs as live |
 
 Rules:
 
 - Index: [docs/INDEX.md](docs/INDEX.md) · audience table: [docs/README.md](docs/README.md)
-- Nested paths only (`guides/`, `internals/`, `security/`, `ship/`) — gated by
-  `tests/04_production/test_docs_integrity.py`
+- Nested paths only (`guides/`, `reference/`, `internals/`, `examples/`, `adr/`,
+  `security/`, `ship/`) — gated by `tests/04_production/test_docs_integrity.py`
 - Do not add new material only to `docs/archive/`
 - Keep Document + FastAPI + `document.mount` as the canonical story
 - Fix broken links and stale test paths in the same PR as the change

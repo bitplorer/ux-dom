@@ -1,5 +1,8 @@
 # uxdom CLI (pure Document tooling)
 
+> **Diátaxis:** how-to · **Canonical:** `docs/guides/CLI.md` · **Layer:** ux-dom  
+> Map: [INDEX.md](../INDEX.md).
+
 **Product lifecycle is not on this CLI.** Use **uxcompose**:
 
 ```bash
