@@ -1,7 +1,9 @@
-# Start here — ux-dom 0.1.0
+# Start here — ux-dom 0.1.0 (mental model)
 
-> **Boundary:** [internals/SYSTEM.md](internals/SYSTEM.md)  
-> **Product apps:** [ux-compose](https://github.com/bitplorer/ux-compose) — `uxcompose create-app | serve | deploy`  
+> **5-minute path (root):** [../START_HERE.md](../START_HERE.md)
+> **Boundary:** [internals/SYSTEM.md](internals/SYSTEM.md)
+> **Product apps:** [ux-compose](https://github.com/bitplorer/ux-compose) — `uxcompose create-app | serve | deploy`
+> **Map:** [INDEX.md](INDEX.md)
 > **Features:** [FEATURES.md](FEATURES.md)
 
 ### Brand lines
@@ -27,6 +29,7 @@ ux-compose   PRODUCT    create-app · serve · deploy · App · delivery
 |---------------|------------------|
 | Document shell, serialize, pure discovery | Product scaffold / serve / deploy |
 | Pure-dom doctor / lint / build | Host strategy / product App |
+| HTML/CSS/JS trees, package static | Intent / Cap / Result, MorphState, motion IR |
 
 ## Day-1 (product app)
 
@@ -68,14 +71,16 @@ uxdom profile
 
 ## Next reading
 
-1. [SYSTEM.md](internals/SYSTEM.md)  
-2. [DOCUMENT.md](guides/DOCUMENT.md)  
-3. [CLI.md](guides/CLI.md) · [DX.md](guides/DX.md)  
-4. ux-compose `docs/FLOW.md`
+1. [../START_HERE.md](../START_HERE.md) — 5-minute path
+2. [SYSTEM.md](internals/SYSTEM.md)
+3. [DOCUMENT.md](guides/DOCUMENT.md)
+4. [CLI.md](guides/CLI.md) · [DX.md](guides/DX.md)
+5. ux-compose `docs/FLOW.md`
+6. [INDEX.md](INDEX.md)
 
 ## Assets
 
-* Library JS: `/ux-dom/static/x_element.js` from installed package  
+* Library JS: `/ux-dom/static/x_element.js` from installed package
 * App files: `/assets/*` → project `assets/`
 
 ## Quality
