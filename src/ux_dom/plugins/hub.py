@@ -256,9 +256,10 @@ class App:
         app = FastAPI(...); document.mount(app)
         # or: document.mount(fastapi_app)
 
-    ``App.web(...).build()`` still works for plugin wiring. If you pass
-    ``document=`` into ``App``, that instance is mounted via
-    ``document.mount`` — App does **not** own head/body placement.
+        ``App.web(...).build()`` is fail-closed — product apps use
+        ``uxcompose create-app``. If you pass ``document=`` into leftover
+        ``App``, that instance is mounted via ``document.mount`` when you
+        ``build(asgi=FastAPI())``.
     """
 
     document: Any = (
@@ -365,11 +366,9 @@ class App:
         return self.use(Csp(**kwargs))
 
     def fastapi(self, **kwargs: Any) -> "App":
-        from ux_dom.plugins.host import FastAPIHost
+        from ux_dom.plugins.host import ProductHostMoved
 
-        if "debug" not in kwargs:
-            kwargs["debug"] = self.debug
-        return self.use(FastAPIHost(**kwargs))
+        raise ProductHostMoved()
 
     def routes(
         self,
@@ -415,32 +414,12 @@ class App:
         htmx_version: str = "2.0.4",
         **host_kwargs: Any,
     ) -> "App":
-        """
-        Batteries-included builder for the common ASGI app.
+        from ux_dom.plugins.host import ProductHostMoved
 
-        ::
-
-            # Prefer: document = Document(...).use(...); app = FastAPI(...); document.mount(app)
-            app = App.web(
-                title="Shop",
-                package_dir=Path(__file__).parent,
-                channel=True,
-                csp=True,
-            ).build()
-        """
-        self = cls(debug=debug, document=document, assets=assets)
-        if xelement:
-            self.xelement()
-        if channel:
-            self.channel()
-        if htmx:
-            self.htmx(version=htmx_version)
-        if csp:
-            self.csp()
-        self.fastapi(title=title, **host_kwargs)
-        if package_dir is not None:
-            self.routes(package_dir=package_dir, base_directory=base_directory)
-        return self
+        raise ProductHostMoved(
+            "App.web() is not the product path. "
+            "Use: uxcompose create-app / ux_compose.build(host=)."
+        )
 
     def use_host(self, plugin: HostPlugin) -> "App":
         self.hub.add_host(plugin)
@@ -473,13 +452,16 @@ class App:
     def materialize_assets(self, root: Path | str) -> MaterializeReport:
         return self.hub.materialize(root)
 
-    def build(self) -> Any:
-        """Publish hub → host → Document.mount (if any) → routing → controls.
+    def build(self, asgi: Any = None) -> Any:
+        """Publish hub → leftover asgi → Document.mount (if any) → routing → controls.
 
-        Head/body placement stays on ``Document`` only. App never injects tags.
+        Leftover App does **not** invent FastAPI. Pass ``asgi=FastAPI()``.
+        Product apps: ``ux_compose.build(host=)``.
         """
+        from ux_dom.plugins.host import ProductHostMoved
+
         set_hub(self.hub)
-        app = self._built
+        app = asgi if asgi is not None else self._built
         for name, host in self.hub.hosts.items():
             app = host.mount(
                 app,
@@ -489,6 +471,12 @@ class App:
                 assets=self.assets,
             )
             self._built = app
+        if app is None:
+            raise ProductHostMoved(
+                "leftover plugins.App.build() does not create a host. "
+                "Pass asgi=FastAPI() or use ux_compose.build(host=). "
+                "FastAPIHost is fail-closed."
+            )
         # Document is SSoT: it mounts its own runtimes/static/middleware
         doc = self.document
         if doc is not None and hasattr(doc, "mount") and app is not None:
@@ -507,6 +495,7 @@ class App:
         if app is not None:
             _mount_package_static(app, self.hub)
         set_hub(self.hub)
+        self._built = app
         return app
 
     def plugin_summary(self) -> Sequence[str]:

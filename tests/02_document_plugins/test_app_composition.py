@@ -27,13 +27,19 @@ class TestMultiUse(unittest.TestCase):
 
 class TestSemantic(unittest.TestCase):
     def test_named_chain(self):
+        from fastapi import FastAPI
+        from fastapi.responses import HTMLResponse
+
+        from ux_dom.plugins.host import ProductHostMoved
+
         set_hub(PluginHub())
-        b = App(debug=True).xelement().htmx().csp().fastapi(title="t")
-        app = b.build()
+        with self.assertRaises(ProductHostMoved):
+            App(debug=True).xelement().htmx().csp().fastapi(title="t")
+        b = App(debug=True).xelement().htmx().csp()
+        app = b.build(asgi=FastAPI(title="t", debug=True, default_response_class=HTMLResponse))
         c = TestClient(app)
         self.assertEqual(c.get(XELEMENT_JS_URL).status_code, 200)
 
-        # CSP header on any route we add
         @app.get("/x")
         def x():
             return "ok"

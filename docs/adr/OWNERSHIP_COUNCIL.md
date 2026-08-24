@@ -49,7 +49,7 @@
 | **Pure markup components** (Button, Input, Card, Table, Badge, Avatar, …) | **OWNS** | RE-EXPORTS | FORBIDDEN | Ownable *copy* via `uxdom add ui` / `uxapp add ui` into product tree |
 | **Channel-bridge helpers** (stamp_region, live_button, public_form, to_fragment) | **OWNS** (`ux_dom.ui.channel_bridge`) | CONSUMES | FORBIDDEN in author package body | CONSUMES |
 | **Document shell / className / `<link>` / package static** | **OWNS** | FORBIDDEN | FORBIDDEN | CONSUMES |
-| **Product CLI / Tailwind compiler / WebAssets folders** | FORBIDDEN (fail-closed stubs) | FORBIDDEN | FORBIDDEN | **OWNS** via ux-compose |
+| **Product CLI / Tailwind compiler / WebAssets / DirectoryRoutes / host / HMR** | FORBIDDEN (fail-closed stubs) | FORBIDDEN | FORBIDDEN | **OWNS** via ux-compose |
 | **Op, update, notify, go, as_ops, S_PAIRS** | FORBIDDEN | **OWNS** (`ops.py`) | Applied by Peer | CONSUMES |
 | **Chrome macros** (open_overlay, close_overlay, select_region, confirm, form_result) | FORBIDDEN | **OWNS** (`overlay.py` façade) | FORBIDDEN | CONSUMES |
 | **Ports / adapters for chrome** (OverlayPort, ChannelOverlay, key scheme) | FORBIDDEN | **OWNS** | FORBIDDEN | Tests may bind mocks; production uses defaults |

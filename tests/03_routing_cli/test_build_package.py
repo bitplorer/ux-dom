@@ -72,7 +72,7 @@ class TestRunnablePackage(unittest.TestCase):
                 r = c.get(XELEMENT_JS_URL)
                 self.assertEqual(r.status_code, 200)
                 self.assertIn("x-tagname", r.text)
-                page = c.get("/index")
+                page = c.get("/")
                 self.assertIn(XELEMENT_JS_URL.lstrip("/").split("/")[0], page.text)
                 self.assertIn("x_element.js", page.text)
             finally:

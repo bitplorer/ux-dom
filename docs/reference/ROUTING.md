@@ -1,16 +1,19 @@
-# File-based routing (DirectoryRoutes)
+# File-based routing
 
 > **Diátaxis:** reference · **Canonical:** `docs/reference/ROUTING.md` · **Layer:** ux-dom  
 > Map: [INDEX.md](../INDEX.md).
 
+**Product page routing is `ux_compose.routing.DirectoryRoutes`.** This page
+documents leftover `DirectoryRouter` batteries for standalone FastAPI trees
+that cannot import compose (demosite / leftover examples).
+
 ## Design overview
 
 File-based routing maps a **directory tree of Python modules** onto URL
-paths — Python-native, filesystem-first. **Core is host-agnostic**; FastAPI is
-one adapter.
+paths — Python-native, filesystem-first.
 
-**Preferred bind (composition roots including ux-compose):**
-`DirectoryRoutes` + thin adapter. `DirectoryRouter` is batteries-only.
+**Product bind:** `from ux_compose.routing import DirectoryRoutes` + thin adapter.
+**Leftover bind:** `DirectoryRouter` (this package).
 
 
 ```text
@@ -44,11 +47,11 @@ app/routes/
 
 ### Generic hooks (host-agnostic)
 
-Preferred:
+Preferred (product — ux-compose):
 
 ```python
-from ux_dom.routing.core import DirectoryRoutes, RouterHooks
-from ux_dom.routing.adapters.fastapi import mount
+from ux_compose.routing import DirectoryRoutes, RouterHooks
+from ux_compose.routing.adapters.fastapi import mount
 
 hooks = RouterHooks(
     resolve_unit=lambda cls, path, name: registry.get(
@@ -85,34 +88,27 @@ router = DirectoryRouter(
 app.include_router(router)
 ```
 
-## Core + adapter (no host lock-in)
+## Leftover core + adapter (fail-closed on ux-dom)
 
 | Module | Role |
 |--------|------|
-| `ux_dom.routing.core` | Path law, page unit, `RouterHooks`, `DirectoryRoutes.discover()`, `RouteRecord` — **no FastAPI imports** |
-| `ux_dom.routing.adapters.fastapi` | Thin **materialize/mount** from core records → APIRouter |
-| `ux_dom.routing.fastapi.DirectoryRouter` | Full-featured FastAPI path (StreamingRoute, `[id]`, route modules) |
+| `ux_compose.routing.core` | **Product** path law, page unit, `DirectoryRoutes.discover()` |
+| `ux_compose.routing.adapters.fastapi` | **Product** materialize/mount |
+| `ux_dom.routing.fastapi.DirectoryRouter` | Leftover FastAPI batteries (demosite / examples) |
+| `ux_dom.routing.core` / `adapters` | Fail-closed teaching stubs |
 
 ```python
-from ux_dom.routing.core import DirectoryRoutes, RouterHooks
-from ux_dom.routing.adapters.fastapi import mount
+from ux_compose.routing import DirectoryRoutes, RouterHooks
+from ux_compose.routing.adapters.fastapi import mount
 
 core = DirectoryRoutes(PACKAGE, hooks=hooks, fail_closed=True)
-mount(core, api)  # include_router under the hood
+mount(core, api)
 ```
 
-`DirectoryRouter` remains the full-featured FastAPI path. Both share path law +
-page unit + `RouterHooks`. Starlette adapter can land later without page-unit changes.
+`DirectoryRouter` remains leftover FastAPI batteries for trees that cannot
+import compose. Product composition roots **must** use `ux_compose.routing`.
 
-### Ownership (composition roots)
-
-Composition roots (**ux-compose** and others) **must** use pure `DirectoryRoutes` + thin adapters
-(`routing.adapters.fastapi.mount` / `adapters.asgi`).
-
-`DirectoryRouter` is a **convenience batteries path for standalone FastAPI users of ux-dom only**.
-It is **not** the primary integration contract for any author or composition layer.
-
-See ux-compose `docs/FLOW.md` for the full residual-free ownership map.
+See ux-compose `docs/FLOW.md` for the ownership map.
 
 ## Control plane (related)
 

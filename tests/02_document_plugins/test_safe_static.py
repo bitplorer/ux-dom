@@ -5,10 +5,11 @@ from __future__ import annotations
 import unittest
 from pathlib import Path
 
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom.plugins import App, XElementRuntime
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.package_static import PackagedFile, PackageStaticContribution
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
@@ -108,8 +109,7 @@ class TestNoDirectoryLeak(unittest.TestCase):
         app = (
             App()
             .use(XElementRuntime())
-            .use(FastAPIHost(title="sec", debug=True))
-            .build()
+            .build(asgi=FastAPI(title="sec", debug=True, default_response_class=HTMLResponse))
         )
         c = TestClient(app)
         r = c.get(XELEMENT_JS_URL)

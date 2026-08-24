@@ -29,24 +29,27 @@ guesswork and the ASGI host stays debuggable:
 |-------|----------------|
 | **`Document`** | Where tags go; runtime attach; `mount` static/middleware |
 | **`FastAPI`** | HTTP/WS process |
-| **`DirectoryRoutes`** | Host-free file discovery + RouterHooks |
+| **`DirectoryRouter`** | Leftover FastAPI file router (demosite / examples) |
 | **`CreateProject` / CLI** | `write()` fails closed — product scaffold is uxcompose |
-| **`CreateAsgi`** | Optional one-liner sugar (tests / pure-dom scripts) |
-| **`App` / `PluginHub`** | Optional registry; tests/advanced only — not product |
+| **`CreateAsgi`** | Fail-closed teaching stub |
+| **`App` / `PluginHub`** | Optional registry; leftover batteries — not product |
 
 ## Canonical assembly
 
 ```python
 from fastapi import FastAPI
-from ux_dom.routing.core import DirectoryRoutes
-from ux_dom.routing.adapters.fastapi import mount
+from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
 from app.document import document
 
 app = FastAPI(title="MyApp", debug=True)
 document.mount(app)
-core = DirectoryRoutes(PACKAGE, base_directory="routes")
-core.discover()
-mount(core, app)
+app.include_router(
+    DirectoryRouter(
+        base_directory="routes",
+        package_dir=PACKAGE,
+        route_class=StreamingRoute,
+    )
+)
 ```
 
 Greenfield: **`uxcompose create-app`**. Hand-roll this render bind only when

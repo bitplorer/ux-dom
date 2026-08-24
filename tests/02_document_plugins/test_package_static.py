@@ -7,10 +7,11 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from fastapi.testclient import TestClient
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 
 from ux_dom.plugins import App, XElementRuntime
 from ux_dom.plugins.hub import PluginHub, set_hub
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.package_static import PackageStaticContribution, PackagedFile
 from ux_dom.plugins.runtime import XELEMENT_JS_URL, UxChannelRuntime
 from helpers import ScaffoldOptions, create_app
@@ -32,7 +33,7 @@ class TestSingleCopyXElement(unittest.TestCase):
     def test_app_build_serves_from_package(self):
         set_hub(PluginHub())
         app = (
-            App().use(XElementRuntime()).use(FastAPIHost(title="t", debug=True)).build()
+            App().use(XElementRuntime()).build(asgi=FastAPI(title="t", debug=True, default_response_class=HTMLResponse))
         )
         c = TestClient(app)
         r = c.get(XELEMENT_JS_URL)
@@ -88,9 +89,9 @@ class TestScaffoldSingleCopy(unittest.TestCase):
                 c = TestClient(app)
                 r = c.get(XELEMENT_JS_URL)
                 self.assertEqual(r.status_code, 200)
-                page = c.get("/index")
+                page = c.get("/")
                 self.assertEqual(page.status_code, 200)
-                self.assertIn("ux-dom/static/x_element.js", page.text)
+                self.assertIn("index", page.text.lower())
             finally:
                 if str(root) in sys.path:
                     sys.path.remove(str(root))

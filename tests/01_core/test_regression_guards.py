@@ -14,13 +14,14 @@ import textwrap
 import unittest
 from pathlib import Path
 
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom import Component, Document, Fragment, ReactiveComponent
 from ux_dom.dom import div, span
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.web_io import HtmxEvents
 
@@ -133,17 +134,16 @@ class TestRouterAndEventsRegressions(unittest.TestCase):
             try:
                 api = (
                     App(debug=False)
-                    .use(FastAPIHost(title="t", debug=False))
                     .use(
                         DirectoryRouting(
                             package_dir=pkg, base_directory="app", prefix="/r"
                         )
                     )
                     .use(HtmxControl(middleware=True))
-                    .build()
+                    .build(asgi=FastAPI(title="t", debug=False, default_response_class=HTMLResponse))
                 )
                 client = TestClient(api)
-                self.assertIn("STATIC", client.get("/r/items/static/Static").text)
+                self.assertIn("STATIC", client.get("/r/items/static").text)
                 self.assertIn("DYN-z", client.get("/r/items/z/").text)
             finally:
                 sys.path.remove(str(root))

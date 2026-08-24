@@ -75,16 +75,18 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from app.document import document
-from ux_dom.routing.core import DirectoryRoutes
-from ux_dom.routing.adapters.fastapi import mount
+from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
 
 PACKAGE = Path(__file__).resolve().parent
 app = FastAPI(title="{title}")
 document.mount(app)
-
-core = DirectoryRoutes(PACKAGE, base_directory="routes")
-core.discover()
-mount(core, app)
+app.include_router(
+    DirectoryRouter(
+        base_directory="routes",
+        package_dir=PACKAGE,
+        route_class=StreamingRoute,
+    )
+)
 
 
 @app.get("/health")

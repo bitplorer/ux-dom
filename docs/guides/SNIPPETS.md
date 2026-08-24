@@ -195,15 +195,15 @@ html = document(div("Hi", id="view")).__render__()
 print("script" in html.lower() or "csp" in html.lower() or html)
 ```
 
-### DirectoryRoutes (host-free discovery)
+### DirectoryRoutes (product — ux-compose)
 
 <a id="dom-routes"></a>
 
-Pure discovery. Host adapters live in ux-compose (Invisible Strategy). Do not import FastAPI from ux-dom to mount pages.
+Product discovery lives on ux-compose. Do not construct DirectoryRoutes from ux-dom.
 
 ```python
 from pathlib import Path
-from ux_dom.routing.core import DirectoryRoutes
+from ux_compose.routing import DirectoryRoutes
 
 core = DirectoryRoutes(package_dir=Path("."), base_directory="routes")
 records = core.discover()
@@ -219,7 +219,7 @@ Hooks are host-agnostic. resolve_unit is only for the synthetic page GET. Explic
 
 ```python
 from pathlib import Path
-from ux_dom.routing.core import DirectoryRoutes, RouterHooks
+from ux_compose.routing import DirectoryRoutes, RouterHooks
 
 hooks = RouterHooks(
     resolve_unit=None,    # (cls, path, name) → instance | None

@@ -79,11 +79,32 @@ class TestScaffoldFailClosed(unittest.TestCase):
 
 
 class TestDirectoryRoutesTeaching(unittest.TestCase):
-    def test_package_doc_prefers_directory_routes(self):
-        # routing public surface documents DirectoryRoutes as primary path
-        from ux_dom.routing import core as core_mod
+    def test_package_doc_teaches_compose_routing(self):
+        from ux_dom.routing.core import DirectoryRoutes, ProductRoutingMoved
 
-        self.assertTrue(hasattr(core_mod, "DirectoryRoutes") or hasattr(core_mod, "RouterHooks"))
+        with self.assertRaises(ProductRoutingMoved) as ctx:
+            DirectoryRoutes(".")
+        self.assertIn("ux_compose.routing", str(ctx.exception))
+
+    def test_fastapi_host_teaches_compose(self):
+        from ux_dom.plugins.host import FastAPIHost, ProductHostMoved
+
+        with self.assertRaises(ProductHostMoved) as ctx:
+            FastAPIHost(title="x")
+        self.assertIn("ux_compose.build", str(ctx.exception))
+
+    def test_hotreload_plugin_teaches_compose(self):
+        from ux_dom.plugins.hmr import HotReload, ProductHmrMoved
+
+        with self.assertRaises(ProductHmrMoved) as ctx:
+            HotReload()
+        self.assertIn("uxcompose serve --hmr", str(ctx.exception))
+
+    def test_leftover_directory_router_still_importable(self):
+        from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
+
+        self.assertTrue(callable(DirectoryRouter))
+        self.assertTrue(callable(StreamingRoute))
 
 
 class TestProductCssFailClosed(unittest.TestCase):

@@ -37,13 +37,13 @@ uxdom lint
 
 ## 3. DirectoryRoutes (when you bind FastAPI yourself)
 
-Preferred discovery is **pure `DirectoryRoutes` + a thin adapter**, not
-`DirectoryRouter` (batteries path for standalone FastAPI users of ux-dom).
+Preferred discovery is **product `ux_compose.routing.DirectoryRoutes`**.
+Leftover standalone FastAPI trees use `DirectoryRouter`.
 
 ```python
 from fastapi import FastAPI
-from ux_dom.routing.core import DirectoryRoutes
-from ux_dom.routing.adapters.fastapi import mount
+from ux_compose.routing import DirectoryRoutes
+from ux_compose.routing.adapters.fastapi import mount
 
 app = FastAPI()
 document.mount(app)

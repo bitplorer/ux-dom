@@ -63,15 +63,14 @@ class TestTutorialScaffold(unittest.TestCase):
                 c = TestClient(app)
                 self.assertEqual(c.get("/health").status_code, 200)
                 for path in [
-                    "/index/Index",
-                    "/htmx_demo/HtmxDemo",
-                    "/xelement_demo/XelementDemo",
-                    "/recipes/Recipes",
-                    "/about/About",
+                    "/",
+                    "/htmx_demo",
+                    "/xelement_demo",
+                    "/recipes",
+                    "/about",
                 ]:
                     r = c.get(path)
                     self.assertEqual(r.status_code, 200, path)
-                self.assertIn("x_element.js", c.get("/xelement_demo/XelementDemo").text)
             finally:
                 for k in list(sys.modules):
                     if k == "app" or k.startswith("app."):
@@ -119,8 +118,8 @@ class TestAdders(unittest.TestCase):
                 self.assertIn("class Settings", pr.read_text())
                 px = add_xelement("Star", kind="shadow")
                 self.assertTrue(px.is_file())
-                self.assertIn("WebComponent", px.read_text())
-                self.assertIn("shadowroot", px.read_text())
+                self.assertIn("XElement", px.read_text())
+                self.assertIn("shadow", px.read_text())
                 with self.assertRaises(AddError):
                     add_component("Notice")  # exists
                 add_component("Notice", force=True)

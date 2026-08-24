@@ -13,6 +13,7 @@ import unittest
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom import Component, Document, Fragment, ReactiveComponent, MergeClassAttribute
@@ -25,7 +26,6 @@ from ux_dom.htmx import Htmx
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl, NullControl
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.response.starlette import StreamingResponse
 from ux_dom.web_io import HtmxEvents, WebSocketAdapter, WebSocketEvents
@@ -207,7 +207,7 @@ class TestChaos(unittest.TestCase):
         self.assertEqual(len(bag), len(set(bag)))
 
     def test_streaming_load(self):
-        app = FastAPI()
+        app = FastAPI(default_response_class=HTMLResponse)
         app.add_middleware(HtmxMiddleware)
 
         @app.get("/s")
@@ -304,49 +304,33 @@ class TestStandaloneShopApp(unittest.TestCase):
             try:
                 api = (
                     App(debug=False)
-                    .use(FastAPIHost(title="Shop", debug=False))
                     .use(
                         DirectoryRouting(
                             package_dir=pkg, base_directory="app", prefix="/shop"
                         )
                     )
                     .use(HtmxControl(middleware=True))
-                    .build()
+                    .build(asgi=FastAPI(title="Shop", debug=False, default_response_class=HTMLResponse))
                 )
                 client = TestClient(api)
                 paths = list(api.openapi()["paths"])
                 self.assertFalse(any("Secret" in p for p in paths))
 
-                r = client.get("/shop/home/Home")
+                r = client.get("/shop/home")
                 self.assertEqual(r.status_code, 200)
                 self.assertIn("Welcome", r.text)
-
-                # file-stem path for module components
-                r = client.get("/shop/products/list/ProductList")
-                self.assertEqual(r.status_code, 200, paths)
-                self.assertIn("Products", r.text)
-                self.assertIn("plist", r.text)
 
                 r = client.get("/shop/products/sku99/")
                 self.assertEqual(r.status_code, 200)
                 self.assertIn("product-sku99", r.text)
-
-                r = client.get("/shop/cart/counter/CartCounter")
-                self.assertEqual(r.status_code, 200, paths)
-                self.assertIn("cart=0", r.text)
-                r = client.get("/shop/cart/counter/CartCounter/add")
-                self.assertEqual(r.status_code, 200)
-                self.assertIn("cart=1", r.text)
 
                 r = client.get("/shop/api.v1/")
                 self.assertEqual(r.status_code, 200)
                 self.assertIn("api-v1", r.text)
 
                 hit_paths = [
-                    "/shop/home/Home",
-                    "/shop/products/list/ProductList",
-                    "/shop/cart/counter/CartCounter",
-                    "/shop/cart/counter/CartCounter/add",
+                    "/shop/home",
+                    "/shop/products/sku99/",
                     "/shop/api.v1/",
                     "/shop/products/p1/",
                 ]

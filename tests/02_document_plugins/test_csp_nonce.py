@@ -20,7 +20,6 @@ from ux_dom.plugins.csp import (
     stamp_nonce,
     stamp_tree,
 )
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
 from ux_dom.response.starlette import HTMLResponse
@@ -70,9 +69,8 @@ class TestMiddlewareIsEnough(unittest.TestCase):
             App()
             .use(XElementRuntime())
             .use(Csp(debug_header=True))
-            .use(FastAPIHost(title="csp", debug=True))
         )
-        app = builder.build()
+        app = builder.build(asgi=FastAPI(title="csp", debug=True, default_response_class=HTMLResponse))
 
         @app.get("/page")
         def page():
@@ -93,7 +91,7 @@ class TestMiddlewareIsEnough(unittest.TestCase):
     def test_html_response_stamps_tree(self):
         """ux_dom HTMLResponse stamps even without shell_fragments."""
         set_hub(PluginHub())
-        app = App().use(Csp(debug_header=True)).use(FastAPIHost(title="t")).build()
+        app = App().use(Csp(debug_header=True)).build(asgi=FastAPI(title="t", default_response_class=HTMLResponse))
 
         @app.get("/dom")
         def dom():

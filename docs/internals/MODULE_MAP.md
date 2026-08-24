@@ -17,14 +17,14 @@ ux_dom/
   ui/           Optional copy-in kit
 ```
 
-Public apps compose **Document + DirectoryRoutes + thin adapter**. Product
-scaffold is **uxcompose** ([DX.md](../guides/DX.md)).
+Public leftover apps compose **Document + leftover DirectoryRouter**. Product
+scaffold + DirectoryRoutes is **uxcompose** ([DX.md](../guides/DX.md)).
 
 | Path | Role | Public? |
 |------|------|---------|
 | `ux_dom/__init__.py` | Version + re-exports Document, Component, runtime facades | **Public** |
 | `ux_dom/runtime/` | Stable aliases: `XElement`, `Htmx`, `Csp`, `Channel` | **Public** |
-| `ux_dom/create/` | CreateAsgi (tests) · CreateProject.write() fails closed | Semi |
+| `ux_dom/create/` | CreateAsgi + CreateProject fail closed | Semi |
 | `ux_dom/compat/` | Runtime compat (e.g. valio PEP 649) | Private |
 | `ux_dom/diagnostics.py` | Error message builders for XElement checks | Private |
 | **`ux_dom/dom/`** | Tag constructors, Document HTML helpers, parse | **Public** |

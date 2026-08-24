@@ -2,16 +2,14 @@
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-"""Routing — **DirectoryRoutes** + thin adapters (live path).
+"""Routing — leftover ``DirectoryRouter`` batteries only.
 
-Preferred::
+Product page routing is ``ux_compose.routing.DirectoryRoutes``.
 
-    from ux_dom.routing.core import DirectoryRoutes, RouterHooks
-    from ux_dom.routing.adapters.fastapi import mount
-    from ux_dom.routing.adapters.asgi import DirectoryASGI
+Leftover standalone FastAPI trees (demosite, examples that must not
+import compose)::
 
-``DirectoryRouter`` (FastAPI APIRouter batteries) remains for leftover
-standalone FastAPI trees. Product apps use ux-compose ``App.mount``.
+    from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
 
-See docs/guides/ROUTING.md for path law and page-unit convention.
+``DirectoryRoutes`` / thin adapters / facade on this package fail closed.
 """

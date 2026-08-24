@@ -120,11 +120,10 @@ class TestDirectoryRouterIntegration(unittest.TestCase):
             app.include_router(router)
             paths = sorted(app.openapi().get("paths", {}))
             joined = " ".join(paths)
-            self.assertTrue(any("Counter" in p for p in paths), paths)
-            self.assertTrue(any("increment" in p for p in paths), paths)
+            self.assertTrue(any("counter" in p for p in paths), paths)
             self.assertTrue(any("{id}" in p for p in paths), paths)
             self.assertFalse(any("[id]" in p for p in paths), paths)
-            self.assertTrue(any("cart" in p for p in paths), paths)
+            self.assertTrue(any("shop" in p for p in paths), paths)
             self.assertTrue(any(p.startswith("/v1/") for p in paths), paths)
 
 

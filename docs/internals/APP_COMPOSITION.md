@@ -11,14 +11,14 @@ where tags go:
 ```text
 Document  →  HTML shell (<head>/<body>), .use(runtimes), .mount(app)
 FastAPI   →  process, routes, lifespan, servers
-Routes    →  DirectoryRoutes (files) + thin adapter, or explicit FastAPI handlers
+Routes    →  leftover DirectoryRouter, or product ux_compose.routing
 ```
 
 | Piece | Owns | Does not own |
 |-------|------|--------------|
 | **Document** | Tag placement, runtime scripts, CSP stamp, static allowlist | ASGI process |
 | **FastAPI** | HTTP/WS lifecycle | Head/body order |
-| **DirectoryRoutes** | File → path discovery | Document head |
+| **DirectoryRouter** | Leftover file → path (demosite) | Document head |
 
 ## Canonical assembly
 
@@ -26,8 +26,7 @@ Routes    →  DirectoryRoutes (files) + thin adapter, or explicit FastAPI handl
 from fastapi import FastAPI
 from ux_dom import Document
 from ux_dom.runtime import XElement, Htmx, Csp
-from ux_dom.routing.core import DirectoryRoutes
-from ux_dom.routing.adapters.fastapi import mount
+from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
 from app import PACKAGE  # package root for file routes
 
 document = Document(head=[], body=[], ensure_csrf_token=False).use(
@@ -38,9 +37,13 @@ document = Document(head=[], body=[], ensure_csrf_token=False).use(
 
 app = FastAPI(title="MyApp")
 document.mount(app)
-core = DirectoryRoutes(PACKAGE, base_directory="routes")
-core.discover()
-mount(core, app)
+app.include_router(
+    DirectoryRouter(
+        base_directory="routes",
+        package_dir=PACKAGE,
+        route_class=StreamingRoute,
+    )
+)
 ```
 
 Greenfield product apps: **`uxcompose create-app`**. Hand-assemble this

@@ -6,10 +6,11 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from ux_dom import Document
-from ux_dom.create import CreateAsgi, CreateProject
+from ux_dom.create import CreateProject
 from ux_dom.dom import meta, title
 from ux_dom.runtime import Csp, Htmx, XElement, XELEMENT_JS_URL
 
@@ -33,7 +34,8 @@ class TestDocumentUse(unittest.TestCase):
         doc = Document(head=[title("T")]).use(
             XElement(), Htmx(cdn=True), Csp(debug_header=True)
         )
-        app = CreateAsgi(title="t", document=doc, debug=True).build()
+        app = FastAPI(title="t", debug=True)
+        doc.mount(app)
 
         @app.get("/p")
         def p():

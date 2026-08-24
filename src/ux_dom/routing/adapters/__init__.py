@@ -1,8 +1,4 @@
-"""Host adapters for DirectoryRoutes core.
-
-* ``fastapi`` — materialize/mount onto APIRouter-compatible apps
-* ``asgi`` — pure :class:`DirectoryASGI` (no framework)
-"""
+"""Fail-closed adapters — product bind is ``ux_compose.routing.adapters``."""
 from __future__ import annotations
 
 from ux_dom.routing.adapters.asgi import DirectoryASGI, match_record

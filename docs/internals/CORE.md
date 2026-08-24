@@ -22,30 +22,31 @@ Public imports::
 
 | Package | Role |
 |---------|------|
-| `ux_dom.plugins.host` | FastAPIHost — ASGI app + lifespan |
-| `ux_dom.plugins.routing` | DirectoryRouting — file routes |
+| `ux_dom.plugins.host` | FastAPIHost — fail-closed teaching stub |
+| `ux_dom.plugins.routing` | leftover DirectoryRouting (DirectoryRouter batteries) |
 | `ux_dom.plugins.control` | HtmxControl / NullControl |
 | `ux_dom.plugins.style` | NullStyle (working); TailwindStyle fail-closed stub |
-| `ux_dom.plugins.hmr` | HotReload |
+| `ux_dom.plugins.hmr` | HotReload — fail-closed teaching stub |
 | `ux_dom.plugins.response` | endpoint wrappers |
 
-Compose (leftover batteries — **not** the product path)::
+Leftover batteries (standalone FastAPI trees that cannot import compose)::
 
     from pathlib import Path
+    from fastapi import FastAPI
     from ux_dom.plugins import App
-    from ux_dom.plugins.host import FastAPIHost
     from ux_dom.plugins.routing import DirectoryRouting
     from ux_dom.plugins.control import HtmxControl
 
     api = (
         App(debug=True)
-        .use(FastAPIHost(title="MyApp"))
         .use(DirectoryRouting(package_dir=Path(__file__).parent, base_directory="app"))
         .use(HtmxControl(middleware=True))
-        .build()
+        .build(asgi=FastAPI(title="MyApp"))
     )
 
-Product apps: `uxcompose create-app` → `build()` / `App.mount` on **ux-compose**.
+Product apps: `uxcompose create-app` → `build()` / `App.mount` on **ux-compose**
+(`ux_compose.routing.DirectoryRoutes`). `FastAPIHost` and `plugins.hmr.HotReload`
+fail closed.
 
 ## CLI
 
@@ -58,4 +59,4 @@ uxdom doctor
 uxdom lint
 ```
 
-`plugins.App.use(FastAPIHost)` is **not** the product path. See [SYSTEM.md](SYSTEM.md).
+`plugins.App.build(asgi=FastAPI())` is leftover glue — **not** the product path. See [SYSTEM.md](SYSTEM.md).
