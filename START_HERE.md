@@ -6,6 +6,7 @@
 
 Longer mental model: [docs/START_HERE.md](docs/START_HERE.md).
 **Map:** [docs/INDEX.md](docs/INDEX.md).
+**Cookbook:** [docs/guides/SNIPPETS.md](docs/guides/SNIPPETS.md) — Document, Component, Fragment, UI kit, DirectoryRoutes, CSP, CLI.
 
 Python **3.14** required (`pyproject.toml`).
 
