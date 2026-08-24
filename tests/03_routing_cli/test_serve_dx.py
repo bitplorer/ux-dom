@@ -9,19 +9,12 @@ import os
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
 
 from typer.testing import CliRunner
 
 from ux_dom.cli.cli import app as cli_app
 from ux_dom.cli.envfile import env_files_for, load_env_files, parse_env_text
-from ux_dom.cli.tailwind import (
-    argv_with_io,
-    discover_css_io,
-    resolve_tailwind,
-    resolve_tailwind_argv,
-    standalone_asset_name,
-)
+from ux_dom.cli.tailwind import argv_with_io, discover_css_io
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -66,56 +59,8 @@ class TestProductCliAbsent(unittest.TestCase):
             from ux_dom.cli.deploy import prepare_deploy  # noqa: F401
 
 
-class TestTailwindResolver(unittest.TestCase):
-    def setUp(self):
-        os.environ["UXDOM_TAILWIND_DOWNLOAD"] = "0"
-        os.environ.pop("UXDOM_TAILWIND", None)
-        os.environ.pop("TAILWINDCSS", None)
-
-    def tearDown(self):
-        os.environ.pop("UXDOM_TAILWIND", None)
-        os.environ.pop("TAILWINDCSS", None)
-
-    def test_env_wins(self):
-        with TemporaryDirectory() as td:
-            fake = Path(td) / "tw"
-            fake.write_text("#!/bin/sh\n")
-            fake.chmod(0o755)
-            os.environ["UXDOM_TAILWIND"] = str(fake)
-            hit = resolve_tailwind(ensure=False)
-            self.assertIsNotNone(hit)
-            self.assertEqual(hit.source, "env")
-            self.assertEqual(hit.argv, [str(fake)])
-
-    def test_no_npx_without_ensure(self):
-        with patch("ux_dom.cli.tailwind._from_env", return_value=None), patch(
-            "ux_dom.cli.tailwind._from_path", return_value=None
-        ), patch("ux_dom.cli.tailwind._from_pytailwindcss", return_value=None), patch(
-            "ux_dom.cli.tailwind._from_node_modules", return_value=None
-        ), patch(
-            "ux_dom.cli.tailwind._cached_binary", return_value=None
-        ):
-            self.assertIsNone(resolve_tailwind(ensure=False))
-            hit = resolve_tailwind(ensure=True)
-            if hit is not None:
-                self.assertEqual(hit.source, "npx")
-                self.assertIn("npx", hit.argv[0])
-
-    def test_download_disabled(self):
-        os.environ["UXDOM_TAILWIND_DOWNLOAD"] = "0"
-        with patch("ux_dom.cli.tailwind._from_env", return_value=None), patch(
-            "ux_dom.cli.tailwind._from_path", return_value=None
-        ), patch("ux_dom.cli.tailwind._from_pytailwindcss", return_value=None), patch(
-            "ux_dom.cli.tailwind._from_node_modules", return_value=None
-        ), patch(
-            "ux_dom.cli.tailwind._cached_binary", return_value=None
-        ), patch(
-            "ux_dom.cli.tailwind._from_npx", return_value=None
-        ), patch(
-            "ux_dom.cli.tailwind.urllib.request.urlopen"
-        ) as urlopen:
-            self.assertIsNone(resolve_tailwind_argv(ensure=True))
-            urlopen.assert_not_called()
+class TestCssPathHelpers(unittest.TestCase):
+    """WebAssets CSS paths stay here. Compiler find/download is uxcompose."""
 
     def test_argv_with_io_watch_vs_minify(self):
         cmd = argv_with_io(
@@ -146,15 +91,12 @@ class TestTailwindResolver(unittest.TestCase):
             self.assertTrue(str(out).endswith("static/file/css/output.css"))
             self.assertTrue(out.parent.is_dir())
 
-    def test_standalone_asset_name_linux(self):
-        name = standalone_asset_name()
-        self.assertTrue(name.startswith("tailwindcss-"), name)
-
-    def test_cwd_accepts_str(self):
-        with TemporaryDirectory() as td:
-            os.environ["UXDOM_TAILWIND"] = str(Path(td) / "missing-bin")
-            resolve_tailwind(cwd=td, ensure=False)
-            os.environ.pop("UXDOM_TAILWIND", None)
+    def test_module_does_not_download(self):
+        src = (ROOT / "src" / "ux_dom" / "cli" / "tailwind.py").read_text(encoding="utf-8")
+        self.assertNotIn("_download_standalone", src)
+        self.assertNotIn("npx --yes", src)
+        self.assertNotIn("def resolve_tailwind", src)
+        self.assertIn("def discover_css_io", src)
 
 
 class TestEnvFiles(unittest.TestCase):

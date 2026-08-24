@@ -17,13 +17,13 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 - Document shell: control, runtime tags, **CSP stamp**, style
 - Pure DirectoryRoutes + RouterHooks
 - Pure-dom CLI: `doctor` | `lint` | `profile` | `dashboard` | `add` | `ui`
-- Tailwind compiler resolution (`ux_dom.cli.tailwind`) — product command is `uxcompose build`
+- WebAssets *paths* (where CSS/JS files sit). className. stylesheet `<link>`.
 
 ## Does not own
 
 | Concern | Home |
 |---------|------|
-| create-app / build / serve / deploy | **uxcompose only** |
+| create-app / build / serve / deploy / Tailwind CLI finder | **uxcompose only** |
 | Host strategy / product App | ux-compose |
 | HMR process | ux-compose (with serve) |
 | Channel transport | ux-compose `wire/` |

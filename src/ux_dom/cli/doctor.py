@@ -158,31 +158,27 @@ def run_doctor(
         Check("ux-channel", ch_ok, str(ch_detail), "info" if ch_ok else "warn")
     )
 
-    # Tailwind CLI — same resolver as uxdom build (no download here)
-    tw_ok = False
-    tw_detail = "not found"
-    try:
-        from ux_dom.cli.tailwind import resolve_tailwind
+    # CSS compile is product DX (uxcompose build). Local probe only.
+    import shutil as _shutil
 
-        hit = resolve_tailwind(cwd=cwd, ensure=False)
-        if hit:
-            tw_ok = True
-            tw_detail = f"{hit.source}: {' '.join(hit.argv)}"
-    except Exception as e:
-        tw_detail = f"resolver error: {e}"
-    if not tw_ok:
-        tw_detail = (
-            "optional — pip install pytailwindcss  ·  "
-            "or pip install pytailwindcss / set UXDOM_TAILWIND"
+    tw_bin = _shutil.which("tailwindcss")
+    css_in = (cwd or Path.cwd()) / "assets" / "css" / "input.css"
+    if tw_bin:
+        tw_ok, tw_detail, tw_level = True, f"path: {tw_bin}", "info"
+    elif css_in.is_file():
+        tw_ok, tw_detail, tw_level = (
+            True,
+            "input.css present — compile with uxcompose build "
+            "(uxdom does not download the Tailwind CLI)",
+            "info",
         )
-    report.checks.append(
-        Check(
-            "tailwind",
-            tw_ok,
-            tw_detail,
-            "info" if tw_ok else "warn",
+    else:
+        tw_ok, tw_detail, tw_level = (
+            True,
+            "optional — product CSS is uxcompose build",
+            "info",
         )
-    )
+    report.checks.append(Check("tailwind", tw_ok, tw_detail, tw_level))
 
     # Port
     free = _port_free("127.0.0.1", port)

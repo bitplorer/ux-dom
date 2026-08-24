@@ -246,7 +246,7 @@ uxdom profile
 uxdom add component Card
 ```
 
-Product CSS minify is `uxcompose build` (hands off to `ux_dom.cli.tailwind`).
+Product CSS minify is `uxcompose build` (`ux_compose.tailwind`).
 `uxdom build` is Document/static verify for leftover `app/main.py` trees.
 
 ### Copy-in UI kit via CLI

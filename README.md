@@ -90,7 +90,7 @@ Five-minute path: [START_HERE.md](START_HERE.md).
 | Pure `DirectoryRoutes` + `RouterHooks` | Product state machines (`ux-behavior`) |
 | Package static (`/ux-dom/static/…`) | Motion IR (`ux-motion`) |
 | Pure-dom CLI: `doctor` · `lint` · `profile` · `add` | Product scaffold / serve / deploy / CSS minify (`ux-compose`) |
-| Tailwind compiler resolution (`ux_dom.cli.tailwind`) | Product `build` command (`uxcompose build`) |
+| WebAssets *paths* (`discover_css_io`) | Tailwind CLI finder / download (`ux_compose.tailwind`) |
 
 ## Audience
 
@@ -125,7 +125,7 @@ uxdom profile
 uxdom add component Card
 ```
 
-Product CSS minify: **`uxcompose build`** (hands off to `ux_dom.cli.tailwind`).
+Product CSS minify: **`uxcompose build`** (`ux_compose.tailwind` finds the CLI).
 `uxdom build` remains Document/static verify for leftover `app/main.py` trees.
 
 See [docs/guides/CLI.md](docs/guides/CLI.md). Product `serve` / `deploy` / tunnel: **ux-compose**.

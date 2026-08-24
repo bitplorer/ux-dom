@@ -12,6 +12,7 @@ Single-copy model
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 import sys
 from dataclasses import dataclass, field
@@ -143,25 +144,28 @@ def run_build(
         )
     )
 
-    # ── Tailwind (standalone CLI first; app.tailwindcss fallback) ─────────
+    # ── CSS (local binary only — product ensure/download is uxcompose build)
     tw_mod = root / "app" / "tailwindcss.py"
     if skip_tailwind:
         report.steps.append(BuildStep("tailwind", True, "skipped"))
     else:
         compiled = False
         try:
-            from ux_dom.cli.tailwind import (
-                argv_with_io,
-                discover_css_io,
-                resolve_tailwind,
-            )
+            from ux_dom.cli.tailwind import argv_with_io, discover_css_io
 
             io = discover_css_io(root)
-            hit = resolve_tailwind(cwd=root, ensure=True) if io else None
-            if io and hit:
+            argv = None
+            raw = os.environ.get("UXDOM_TAILWIND") or os.environ.get("TAILWINDCSS")
+            if raw:
+                argv = [p for p in raw.split() if p]
+            else:
+                found = shutil.which("tailwindcss")
+                if found:
+                    argv = [found]
+            if io and argv:
                 input_css, output_css = io
                 cmd = argv_with_io(
-                    hit.argv,
+                    argv,
                     input_css=input_css,
                     output_css=output_css,
                     minify=minify,
@@ -184,7 +188,7 @@ def run_build(
                     BuildStep(
                         "tailwind",
                         proc.returncode == 0,
-                        f"{hit.source} exit {proc.returncode}"
+                        f"path exit {proc.returncode}"
                         + (f" · {out.strip()[:200]}" if out.strip() else ""),
                     )
                 )
@@ -216,7 +220,10 @@ def run_build(
         elif not compiled:
             report.steps.append(
                 BuildStep(
-                    "tailwind", True, "no assets/css/input.css (CDN or external CSS)"
+                    "tailwind",
+                    True,
+                    "no local tailwindcss on PATH — product compile is uxcompose build "
+                    "(this command does not download the CLI)",
                 )
             )
 

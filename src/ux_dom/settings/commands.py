@@ -7,6 +7,7 @@
 """TailwindCommand and related asset commands."""
 import asyncio
 import logging
+import os
 import platform
 import shutil
 import subprocess
@@ -175,8 +176,9 @@ class TailwindCommand(object):
         (no ``init`` subcommand — CSS-first ``@import "tailwindcss"``).
 
         Scaffold files are written even when the CLI binary is missing so
-        create-app / doctor layouts stay complete. Running the compiler still
-        requires ``tailwindcss`` on PATH (or pytailwindcss).
+        Document / doctor layouts stay complete. Running the compiler still
+        requires ``tailwindcss`` on PATH. Product ensure/download is
+        ``uxcompose build`` (``ux_compose.tailwind``).
         """
         available = self.is_tailwindcss_available()
         # Default to v4 CSS-first scaffold when the binary is not present.
@@ -219,25 +221,24 @@ class TailwindCommand(object):
             self._output_file.touch()
 
     def _tw_argv(self) -> list[str]:
-        """Resolved Tailwind CLI argv (env / PATH / pytailwindcss / cache).
+        """Local Tailwind CLI argv (explicit path / env / PATH).
 
         An explicit ``tailwindcss=`` other than the default name wins.
-        Does **not** download — ``uxdom build`` / compose serve is the ensure path.
+        Does **not** download or search caches — that is ``uxcompose build``.
         """
         explicit = self.tailwindcss
         if isinstance(explicit, (list, tuple)) and explicit:
             return [str(x) for x in explicit]
         if isinstance(explicit, str) and explicit not in {"", "tailwindcss"}:
             return [explicit]
-        try:
-            from ux_dom.cli.tailwind import resolve_tailwind_argv
-
-            cwd = getattr(self, "_root_dir", None)
-            hit = resolve_tailwind_argv(cwd=cwd, ensure=False)
-            if hit:
-                return hit
-        except Exception:
-            pass
+        raw = os.environ.get("UXDOM_TAILWIND") or os.environ.get("TAILWINDCSS")
+        if raw:
+            parts = [p for p in raw.split() if p]
+            if parts:
+                return parts
+        found = shutil.which("tailwindcss")
+        if found:
+            return [found]
         return ["tailwindcss"]
 
     def _tw_bin(self) -> str:
@@ -287,22 +288,13 @@ class TailwindCommand(object):
         )
 
     def is_tailwindcss_available(self) -> bool:
-        """Return True when the tailwindcss binary is resolvable.
+        """Return True when the tailwindcss binary is on PATH or explicit.
 
-        Resolution order matches ``uxdom build`` (env / PATH / pytailwindcss /
-        node_modules / cache). Falls back to ``shutil.which`` + ``which``/``where``
-        so existing unit tests that patch those still work.
+        Product ensure/download is ``uxcompose build``. This helper is a
+        local probe so Document-era ``TailwindCommand`` still works offline.
+        Falls back to ``shutil.which`` + ``which``/``where`` so existing unit
+        tests that patch those still work.
         """
-        try:
-            from ux_dom.cli.tailwind import resolve_tailwind_argv
-
-            cwd = getattr(self, "_root_dir", None)
-            explicit = self.tailwindcss
-            defaulted = explicit in (None, "tailwindcss")
-            if defaulted and resolve_tailwind_argv(cwd=cwd, ensure=False):
-                return True
-        except Exception:
-            pass
         name = self._tw_bin()
         if Path(name).is_file() or shutil.which(name):
             return True

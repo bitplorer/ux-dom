@@ -29,9 +29,8 @@ See ux-compose `docs/guides/CLI.md` and `docs/FLOW.md`.
 | `add` | component \| xelement \| ui (pure-dom) |
 | `ui` | List UI kit |
 
-Tailwind *compiler resolution* is a library: `ux_dom.cli.tailwind`
-(`discover_css_io` / `resolve_tailwind` / `argv_with_io`). Compose hands
-off; it never re-implements the finder.
+Tailwind *compiler resolution* is product DX: `ux_compose.tailwind`.
+This package keeps CSS *path* helpers (`ux_dom.cli.tailwind.discover_css_io`).
 
 ```bash
 uxdom doctor
