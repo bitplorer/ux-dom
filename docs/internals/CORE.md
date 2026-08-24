@@ -25,7 +25,7 @@ Public imports::
 | `ux_dom.plugins.host` | FastAPIHost — ASGI app + lifespan |
 | `ux_dom.plugins.routing` | DirectoryRouting — file routes |
 | `ux_dom.plugins.control` | HtmxControl / NullControl |
-| `ux_dom.plugins.style` | TailwindStyle / NullStyle |
+| `ux_dom.plugins.style` | NullStyle (working); TailwindStyle fail-closed stub |
 | `ux_dom.plugins.hmr` | HotReload |
 | `ux_dom.plugins.response` | endpoint wrappers |
 

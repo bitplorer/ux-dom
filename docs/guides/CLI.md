@@ -29,8 +29,9 @@ See ux-compose `docs/guides/CLI.md` and `docs/FLOW.md`.
 | `add` | component \| xelement \| ui (pure-dom) |
 | `ui` | List UI kit |
 
-Tailwind *compiler resolution* is product DX: `ux_compose.tailwind`.
-This package keeps CSS *path* helpers (`ux_dom.cli.tailwind.discover_css_io`).
+Tailwind *compiler* is product DX: `uxcompose build` (`ux_compose.tailwind`).
+This package does not find, download, or invoke the CLI. `className`, Document
+`<link>`, and WebAssets *paths* stay here.
 
 ```bash
 uxdom doctor

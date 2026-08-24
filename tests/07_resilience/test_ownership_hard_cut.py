@@ -84,3 +84,20 @@ class TestDirectoryRoutesTeaching(unittest.TestCase):
         from ux_dom.routing import core as core_mod
 
         self.assertTrue(hasattr(core_mod, "DirectoryRoutes") or hasattr(core_mod, "RouterHooks"))
+
+
+class TestProductCssFailClosed(unittest.TestCase):
+    def test_tailwind_command_teaches_uxcompose_build(self):
+        from ux_dom import TailwindCommand
+        from ux_dom.settings.commands import ProductCssMoved
+
+        with self.assertRaises(ProductCssMoved) as ctx:
+            TailwindCommand(file_path="x", webassets=None)
+        self.assertIn("uxcompose build", str(ctx.exception))
+
+    def test_cli_tailwind_module_does_not_compile(self):
+        from ux_dom.cli.tailwind import discover_css_io
+
+        with self.assertRaises(ImportError) as ctx:
+            discover_css_io(".")
+        self.assertIn("ux_compose.tailwind", str(ctx.exception))

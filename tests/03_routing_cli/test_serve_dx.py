@@ -1,11 +1,10 @@
-"""Pure-dom DX residuals: CSS path helpers + envfile + doctor.
+"""Pure-dom DX residuals: envfile + doctor. Compiler is uxcompose build.
 
 Product lifecycle (create-app / build / serve / deploy) lives on uxcompose
 only. This module locks that absence and keeps pure-dom tooling tests.
 """
 from __future__ import annotations
 
-import os
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -14,7 +13,6 @@ from typer.testing import CliRunner
 
 from ux_dom.cli.cli import app as cli_app
 from ux_dom.cli.envfile import env_files_for, load_env_files, parse_env_text
-from ux_dom.cli.tailwind import argv_with_io, discover_css_io
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -59,44 +57,28 @@ class TestProductCliAbsent(unittest.TestCase):
             from ux_dom.cli.deploy import prepare_deploy  # noqa: F401
 
 
-class TestCssPathHelpers(unittest.TestCase):
-    """WebAssets CSS paths stay here. Compiler find/download is uxcompose."""
+class TestCssCompilerNotOnUxDom(unittest.TestCase):
+    """Path helpers and compiler invocation left ux-dom. Compose owns them."""
 
-    def test_argv_with_io_watch_vs_minify(self):
-        cmd = argv_with_io(
-            ["tw"],
-            input_css=Path("in.css"),
-            output_css=Path("out.css"),
-            watch=True,
-        )
-        self.assertEqual(cmd[-1], "--watch")
-        cmd = argv_with_io(
-            ["tw"],
-            input_css=Path("in.css"),
-            output_css=Path("out.css"),
-            minify=True,
-        )
-        self.assertEqual(cmd[-1], "--minify")
-        self.assertNotIn("--watch", cmd)
+    def test_discover_css_io_fail_closed(self):
+        from ux_dom.cli.tailwind import discover_css_io
 
-    def test_discover_css_io(self):
-        with TemporaryDirectory() as td:
-            root = Path(td)
-            (root / "assets" / "css").mkdir(parents=True)
-            (root / "assets" / "css" / "input.css").write_text("@import 'tailwindcss';\n")
-            io = discover_css_io(root)
-            self.assertIsNotNone(io)
-            inp, out = io
-            self.assertEqual(inp.name, "input.css")
-            self.assertTrue(str(out).endswith("static/file/css/output.css"))
-            self.assertTrue(out.parent.is_dir())
+        with self.assertRaises(ImportError) as ctx:
+            discover_css_io(Path("."))
+        self.assertIn("uxcompose build", str(ctx.exception).lower())
+
+    def test_argv_with_io_fail_closed(self):
+        from ux_dom.cli.tailwind import argv_with_io
+
+        with self.assertRaises(ImportError):
+            argv_with_io(["tw"], input_css=Path("in.css"), output_css=Path("out.css"))
 
     def test_module_does_not_download(self):
         src = (ROOT / "src" / "ux_dom" / "cli" / "tailwind.py").read_text(encoding="utf-8")
         self.assertNotIn("_download_standalone", src)
         self.assertNotIn("npx --yes", src)
         self.assertNotIn("def resolve_tailwind", src)
-        self.assertIn("def discover_css_io", src)
+        self.assertIn("ux_compose.tailwind", src)
 
 
 class TestEnvFiles(unittest.TestCase):
@@ -127,40 +109,23 @@ class TestEnvFiles(unittest.TestCase):
         self.assertNotIn(".env.development", names)
 
 
-class TestTailwindCommandLocalProbe(unittest.TestCase):
-    def test_tw_argv_honors_env(self):
-        from ux_dom.settings.commands import TailwindCommand
+class TestTailwindCommandFailClosed(unittest.TestCase):
+    def test_construct_raises(self):
+        from ux_dom.settings.commands import ProductCssMoved, TailwindCommand
 
-        with TemporaryDirectory() as td:
-            fake = Path(td) / "custom-tw"
-            fake.write_text("#!/bin/sh\n")
-            fake.chmod(0o755)
-            os.environ["UXDOM_TAILWIND"] = str(fake)
-            try:
-                cmd = object.__new__(TailwindCommand)
-                cmd.tailwindcss = "tailwindcss"
-                cmd._root_dir = Path(td)
-                self.assertEqual(cmd._tw_argv(), [str(fake)])
-            finally:
-                os.environ.pop("UXDOM_TAILWIND", None)
+        with self.assertRaises(ProductCssMoved) as ctx:
+            TailwindCommand(file_path="x", webassets=None)
+        self.assertIn("uxcompose build", str(ctx.exception))
 
-    def test_style_skips_when_cli_owns(self):
-        import asyncio
-
+    def test_style_construct_raises(self):
         from ux_dom.plugins.style import TailwindStyle
+        from ux_dom.settings.commands import ProductCssMoved
 
-        async def run():
-            os.environ["UXDOM_TAILWIND_OWNED"] = "1"
-            try:
-                style = TailwindStyle(webassets=None)
-                self.assertIsNone(await style.build(watch=True))
-            finally:
-                os.environ.pop("UXDOM_TAILWIND_OWNED", None)
-
-        asyncio.run(run())
+        with self.assertRaises(ProductCssMoved):
+            TailwindStyle(webassets=None)
 
 
-class TestDoctorReportsResolver(unittest.TestCase):
+class TestDoctorReportsProductCss(unittest.TestCase):
     def test_doctor_path_on_repo(self):
         from ux_dom.cli.doctor import run_doctor
 
@@ -168,6 +133,8 @@ class TestDoctorReportsResolver(unittest.TestCase):
         names = {c.name for c in rep.checks}
         self.assertIn("tailwind", names)
         self.assertIn("python", names)
+        tw = next(c for c in rep.checks if c.name == "tailwind")
+        self.assertIn("uxcompose build", tw.detail)
 
     def test_doctor_cli_path_flag(self):
         runner = CliRunner()
@@ -176,6 +143,7 @@ class TestDoctorReportsResolver(unittest.TestCase):
         )
         self.assertIn("uxdom doctor", result.output)
         self.assertIn("tailwind", result.output)
+        self.assertIn("uxcompose build", result.output)
 
     def test_doctor_path_option_in_help(self):
         runner = CliRunner()

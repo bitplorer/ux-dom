@@ -1,63 +1,22 @@
-"""CSS *path* helpers for WebAssets trees — not the product compiler.
+"""Removed from the product path.
 
-Product command: ``uxcompose build`` (``ux_compose.tailwind`` finds / downloads
-/ invokes the Tailwind CLI). This module only knows where CSS files sit for
-leftover ``uxdom build`` / Document verify:
-
-- input:  ``assets/css/input.css``
-- output: ``assets/static/file/css/output.css``  (WebAssets ``static.css``)
-
-Product convention SSoT is ``ux_compose.tailwind.discover_css_io`` (consults
-``WebAssets.static.css`` when ux-dom is installed). This copy is the leftover
-path helper and does **not** download, cache, or call npx.
-
-``argv_with_io`` is trivial CLI glue leftover verify may use when a binary is
-already on PATH.
+CSS *compiler* I/O (``discover_css_io`` / ``resolve_tailwind`` / ``argv_with_io``)
+lives on ``ux_compose.tailwind``. This module exists so leftover imports fail
+closed with a teaching error instead of a silent path helper that still looks
+like ux-dom owns Tailwind.
 """
-from __future__ import annotations
 
-from pathlib import Path
-from typing import Optional, Sequence
-
-__all__ = [
-    "argv_with_io",
-    "discover_css_io",
-]
+_MSG = (
+    "ux_dom.cli.tailwind is not the CSS compiler. "
+    "Use: uxcompose build  "
+    "(ux_compose.tailwind.discover_css_io / resolve_tailwind). "
+    "ux-dom keeps className, Document <link>, and WebAssets paths."
+)
 
 
-def argv_with_io(
-    argv: Sequence[str],
-    *,
-    input_css: Path,
-    output_css: Path,
-    minify: bool = False,
-    watch: bool = False,
-) -> list[str]:
-    out = list(argv)
-    out.extend(["-i", str(input_css), "-o", str(output_css)])
-    if minify:
-        out.append("--minify")
-    elif watch:
-        out.append("--watch")
-    return out
+def argv_with_io(*args, **kwargs):
+    raise ImportError(_MSG)
 
 
-def discover_css_io(root: Path) -> Optional[tuple[Path, Path]]:
-    """Resolve input/output CSS the same way WebAssets layout does.
-
-    Leftover verify helper. Product convention SSoT is
-    ``ux_compose.tailwind.discover_css_io``.
-    """
-    assets = Path(root) / "assets"
-    input_css = assets / "css" / "input.css"
-    if not input_css.is_file():
-        alt = assets / "input.css"
-        if alt.is_file():
-            input_css = alt
-        elif (Path(root) / "app" / "tailwindcss.py").is_file():
-            input_css = assets / "css" / "input.css"
-        else:
-            return None
-    output_css = assets / "static" / "file" / "css" / "output.css"
-    output_css.parent.mkdir(parents=True, exist_ok=True)
-    return input_css, output_css
+def discover_css_io(*args, **kwargs):
+    raise ImportError(_MSG)

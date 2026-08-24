@@ -15,7 +15,7 @@ def page(*body, page_title: str | None = None):
         title(page_title or settings.APP_TITLE),
     ]
     if settings.WITH_TAILWIND:
-        # TailwindStyle serves compiled sheet under /css/<output>
+        # Compiled sheet under /css (compile with uxcompose build, not Document)
         head.append(
             link(href=f"/css/{settings.OUTPUT_CSS}", rel="stylesheet")
         )

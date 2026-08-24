@@ -69,7 +69,7 @@ Do not analogize this layer to React / Next / htmx as its identity.
 
 **Product:** `uxcompose create-app → build → serve → deploy`
 **Pure-dom:** `uxdom doctor | lint | profile | add`
-**CSS resolver:** `ux_compose.tailwind` (product). This package keeps `discover_css_io` as WebAssets path layout.
+**CSS compiler:** `ux_compose.tailwind` / `uxcompose build` (product). This package keeps `className`, Document `<link>`, WebAssets *paths*. `TailwindCommand` is fail-closed.
 
 ## Tests
 

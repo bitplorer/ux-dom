@@ -39,7 +39,7 @@ scaffold is **uxcompose** ([DX.md](../guides/DX.md)).
 | `ux_dom/dom/src/html_string.py` | defHTML parse + sanitize | **Public** via dom |
 | `ux_dom/dom/uniqueid.py` | Unique id generator for trees | Semi |
 | `ux_dom/dom/src/ws_rpc.py` | Optional WS helpers (uses document.ux_domMessageHandler) | Advanced |
-| **`ux_dom/settings/`** | Document, WebAssets, paths, TailwindCommand | **Public** |
+| **`ux_dom/settings/`** | Document, WebAssets, paths (`TailwindCommand` fail-closed stub) | **Public** |
 | **`ux_dom/plugins/`** | Hub, contributions, host, routing, CSP, control | Semi / **Public** facades |
 | `ux_dom/plugins/runtime.py` | XElementRuntime, UxChannelRuntime — package static | Semi |
 | `ux_dom/plugins/safe_static.py` | Allowlisted file mounts | Semi |

@@ -70,19 +70,6 @@ _builder = (
     .use(HtmxControl(middleware=True, version="2.0.4", sse=True))
 )
 
-if settings.WITH_TAILWIND:
-    from ux_dom.plugins.style import TailwindStyle
-
-    _builder.use(
-        TailwindStyle(
-            settings.webassets,
-            file_path=PACKAGE / "main.py",
-            input_css=settings.INPUT_CSS,
-            output_css=settings.OUTPUT_CSS,
-            minify=not settings.DEBUG,
-        )
-    )
-
 if settings.WITH_HMR and settings.DEBUG:
     from ux_dom.plugins.hmr import HotReload
 

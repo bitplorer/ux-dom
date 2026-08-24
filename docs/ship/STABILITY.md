@@ -15,7 +15,7 @@
 | Path params as query | Named path params in generated `get` |
 | Nested packages | `_ensure_route_packages` writes `__init__.py` |
 | Dual JS names | Single `x_element.js` / `x-tagname` |
-| Tailwind missing | product compile is `uxcompose build` (`ux_compose.tailwind`); leftover `uxdom build` probes PATH/env only |
+| Tailwind missing | product compile is `uxcompose build` (`ux_compose.tailwind`); `uxdom build` does not compile CSS |
 
 ## Stability gates
 

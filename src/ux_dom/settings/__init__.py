@@ -3,10 +3,12 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-"""Document, WebAssets, paths, TailwindCommand exports.
+"""Document, WebAssets, paths.
 
-Document is HTML shell SSoT — use .use() / .mount(). See guides/DOCUMENT.md.
+``TailwindCommand`` is a fail-closed teaching stub — product CSS compile
+is ``uxcompose build``.
 """
 from .document import *
 
+from .commands import ProductCssMoved as ProductCssMoved  # isort: skip
 from .commands import TailwindCommand as TailwindCommand  # isort: skip

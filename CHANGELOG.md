@@ -9,9 +9,11 @@
   fails closed with a teaching import error. Doctor no longer runs scaffold
   integrity as if ux-dom owned product trees.
 - **Product CSS:** `uxcompose build` (`ux_compose.tailwind` finds / downloads
-  the CLI). `uxdom build` on an `app.py` product tree exits 2 and teaches
-  `uxcompose build`. Leftover `app/main.py` trees still get Document/static
-  verify and do **not** download a compiler. WebAssets *paths* stay here.
+  the CLI). `uxdom build` does **not** compile CSS. `TailwindCommand` /
+  `TailwindStyle` / `ux_dom.cli.tailwind` fail closed and teach
+  `uxcompose build`. WebAssets *paths*, `className`, and Document `<link>`
+  stay here. `uxdom build` on an `app.py` product tree exits 2 and teaches
+  `uxcompose build`.
 - **Preferred routing bind:** `DirectoryRoutes` + thin adapter.
   `DirectoryRouter` remains batteries-only for standalone FastAPI users.
 - Historical `uxdom serve` / `create-app` notes below are **pre-cut**.

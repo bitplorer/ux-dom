@@ -23,7 +23,8 @@ Product lifecycle CLI: **`uxcompose`** (`create-app` · `build` · `serve` · `d
 | `Document` | class | HTML shell SSoT |
 | `Component` / `Fragment` / `ReactiveComponent` | class | Trees |
 | `XElement` / `Htmx` / `Csp` / `Channel` | facades | `ux_dom.runtime` |
-| `WebAssets` / `TailwindCommand` | settings | Assets & CSS |
+| `WebAssets` | settings | Static *paths* (Document mount) |
+| `TailwindCommand` | stub | Fail-closed — use `uxcompose build` |
 
 ---
 
@@ -60,7 +61,7 @@ Thin FastAPI batteries may exist; product mount path is **ux-compose**.
 |---------|------|
 | `doctor` / `info` | Package / Document health |
 | `lint` | Conventions |
-| `build` | leftover Document/static verify (`app/main.py`); no CLI download |
+| `build` | leftover Document/static verify (`app/main.py`); does **not** compile CSS |
 | `profile` / `dashboard` | Render p95 |
 | `add` | component \| xelement \| ui |
 | `ui` | List UI kit |

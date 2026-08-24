@@ -90,7 +90,7 @@ Five-minute path: [START_HERE.md](START_HERE.md).
 | Pure `DirectoryRoutes` + `RouterHooks` | Product state machines (`ux-behavior`) |
 | Package static (`/ux-dom/static/…`) | Motion IR (`ux-motion`) |
 | Pure-dom CLI: `doctor` · `lint` · `profile` · `add` | Product scaffold / build / serve / deploy / CSS minify (`ux-compose`) |
-| WebAssets *paths* (`discover_css_io`) | Tailwind CLI finder / download (`ux_compose.tailwind`) |
+| WebAssets *paths*, `className`, `<link>` | Tailwind compiler (`uxcompose build` / `ux_compose.tailwind`) |
 
 ## Audience
 

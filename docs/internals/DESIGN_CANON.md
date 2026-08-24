@@ -13,7 +13,7 @@
 | Command | Writes? | Notes |
 |---------|---------|--------|
 | `doctor` / `lint` / `info` | No | Read-only |
-| `build` | leftover Document/static verify (`app/main.py`); no CLI download | flags |
+| `build` | leftover Document/static verify (`app/main.py`); does not compile CSS | flags |
 | `add` | Yes | refuse existing unless `--force` |
 | `profile` / `dashboard` | reports/ only | |
 

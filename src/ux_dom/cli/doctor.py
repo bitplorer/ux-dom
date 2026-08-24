@@ -158,27 +158,15 @@ def run_doctor(
         Check("ux-channel", ch_ok, str(ch_detail), "info" if ch_ok else "warn")
     )
 
-    # CSS compile is product DX (uxcompose build). Local probe only.
-    import shutil as _shutil
-
-    tw_bin = _shutil.which("tailwindcss")
-    css_in = (cwd or Path.cwd()) / "assets" / "css" / "input.css"
-    if tw_bin:
-        tw_ok, tw_detail, tw_level = True, f"path: {tw_bin}", "info"
-    elif css_in.is_file():
-        tw_ok, tw_detail, tw_level = (
+    # CSS compile is product DX. This CLI does not probe or run Tailwind.
+    report.checks.append(
+        Check(
+            "tailwind",
             True,
-            "input.css present — compile with uxcompose build "
-            "(uxdom does not download the Tailwind CLI)",
+            "product CSS is uxcompose build (this CLI does not compile CSS)",
             "info",
         )
-    else:
-        tw_ok, tw_detail, tw_level = (
-            True,
-            "optional — product CSS is uxcompose build",
-            "info",
-        )
-    report.checks.append(Check("tailwind", tw_ok, tw_detail, tw_level))
+    )
 
     # Port
     free = _port_free("127.0.0.1", port)

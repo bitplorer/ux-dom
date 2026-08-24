@@ -52,7 +52,7 @@ from .compat.valio_pep649 import ensure_valio_pep649_compat
 
 ensure_valio_pep649_compat()
 
-from .settings import *  # Document, WebAssets, TailwindCommand, paths…  # isort: skip
+from .settings import *  # Document, WebAssets, paths; TailwindCommand is fail-closed  # isort: skip
 from .slots import *  #Slots, WebComponentSlot, …  # isort: skip
 
 from ux_dom.dom.src.component import (  # noqa: E402

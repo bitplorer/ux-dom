@@ -2,8 +2,8 @@
 """uxdom CLI entry — pure Document/render tooling.
 
 Product lifecycle: ``uxcompose create-app | build | serve | deploy``.
-Tailwind *compiler* resolution: ``ux_compose.tailwind``.
-This package keeps CSS *path* helpers (``ux_dom.cli.tailwind.discover_css_io``).
+Tailwind compiler: ``ux_compose.tailwind`` (``uxcompose build``).
+This package does not find, download, or invoke the Tailwind CLI.
 """
 
 from .cli import app as app

@@ -78,7 +78,7 @@ _PRODUCT_BUILD = (
     "this is a product app (app.py from uxcompose). "
     "Use: uxcompose build   "
     "(uxdom build is Document/static verify for app/main.py trees; "
-    "the Tailwind CLI finder lives on ux_compose.tailwind). "
+    "it does not compile CSS). "
     "XElement is served from the installed package at /ux-dom/static/x_element.js"
 )
 
@@ -97,8 +97,8 @@ def build_cmd(
     """Document/static verify for pure-dom ``app/main.py`` trees.
 
     Product apps (``app.py`` from uxcompose): use ``uxcompose build``.
-    Tailwind compiler resolution lives on ux-compose
-    (``ux_compose.tailwind``); this command does not download a CLI.
+    This command does not compile CSS. Product CSS is ``uxcompose build``
+    (``ux_compose.tailwind``). ``--skip-tailwind`` is accepted and ignored.
     XElement is served from the installed package at
     ``/ux-dom/static/x_element.js`` (no app copy).
     """

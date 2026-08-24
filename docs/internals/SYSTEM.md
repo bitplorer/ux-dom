@@ -23,7 +23,7 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 
 | Concern | Home |
 |---------|------|
-| create-app / build / serve / deploy / Tailwind CLI finder | **uxcompose only** |
+| create-app / build / serve / deploy / Tailwind compiler | **uxcompose only** |
 | Host strategy / product App | ux-compose |
 | HMR process | ux-compose (with serve) |
 | Channel transport | ux-compose `wire/` |
@@ -40,7 +40,7 @@ uxdom doctor | lint | profile | add
 ```
 
 `uxdom build` remains Document/static verify for leftover `app/main.py`
-trees — not the product CSS command.
+trees — it does not compile CSS.
 
 ## Document.use
 
