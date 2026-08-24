@@ -3,10 +3,11 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-"""Document, WebAssets, paths.
+"""Document + fail-closed product stubs.
 
-``TailwindCommand`` is a fail-closed teaching stub — product CSS compile
-is ``uxcompose build``.
+``WebAssets`` and ``TailwindCommand`` raise teaching errors.
+App layout: ``from ux_compose import WebAssets``.
+Product CSS: ``uxcompose build``.
 """
 from .document import *
 

@@ -10,7 +10,8 @@ _MSG = (
     "ux_dom.cli.tailwind is not the CSS compiler. "
     "Use: uxcompose build  "
     "(ux_compose.tailwind.discover_css_io / resolve_tailwind). "
-    "ux-dom keeps className, Document <link>, and WebAssets paths."
+    "ux-dom keeps className, Document <link>, and package static "
+    "/ux-dom/static/x_element.js."
 )
 
 

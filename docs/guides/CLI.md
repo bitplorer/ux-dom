@@ -31,7 +31,7 @@ See ux-compose `docs/guides/CLI.md` and `docs/FLOW.md`.
 
 Tailwind *compiler* is product DX: `uxcompose build` (`ux_compose.tailwind`).
 This package does not find, download, or invoke the CLI. `className`, Document
-`<link>`, and WebAssets *paths* stay here.
+`<link>`, and package static stay here. App folders: `ux_compose.WebAssets`.
 
 ```bash
 uxdom doctor

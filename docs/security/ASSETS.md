@@ -77,10 +77,11 @@ App().use(static_from_package(
 ))
 ```
 
-## WebAssets
+## App folders
 
-Still useful for **directory layout** of app-local static and Tailwind paths.
-Not a place to duplicate pip-owned JS.
+App CSS/JS disk layout is **ux-compose** (`ux_compose.WebAssets`).
+This package serves **library** JS from site-packages
+(`/ux-dom/static/x_element.js`). Do not duplicate pip-owned JS into `assets/`.
 
 ## Security: no raw filesystem exposure
 

@@ -13,7 +13,7 @@ The UX stack is a **layered system of specialists**, not a monolith.
 
 | Layer | Owns | Must **not** own |
 |-------|------|------------------|
-| **ux-dom** (this repo) | HTML/CSS/JS trees, `Document`, serialize, pure discovery, `uxdom`, WebAssets *paths* | Intent, Cap, Result ops, MorphState, motion IR, product CLI, Tailwind CLI finder |
+| **ux-dom** (this repo) | HTML/CSS/JS trees, `Document`, serialize, pure discovery, `uxdom`, package static | Intent, Cap, Result ops, MorphState, motion IR, product CLI, Tailwind CLI finder, app asset layout |
 | **ux-channel** | Intent / Result / Cap / wire / peers / host runtime | HTML trees, CSS |
 | **ux-behavior** | Product behavior, Morph/Ref, `@action`, validation | Raw HTML construction, wire codecs |
 | **ux-motion** | Presence / transition plans as data (IR v1) | Product behavior, DOM construction |
@@ -69,7 +69,7 @@ Do not analogize this layer to React / Next / htmx as its identity.
 
 **Product:** `uxcompose create-app → build → serve → deploy`
 **Pure-dom:** `uxdom doctor | lint | profile | add`
-**CSS compiler:** `ux_compose.tailwind` / `uxcompose build` (product). This package keeps `className`, Document `<link>`, WebAssets *paths*. `TailwindCommand` is fail-closed.
+**CSS compiler:** `ux_compose.tailwind` / `uxcompose build`. **App folders:** `ux_compose.WebAssets`. This package keeps `className`, Document `<link>`, package static. `TailwindCommand` / `WebAssets` are fail-closed.
 
 ## Tests
 

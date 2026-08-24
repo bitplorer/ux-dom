@@ -5,9 +5,9 @@
 """Fail-closed Tailwind *compiler* stub.
 
 Product CSS compile is ``uxcompose build`` (``ux_compose.tailwind``).
-This package keeps render-only CSS: ``className``, Document ``<link>``,
-WebAssets *paths*. It does not find, download, scaffold ``@source``, or
-invoke the Tailwind CLI.
+This package keeps render-only CSS: ``className``, Document ``<link>``.
+It does not find, download, scaffold ``@source``, or
+invoke the Tailwind CLI. App folders are ``ux_compose.assets.WebAssets``.
 
 ``TailwindCommand`` remains importable so leftover callers fail closed
 with a teaching error instead of silently compiling from Document.
@@ -23,7 +23,8 @@ _TEACH = (
     "Use: uxcompose build   "
     "(ux_compose.tailwind finds / ensures / invokes the compiler; "
     "create-app writes assets/css/input.css @source). "
-    "ux-dom keeps className, Document <link>, and WebAssets paths."
+    "ux-dom keeps className, Document <link>, and package static "
+    "/ux-dom/static/x_element.js."
 )
 
 

@@ -11,9 +11,8 @@
 - **Product CSS:** `uxcompose build` (`ux_compose.tailwind` finds / downloads
   the CLI). `uxdom build` does **not** compile CSS. `TailwindCommand` /
   `TailwindStyle` / `ux_dom.cli.tailwind` fail closed and teach
-  `uxcompose build`. WebAssets *paths*, `className`, and Document `<link>`
-  stay here. `uxdom build` on an `app.py` product tree exits 2 and teaches
-  `uxcompose build`.
+  `uxcompose build`. `className`, Document `<link>`, and package static
+  stay here. App folders are `ux_compose.WebAssets` (ux-dom `WebAssets` fails closed).
 - **Preferred routing bind:** `DirectoryRoutes` + thin adapter.
   `DirectoryRouter` remains batteries-only for standalone FastAPI users.
 - Historical `uxdom serve` / `create-app` notes below are **pre-cut**.

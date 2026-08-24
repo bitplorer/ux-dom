@@ -18,7 +18,7 @@ Version: **0.1.0** (ux-dom production line).
 - [x] `HtmlDocument` placeholders + XTemplate/WC hoist
 - [x] `__render__` / `__async_render__` / `async with` (`__aenter__` / `__aexit__`)
 - [x] `uniqueid`, SVG tags, CSS tags, `defHTML` parse path
-- [x] Top-level `from ux_dom import Component, Fragment, Document, WebAssets`
+- [x] Top-level `from ux_dom import Component, Fragment, Document`
 
 ## Host / routing (HOST)
 
@@ -39,7 +39,7 @@ Version: **0.1.0** (ux-dom production line).
 
 ## Infra
 
-- [x] `WebAssets` / Dir family
+- [x] App folders: `ux_compose.WebAssets` (ux-dom stub fails closed)
 - [x] `TailwindCommand` / `TailwindStyle` fail closed → `uxcompose build`
 - [x] HotReloadWebSocketRoute API preserved
 - [x] `x_element_js` + `x_element.js` (pairs with Python XElement / x-tagname) — see [XELEMENT.md](../guides/XELEMENT.md)

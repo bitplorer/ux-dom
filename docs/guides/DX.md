@@ -23,7 +23,7 @@
 | Component stubs | `uxdom add component\|ui\|xelement` |
 | Document/static verify (`app/main.py` trees) | `uxdom build` |
 
-Tailwind compiler resolution: `ux_compose.tailwind` (product). WebAssets
-paths stay here. Product command: `uxcompose build`.
+Tailwind compiler: `ux_compose.tailwind`. App folders: `ux_compose.WebAssets`.
+Product command: `uxcompose build`.
 
 See `docs/guides/CLI.md` and ux-compose `docs/FLOW.md`.

@@ -23,7 +23,7 @@ Product lifecycle CLI: **`uxcompose`** (`create-app` · `build` · `serve` · `d
 | `Document` | class | HTML shell SSoT |
 | `Component` / `Fragment` / `ReactiveComponent` | class | Trees |
 | `XElement` / `Htmx` / `Csp` / `Channel` | facades | `ux_dom.runtime` |
-| `WebAssets` | settings | Static *paths* (Document mount) |
+| `WebAssets` | stub | Fail-closed — `from ux_compose import WebAssets` |
 | `TailwindCommand` | stub | Fail-closed — use `uxcompose build` |
 
 ---

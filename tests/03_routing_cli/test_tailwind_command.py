@@ -3,18 +3,15 @@ from __future__ import annotations
 
 import unittest
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
-from ux_dom import TailwindCommand, WebAssets
+from ux_dom import TailwindCommand
 from ux_dom.settings.commands import ProductCssMoved
 
 
 class TestTailwindCommandFailClosed(unittest.TestCase):
     def test_construct_teaches_uxcompose_build(self):
-        with TemporaryDirectory() as td:
-            wa = WebAssets(base_dir=Path(td), dry_run=True)
-            with self.assertRaises(ProductCssMoved) as ctx:
-                TailwindCommand(file_path=Path(td) / "app.py", webassets=wa)
+        with self.assertRaises(ProductCssMoved) as ctx:
+            TailwindCommand()
         msg = str(ctx.exception).lower()
         self.assertIn("uxcompose build", msg)
         self.assertIn("classname", msg)

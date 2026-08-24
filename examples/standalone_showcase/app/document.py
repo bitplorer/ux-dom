@@ -24,6 +24,5 @@ def page(*body, page_title: str | None = None):
     return Document(
         head=head,
         ensure_csrf_token=False,
-        webassets=settings.webassets if settings.WITH_TAILWIND else None,
         include_runtimes=True,
     )(*body)

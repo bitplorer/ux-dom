@@ -4,7 +4,7 @@
 # https://opensource.org/licenses/MIT
 
 
-"""Path constants and project path helpers for Document / WebAssets."""
+"""Path constants and project path helpers (`MakePath` / `make_paths`)."""
 import os
 from collections.abc import Iterable
 from typing import List, Union

@@ -28,8 +28,8 @@ ux-compose   PRODUCT    create-app · build · serve · deploy · App · deliver
 | Owns (ux-dom) | Does **not** own |
 |---------------|------------------|
 | Document shell, serialize, pure discovery | Product scaffold / build / serve / deploy |
-| Pure-dom doctor / lint / profile / add | Host strategy / product App / Tailwind CLI finder |
-| HTML/CSS/JS trees, package static, WebAssets *paths* | Intent / Cap / Result, MorphState, motion IR |
+| Pure-dom doctor / lint / profile / add | Host strategy / product App / Tailwind CLI finder / app folders |
+| HTML/CSS/JS trees, package static | Intent / Cap / Result, MorphState, motion IR |
 
 ## Day-1 (product app)
 

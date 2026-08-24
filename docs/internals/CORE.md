@@ -10,12 +10,12 @@ These are the long-lived surface. Breaking them breaks every app.
 | `ux_dom.dom.src.ext.Tags` | Attr dialects, control flags, walk-stream |
 | `ux_dom.dom.src.component` | Component / Fragment / ReactiveComponent |
 | `ux_dom.dom.htmldocument` | HtmlDocument shell |
-| `ux_dom.settings.document` | Document / WebAssets factories |
+| `ux_dom.settings.document` | Document factory (`WebAssets` fail-closed) |
 | `ux_dom.response` | HTML / Streaming response adapters |
 
 Public imports::
 
-    from ux_dom import Component, Document, Fragment, ReactiveComponent, WebAssets
+    from ux_dom import Component, Document, Fragment, ReactiveComponent
     from ux_dom.dom import div, button, ...
 
 ## Plugins (swappable)

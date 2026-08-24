@@ -75,7 +75,8 @@ if ch:
 Product apps: `uxcompose create-app` emits `assets/css/input.css`; compile with
 `uxcompose build` (`ux_compose.tailwind` finds / ensures the CLI). Document
 links `/css/output.css`. Do not run the compiler from Document / `TailwindStyle`
-/ `TailwindCommand`. WebAssets: [ASSETS.md](../security/ASSETS.md).
+/ `TailwindCommand`. App folders: `ux_compose.WebAssets`. Package static:
+[ASSETS.md](../security/ASSETS.md).
 
 ## Streaming HTML
 

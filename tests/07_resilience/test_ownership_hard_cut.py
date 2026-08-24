@@ -101,3 +101,24 @@ class TestProductCssFailClosed(unittest.TestCase):
         with self.assertRaises(ImportError) as ctx:
             discover_css_io(".")
         self.assertIn("ux_compose.tailwind", str(ctx.exception))
+
+    def test_webassets_teaches_compose(self):
+        from ux_dom import WebAssets
+        from ux_dom.settings.document import ProductAssetsMoved
+
+        with self.assertRaises(ProductAssetsMoved) as ctx:
+            WebAssets(base_dir=".")
+        msg = str(ctx.exception)
+        self.assertIn("ux_compose", msg)
+        self.assertIn("WebAssets", msg)
+        self.assertIn("x_element.js", msg)
+
+    def test_document_has_no_webassets_field(self):
+        from dataclasses import fields
+
+        from ux_dom import Document
+
+        names = {f.name for f in fields(Document)}
+        self.assertNotIn("webassets", names)
+        with self.assertRaises(TypeError):
+            Document(head=[], webassets=object())
