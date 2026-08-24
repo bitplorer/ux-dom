@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Documentation map
+    url: https://github.com/bitplorer/ux-dom/blob/main/docs/INDEX.md
+    about: Start at docs/INDEX.md.
+  - name: Support
+    url: https://github.com/bitplorer/ux-dom/blob/main/SUPPORT.md
+    about: Questions and where not to file issues.
+  - name: Security
+    url: https://github.com/bitplorer/ux-dom/blob/main/SECURITY.md
+    about: Report vulnerabilities privately.
