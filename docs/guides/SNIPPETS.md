@@ -7,13 +7,28 @@ Render layer. Trees serialize with __render__. Document is the shell. Product se
 
 Every block is meant to run (or to be the exact fragment you drop into a running app). Names are public exports. If code and this page disagree, **code wins**.
 
+**13 snippets** covering install, core usage, fail-closed errors, live/async, CLI, and the usage patterns that keep layers from leaking.
+
+### Public names in this cookbook
+
+`Document`, `Component`, `XElement`, `Htmx`, `Csp`, `div`, `h1`, `p`, `button`, `section`, `h2`, `ul`, `li`, `Fragment`, `span`, `dataclass`, `ReactiveComponent`, `Button`, `Card`, `CardHeader`, `CardTitle`, `CardContent`, `Path`, `DirectoryRoutes`, `RouterHooks`
+
 ## Contents
 
 - [Install](#dom-install)
 - [Document shell + serialize](#dom-document)
 - [Component / Fragment](#dom-component)
-- [Pure-dom CLI](#dom-cli)
 - [Nonce CSP stamp](#dom-csp)
+- [Fragment fans attrs onto children](#dom-fragment)
+- [ReactiveComponent re-renders on field change](#dom-reactive)
+- [Optional UI kit (Button / Card)](#dom-ui-kit)
+- [XElement + Htmx contributions](#dom-htmx)
+- [DirectoryRoutes (host-free discovery)](#dom-routes)
+- [RouterHooks on DirectoryRoutes](#dom-hooks)
+- [Pure-dom CLI](#dom-cli)
+- [Copy-in UI kit via CLI](#dom-add-ui)
+- [Pattern: __render__ is the serialize SSoT](#dom-pattern-serialize)
+
 
 ## Install
 
@@ -28,6 +43,7 @@ python3.14 -m venv .venv && source .venv/bin/activate
 pip install ux-dom
 uxdom doctor
 ```
+
 
 ## Core usage
 
@@ -83,6 +99,138 @@ class ProductList(Component):
 print(ProductList(["Tee", "Tote"]).render().__render__())
 ```
 
+### Nonce CSP stamp
+
+<a id="dom-csp"></a>
+
+CSP is a Document.use contribution. See docs/security/CSP.md. Do not inline event handlers.
+
+```python
+from ux_dom.runtime import Csp
+from ux_dom import Document
+from ux_dom.dom import div
+
+document = Document(head=[], body=[]).use(Csp.auto())
+html = document(div("ok")).__render__()
+# Look for nonce= on script tags and a Content-Security-Policy meta/header stamp.
+```
+
+### Fragment fans attrs onto children
+
+<a id="dom-fragment"></a>
+
+Fragment is a transparent group. Unique attrs (id) apply only to the first child so you never emit duplicate ids.
+
+```python
+from ux_dom import Fragment
+from ux_dom.dom import div, span
+
+tree = Fragment(className="row")(
+    span("A"),
+    span("B"),
+)
+print(tree.__render__())
+# class="row" is applied to each child. id= would apply only to the first child.
+```
+
+### ReactiveComponent re-renders on field change
+
+<a id="dom-reactive"></a>
+
+render() runs before the old tree is cleared — an exception leaves the previous tree intact. This is still render, not MorphState.
+
+```python
+from dataclasses import dataclass
+from ux_dom import ReactiveComponent
+from ux_dom.dom import div, button
+
+@dataclass(eq=False)
+class Counter(ReactiveComponent):
+    count: int = 0
+
+    def render(self, count=0):
+        return div(str(self.count), id="n")
+
+    def increment(self):
+        self.count += 1
+
+c = Counter(count=1)
+c.increment()
+print("2" in str(c))
+```
+
+### Optional UI kit (Button / Card)
+
+<a id="dom-ui-kit"></a>
+
+Markup + tokens only. No Op construction. Copy into the app with: uxdom add ui Button. Live morph is ux-behavior / ux-channel.
+
+```python
+from ux_dom.ui import Button, Card, CardHeader, CardTitle, CardContent
+
+card = Card(
+    CardHeader(CardTitle("Cart")),
+    CardContent(Button("Add", variant="default", size="md", type="button")),
+)
+print(card.render().__render__())
+```
+
+### XElement + Htmx contributions
+
+<a id="dom-htmx"></a>
+
+Document.use stamps contributions. HTMX is never auto-attached by ux-compose; opt in here. Product serve stays on uxcompose.
+
+```python
+from ux_dom import Document
+from ux_dom.runtime import XElement, Htmx, Csp
+from ux_dom.dom import div
+
+document = Document(head=[], body=[]).use(
+    XElement(),
+    Htmx(),
+    Csp.auto(),
+)
+html = document(div("Hi", id="view")).__render__()
+print("script" in html.lower() or "csp" in html.lower() or html)
+```
+
+### DirectoryRoutes (host-free discovery)
+
+<a id="dom-routes"></a>
+
+Pure discovery. Host adapters live in ux-compose (Invisible Strategy). Do not import FastAPI from ux-dom to mount pages.
+
+```python
+from pathlib import Path
+from ux_dom.routing.core import DirectoryRoutes
+
+core = DirectoryRoutes(package_dir=Path("."), base_directory="routes")
+records = core.discover()
+for rec in records:
+    print(rec.path, rec.name, rec.kind)
+```
+
+### RouterHooks on DirectoryRoutes
+
+<a id="dom-hooks"></a>
+
+Hooks are host-agnostic. resolve_unit is only for the synthetic page GET. Explicit HTTP methods bypass it.
+
+```python
+from pathlib import Path
+from ux_dom.routing.core import DirectoryRoutes, RouterHooks
+
+hooks = RouterHooks(
+    resolve_unit=None,    # (cls, path, name) → instance | None
+    accept_symbol=None,   # (name, obj, module) → bool
+    on_route=None,        # (record) → None
+)
+core = DirectoryRoutes(package_dir=Path("."), base_directory="routes", hooks=hooks)
+print(core.discover())
+```
+
+
 ## CLI
 
 ### Pure-dom CLI
@@ -99,20 +247,37 @@ uxdom profile
 uxdom add component Card
 ```
 
-## Core usage
+### Copy-in UI kit via CLI
 
-### Nonce CSP stamp
+<a id="dom-add-ui"></a>
 
-<a id="dom-csp"></a>
+uxdom add copies markup you own. uxcompose create-app | serve | deploy remains the product path.
 
-CSP is a Document.use contribution. See docs/security/CSP.md. Do not inline event handlers.
+```bash
+uxdom ui list
+uxdom add ui Button
+uxdom add component Card
+uxdom doctor
+uxdom lint
+uxdom build
+uxdom profile
+```
+
+
+## Usage patterns
+
+### Pattern: __render__ is the serialize SSoT
+
+<a id="dom-pattern-serialize"></a>
+
+Serialize SSoT is tree.__render__() / tree.__async_render__(). Product create-app / serve is uxcompose, not uxdom.
 
 ```python
-from ux_dom.runtime import Csp
-from ux_dom import Document
-from ux_dom.dom import div
+from ux_dom.dom import div, h1, p
 
-document = Document(head=[], body=[]).use(Csp.auto())
-html = document(div("ok")).__render__()
-# Look for nonce= on script tags and a Content-Security-Policy meta/header stamp.
+tree = div(h1("Shop"), p("Server-authored HTML."), id="view")
+html = tree.__render__()          # SSoT
+# html = tree.__async_render__()  # async variant
+print(html)
+# str(tree) may work for debugging; do not treat it as the wire contract.
 ```
