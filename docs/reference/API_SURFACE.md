@@ -11,7 +11,7 @@
 | **Import** | `ux_dom` |
 | **CLI** | **`uxdom`** (pure-dom tooling only) |
 
-Product lifecycle CLI: **`uxcompose`** (`create-app` · `serve` · `deploy` · `doctor`).
+Product lifecycle CLI: **`uxcompose`** (`create-app` · `build` · `serve` · `deploy` · `doctor`).
 
 ---
 
@@ -60,12 +60,12 @@ Thin FastAPI batteries may exist; product mount path is **ux-compose**.
 |---------|------|
 | `doctor` / `info` | Package / Document health |
 | `lint` | Conventions |
-| `build` | Tailwind / static verify |
+| `build` | leftover Document/static verify (`app/main.py`); no CLI download |
 | `profile` / `dashboard` | Render p95 |
 | `add` | component \| xelement \| ui |
 | `ui` | List UI kit |
 
-**Not on uxdom:** create-app · serve · deploy → use **uxcompose**.
+**Product CSS is `uxcompose build`.** Not on uxdom as product verbs: create-app · build · serve · deploy → use **uxcompose**. Leftover `uxdom build` stays Document/static verify for `app/main.py` trees.
 
 ---
 

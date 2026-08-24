@@ -64,7 +64,7 @@ Version: **0.1.0** (ux-dom production line).
 - [ ] watchfiles backend replace watchgod
 - [ ] `ux_dom[channel]` ControlPlugin package
 - [x] Product CLI moved: `uxcompose create-app | build | serve | deploy` (not uxdom)
-- [x] Standalone Tailwind CLI resolver (`cli/tailwind.py`)
+- [x] CSS *paths* stay here (`cli/tailwind.discover_css_io`); compiler finder is `ux_compose.tailwind`
 - [x] DirectoryRoutes `[id]` → `{id}` + private `_*.py` skip
 - [x] FastAPIHost + DirectoryRouting + control/style/hmr plugins (quarantined, not product)
 

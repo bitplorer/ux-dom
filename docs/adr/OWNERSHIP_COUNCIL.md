@@ -5,6 +5,7 @@
 
 **Date:** 2026-08-17  
 **Note (2026-08-19):** the author-layer seat is now **ux-behavior** (verbs `open` / `close` / `select` / `notify`). This record still names `ux-app` as the historical owner of Op macros.  
+**Note (2026-08-24):** product CLI (`create-app` / `build` / `serve` / `deploy`) and Tailwind CLI finder are **ux-compose**. Markup / Document / tokens seats below still hold. See [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md).  
 **Question:** For a multi-year stable design system on ux-app / ux-dom / Channel, which elements live in which package — and which never move?  
 **Strategy:** halt-or-patch · primary sources · adversary stress  
 **Outcome:** Binding placement matrix + non-negotiable rules

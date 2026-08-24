@@ -27,9 +27,11 @@ pip install 'ux-dom[fastapi]'
 | Extra | Provides |
 |-------|----------|
 | **`fastapi`** | fastapi, uvicorn, python-multipart |
-| **`fastapidev`** | Dev-oriented FastAPI stack |
-| **`tailwind`** | pytailwindcss |
-| **`hmr`** | watchfiles |
+| **`fastapidev`** | Dev-oriented FastAPI stack + pytailwindcss + watchfiles |
+| **`dev`** | pytailwindcss, watchfiles, uvicorn |
+
+There is no `tailwind` or `hmr` extra. Product CSS compile is
+`uxcompose build`. Product HMR is `uxcompose serve --hmr`.
 
 ## CLI
 

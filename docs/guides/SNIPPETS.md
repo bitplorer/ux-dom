@@ -36,7 +36,7 @@ Every block is meant to run (or to be the exact fragment you drop into a running
 
 <a id="dom-install"></a>
 
-Full stack requires Python ≥ 3.14. Product create-app / serve live on uxcompose, not uxdom.
+Full stack requires Python ≥ 3.14. Product create-app / build / serve live on uxcompose, not uxdom.
 
 ```bash
 python3.14 -m venv .venv && source .venv/bin/activate
@@ -237,7 +237,7 @@ print(core.discover())
 
 <a id="dom-cli"></a>
 
-uxdom is Document tooling only. uxcompose create-app | serve | deploy is the product path.
+uxdom is Document tooling only. uxcompose create-app | build | serve | deploy is the product path.
 
 ```bash
 uxdom doctor
@@ -253,7 +253,7 @@ Product CSS minify is `uxcompose build` (`ux_compose.tailwind`).
 
 <a id="dom-add-ui"></a>
 
-uxdom add copies markup you own. uxcompose create-app | serve | deploy remains the product path.
+uxdom add copies markup you own. uxcompose create-app | build | serve | deploy remains the product path.
 
 ```bash
 uxdom ui list
@@ -271,7 +271,7 @@ uxdom profile
 
 <a id="dom-pattern-serialize"></a>
 
-Serialize SSoT is tree.__render__() / tree.__async_render__(). Product create-app / serve is uxcompose, not uxdom.
+Serialize SSoT is tree.__render__() / tree.__async_render__(). Product create-app / build / serve is uxcompose, not uxdom.
 
 ```python
 from ux_dom.dom import div, h1, p

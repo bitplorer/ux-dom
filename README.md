@@ -89,7 +89,7 @@ Five-minute path: [START_HERE.md](START_HERE.md).
 | HTML/CSS/JS trees, `Document` shell, serialize | Intent / Cap / Result ops (`ux-channel`) |
 | Pure `DirectoryRoutes` + `RouterHooks` | Product state machines (`ux-behavior`) |
 | Package static (`/ux-dom/static/…`) | Motion IR (`ux-motion`) |
-| Pure-dom CLI: `doctor` · `lint` · `profile` · `add` | Product scaffold / serve / deploy / CSS minify (`ux-compose`) |
+| Pure-dom CLI: `doctor` · `lint` · `profile` · `add` | Product scaffold / build / serve / deploy / CSS minify (`ux-compose`) |
 | WebAssets *paths* (`discover_css_io`) | Tailwind CLI finder / download (`ux_compose.tailwind`) |
 
 ## Audience

@@ -5,7 +5,7 @@ Low cognitive load: **render vs product**.
 ```text
 ┌─────────────────────────────────────────────────────────┐
 │  PRODUCT  (ux-compose)                                   │
-│     uxcompose create-app · serve · deploy · App.mount    │
+│     uxcompose create-app · build · serve · deploy · App.mount    │
 └──────────────────────────▲──────────────────────────────┘
                            │ uses render + discovery
 ┌──────────────────────────┴──────────────────────────────┐
@@ -45,4 +45,4 @@ See [SYSTEM.md](SYSTEM.md).
 1. **Core never imports FastAPI/Tailwind/channel** — adapters and compose do.
 2. **Browser surface via Document.use** — not ad-hoc globals.
 3. **`[id]` folders stay `[id]` on disk** — FastAPI path becomes `{id}`.
-4. **Product CLI is uxcompose** — uxdom does not scaffold / serve / deploy.
+4. **Product CLI is uxcompose** — uxdom does not scaffold / build / serve / deploy.

@@ -2,7 +2,7 @@
 
 > **5-minute path (root):** [../START_HERE.md](../START_HERE.md)
 > **Boundary:** [internals/SYSTEM.md](internals/SYSTEM.md)
-> **Product apps:** [ux-compose](https://github.com/bitplorer/ux-compose) — `uxcompose create-app | serve | deploy`
+> **Product apps:** [ux-compose](https://github.com/bitplorer/ux-compose) — `uxcompose create-app | build | serve | deploy`
 > **Map:** [INDEX.md](INDEX.md)
 > **Features:** [FEATURES.md](FEATURES.md)
 
@@ -22,20 +22,21 @@ ux-dom       RENDER     trees → __render__ / __async_render__
              Document   shell (.use: control, runtime, CSP stamp)
              discovery  pure DirectoryRoutes + RouterHooks
 
-ux-compose   PRODUCT    create-app · serve · deploy · App · delivery
+ux-compose   PRODUCT    create-app · build · serve · deploy · App · delivery
 ```
 
 | Owns (ux-dom) | Does **not** own |
 |---------------|------------------|
-| Document shell, serialize, pure discovery | Product scaffold / serve / deploy |
-| Pure-dom doctor / lint / build | Host strategy / product App |
-| HTML/CSS/JS trees, package static | Intent / Cap / Result, MorphState, motion IR |
+| Document shell, serialize, pure discovery | Product scaffold / build / serve / deploy |
+| Pure-dom doctor / lint / profile / add | Host strategy / product App / Tailwind CLI finder |
+| HTML/CSS/JS trees, package static, WebAssets *paths* | Intent / Cap / Result, MorphState, motion IR |
 
 ## Day-1 (product app)
 
 ```bash
 pip install ux-compose ux-dom
 uxcompose create-app myapp && cd myapp
+uxcompose build
 uxcompose serve app:asgi --port 8080
 ```
 

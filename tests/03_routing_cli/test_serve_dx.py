@@ -1,7 +1,7 @@
-"""Pure-dom DX residuals: Tailwind resolver + envfile + doctor.
+"""Pure-dom DX residuals: CSS path helpers + envfile + doctor.
 
-Product lifecycle (create-app / serve / dev / start / tunnel / deploy) lives on
-uxcompose only. This module locks that absence and keeps pure-dom tooling tests.
+Product lifecycle (create-app / build / serve / deploy) lives on uxcompose
+only. This module locks that absence and keeps pure-dom tooling tests.
 """
 from __future__ import annotations
 
@@ -127,7 +127,7 @@ class TestEnvFiles(unittest.TestCase):
         self.assertNotIn(".env.development", names)
 
 
-class TestTailwindCommandUsesResolver(unittest.TestCase):
+class TestTailwindCommandLocalProbe(unittest.TestCase):
     def test_tw_argv_honors_env(self):
         from ux_dom.settings.commands import TailwindCommand
 

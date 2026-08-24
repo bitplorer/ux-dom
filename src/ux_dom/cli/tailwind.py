@@ -1,13 +1,18 @@
 """CSS *path* helpers for WebAssets trees — not the product compiler.
 
 Product command: ``uxcompose build`` (``ux_compose.tailwind`` finds / downloads
-/ invokes the Tailwind CLI). This module only knows where CSS files sit:
+/ invokes the Tailwind CLI). This module only knows where CSS files sit for
+leftover ``uxdom build`` / Document verify:
 
 - input:  ``assets/css/input.css``
 - output: ``assets/static/file/css/output.css``  (WebAssets ``static.css``)
 
+Product convention SSoT is ``ux_compose.tailwind.discover_css_io`` (consults
+``WebAssets.static.css`` when ux-dom is installed). This copy is the leftover
+path helper and does **not** download, cache, or call npx.
+
 ``argv_with_io`` is trivial CLI glue leftover verify may use when a binary is
-already on PATH. It does **not** download, cache, or call npx.
+already on PATH.
 """
 from __future__ import annotations
 
@@ -38,7 +43,11 @@ def argv_with_io(
 
 
 def discover_css_io(root: Path) -> Optional[tuple[Path, Path]]:
-    """Resolve input/output CSS the same way WebAssets + create-app do."""
+    """Resolve input/output CSS the same way WebAssets layout does.
+
+    Leftover verify helper. Product convention SSoT is
+    ``ux_compose.tailwind.discover_css_io``.
+    """
     assets = Path(root) / "assets"
     input_css = assets / "css" / "input.css"
     if not input_css.is_file():

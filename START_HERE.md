@@ -22,7 +22,7 @@ Python **3.14** required (`pyproject.toml`).
 | Tag trees, Document, CSP stamp, package static | Intent / Cap / Result (`ux-channel`) |
 | Pure directory discovery | Product actions / MorphState (`ux-behavior`) |
 | Pure-dom CLI (`uxdom`) | Motion plans (`ux-motion`) |
-| | Product create-app / serve / deploy (`ux-compose`) |
+| | Product create-app / build / serve / deploy (`ux-compose`) |
 
 Product apps: **[ux-compose](https://github.com/bitplorer/ux-compose)** —
 `uxcompose create-app | build | serve | deploy`.

@@ -31,7 +31,9 @@ Optional HTTP adapters under ``ux_dom.response`` are **not** the product path.
 Product apps::
 
     uxcompose create-app myapp
-    # composition root + delivery + HMR(dev) — see ux-compose docs/FLOW.md
+    uxcompose build
+    uxcompose serve app:asgi
+    # composition root + CSS compile + delivery — see ux-compose docs/FLOW.md
 
 Pure document (no product host)::
 
