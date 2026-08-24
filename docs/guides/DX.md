@@ -8,6 +8,7 @@
 | Need | Command |
 |------|---------|
 | Scaffold | `uxcompose create-app` |
+| CSS minify | `uxcompose build` |
 | Run | `uxcompose serve app:asgi` |
 | Deploy configs | `uxcompose deploy` |
 | Product health | `uxcompose doctor` |
@@ -18,8 +19,11 @@
 |------|---------|
 | Env / package health | `uxdom doctor` |
 | Conventions | `uxdom lint` |
-| Tailwind / static | `uxdom build` |
 | Render p95 | `uxdom profile` / `dashboard` |
 | Component stubs | `uxdom add component\|ui\|xelement` |
+| Document/static verify (`app/main.py` trees) | `uxdom build` |
+
+Tailwind compiler resolution: `ux_dom.cli.tailwind` (library). Product
+command: `uxcompose build`.
 
 See `docs/guides/CLI.md` and ux-compose `docs/FLOW.md`.

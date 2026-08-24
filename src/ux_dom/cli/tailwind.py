@@ -1,4 +1,7 @@
-"""Resolve the Tailwind standalone CLI for ``uxdom build`` (and compose serve).
+"""Resolve the Tailwind standalone CLI for product and pure-dom builds.
+
+Product command: ``uxcompose build`` (hands off to this module).
+Pure-dom verify: ``uxdom build`` on ``app/main.py`` trees.
 
 Order (first hit wins):
 

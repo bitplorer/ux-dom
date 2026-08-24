@@ -55,8 +55,9 @@ def _find_app_root(start: Optional[Path] = None) -> Path:
         if p == p.parent:
             break
     raise FileNotFoundError(
-        "no ux-dom app found (expected app/main.py). "
-        "Run from a create-app project root."
+        "no pure-dom app found (expected app/main.py). "
+        "Product apps from uxcompose create-app have app.py — use: uxcompose build. "
+        "This pipeline is Document/static verify for showcase trees."
     )
 
 

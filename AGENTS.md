@@ -36,7 +36,7 @@ Do not analogize this layer to React / Next / htmx as its identity.
 
 ## What not to invent
 
-- Product CLI on `uxdom` (`create-app`, `serve`, `deploy`)
+- Product CLI on `uxdom` (`create-app`, `serve`, `deploy`, product `build`)
 - A second document factory on `App`
 - Dual-copy of library JS into `assets/js/` (package URL is SSoT)
 - Intent / Cap / Result types in this package
@@ -48,6 +48,7 @@ Do not analogize this layer to React / Next / htmx as its identity.
 | Need | Command |
 |------|---------|
 | New **product** app | `uxcompose create-app` |
+| Product CSS minify | `uxcompose build` |
 | Component / XElement / UI | `uxdom add …` |
 | Pure-dom integrity | `uxdom doctor` |
 | Product health | `uxcompose doctor` |
@@ -66,8 +67,9 @@ Do not analogize this layer to React / Next / htmx as its identity.
 
 ## CLI spine
 
-**Product:** `uxcompose create-app → serve → deploy`
-**Pure-dom:** `uxdom doctor | lint | build | profile | add`
+**Product:** `uxcompose create-app → build → serve → deploy`
+**Pure-dom:** `uxdom doctor | lint | profile | add`
+**CSS resolver:** `ux_dom.cli.tailwind` (library). Product command: `uxcompose build`.
 
 ## Tests
 

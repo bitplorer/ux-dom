@@ -44,6 +44,8 @@ Not library runtimes.
 
 ## Build / package
 
+Product CSS minify: `uxcompose build`.
+
 ```bash
 uxdom build --package
 ```

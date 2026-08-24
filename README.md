@@ -55,6 +55,7 @@ python -c "from ux_dom import Document; print(Document)"
 
 ```bash
 uxcompose create-app myapp && cd myapp
+uxcompose build
 uxcompose serve app:asgi --port 8080
 ```
 
@@ -88,7 +89,8 @@ Five-minute path: [START_HERE.md](START_HERE.md).
 | HTML/CSS/JS trees, `Document` shell, serialize | Intent / Cap / Result ops (`ux-channel`) |
 | Pure `DirectoryRoutes` + `RouterHooks` | Product state machines (`ux-behavior`) |
 | Package static (`/ux-dom/static/…`) | Motion IR (`ux-motion`) |
-| Pure-dom CLI: `doctor` · `lint` · `build` · `profile` · `add` | Product scaffold / serve / deploy (`ux-compose`) |
+| Pure-dom CLI: `doctor` · `lint` · `profile` · `add` | Product scaffold / serve / deploy / CSS minify (`ux-compose`) |
+| Tailwind compiler resolution (`ux_dom.cli.tailwind`) | Product `build` command (`uxcompose build`) |
 
 ## Audience
 
@@ -109,7 +111,7 @@ ux-dom       RENDER     trees → __render__ / __async_render__
              Document   shell (.use: control, runtime, CSP stamp)
              discovery  pure DirectoryRoutes + RouterHooks
 
-ux-compose   PRODUCT    create-app · serve · deploy · App · delivery
+ux-compose   PRODUCT    create-app · build · serve · deploy · App · delivery
 ```
 
 **Greenfield product apps:** `uxcompose create-app` — not `uxdom create-app`.
@@ -119,10 +121,12 @@ ux-compose   PRODUCT    create-app · serve · deploy · App · delivery
 ```bash
 uxdom doctor
 uxdom lint
-uxdom build
 uxdom profile
 uxdom add component Card
 ```
+
+Product CSS minify: **`uxcompose build`** (hands off to `ux_dom.cli.tailwind`).
+`uxdom build` remains Document/static verify for leftover `app/main.py` trees.
 
 See [docs/guides/CLI.md](docs/guides/CLI.md). Product `serve` / `deploy` / tunnel: **ux-compose**.
 

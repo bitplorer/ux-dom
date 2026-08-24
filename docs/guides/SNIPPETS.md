@@ -242,10 +242,12 @@ uxdom is Document tooling only. uxcompose create-app | serve | deploy is the pro
 ```bash
 uxdom doctor
 uxdom lint
-uxdom build
 uxdom profile
 uxdom add component Card
 ```
+
+Product CSS minify is `uxcompose build` (hands off to `ux_dom.cli.tailwind`).
+`uxdom build` is Document/static verify for leftover `app/main.py` trees.
 
 ### Copy-in UI kit via CLI
 
@@ -259,7 +261,6 @@ uxdom add ui Button
 uxdom add component Card
 uxdom doctor
 uxdom lint
-uxdom build
 uxdom profile
 ```
 

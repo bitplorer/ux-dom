@@ -63,7 +63,7 @@ Version: **0.1.0** (ux-dom production line).
 - [x] Walk-stream `__async_render__` (compact open→children→close; pretty uses full engine)
 - [ ] watchfiles backend replace watchgod
 - [ ] `ux_dom[channel]` ControlPlugin package
-- [x] Product CLI moved: `uxcompose create-app | serve | deploy` (not uxdom)
+- [x] Product CLI moved: `uxcompose create-app | build | serve | deploy` (not uxdom)
 - [x] Standalone Tailwind CLI resolver (`cli/tailwind.py`)
 - [x] DirectoryRoutes `[id]` → `{id}` + private `_*.py` skip
 - [x] FastAPIHost + DirectoryRouting + control/style/hmr plugins (quarantined, not product)

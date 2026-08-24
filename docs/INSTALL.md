@@ -36,13 +36,13 @@ pip install 'ux-dom[fastapi]'
 ```bash
 # Product apps (composition + delivery):
 uxcompose create-app myapp
+uxcompose build
 uxcompose serve app:asgi --port 8080
 
 # Pure Document tooling:
 uxdom --help
 uxdom doctor
 uxdom lint
-uxdom build
 ```
 
 ## Import

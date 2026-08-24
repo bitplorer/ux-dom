@@ -55,7 +55,6 @@ html = document(div(h1("Hi"))).__render__()
 ```bash
 uxdom doctor
 uxdom lint
-uxdom build
 uxdom profile
 ```
 

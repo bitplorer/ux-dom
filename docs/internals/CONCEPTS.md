@@ -33,11 +33,11 @@ See [SYSTEM.md](SYSTEM.md).
 
 | Want | Do |
 |------|-----|
-| New app | `uxcompose create-app myapp && cd myapp && uxcompose serve app:asgi` |
+| New app | `uxcompose create-app myapp && cd myapp && uxcompose build && uxcompose serve app:asgi` |
 | New page | `routes/<stem>.py` (product) or `uxdom add route` (pure-dom stub) |
 | Custom element | `uxdom add xelement Counter` |
 | UI primitive | `uxdom add ui Button` (ownable copy) |
-| Ship | `uxcompose deploy` · `uxdom build` |
+| Ship | `uxcompose build` · `uxcompose deploy` |
 | Live regions | `pip install ux-channel` behind ux-compose `wire/` |
 
 ## Non-negotiable rules

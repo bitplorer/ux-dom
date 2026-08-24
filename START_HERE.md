@@ -25,7 +25,7 @@ Python **3.14** required (`pyproject.toml`).
 | | Product create-app / serve / deploy (`ux-compose`) |
 
 Product apps: **[ux-compose](https://github.com/bitplorer/ux-compose)** —
-`uxcompose create-app | serve | deploy`.
+`uxcompose create-app | build | serve | deploy`.
 
 ---
 
@@ -64,10 +64,12 @@ uxdom doctor
 ```bash
 pip install ux-compose ux-dom
 uxcompose create-app myapp && cd myapp
+uxcompose build
 uxcompose serve app:asgi --port 8080
 ```
 
 Do **not** run `uxdom create-app` or `uxdom serve`. Those are not the product path.
+Product CSS is `uxcompose build`, not `uxdom build`.
 
 ---
 
