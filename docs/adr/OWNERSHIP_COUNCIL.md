@@ -48,7 +48,8 @@
 | **Token tables** (surface, ink, type_scale, target, density, overlay, color, cn, variants) | **OWNS** | RE-EXPORTS via `ux_app.ui` | FORBIDDEN | CONSUMES; local CSS may *extend*, not replace the table |
 | **Pure markup components** (Button, Input, Card, Table, Badge, Avatar, …) | **OWNS** | RE-EXPORTS | FORBIDDEN | Ownable *copy* via `uxdom add ui` / `uxapp add ui` into product tree |
 | **Channel-bridge helpers** (stamp_region, live_button, public_form, to_fragment) | **OWNS** (`ux_dom.ui.channel_bridge`) | CONSUMES | FORBIDDEN in author package body | CONSUMES |
-| **Document / TailwindStyle / create-app** | **OWNS** | FORBIDDEN | FORBIDDEN | CONSUMES |
+| **Document shell / className / `<link>` / package static** | **OWNS** | FORBIDDEN | FORBIDDEN | CONSUMES |
+| **Product CLI / Tailwind compiler / WebAssets folders** | FORBIDDEN (fail-closed stubs) | FORBIDDEN | FORBIDDEN | **OWNS** via ux-compose |
 | **Op, update, notify, go, as_ops, S_PAIRS** | FORBIDDEN | **OWNS** (`ops.py`) | Applied by Peer | CONSUMES |
 | **Chrome macros** (open_overlay, close_overlay, select_region, confirm, form_result) | FORBIDDEN | **OWNS** (`overlay.py` façade) | FORBIDDEN | CONSUMES |
 | **Ports / adapters for chrome** (OverlayPort, ChannelOverlay, key scheme) | FORBIDDEN | **OWNS** | FORBIDDEN | Tests may bind mocks; production uses defaults |
@@ -75,7 +76,7 @@
 
 ### Document
 - Live COMPONENTS.md already states: *“Markup and Tailwind tokens live in ux-dom. Ownership does not move.”*
-- create-app / Tailwind pipeline only understands ux-dom paths cleanly.
+- Product create-app / Tailwind *compiler* live on ux-compose. ux-dom keeps className and Document `<link>`.
 - Channel-bridge stays in ux-dom because it is markup-side progressive enhancement (data attributes + optional stamp), not Cap logic.
 
 ### Domain

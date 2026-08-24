@@ -47,7 +47,7 @@
 ### D2.1 — Split ownership
 | Concern | Owner | Why |
 |---------|--------|-----|
-| Markup, tokens, pure components | **ux-dom** | Document / Tailwind / create-app already live there; moving markup to ux-app would create a second design system |
+| Markup, tokens, pure components | **ux-dom** | Document / className / `<link>` / package static already live there; moving markup to ux-app would create a second design system |
 | Author macros for chrome (open/close/select) | **ux-app** | Expands to `Op`; author layer owns Actions → list[Op] |
 | Cap mint, Peer apply, stamp | **Channel / CEK via adapter/** only | Isolation law: only `src/ux_app/adapter/**` may import `ux_channel` / `cek_*` |
 

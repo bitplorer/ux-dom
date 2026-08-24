@@ -36,7 +36,12 @@ def lint_project(root: Optional[Path] = None) -> list[LintIssue]:
     doc = app_root / "app" / "document.py"
     if doc.is_file():
         t = doc.read_text(encoding="utf-8")
-        if "x_element.js" not in t and "x_element_js" not in t:
+        if (
+            "x_element.js" not in t
+            and "x_element_js" not in t
+            and "XElement(" not in t
+            and "XElementRuntime" not in t
+        ):
             issues.append(
                 LintIssue(
                     str(doc.relative_to(app_root)),

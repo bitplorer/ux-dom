@@ -29,7 +29,7 @@ Public imports::
 | `ux_dom.plugins.hmr` | HotReload |
 | `ux_dom.plugins.response` | endpoint wrappers |
 
-Compose::
+Compose (leftover batteries — **not** the product path)::
 
     from pathlib import Path
     from ux_dom.plugins import App
@@ -44,6 +44,8 @@ Compose::
         .use(HtmxControl(middleware=True))
         .build()
     )
+
+Product apps: `uxcompose create-app` → `build()` / `App.mount` on **ux-compose**.
 
 ## CLI
 

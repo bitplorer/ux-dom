@@ -58,8 +58,8 @@ uxdom build --package
 ## Escape hatch (usually avoid)
 
 ```python
-XElementRuntime(serve="webassets")  # copies into assets/ — dual copy
-UxChannelRuntime(serve="webassets")
+XElementRuntime(serve="dual_copy")  # copies into assets/ — dual copy (legacy alias serve="webassets")
+UxChannelRuntime(serve="dual_copy")
 ```
 
 Only for air-gapped trees that ship without site-packages (rare; not recommended).

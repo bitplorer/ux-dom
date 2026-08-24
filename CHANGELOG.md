@@ -13,6 +13,7 @@
   `TailwindStyle` / `ux_dom.cli.tailwind` fail closed and teach
   `uxcompose build`. `className`, Document `<link>`, and package static
   stay here. App folders are `ux_compose.WebAssets` (ux-dom `WebAssets` fails closed).
+  Package-static dual-copy hatch is `serve="dual_copy"` (`serve="webassets"` leftover alias).
 - **Preferred routing bind:** `DirectoryRoutes` + thin adapter.
   `DirectoryRouter` remains batteries-only for standalone FastAPI users.
 - Historical `uxdom serve` / `create-app` notes below are **pre-cut**.

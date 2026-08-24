@@ -13,8 +13,9 @@ ux-channel pattern (gold standard)::
 
 ux-dom mirrors that for every library contribution.
 
-``serve="webassets"`` remains as an **escape hatch** only (air-gapped tree
-without site-packages). Prefer ``package_mount`` (default).
+``serve="dual_copy"`` (legacy alias ``serve="webassets"``) remains as an
+**escape hatch** only (air-gapped tree without site-packages). Prefer
+``package_mount`` (default). This string is **not** ``ux_compose.WebAssets``.
 """
 
 from __future__ import annotations
@@ -27,7 +28,7 @@ from typing import Any, Callable, Literal, Mapping, Sequence
 
 from ux_dom.plugins.contribution import StaticArtifact
 
-ServeMode = Literal["package_mount", "webassets"]
+ServeMode = Literal["package_mount", "dual_copy", "webassets"]
 Inject = Literal["head", "body", "none"]
 
 
@@ -105,10 +106,13 @@ class PackageStaticContribution:
             self.public_url_prefix = f"/ux-pkg/{self.name}/static"
         if not self.mount_package and self.files:
             self.mount_package = self.files[0].package
-        if self.serve == "webassets":
+        if self.serve in ("webassets", "dual_copy"):
+            alias = self.serve
+            self.serve = "dual_copy"  # type: ignore[misc]
             warnings.warn(
-                f"PackageStaticContribution({self.name!r}): serve='webassets' "
-                "duplicates files already in site-packages. Prefer package_mount "
+                f"PackageStaticContribution({self.name!r}): serve={alias!r} "
+                "is the dual-copy hatch (library JS into app assets/). "
+                "It is NOT ux_compose.assets.WebAssets. Prefer package_mount "
                 "(default) unless you have an air-gapped tree without pip packages.",
                 stacklevel=2,
             )
@@ -169,7 +173,7 @@ class PackageStaticContribution:
         return self._tags("body")
 
     def _tags(self, placement: str) -> list[Any]:
-        if self.serve == "webassets":
+        if self.serve != "package_mount":
             return []  # artifacts auto-tag
         from ux_dom.dom import link, script
 
@@ -192,7 +196,7 @@ class PackageStaticContribution:
         return out
 
     def scripts_html(self) -> str:
-        if self.serve == "webassets":
+        if self.serve != "package_mount":
             nodes = [a.html_node() for a in self.artifacts()]
             return "\n".join(str(n) for n in nodes if n is not None)
         return "\n".join(

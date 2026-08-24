@@ -1,4 +1,8 @@
-"""FastAPI host plugin — production default host for ux-dom apps."""
+"""FastAPI host plugin — leftover batteries, **not** the product path.
+
+Product host strategy lives on **ux-compose** (`build(host=)`).
+This module remains for tests and pure-dom experiments.
+"""
 
 from __future__ import annotations
 
