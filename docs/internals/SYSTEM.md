@@ -7,7 +7,7 @@
 **ux-dom renders. Product lifecycle is ux-compose only.**
 
 ```text
-IN  → tag trees / Document / pure discovery
+IN  → tag trees / Document / pure discovery helpers
 OUT → HTML string | bytes | async token stream (+ Document shell)
 ```
 
@@ -15,18 +15,19 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 
 - Tag trees, `__render__` / `__async_render__`
 - Document shell: control, runtime tags, **CSP stamp**, style
-- Pure DirectoryRoutes + RouterHooks
 - Pure-dom CLI: `doctor` | `lint` | `profile` | `dashboard` | `add` | `ui`
-- className. stylesheet `<link>`.
-- Package static (`/ux-dom/static/x_element.js`).
+- className, stylesheet `<link>`
+- Package static (`/ux-dom/static/x_element.js`)
 
 ## Does not own
 
 | Concern | Home |
 |---------|------|
-| create-app / build / serve / deploy / Tailwind compiler / app asset layout | **uxcompose only** |
+| create-app / build / serve / deploy | **uxcompose only** |
+| Product page routes (`DirectoryRoutes`) | **ux-compose** |
+| Tailwind compiler / app asset layout (`WebAssets`) | **ux-compose** |
 | Host strategy / product App | ux-compose |
-| HMR process | ux-compose (with serve) |
+| HMR process / tunnel | ux-compose (with serve) |
 | Channel transport | ux-compose `wire/` |
 
 ## CLI
@@ -40,24 +41,18 @@ uxcompose deploy --provider docker
 uxdom doctor | lint | profile | add
 ```
 
-`uxdom build` remains Document/static verify for leftover `app/main.py`
-trees — it does not compile CSS.
+`uxdom build` remains Document/static verify for pure-dom trees — it does not compile CSS.
 
 ## Document.use
 
 Allowed: control, runtime, CSP, style.  
-Not: HMR process, FastAPIHost, product App.
-
-## Plugins
-
-`plugins.App` / `PluginHub` / `plugins.host` are **not** the product path.
-Product composition root: **ux_compose.App** / `build()`.
+Not: HMR process, host strategy, product App.
 
 ## Forbidden residuals
 
 - Dual product CLI on uxdom
-- Recommending plugins.App.web as app entry
+- Product routing / host / HotReload living on ux-dom
 - CSP stamp owned by host package
 - FastAPI inside dunder serialize path
-- App asset layout (`WebAssets`) on ux-dom — product folders live on ux-compose
+- App asset layout (`WebAssets`) on ux-dom
 - Tailwind compiler (finder / `@source` / CLI invoke) on ux-dom
