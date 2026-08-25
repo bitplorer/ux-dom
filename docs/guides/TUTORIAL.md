@@ -35,21 +35,36 @@ uxdom doctor
 uxdom lint
 ```
 
-## 3. DirectoryRoutes (when you bind FastAPI yourself)
-
-Preferred discovery is **product `ux_compose.routing.DirectoryRoutes`**.
-Leftover standalone FastAPI trees use `DirectoryRouter`.
+## 3. Page routes (product — ux-compose)
 
 ```python
-from fastapi import FastAPI
+from pathlib import Path
 from ux_compose.routing import DirectoryRoutes
 from ux_compose.routing.adapters.fastapi import mount
 
-app = FastAPI()
-document.mount(app)
-core = DirectoryRoutes(PACKAGE, base_directory="routes")
+core = DirectoryRoutes(
+    Path(__file__).resolve().parent,
+    base_directory="routes",
+    fail_closed=True,
+)
 core.discover()
 mount(core, app)
+```
+
+Or the composition root from create-app:
+
+```python
+from pathlib import Path
+from ux_compose.build import build
+from document import document
+
+app, asgi, bundle = build(
+    Path(__file__).parent,
+    host="auto",
+    live="auto",
+    level=1,
+    document=document,
+)
 ```
 
 ## 4. Add a page unit
@@ -68,15 +83,15 @@ from ux_dom.dom import div, h1, a
 from document import page
 
 class About(Component):
-    routes = ["get"]
     def render(self):
         return div(
             a("Home", href="/"),
             h1("About"),
         )
+
     @classmethod
     def get(cls):
-        return page(cls(), page_title="About")
+        return page(cls().render())
 ```
 
 ## 5. Custom element
