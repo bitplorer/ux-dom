@@ -69,8 +69,7 @@ uxcompose build
 uxcompose serve app:asgi --port 8080
 ```
 
-Do **not** run `uxdom create-app` or `uxdom serve`. Those are not the product path.
-Product CSS is `uxcompose build`, not `uxdom build`.
+Product CSS is `uxcompose build`.
 
 ---
 
@@ -79,10 +78,10 @@ Product CSS is `uxcompose build`, not `uxdom build`.
 | Goal | Doc |
 |------|-----|
 | Install variants (Poetry / extras) | [INSTALL.md](INSTALL.md) · [docs/INSTALL.md](docs/INSTALL.md) |
-| Document SSoT | [docs/guides/DOCUMENT.md](docs/guides/DOCUMENT.md) |
-| Component / Fragment | [docs/guides/COMPONENTS.md](docs/guides/COMPONENTS.md) |
+| Document SSoT | [docs/reference/DOCUMENT.md](docs/reference/DOCUMENT.md) |
+| Component / Fragment | [docs/reference/COMPONENTS.md](docs/reference/COMPONENTS.md) |
 | Routing as pages | [docs/reference/ROUTING.md](docs/reference/ROUTING.md) |
-| XElement | [docs/guides/XELEMENT.md](docs/guides/XELEMENT.md) |
+| XElement | [docs/reference/XELEMENT.md](docs/reference/XELEMENT.md) |
 | Ownership law | [docs/internals/SYSTEM.md](docs/internals/SYSTEM.md) |
 | Product lifecycle | ux-compose `docs/FLOW.md` |
 | Contributor / agent | [CONTRIBUTING.md](CONTRIBUTING.md) · [AGENTS.md](AGENTS.md) |

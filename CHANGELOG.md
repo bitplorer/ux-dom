@@ -14,9 +14,13 @@
   `uxcompose build`. `className`, Document `<link>`, and package static
   stay here. App folders are `ux_compose.WebAssets` (ux-dom `WebAssets` fails closed).
   Package-static dual-copy hatch is `serve="dual_copy"` (`serve="webassets"` leftover alias).
-- **Preferred routing bind:** `DirectoryRoutes` + thin adapter.
-  `DirectoryRouter` remains batteries-only for standalone FastAPI users.
+- **Product routing bind:** `ux_compose.routing.DirectoryRoutes` + thin adapter.
+  `DirectoryRoutes` constructed from this package fails closed.
 - Historical `uxdom serve` / `create-app` notes below are **pre-cut**.
+- **Docs:** teaching pages no longer cite leftover product CLI, DirectoryRouter,
+  plugins.App, or fail-closed `DirectoryRoutes` on this package. Canonical
+  pages under `docs/reference/` replace stub cites. Examples labeled as
+  render demos, not the product routing path.
 
 ## Previously
 

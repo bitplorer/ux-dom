@@ -70,8 +70,5 @@ Document.use stamps control, runtime, CSP — **not** HMR, host strategy, or pro
 | WebAssets / Tailwind CLI | `ux-compose` |
 | Host / HMR / tunnel | `uxcompose serve` |
 
-Historical FastAPI batteries and host plugins on this package are fail-closed
-or non-product. Do not cite them in new apps.
-
 **Further reading:** [DOCUMENT.md](../reference/DOCUMENT.md) · [SYSTEM.md](SYSTEM.md) ·
 ux-compose `docs/FLOW.md` · [START_HERE.md](../START_HERE.md).

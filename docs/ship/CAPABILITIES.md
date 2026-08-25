@@ -36,7 +36,7 @@ Version: **0.1.0** (ux-dom production line).
 ## Infra (render-only)
 
 - [x] Package static: `/ux-dom/static/x_element.js`
-- [x] `x_element_js` + `x_element.js` — see [XELEMENT.md](../guides/XELEMENT.md)
+- [x] `x_element_js` + `x_element.js` — see [XELEMENT.md](../reference/XELEMENT.md)
 - [x] App folders / Tailwind CLI / product HMR → **ux-compose** (fail-closed here)
 
 ## Feature packs (optional import)

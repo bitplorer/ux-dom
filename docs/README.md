@@ -59,12 +59,12 @@ How-to stays in `guides/`. API/facts moved to `reference/` (stubs remain in `gui
 | Doc | Description |
 |-----|-------------|
 | [TUTORIAL.md](guides/TUTORIAL.md) | Product path + pure Document |
-| [CLI.md](guides/CLI.md) | pure-dom doctor · lint · build · add |
+| [CLI.md](guides/CLI.md) | pure-dom doctor · lint · profile · add |
 | [DOCUMENT.md](reference/DOCUMENT.md) | Document SSoT |
 | [DOCUMENT_TWO_STAGE.md](reference/DOCUMENT_TWO_STAGE.md) | Head/body stages |
 | [COMPONENTS.md](reference/COMPONENTS.md) | Component / Fragment |
 | [REACTIVE.md](reference/REACTIVE.md) | ReactiveComponent |
-| [ROUTING.md](reference/ROUTING.md) | DirectoryRoutes + thin adapter |
+| [ROUTING.md](reference/ROUTING.md) | Product page routes live on ux-compose |
 | [XELEMENT.md](reference/XELEMENT.md) | Custom elements |
 | [XELEMENT_AUTO_DEFINITIONS.md](reference/XELEMENT_AUTO_DEFINITIONS.md) | Auto defs |
 | [HYPERMEDIA.md](reference/HYPERMEDIA.md) | HTMX / Alpine / slots |

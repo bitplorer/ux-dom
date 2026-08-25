@@ -5,16 +5,16 @@
 | Area | Touch with |
 |------|------------|
 | Core DOM / Document / dunders | Tests + SYSTEM.md |
-| Pure-dom CLI (doctor/lint/build) | tests + CLI.md |
+| Pure-dom CLI (doctor/lint/profile/add) | tests + CLI.md |
 | Product scaffold / build / serve / deploy | **ux-compose** — not this repo |
 | CSP stamp | Document contributions |
 
 ## Must not regress
 
 1. Serialize SSoT remains `__render__` / `__async_render__`.
-2. Product authors are not steered to `uxdom create-app` or `plugins.App.web`.
+2. Product authors are steered to `uxcompose create-app`, never a second CLI on this package.
 3. Package static JS single-copy model (`/ux-dom/static/x_element.js`).
-4. DirectoryRoutes host-free path law.
+4. Product page routes live on ux-compose (`DirectoryRoutes`).
 
 ## Scaffold / deploy
 

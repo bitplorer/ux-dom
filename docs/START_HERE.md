@@ -76,7 +76,7 @@ Product page routes: `from ux_compose.routing import DirectoryRoutes` — see ux
 
 1. [../START_HERE.md](../START_HERE.md) — 5-minute path
 2. [SYSTEM.md](internals/SYSTEM.md)
-3. [DOCUMENT.md](guides/DOCUMENT.md)
+3. [DOCUMENT.md](reference/DOCUMENT.md)
 4. [CLI.md](guides/CLI.md) · [DX.md](guides/DX.md)
 5. ux-compose `docs/FLOW.md`
 6. [INDEX.md](INDEX.md)

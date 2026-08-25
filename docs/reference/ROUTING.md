@@ -76,9 +76,6 @@ Scaffold: `uxcompose create-app`.
 | Host strategy / HMR | `uxcompose serve` |
 | App CSS folders | `ux_compose.WebAssets` |
 
-Historical FastAPI batteries and host plugins on this package are fail-closed
-or non-product. Do not cite them in new apps.
-
 See ux-compose `docs/FLOW.md` for the ownership map.
 
 ## Page unit example

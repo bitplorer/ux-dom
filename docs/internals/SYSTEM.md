@@ -41,8 +41,6 @@ uxcompose deploy --provider docker
 uxdom doctor | lint | profile | add
 ```
 
-`uxdom build` remains Document/static verify for pure-dom trees — it does not compile CSS.
-
 ## Document.use
 
 Allowed: control, runtime, CSP, style.  

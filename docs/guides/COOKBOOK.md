@@ -33,7 +33,7 @@ cd shop && uxcompose build && uxcompose serve app:asgi --port 8080
 
 ```python
 button("Load", hx_get="/htmx_demo/Partial", hx_target="#panel", hx_swap="innerHTML")
-# Partial.get returns fragment only — see ROUTING.md
+# Partial.get returns fragment only — see reference/ROUTING.md (product routes: ux-compose)
 ```
 
 ## XElement light DOM
@@ -50,7 +50,7 @@ class HelloLight(CustomElement):
 # In page: place host HelloLight() — Document auto-collects definition
 ```
 
-See [XELEMENT.md](XELEMENT.md).
+See [XELEMENT.md](../reference/XELEMENT.md).
 
 ## CSP
 
@@ -95,12 +95,6 @@ class Price(Component):
     def render(self, amount):
         return span(f"${amount}")
 ```
-
-## Health check (leftover showcase)
-
-Leftover `app/main.py` trees may expose `GET /health`. Product `create-app`
-trees do not — use `uxcompose doctor` / `uxdom doctor`.
-
 
 ## Reactive counter
 

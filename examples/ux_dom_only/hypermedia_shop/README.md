@@ -4,7 +4,7 @@ Production-shaped demo of **ux_dom without ux-channel**.
 
 | Surface | Where |
 |---------|--------|
-| DirectoryRouter + `[id]` | `shop_routes/products/[id]/` |
+| File routes + `[id]` (leftover demo) | `shop_routes/products/[id]/` |
 | Component route classmethods | `CartCounter.get` / `.add` |
 | DOM API unshadowed | instance `.get(id=…)` still works |
 | HTMX partials | `hx_post` → fragment swap |

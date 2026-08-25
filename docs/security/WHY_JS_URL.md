@@ -14,11 +14,11 @@ The only extra job is: **map package path → public URL**.
 ```text
   site-packages/ux_dom/scripts/x_element.js     ← only copy (pip owns it)
            │
-           │  App.build mounts StaticFiles
+           │  Document.use(XElement()) + product serve mounts the URL
            ▼
   GET /ux-dom/static/x_element.js           ← URL the browser can load
            │
-           │  <script src="…"> from shell_fragments()
+           │  <script src="…"> from the Document shell
            ▼
   Document head
 ```
@@ -28,7 +28,6 @@ Copying into `assets/` would mean:
 
 - two files to keep in sync  
 - upgrades (`pip install -U ux_dom`) leave a **stale** `assets/js/x_element.js`  
-- `uxdom build` becomes a duplicate ship step for no gain  
 
 ## What *does* go in `assets/`?
 
@@ -49,11 +48,15 @@ site-packages/ux_channel/static/ux-channel.js
 ## Day-1 usage (you don’t think about mounts)
 
 ```python
-App().use(XElementRuntime())   # injects script URL + mounts package dir
+from ux_dom import Document
+from ux_dom.runtime import XElement
+
+document = Document(head=[], body=[]).use(XElement())
 ```
 
-`shell_fragments(get_hub())` puts the tag in the document.  
-`App.build()` wires the StaticFiles mount. Browser gets one consistent file.
+`Document.use(XElement())` puts the script tag in the shell.
+Product serve (ux-compose) exposes `/ux-dom/static/x_element.js`.
+Browser gets one consistent file.
 
 ## Security note
 

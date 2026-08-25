@@ -58,7 +58,7 @@ Allowed: `.js .mjs .cjs .css .map .woff .woff2 .ttf .otf .svg .png .jpg .jpeg .g
 
 ## Fail closed
 
-`App.build` → `collect_served_files` raises `UnsafeStaticError` → **no** static install for that hub pass (nothing unsafe is mounted).
+`collect_served_files` raises `UnsafeStaticError` → **no** static install for that pass (nothing unsafe is mounted).
 
 ## Introspection
 

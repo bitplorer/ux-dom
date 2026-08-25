@@ -60,7 +60,7 @@ app, asgi, bundle = build(
 
 ## Two-stage Document
 
-See [DOCUMENT.md](../guides/DOCUMENT.md) and [DOCUMENT_TWO_STAGE.md](../guides/DOCUMENT_TWO_STAGE.md).
+See [DOCUMENT.md](../reference/DOCUMENT.md) and [DOCUMENT_TWO_STAGE.md](../reference/DOCUMENT_TWO_STAGE.md).
 
 ```text
 <head>  [call-time head]  then  [common_head / runtimes]

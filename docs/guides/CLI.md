@@ -24,7 +24,6 @@ See ux-compose `docs/guides/CLI.md` and `docs/FLOW.md`.
 |---------|------|
 | `doctor` / `info` | Document / package / env health |
 | `lint` | Document convention checks |
-| `build` | Document/static verify for leftover `app/main.py` trees. Product CSS: `uxcompose build`. |
 | `profile` / `dashboard` | Render p95 / DX graphs |
 | `add` | component \| xelement \| ui (pure-dom) |
 | `ui` | List UI kit |

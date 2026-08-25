@@ -61,7 +61,7 @@ behavior, motion IR, or product lifecycle.
 | Doc | Description |
 |-----|-------------|
 | [../INSTALL.md](../INSTALL.md) · [INSTALL.md](INSTALL.md) | Install & verify |
-| [guides/CLI.md](guides/CLI.md) | `uxdom` doctor · lint · build · add |
+| [guides/CLI.md](guides/CLI.md) | `uxdom` doctor · lint · profile · add |
 | [guides/COOKBOOK.md](guides/COOKBOOK.md) | Recipes |
 | [guides/DX.md](guides/DX.md) | DX principles |
 | [guides/TUNNEL.md](guides/TUNNEL.md) | Tunnel is **uxcompose**, not ux-dom |

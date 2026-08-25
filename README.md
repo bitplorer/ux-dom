@@ -74,7 +74,7 @@ document = Document(head=[], body=[]).use(
     Csp.auto(),
 )
 
-# Product HTTP host / routes: ux-compose App.mount (not plugins.App.web)
+# Product HTTP host / routes: ux-compose App.mount
 html = document(div(h1("Hi"))).__render__()
 ```
 
@@ -87,10 +87,9 @@ Five-minute path: [START_HERE.md](START_HERE.md).
 | Owns | Does **not** own |
 |------|------------------|
 | HTML/CSS/JS trees, `Document` shell, serialize | Intent / Cap / Result ops (`ux-channel`) |
-| Pure `DirectoryRoutes` + `RouterHooks` | Product state machines (`ux-behavior`) |
-| Package static (`/ux-dom/static/…`) | Motion IR (`ux-motion`) |
-| Pure-dom CLI: `doctor` · `lint` · `profile` · `add` | Product scaffold / build / serve / deploy / CSS minify (`ux-compose`) |
-| className, `<link>`, package static (`/ux-dom/static/…`) | App asset layout (`ux_compose.WebAssets`) / Tailwind compiler |
+| Package static (`/ux-dom/static/…`) | Product page routes (`ux_compose.routing.DirectoryRoutes`) |
+| Pure-dom CLI: `doctor` · `lint` · `profile` · `add` | Product state machines (`ux-behavior`); motion IR (`ux-motion`) |
+| className, `<link>` | Product scaffold / build / serve / deploy / CSS minify (`ux-compose`); WebAssets / Tailwind compiler |
 
 ## Audience
 
@@ -109,12 +108,11 @@ Five-minute path: [START_HERE.md](START_HERE.md).
 ```text
 ux-dom       RENDER     trees → __render__ / __async_render__
              Document   shell (.use: control, runtime, CSP stamp)
-             discovery  pure DirectoryRoutes + RouterHooks
 
-ux-compose   PRODUCT    create-app · build · serve · deploy · App · delivery
+ux-compose   PRODUCT    create-app · build · serve · deploy · App · DirectoryRoutes
 ```
 
-**Greenfield product apps:** `uxcompose create-app` — not `uxdom create-app`.
+**Greenfield product apps:** `uxcompose create-app`.
 
 ## Pure-dom CLI
 
@@ -126,7 +124,6 @@ uxdom add component Card
 ```
 
 Product CSS minify: **`uxcompose build`** (`ux_compose.tailwind` finds the CLI).
-`uxdom build` remains Document/static verify for leftover `app/main.py` trees.
 
 See [docs/guides/CLI.md](docs/guides/CLI.md). Product `serve` / `deploy` / tunnel: **ux-compose**.
 
@@ -153,7 +150,6 @@ Typical imports (see `ux_dom/__init__.py` and [docs/reference/API_SURFACE.md](do
 | `Component`, `Fragment`, `ReactiveComponent` | Build trees |
 | `XElement`, `Htmx`, `Csp` | Optional runtimes / nonce CSP |
 | `ux_dom.dom` (`div`, `h1`, …) | Tag constructors |
-| `ux_dom.routing.core` | Pure `DirectoryRoutes` + `RouterHooks` |
 | `ux_dom.ui` | Optional copy-in UI kit |
 | CLI `uxdom` | `ux_dom.cli:app` |
 

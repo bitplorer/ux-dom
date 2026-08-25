@@ -42,5 +42,5 @@ PYTHONPATH=../..:. uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 - `app/components/x_widgets.py` — mixed kit widgets
 - Document serves **`/ux-dom/static/x_element.js`** via package mount (default)
 
-Library docs: [`docs/guides/XELEMENT.md`](../../docs/guides/XELEMENT.md) ·
-[`docs/guides/HYPERMEDIA.md`](../../docs/guides/HYPERMEDIA.md)
+Library docs: [`docs/reference/XELEMENT.md`](../../docs/reference/XELEMENT.md) ·
+[`docs/reference/HYPERMEDIA.md`](../../docs/reference/HYPERMEDIA.md)

@@ -45,13 +45,10 @@ Product HTTP delivery / host strategy: **ux-compose**, not Document.use.
 
 ---
 
-## Discovery (host-free)
+## Discovery
 
-| API | Module |
-|-----|--------|
-| `DirectoryRoutes` + `RouterHooks` | `ux_dom.routing.core` |
-
-Thin FastAPI batteries may exist; product mount path is **ux-compose**.
+Product page routing is **ux-compose** (`ux_compose.routing.DirectoryRoutes`).
+Constructing `DirectoryRoutes` from this package fails closed.
 
 ---
 
@@ -61,12 +58,11 @@ Thin FastAPI batteries may exist; product mount path is **ux-compose**.
 |---------|------|
 | `doctor` / `info` | Package / Document health |
 | `lint` | Conventions |
-| `build` | leftover Document/static verify (`app/main.py`); does **not** compile CSS |
 | `profile` / `dashboard` | Render p95 |
 | `add` | component \| xelement \| ui |
 | `ui` | List UI kit |
 
-**Product CSS is `uxcompose build`.** Not on uxdom as product verbs: create-app · build · serve · deploy → use **uxcompose**. Leftover `uxdom build` stays Document/static verify for `app/main.py` trees.
+**Product CSS is `uxcompose build`.** Product verbs create-app · build · serve · deploy live on **uxcompose**.
 
 ---
 
@@ -74,4 +70,4 @@ Thin FastAPI batteries may exist; product mount path is **ux-compose**.
 
 * Underscored render internals
 * `docs/archive/*`
-* `plugins.App` / `FastAPIHost` as product composition (use ux-compose)
+* Historical host / routing leftovers on this package (fail-closed; use ux-compose)

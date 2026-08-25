@@ -1,7 +1,8 @@
 # UxDom production examples
 
 > Prefer **`uxcompose create-app myapp`** for greenfield product apps.
-> These folders are **ux-dom-only** render demos — see [DX.md](../docs/guides/DX.md).
+> These folders are **ux-dom-only render demos**, not the product routing path.
+> See [DX.md](../docs/guides/DX.md).
 
 Runnable, production-shaped apps demonstrating **ux_dom alone** and **ux_dom + ux-channel**.
 
@@ -9,7 +10,7 @@ Runnable, production-shaped apps demonstrating **ux_dom alone** and **ux_dom + u
 
 | App | Path | Stack | Port |
 |-----|------|-------|------|
-| Hypermedia shop | [`ux_dom_only/hypermedia_shop`](ux_dom_only/hypermedia_shop/) | uxdom plugins, DirectoryRouter, HTMX | 8091 |
+| Hypermedia shop | [`ux_dom_only/hypermedia_shop`](ux_dom_only/hypermedia_shop/) | leftover standalone FastAPI demo + HTMX | 8091 |
 | Realtime kit | [`ux_dom_only/realtime_kit`](ux_dom_only/realtime_kit/) | SSE, WebSocketAdapter, streaming HTML | 8092 |
 | Live cart | [`with_ux_channel/live_cart`](with_ux_channel/live_cart/) | ux_dom markup + Channel regions/actions | 8093 |
 | **Standalone showcase** | [`standalone_showcase`](standalone_showcase/) | ux_dom-only full demo (shop, HTMX, SSE, stream) | 8080 |
@@ -22,7 +23,7 @@ Runnable, production-shaped apps demonstrating **ux_dom alone** and **ux_dom + u
 | Capability | hypermedia_shop | realtime_kit | live_cart | market_board |
 |------------|:---:|:---:|:---:|:---:|
 | Components / Document | ✓ | ✓ | ✓ | ✓ |
-| DirectoryRouter `[id]` | ✓ | | | |
+| File routes (demo only) | ✓ | | | |
 | Route classmethods + DOM API | ✓ | | | |
 | HTMX partials / middleware | ✓ | ✓ | | |
 | SSE | | ✓ | | via channel push |
@@ -67,10 +68,10 @@ python -m pytest tests/04_production/test_examples_production.py -q
 See [`xelement_kit/`](xelement_kit/).
 
 - Light/Shadow full guides: [`xelement_kit`](xelement_kit/) ·
-  [`docs/guides/XELEMENT.md`](../docs/guides/XELEMENT.md) ·
-  [`docs/guides/HYPERMEDIA.md`](../docs/guides/HYPERMEDIA.md)
+  [`docs/reference/XELEMENT.md`](../docs/reference/XELEMENT.md) ·
+  [`docs/reference/HYPERMEDIA.md`](../docs/reference/HYPERMEDIA.md)
 
 ### ux_kit
 
 Shadcn-inspired `ux_dom.ui` gallery (+ optional channel bridge). See
-[docs/guides/UI.md](../docs/guides/UI.md).
+[docs/reference/UI.md](../docs/reference/UI.md).

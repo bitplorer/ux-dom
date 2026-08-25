@@ -7,11 +7,11 @@ Render layer. Trees serialize with __render__. Document is the shell. Product se
 
 Every block is meant to run (or to be the exact fragment you drop into a running app). Names are public exports. If code and this page disagree, **code wins**.
 
-**13 snippets** covering install, core usage, fail-closed errors, live/async, CLI, and the usage patterns that keep layers from leaking.
+**12 snippets** covering install, core usage, CLI, and the usage patterns that keep layers from leaking.
 
 ### Public names in this cookbook
 
-`Document`, `Component`, `XElement`, `Htmx`, `Csp`, `div`, `h1`, `p`, `button`, `section`, `h2`, `ul`, `li`, `Fragment`, `span`, `dataclass`, `ReactiveComponent`, `Button`, `Card`, `CardHeader`, `CardTitle`, `CardContent`, `Path`, `DirectoryRoutes`, `RouterHooks`
+`Document`, `Component`, `XElement`, `Htmx`, `Csp`, `div`, `h1`, `p`, `button`, `section`, `h2`, `ul`, `li`, `Fragment`, `span`, `dataclass`, `ReactiveComponent`, `Button`, `Card`, `CardHeader`, `CardTitle`, `CardContent`
 
 ## Contents
 
@@ -23,8 +23,7 @@ Every block is meant to run (or to be the exact fragment you drop into a running
 - [ReactiveComponent re-renders on field change](#dom-reactive)
 - [Optional UI kit (Button / Card)](#dom-ui-kit)
 - [XElement + Htmx contributions](#dom-htmx)
-- [DirectoryRoutes (host-free discovery)](#dom-routes)
-- [RouterHooks on DirectoryRoutes](#dom-hooks)
+- [Page routes (product — ux-compose)](#dom-routes)
 - [Pure-dom CLI](#dom-cli)
 - [Copy-in UI kit via CLI](#dom-add-ui)
 - [Pattern: __render__ is the serialize SSoT](#dom-pattern-serialize)
@@ -195,40 +194,18 @@ html = document(div("Hi", id="view")).__render__()
 print("script" in html.lower() or "csp" in html.lower() or html)
 ```
 
-### DirectoryRoutes (product — ux-compose)
+### Page routes (product — ux-compose)
 
 <a id="dom-routes"></a>
 
-Product discovery lives on ux-compose. Do not construct DirectoryRoutes from ux-dom.
+Page-unit discovery is not a ux-dom API. Product apps use:
 
 ```python
-from pathlib import Path
-from ux_compose.routing import DirectoryRoutes
-
-core = DirectoryRoutes(package_dir=Path("."), base_directory="routes")
-records = core.discover()
-for rec in records:
-    print(rec.path, rec.name, rec.kind)
-```
-
-### RouterHooks on DirectoryRoutes
-
-<a id="dom-hooks"></a>
-
-Hooks are host-agnostic. resolve_unit is only for the synthetic page GET. Explicit HTTP methods bypass it.
-
-```python
-from pathlib import Path
 from ux_compose.routing import DirectoryRoutes, RouterHooks
-
-hooks = RouterHooks(
-    resolve_unit=None,    # (cls, path, name) → instance | None
-    accept_symbol=None,   # (name, obj, module) → bool
-    on_route=None,        # (record) → None
-)
-core = DirectoryRoutes(package_dir=Path("."), base_directory="routes", hooks=hooks)
-print(core.discover())
+# or: ux_compose.build(...) / App.mount / uxcompose serve
 ```
+
+See ux-compose `docs/guides/SNIPPETS.md` and `docs/FLOW.md`.
 
 
 ## CLI
@@ -247,7 +224,6 @@ uxdom add component Card
 ```
 
 Product CSS minify is `uxcompose build` (`ux_compose.tailwind`).
-`uxdom build` is Document/static verify for leftover `app/main.py` trees.
 
 ### Copy-in UI kit via CLI
 

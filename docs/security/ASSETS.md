@@ -20,17 +20,16 @@ uxchannel already does this: package `static/` → mount `/ux-channel/static/*` 
 ```text
 pip install ux-dom └── site-packages/ux_dom/scripts/x_element.js   ← only copy
 
-App().use(XElementRuntime())
+Document.use(XElement())
   ├── document: <script src="/ux-dom/static/x_element.js">
-  └── App.build mounts StaticFiles(
+  └── product serve (uxcompose) mounts the package URL
         "/ux-dom/static" → site-packages/ux_dom/scripts/
-      )
 ```
 
 ux-channel:
 
 ```text
-App().use(UxChannelRuntime())   # or channel mounts itself
+Channel attach (ux-compose wire/) mounts itself
   tags → /ux-channel/static/ux-channel.js
   files → site-packages/ux_channel/static/   only
 ```
@@ -46,12 +45,7 @@ Not library runtimes.
 
 Product CSS minify: `uxcompose build`.
 
-```bash
-uxdom build --package
-```
-
-- Verifies installed `x_element.js` contract  
-- Records package mount prefixes in MANIFEST  
+- Verifies installed `x_element.js` contract via `uxdom doctor`  
 - **Does not** vendor library JS into `dist/` — `requirements.txt` + pip  
 - At runtime, mounts resolve from site-packages  
 
@@ -69,7 +63,7 @@ Only for air-gapped trees that ship without site-packages (rare; not recommended
 ```python
 from ux_dom.plugins import static_from_package
 
-App().use(static_from_package(
+document.use(static_from_package(
     "mycharts",
     "mycharts",
     ["runtime.js"],          # mycharts/static/runtime.js
@@ -113,23 +107,17 @@ uxchannel **already** packages and serves its JS. Do not invent a second alias.
 ### Recommended ux-dom wiring
 
 ```python
-App()
-  .use(XElementRuntime())                           # ux-dom safe file route
-  .use(UxChannelRuntime(mount_via_ux_dom=False))    # tags only (default)
-  .use(FastAPIHost(...))
-  ...
-app = builder.build()
-attach_channel(app)   # channel mounts /ux-channel/static/* from package
+from ux_dom import Document
+from ux_dom.runtime import XElement, Csp
+
+document = Document(head=[], body=[]).use(
+    XElement(),   # <script src="/ux-dom/static/x_element.js">
+    Csp.auto(),
+)
 ```
 
-Document shell:
-
-```python
-plugin_head, plugin_body = shell_fragments(get_hub())
-# includes XElement + channel script tags
-```
-
-**Do not** also put `raw(ch.scripts())` on every page — you would inject twice.
+Product HTTP / Channel attach is **ux-compose** (`uxcompose serve`, `App.use_channel`).
+Do not also put `raw(ch.scripts())` on every page — you would inject twice.
 
 ### When would ux-dom serve channel JS?
 

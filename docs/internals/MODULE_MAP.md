@@ -9,16 +9,16 @@ ux_dom/
   settings/     Document factory (WebAssets fail-closed stub)
   dom/          Tags, Component, serialize, XElement types
   runtime/      Document-facing XElement / Htmx / Csp / Channel facades
-  plugins/      Host, routing helper, CSP, SafeStatic, hub
-  routing/      DirectoryRoutes (core) + adapters + DirectoryRouter batteries
+  plugins/      Document contributions (CSP, SafeStatic, hub)
+  routing/      fail-closed leftover (product routes are ux-compose)
   response/     HTML / streaming adapters
   scripts/      x_element.js (package-mounted)
-  cli/          doctor, lint, build, profile, add, dashboard (pure-dom)
+  cli/          doctor, lint, profile, add, dashboard (pure-dom)
   ui/           Optional copy-in kit
 ```
 
-Public leftover apps compose **Document + leftover DirectoryRouter**. Product
-scaffold + DirectoryRoutes is **uxcompose** ([DX.md](../guides/DX.md)).
+Product scaffold + DirectoryRoutes is **uxcompose** ([DX.md](../guides/DX.md)).
+Routing symbols on this package fail closed.
 
 | Path | Role | Public? |
 |------|------|---------|
@@ -40,13 +40,13 @@ scaffold + DirectoryRoutes is **uxcompose** ([DX.md](../guides/DX.md)).
 | `ux_dom/dom/uniqueid.py` | Unique id generator for trees | Semi |
 | `ux_dom/dom/src/ws_rpc.py` | Optional WS helpers (uses document.ux_domMessageHandler) | Advanced |
 | **`ux_dom/settings/`** | Document (`WebAssets` fail-closed stub) | **Public** |
-| **`ux_dom/plugins/`** | Hub, contributions, host, routing, CSP, control | Semi / **Public** facades |
+| **`ux_dom/plugins/`** | Hub, contributions, CSP, control, package static | Semi / **Public** facades |
 | `ux_dom/plugins/runtime.py` | XElementRuntime, UxChannelRuntime — package static | Semi |
 | `ux_dom/plugins/safe_static.py` | Allowlisted file mounts | Semi |
-| **`ux_dom/routing/`** | DirectoryRoutes + adapters; DirectoryRouter batteries | **Public** |
+| **`ux_dom/routing/`** | Fail-closed leftover; product routes are `ux_compose.routing` | Leftover |
 | **`ux_dom/response/`** | HTMLResponse, StreamingResponse | **Public** |
 | **`ux_dom/scripts/`** | `x_element.js` + `x_element_js` embed helper | **Public** helper |
-| **`ux_dom/cli/`** | Typer DX: doctor, lint, build, profile, add (not product scaffold) | CLI |
+| **`ux_dom/cli/`** | Typer DX: doctor, lint, profile, add (not product scaffold) | CLI |
 | **`ux_dom/ui/`** | Optional Tailwind UI kit (copy-in) | Optional public |
 | **`ux_dom/slots/`** | Slot helpers for WebComponent | Semi |
 | **`ux_dom/elements/`** | Typed form field components | Semi |

@@ -5,19 +5,14 @@ Low cognitive load: **render vs product**.
 ```text
 ┌─────────────────────────────────────────────────────────┐
 │  PRODUCT  (ux-compose)                                   │
-│     uxcompose create-app · build · serve · deploy · App.mount    │
+│     uxcompose create-app · build · serve · deploy        │
+│     App.mount · DirectoryRoutes                          │
 └──────────────────────────▲──────────────────────────────┘
-                           │ uses render + discovery
+                           │ uses render
 ┌──────────────────────────┴──────────────────────────────┐
 │  DOCUMENT SHELL                                          │
 │     Document.use(control, runtime, CSP, style)           │
 │     serialize: __render__ / __async_render__             │
-└──────────────────────────▲──────────────────────────────┘
-                           │ discovers
-┌──────────────────────────┴──────────────────────────────┐
-│  DISCOVERY                                               │
-│     DirectoryRoutes + RouterHooks (host-free)            │
-│     thin adapter (FastAPI / ASGI)                        │
 └──────────────────────────▲──────────────────────────────┘
                            │ renders
 ┌─────────────────────────────────────────────────────────┐
@@ -26,7 +21,6 @@ Low cognitive load: **render vs product**.
 └─────────────────────────────────────────────────────────┘
 ```
 
-`plugins.App` / `DirectoryRouter` / HMR process are **not** the product path.
 See [SYSTEM.md](SYSTEM.md).
 
 ## What you touch day-to-day
@@ -45,4 +39,4 @@ See [SYSTEM.md](SYSTEM.md).
 1. **Core never imports FastAPI/Tailwind/channel** — adapters and compose do.
 2. **Browser surface via Document.use** — not ad-hoc globals.
 3. **`[id]` folders stay `[id]` on disk** — FastAPI path becomes `{id}`.
-4. **Product CLI is uxcompose** — uxdom does not scaffold / build / serve / deploy.
+4. **Product CLI is uxcompose** — this layer renders; it does not own product lifecycle.

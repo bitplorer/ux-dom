@@ -3,7 +3,7 @@
 > **Diátaxis:** reference · **Canonical:** `docs/reference/FEATURES.md` · **Layer:** ux-dom  
 > Map: [INDEX.md](../INDEX.md).
 
-ux-dom is the **hypermedia render** layer: trees → `__render__` / `__async_render__`, Document shell (control, runtime tags, CSP stamp), pure DirectoryRoutes.
+ux-dom is the **hypermedia render** layer: trees → `__render__` / `__async_render__`, Document shell (control, runtime tags, CSP stamp).
 
 ## Product apps
 
@@ -31,6 +31,5 @@ Product CSS: `uxcompose build`.
 
 - `Document.use(...)` — shell contributions (control, runtime, CSP, style)
 - `Component` / tags / `__render__` / `__async_render__`
-- `routing.core.DirectoryRoutes` + `RouterHooks` (host-free discovery)
 
-Product HTTP host strategy and HMR process: **ux-compose**, not Document.use.
+Product page routes, HTTP host, and HMR: **ux-compose**, not Document.use.

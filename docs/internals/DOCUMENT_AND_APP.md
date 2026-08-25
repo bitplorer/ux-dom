@@ -51,7 +51,6 @@ app, asgi, bundle = build(
 |------|---------|
 | Everyday “app” | Product composition root on ux-compose |
 | `ux_compose.App` / `build()` | Product path |
-| `ux_dom.plugins.App` | Optional plugin hub (tests / advanced) — **not** the HTML shell |
 
 ## Automation
 
