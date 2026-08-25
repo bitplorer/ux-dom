@@ -20,16 +20,18 @@
 ```text
 ux-dom       RENDER     trees → __render__ / __async_render__
              Document   shell (.use: control, runtime, CSP stamp)
-             discovery  pure DirectoryRoutes + RouterHooks
+             package    static (/ux-dom/static/…)
+             pure-dom   doctor | lint | profile | add
 
-ux-compose   PRODUCT    create-app · build · serve · deploy · App · delivery
+ux-compose   PRODUCT    create-app · build · serve · deploy
+                        DirectoryRoutes · WebAssets · Tailwind · HMR
 ```
 
 | Owns (ux-dom) | Does **not** own |
 |---------------|------------------|
-| Document shell, serialize, pure discovery | Product scaffold / build / serve / deploy |
-| Pure-dom doctor / lint / profile / add | Host strategy / product App / Tailwind CLI finder / app folders |
-| HTML/CSS/JS trees, package static | Intent / Cap / Result, MorphState, motion IR |
+| Document shell, serialize, package static | Product scaffold / build / serve / deploy |
+| Pure-dom doctor / lint / profile / add | Host strategy / product App / DirectoryRoutes |
+| HTML/CSS/JS trees | Tailwind compiler, WebAssets, HMR, tunnel |
 
 ## Day-1 (product app)
 
@@ -66,8 +68,9 @@ uxdom profile
 | **`Component`** | `render()` → DOM tree |
 | **`ReactiveComponent`** | Field mutation re-renders on serialize |
 | **`document(*content)`** | HTML shell SSoT |
-| **`DirectoryRoutes`** | Host-free path discovery |
 | **`XElement`** | Custom element + definitions |
+
+Product page routes: `from ux_compose.routing import DirectoryRoutes` — see ux-compose `docs/FLOW.md`.
 
 ## Next reading
 
@@ -81,7 +84,7 @@ uxdom profile
 ## Assets
 
 * Library JS: `/ux-dom/static/x_element.js` from installed package
-* App files: `/assets/*` → project `assets/`
+* App CSS folders / Tailwind: **ux-compose** (`WebAssets`, `uxcompose build`)
 
 ## Quality
 
