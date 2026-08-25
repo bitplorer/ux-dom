@@ -11,42 +11,17 @@ from fastapi.testclient import TestClient
 
 class TestCreateAsgiCoverage(unittest.TestCase):
     def test_build_with_document(self):
-        from ux_dom import Document
-        from ux_dom.create import CreateAsgi
-        from ux_dom.runtime import XElement
+        from ux_dom.create import CreateAsgi, ProductAsgiMoved
 
-        doc = Document(ensure_csrf_token=False, head=[], body=[]).use(XElement())
-        with TemporaryDirectory() as td:
-            pkg = Path(td)
-            (pkg / "__init__.py").write_text("")
-            routes = pkg / "routes"
-            routes.mkdir()
-            (routes / "index.py").write_text(
-                "from ux_dom import Component\n"
-                "from ux_dom.dom import div\n\n"
-                "class Index(Component):\n"
-                "    routes = ['get']\n"
-                "    def render(self):\n"
-                "        return div('ok')\n"
-                "    @classmethod\n"
-                "    def get(cls):\n"
-                "        return cls()\n"
-            )
-            app = (
-                CreateAsgi(title="cov", document=doc, debug=True)
-                .directory_routes(pkg, "routes")
-                .static("/assets", pkg)
-                .build()
-            )
-            self.assertIsNotNone(app)
-            TestClient(app)  # construct without error
+        with self.assertRaises(ProductAsgiMoved) as ctx:
+            CreateAsgi(title="cov", debug=True).directory_routes(".", "routes")
+        self.assertIn("uxcompose", str(ctx.exception).lower())
 
     def test_create_asgi_existing_app(self):
-        from ux_dom.create import CreateAsgi
+        from ux_dom.create import CreateAsgi, ProductAsgiMoved
 
-        base = FastAPI()
-        app = CreateAsgi(title="x", app=base, debug=False).build()
-        self.assertIs(app, base)
+        with self.assertRaises(ProductAsgiMoved):
+            CreateAsgi(title="x", app=FastAPI(), debug=False).build()
 
 
 class TestStaticArtifactAndPackageStatic(unittest.TestCase):
@@ -142,13 +117,11 @@ class TestResponseCoverage(unittest.TestCase):
 
 class TestFastAPIHostCoverage(unittest.TestCase):
     def test_host_mount(self):
-        from ux_dom.plugins.host.fastapi import FastAPIHost
-        from ux_dom.plugins.hub import PluginHub
+        from ux_dom.plugins.host.fastapi import FastAPIHost, ProductHostMoved
 
-        host = FastAPIHost(title="H", debug=True)
-        app = host.mount(None, hub=PluginHub(), debug=True)
-        self.assertIsNotNone(app)
-        self.assertEqual(TestClient(app).get("/nope").status_code, 404)
+        with self.assertRaises(ProductHostMoved) as ctx:
+            FastAPIHost(title="H", debug=True)
+        self.assertIn("ux_compose.build", str(ctx.exception))
 
 
 class TestStyleTokensFunctional(unittest.TestCase):
@@ -245,37 +218,10 @@ if __name__ == "__main__":
 
 class TestCreateAsgiStyleHmr(unittest.TestCase):
     def test_use_style_and_hmr_no_crash(self):
-        from ux_dom.create import CreateAsgi
+        from ux_dom.create import CreateAsgi, ProductAsgiMoved
 
-        class Style:
-            plugin_kind = "style"
-            stylesheet_href = "/assets/css/out.css"
-
-            async def build(self, watch=False):
-                return None
-
-            async def stop(self):
-                return None
-
-        class Hmr:
-            plugin_kind = "hmr"
-            name = "hmr"
-            url_name = "hmr"
-
-            async def startup(self):
-                return None
-
-            async def shutdown(self):
-                return None
-
-            def asgi_route(self):
-                async def ep(ws):
-                    pass
-
-                return ("/ws/hmr", ep)
-
-        app = CreateAsgi(title="s", debug=True).use(Style(), Hmr()).build()
-        self.assertIsNotNone(app)
+        with self.assertRaises(ProductAsgiMoved):
+            CreateAsgi(title="s", debug=True).use(object())
 
 
 class TestFunctionalModule(unittest.TestCase):
@@ -306,23 +252,17 @@ class TestFunctionalModule(unittest.TestCase):
 
 class TestHostLifespan(unittest.TestCase):
     def test_mount_with_static_and_debug(self):
-        from ux_dom.plugins.host.fastapi import FastAPIHost
-        from ux_dom.plugins.hub import PluginHub
+        from ux_dom.plugins.host.fastapi import FastAPIHost, ProductHostMoved
 
         with TemporaryDirectory() as td:
             d = Path(td)
             (d / "f.txt").write_text("x")
-            host = FastAPIHost(
-                title="L",
-                debug=True,
-                static_mounts=[("/static", d)],
-            )
-            app = host.mount(None, hub=PluginHub(), debug=True)
-            c = TestClient(app)
-            # lifespan context via TestClient
-            with c:
-                r = c.get("/static/f.txt")
-                self.assertIn(r.status_code, (200, 404, 307, 405))
+            with self.assertRaises(ProductHostMoved):
+                FastAPIHost(
+                    title="L",
+                    debug=True,
+                    static_mounts=[("/static", d)],
+                )
 
 
 class TestPackageStaticMore(unittest.TestCase):

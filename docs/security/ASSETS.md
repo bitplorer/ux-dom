@@ -44,6 +44,8 @@ Not library runtimes.
 
 ## Build / package
 
+Product CSS minify: `uxcompose build`.
+
 ```bash
 uxdom build --package
 ```
@@ -56,8 +58,8 @@ uxdom build --package
 ## Escape hatch (usually avoid)
 
 ```python
-XElementRuntime(serve="webassets")  # copies into assets/ — dual copy
-UxChannelRuntime(serve="webassets")
+XElementRuntime(serve="dual_copy")  # copies into assets/ — dual copy (legacy alias serve="webassets")
+UxChannelRuntime(serve="dual_copy")
 ```
 
 Only for air-gapped trees that ship without site-packages (rare; not recommended).
@@ -75,10 +77,11 @@ App().use(static_from_package(
 ))
 ```
 
-## WebAssets
+## App folders
 
-Still useful for **directory layout** of app-local static and Tailwind paths.
-Not a place to duplicate pip-owned JS.
+App CSS/JS disk layout is **ux-compose** (`ux_compose.WebAssets`).
+This package serves **library** JS from site-packages
+(`/ux-dom/static/x_element.js`). Do not duplicate pip-owned JS into `assets/`.
 
 ## Security: no raw filesystem exposure
 

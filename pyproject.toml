@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ux-dom"
 version = "0.1.0"
-description = "ux-dom 0.1 — Python hypermedia UI (PyPI: ux-dom · import: ux_dom · CLI: uxdom)"
+description = "ux-dom 0.1 — Python hypermedia render library (tree → HTML / stream)"
 authors = ["bitplorer <bitplorer@outlook.com>"]
 license = "MIT"
 readme = "README.md"

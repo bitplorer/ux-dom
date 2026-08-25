@@ -73,7 +73,7 @@ class TestScaffoldServesPackageJs(unittest.TestCase):
 
                 c = TestClient(app)
                 self.assertEqual(c.get(XELEMENT_JS_URL).status_code, 200)
-                page = c.get("/index")
+                page = c.get("/")
                 self.assertEqual(page.status_code, 200)
                 self.assertIn("ux-dom/static/x_element.js", page.text)
             finally:

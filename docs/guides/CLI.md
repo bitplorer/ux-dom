@@ -7,12 +7,14 @@
 
 ```bash
 uxcompose create-app myapp --host auto --level auto
+cd myapp
+uxcompose build
 uxcompose serve app:asgi --port 8080
 uxcompose deploy --provider docker
 uxcompose doctor .
 ```
 
-See ux-compose `docs/CLI.md` and `docs/FLOW.md`.
+See ux-compose `docs/guides/CLI.md` and `docs/FLOW.md`.
 
 ---
 
@@ -22,15 +24,18 @@ See ux-compose `docs/CLI.md` and `docs/FLOW.md`.
 |---------|------|
 | `doctor` / `info` | Document / package / env health |
 | `lint` | Document convention checks |
-| `build` | Tailwind / static verify |
+| `build` | Document/static verify for leftover `app/main.py` trees. Product CSS: `uxcompose build`. |
 | `profile` / `dashboard` | Render p95 / DX graphs |
 | `add` | component \| xelement \| ui (pure-dom) |
 | `ui` | List UI kit |
 
+Tailwind *compiler* is product DX: `uxcompose build` (`ux_compose.tailwind`).
+This package does not find, download, or invoke the CLI. `className`, Document
+`<link>`, and package static stay here. App folders: `ux_compose.WebAssets`.
+
 ```bash
 uxdom doctor
 uxdom lint
-uxdom build
 uxdom profile
 uxdom add component Card
 uxdom add ui Button
@@ -43,6 +48,7 @@ uxdom add ui Button
 | Concern | Use |
 |---------|-----|
 | create-app | `uxcompose create-app` |
+| product CSS minify | `uxcompose build` |
 | serve / dev / start | `uxcompose serve` |
 | deploy | `uxcompose deploy` |
 | product doctor | `uxcompose doctor` |

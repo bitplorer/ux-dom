@@ -27,7 +27,7 @@ python -c "from ux_dom import __version__; print(__version__)"
 |------|---------|
 | Library only | `poetry install` / `pip install -e .` |
 | FastAPI apps | `poetry install --extras fastapi` / `pip install -e ".[fastapi]"` |
-| FastAPI + Tailwind + HMR | `poetry install --extras fastapidev` / `pip install -e ".[fastapidev]"` |
+| FastAPI + pytailwindcss + watchfiles (dev stack) | `poetry install --extras fastapidev` / `pip install -e ".[fastapidev]"` |
 | Live morph / regions | `pip install "ux-channel>=0.1.0"` (companion package) |
 
 ## Create an app
@@ -36,6 +36,7 @@ python -c "from ux_dom import __version__; print(__version__)"
 pip install ux-compose ux-dom
 uxcompose create-app myapp
 cd myapp
+uxcompose build
 uxcompose serve app:asgi --host 0.0.0.0 --port 8080
 ```
 

@@ -55,8 +55,9 @@ def _find_app_root(start: Optional[Path] = None) -> Path:
         if p == p.parent:
             break
     raise FileNotFoundError(
-        "no ux-dom app found (expected app/main.py). "
-        "Run from a create-app project root."
+        "no pure-dom app found (expected app/main.py). "
+        "Product apps from uxcompose create-app have app.py — use: uxcompose build. "
+        "This pipeline is Document/static verify for showcase trees."
     )
 
 
@@ -73,14 +74,16 @@ def run_build(
     minify: bool = True,
 ) -> BuildReport:
     """
-    Production build pipeline:
+    Production verify pipeline (not product CSS compile):
 
     1. Structure checks
     2. Sync static runtimes (x_element.js) from installed ux_dom
-    3. Tailwind (if present)
-    4. Import ``app.main:app``
-    5. Soft doctor
-    6. Optional: materialize ``dist/<name>/`` runnable package
+    3. Import ``app.main:app``
+    4. Soft doctor
+    5. Optional: materialize ``dist/<name>/`` runnable package
+
+    Product CSS minify is ``uxcompose build``. ``skip_tailwind`` is accepted
+    and ignored so leftover scripts do not crash.
     """
     root = _find_app_root(cwd)
     report = BuildReport(root=root)
@@ -142,99 +145,30 @@ def run_build(
         )
     )
 
-    # ── Tailwind (standalone CLI first; app.tailwindcss fallback) ─────────
-    tw_mod = root / "app" / "tailwindcss.py"
-    if skip_tailwind:
-        report.steps.append(BuildStep("tailwind", True, "skipped"))
-    else:
-        compiled = False
-        try:
-            from ux_dom.cli.tailwind import (
-                argv_with_io,
-                discover_css_io,
-                resolve_tailwind,
-            )
-
-            io = discover_css_io(root)
-            hit = resolve_tailwind(cwd=root, ensure=True) if io else None
-            if io and hit:
-                input_css, output_css = io
-                cmd = argv_with_io(
-                    hit.argv,
-                    input_css=input_css,
-                    output_css=output_css,
-                    minify=minify,
-                    watch=False,
-                )
-                env = os.environ.copy()
-                env["PYTHONPATH"] = os.pathsep.join(
-                    [str(root), env.get("PYTHONPATH", "")]
-                )
-                proc = subprocess.run(
-                    cmd,
-                    cwd=str(root),
-                    capture_output=True,
-                    text=True,
-                    timeout=180,
-                    env=env,
-                )
-                out = (proc.stdout or "") + (proc.stderr or "")
-                report.steps.append(
-                    BuildStep(
-                        "tailwind",
-                        proc.returncode == 0,
-                        f"{hit.source} exit {proc.returncode}"
-                        + (f" · {out.strip()[:200]}" if out.strip() else ""),
-                    )
-                )
-                compiled = True
-        except Exception as e:
-            report.steps.append(BuildStep("tailwind", False, f"standalone: {e}"))
-            compiled = True  # don't also run the python -m fallback after a hard fail
-
-        if not compiled and tw_mod.is_file():
-            env = os.environ.copy()
-            env["PYTHONPATH"] = os.pathsep.join([str(root), env.get("PYTHONPATH", "")])
-            proc = subprocess.run(
-                [sys.executable, "-m", "app.tailwindcss"],
-                cwd=str(root),
-                capture_output=True,
-                text=True,
-                timeout=180,
-                env=env,
-            )
-            out = (proc.stdout or "") + (proc.stderr or "")
-            report.steps.append(
-                BuildStep(
-                    "tailwind",
-                    proc.returncode == 0,
-                    f"exit {proc.returncode}"
-                    + (f" · {out.strip()[:200]}" if out.strip() else ""),
-                )
-            )
-        elif not compiled:
-            report.steps.append(
-                BuildStep(
-                    "tailwind", True, "no assets/css/input.css (CDN or external CSS)"
-                )
-            )
-
-        css_candidates = (
-            list((root / "assets" / "css").glob("*.css"))
-            if (root / "assets" / "css").is_dir()
-            else []
+    # ── CSS compile is product DX (this command does not run Tailwind)
+    report.steps.append(
+        BuildStep(
+            "css",
+            True,
+            "product CSS compile is uxcompose build "
+            "(this command does not run the Tailwind CLI"
+            + ("; --skip-tailwind ignored" if skip_tailwind else "")
+            + ")",
         )
-        out_css = root / "assets" / "static" / "file" / "css" / "output.css"
-        if out_css.is_file():
-            css_candidates.append(out_css)
-        report.steps.append(
-            BuildStep(
-                "css-artifacts",
-                True,
-                ", ".join(str(p.relative_to(root)) for p in css_candidates[:5])
-                or "no css files yet under assets/css",
-            )
+    )
+    css_dir = root / "assets" / "css"
+    css_candidates = list(css_dir.glob("*.css")) if css_dir.is_dir() else []
+    out_css = root / "assets" / "static" / "file" / "css" / "output.css"
+    if out_css.is_file():
+        css_candidates.append(out_css)
+    report.steps.append(
+        BuildStep(
+            "css-artifacts",
+            True,
+            ", ".join(str(p.relative_to(root)) for p in css_candidates[:5])
+            or "no css files yet under assets/css",
         )
+    )
 
     # ── Import ASGI app ──────────────────────────────────────────────────
     if skip_import:

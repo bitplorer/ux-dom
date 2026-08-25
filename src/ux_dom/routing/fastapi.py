@@ -3,48 +3,37 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-"""FastAPI **adapter** for DirectoryRouter.
+"""Leftover FastAPI DirectoryRouter batteries.
 
-Core path-law / page-unit discovery lives in ``ux_dom.routing.core``
-(no FastAPI imports). This module materializes an ``APIRouter`` from that
-model. Swap hosts later via additional adapters without changing page units.
+Product page routing is ``ux_compose.routing.DirectoryRoutes``.
+This module stays so leftover demosite / examples that cannot import
+compose keep a working FastAPI file router.
 
-* Full-featured adapter: ``DirectoryRouter`` (StreamingRoute, [id] paths, …)
-* Thin materialize path: ``ux_dom.routing.adapters.fastapi.mount(core, app)``
+Do not use this from product ``app.py`` trees.
 """
 from __future__ import annotations
 
-from ux_dom.routing.core import (  # noqa: F401
+from ux_dom.routing._directory_router_impl import (  # noqa: F401
     AcceptSymbol,
+    DirectoryRouter,
     DirectoryRouterError,
-    DirectoryRoutes,
+    HTMLRoute,
     OnRoute,
     ResolveUnit,
-    RouteRecord,
     RouterHooks,
-)
-from ux_dom.routing._directory_router_impl import (  # noqa: F401
-    DirectoryRouter,
-    HTMLRoute,
     StreamingRoute,
+    _clean_url_prefix,
+    _set_endpoint_name,
+    _to_fastapi_path_params,
 )
-
-try:
-    from ux_dom.routing.adapters.fastapi import materialize, mount  # noqa: F401
-except ImportError:  # pragma: no cover
-    materialize = mount = None  # type: ignore
 
 __all__ = [
     "HTMLRoute",
     "StreamingRoute",
     "DirectoryRouter",
     "DirectoryRouterError",
-    "DirectoryRoutes",
-    "RouteRecord",
     "RouterHooks",
     "ResolveUnit",
     "AcceptSymbol",
     "OnRoute",
-    "materialize",
-    "mount",
 ]

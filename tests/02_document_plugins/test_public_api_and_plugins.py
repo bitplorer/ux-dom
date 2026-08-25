@@ -22,6 +22,7 @@ class TestPublicAPI(unittest.TestCase):
     def test_version_bump_area(self):
         self.assertTrue(__version__)
         self.assertEqual(ux_dom.__version__, __version__)
+        self.assertTrue(callable(WebAssets))  # fail-closed stub; still public
 
     def test_component_top_level(self):
         class Box(Component):

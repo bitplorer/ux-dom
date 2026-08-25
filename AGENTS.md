@@ -13,7 +13,7 @@ The UX stack is a **layered system of specialists**, not a monolith.
 
 | Layer | Owns | Must **not** own |
 |-------|------|------------------|
-| **ux-dom** (this repo) | HTML/CSS/JS trees, `Document`, serialize, pure discovery, `uxdom` | Intent, Cap, Result ops, MorphState, motion IR, product CLI |
+| **ux-dom** (this repo) | HTML/CSS/JS trees, `Document`, serialize, pure discovery, `uxdom`, package static | Intent, Cap, Result ops, MorphState, motion IR, product CLI, Tailwind CLI finder, app asset layout |
 | **ux-channel** | Intent / Result / Cap / wire / peers / host runtime | HTML trees, CSS |
 | **ux-behavior** | Product behavior, Morph/Ref, `@action`, validation | Raw HTML construction, wire codecs |
 | **ux-motion** | Presence / transition plans as data (IR v1) | Product behavior, DOM construction |
@@ -36,7 +36,7 @@ Do not analogize this layer to React / Next / htmx as its identity.
 
 ## What not to invent
 
-- Product CLI on `uxdom` (`create-app`, `serve`, `deploy`)
+- Product CLI on `uxdom` (`create-app`, `serve`, `deploy`, product `build`)
 - A second document factory on `App`
 - Dual-copy of library JS into `assets/js/` (package URL is SSoT)
 - Intent / Cap / Result types in this package
@@ -48,6 +48,7 @@ Do not analogize this layer to React / Next / htmx as its identity.
 | Need | Command |
 |------|---------|
 | New **product** app | `uxcompose create-app` |
+| Product CSS minify | `uxcompose build` |
 | Component / XElement / UI | `uxdom add …` |
 | Pure-dom integrity | `uxdom doctor` |
 | Product health | `uxcompose doctor` |
@@ -66,8 +67,9 @@ Do not analogize this layer to React / Next / htmx as its identity.
 
 ## CLI spine
 
-**Product:** `uxcompose create-app → serve → deploy`
-**Pure-dom:** `uxdom doctor | lint | build | profile | add`
+**Product:** `uxcompose create-app → build → serve → deploy`
+**Pure-dom:** `uxdom doctor | lint | profile | add`
+**CSS compiler:** `ux_compose.tailwind` / `uxcompose build`. **App folders:** `ux_compose.WebAssets`. This package keeps `className`, Document `<link>`, package static. `TailwindCommand` / `WebAssets` are fail-closed.
 
 ## Tests
 

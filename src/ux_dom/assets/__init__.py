@@ -8,8 +8,7 @@ Prefer the first-class API::
     hub.shell_fragments()
     hub.materialize(root)
 
-These helpers exist so older call sites and ``WebAssets.sync_plugin_assets``
-keep working without a second registry.
+These helpers exist so older call sites keep working without a second registry.
 """
 
 from __future__ import annotations

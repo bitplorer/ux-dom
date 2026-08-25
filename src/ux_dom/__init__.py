@@ -22,7 +22,7 @@ scaffold live in **ux-compose**.
 | **Shell** | ``Document`` | HTML head/body SSoT — ``.use`` (control, runtime tags, CSP stamp) |
 | **Core** | ``Component``, ``Fragment``, ``ReactiveComponent`` | Build trees |
 | **DOM** | ``ux_dom.dom`` | Tags, parse, ``__render__`` / ``__async_render__`` |
-| **Discovery** | ``ux_dom.routing.core`` | Pure ``DirectoryRoutes`` + ``RouterHooks`` (host-free) |
+| **Discovery** | leftover ``DirectoryRouter`` | Not product. Product ``routes/`` is ``ux_compose.routing`` |
 | **UI kit** | ``ux_dom.ui`` | Optional copy-in components |
 
 Serialize SSoT: ``tree.__render__()`` / ``tree.__async_render__()``.
@@ -31,7 +31,9 @@ Optional HTTP adapters under ``ux_dom.response`` are **not** the product path.
 Product apps::
 
     uxcompose create-app myapp
-    # composition root + delivery + HMR(dev) — see ux-compose docs/FLOW.md
+    uxcompose build
+    uxcompose serve app:asgi
+    # composition root + CSS compile + delivery — see ux-compose docs/FLOW.md
 
 Pure document (no product host)::
 
@@ -50,7 +52,7 @@ from .compat.valio_pep649 import ensure_valio_pep649_compat
 
 ensure_valio_pep649_compat()
 
-from .settings import *  # Document, WebAssets, TailwindCommand, paths…  # isort: skip
+from .settings import *  # Document; WebAssets/TailwindCommand are fail-closed  # isort: skip
 from .slots import *  #Slots, WebComponentSlot, …  # isort: skip
 
 from ux_dom.dom.src.component import (  # noqa: E402

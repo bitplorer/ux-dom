@@ -36,7 +36,7 @@ Every block is meant to run (or to be the exact fragment you drop into a running
 
 <a id="dom-install"></a>
 
-Full stack requires Python ≥ 3.14. Product create-app / serve live on uxcompose, not uxdom.
+Full stack requires Python ≥ 3.14. Product create-app / build / serve live on uxcompose, not uxdom.
 
 ```bash
 python3.14 -m venv .venv && source .venv/bin/activate
@@ -195,15 +195,15 @@ html = document(div("Hi", id="view")).__render__()
 print("script" in html.lower() or "csp" in html.lower() or html)
 ```
 
-### DirectoryRoutes (host-free discovery)
+### DirectoryRoutes (product — ux-compose)
 
 <a id="dom-routes"></a>
 
-Pure discovery. Host adapters live in ux-compose (Invisible Strategy). Do not import FastAPI from ux-dom to mount pages.
+Product discovery lives on ux-compose. Do not construct DirectoryRoutes from ux-dom.
 
 ```python
 from pathlib import Path
-from ux_dom.routing.core import DirectoryRoutes
+from ux_compose.routing import DirectoryRoutes
 
 core = DirectoryRoutes(package_dir=Path("."), base_directory="routes")
 records = core.discover()
@@ -219,7 +219,7 @@ Hooks are host-agnostic. resolve_unit is only for the synthetic page GET. Explic
 
 ```python
 from pathlib import Path
-from ux_dom.routing.core import DirectoryRoutes, RouterHooks
+from ux_compose.routing import DirectoryRoutes, RouterHooks
 
 hooks = RouterHooks(
     resolve_unit=None,    # (cls, path, name) → instance | None
@@ -237,21 +237,23 @@ print(core.discover())
 
 <a id="dom-cli"></a>
 
-uxdom is Document tooling only. uxcompose create-app | serve | deploy is the product path.
+uxdom is Document tooling only. uxcompose create-app | build | serve | deploy is the product path.
 
 ```bash
 uxdom doctor
 uxdom lint
-uxdom build
 uxdom profile
 uxdom add component Card
 ```
+
+Product CSS minify is `uxcompose build` (`ux_compose.tailwind`).
+`uxdom build` is Document/static verify for leftover `app/main.py` trees.
 
 ### Copy-in UI kit via CLI
 
 <a id="dom-add-ui"></a>
 
-uxdom add copies markup you own. uxcompose create-app | serve | deploy remains the product path.
+uxdom add copies markup you own. uxcompose create-app | build | serve | deploy remains the product path.
 
 ```bash
 uxdom ui list
@@ -259,7 +261,6 @@ uxdom add ui Button
 uxdom add component Card
 uxdom doctor
 uxdom lint
-uxdom build
 uxdom profile
 ```
 
@@ -270,7 +271,7 @@ uxdom profile
 
 <a id="dom-pattern-serialize"></a>
 
-Serialize SSoT is tree.__render__() / tree.__async_render__(). Product create-app / serve is uxcompose, not uxdom.
+Serialize SSoT is tree.__render__() / tree.__async_render__(). Product create-app / build / serve is uxcompose, not uxdom.
 
 ```python
 from ux_dom.dom import div, h1, p

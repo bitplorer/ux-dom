@@ -14,6 +14,8 @@ import unittest
 import warnings
 from pathlib import Path
 
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom import Component, Document, Fragment, ReactiveComponent
@@ -24,7 +26,6 @@ from ux_dom.dom.src.parse_html import tokenize_html
 from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.web_io import HtmxEvents
 
@@ -320,23 +321,19 @@ class TestBehaviourIntegration(unittest.TestCase):
             try:
                 api = (
                     App(debug=False)
-                    .use(FastAPIHost(title="int", debug=False))
                     .use(
                         DirectoryRouting(
                             package_dir=pkg, base_directory="app", prefix="/a"
                         )
                     )
                     .use(HtmxControl(middleware=True))
-                    .build()
+                    .build(asgi=FastAPI(title="int", debug=False, default_response_class=HTMLResponse))
                 )
                 client = TestClient(api)
-                self.assertIn("pg", client.get("/a/page/Page").text)
-                self.assertIn("n=1", client.get("/a/page/Bump/go").text)
+                self.assertIn("pg", client.get("/a/page").text)
                 self.assertIn("item-xyz", client.get("/a/items/xyz").text)
                 paths = [
-                    "/a/page/Page",
-                    "/a/page/Bump",
-                    "/a/page/Bump/go",
+                    "/a/page",
                     "/a/items/1",
                 ]
 

@@ -4,7 +4,10 @@
 # https://opensource.org/licenses/MIT
 
 
-"""FastAPI DirectoryRouter and streaming HTML route classes.
+"""Leftover FastAPI DirectoryRouter and streaming HTML route classes.
+
+Product page routing is ``ux_compose.routing.DirectoryRoutes``.
+This module stays for leftover demosite / examples that cannot import compose.
 
 DirectoryRouter maps app/routes file paths to URLs; streaming helpers serialize
 ux-dom trees for responses.
@@ -13,7 +16,7 @@ Path law (fixed, not flags):
 * URL = filesystem only (folder + file stem). Class name never in path.
 * route.py / index.py → folder prefix (or "/").
 
-Page unit (default product path):
+Page unit (leftover DirectoryRouter; product path is ux-compose DirectoryRoutes):
 * Exports from ``__all__`` when present (Python-native allow-list).
 * Page type = class whose name matches the module stem (cart.py → Cart).
 * Ambiguous page picks fail closed (no silent guess).
@@ -366,7 +369,7 @@ class DirectoryRouter(routing.APIRouter):
       * URL = folder + file stem only. Class name never appears in the path.
       * ``route.py`` / ``index.py`` map to the folder prefix (or ``/``).
 
-    Page unit (default product path):
+    Page unit (leftover DirectoryRouter; product is ux-compose DirectoryRoutes):
       * Prefer ``__all__``; otherwise define-in-module classes only.
       * Page type = renderable class whose name matches the module stem
         (``cart.py`` → ``Cart``). Ambiguity fails closed.

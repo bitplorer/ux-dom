@@ -16,13 +16,15 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 - Tag trees, `__render__` / `__async_render__`
 - Document shell: control, runtime tags, **CSP stamp**, style
 - Pure DirectoryRoutes + RouterHooks
-- Pure-dom CLI: `doctor` | `lint` | `build` | `profile` | `dashboard` | `add` | `ui`
+- Pure-dom CLI: `doctor` | `lint` | `profile` | `dashboard` | `add` | `ui`
+- className. stylesheet `<link>`.
+- Package static (`/ux-dom/static/x_element.js`).
 
 ## Does not own
 
 | Concern | Home |
 |---------|------|
-| create-app / serve / deploy | **uxcompose only** |
+| create-app / build / serve / deploy / Tailwind compiler / app asset layout | **uxcompose only** |
 | Host strategy / product App | ux-compose |
 | HMR process | ux-compose (with serve) |
 | Channel transport | ux-compose `wire/` |
@@ -31,11 +33,15 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 
 ```bash
 uxcompose create-app myapp
+uxcompose build
 uxcompose serve app:asgi
 uxcompose deploy --provider docker
 
-uxdom doctor | lint | build | profile
+uxdom doctor | lint | profile | add
 ```
+
+`uxdom build` remains Document/static verify for leftover `app/main.py`
+trees — it does not compile CSS.
 
 ## Document.use
 
@@ -53,3 +59,5 @@ Product composition root: **ux_compose.App** / `build()`.
 - Recommending plugins.App.web as app entry
 - CSP stamp owned by host package
 - FastAPI inside dunder serialize path
+- App asset layout (`WebAssets`) on ux-dom — product folders live on ux-compose
+- Tailwind compiler (finder / `@source` / CLI invoke) on ux-dom

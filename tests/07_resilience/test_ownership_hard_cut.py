@@ -2,7 +2,10 @@
 from __future__ import annotations
 
 import importlib
+import os
 import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from typer.testing import CliRunner
 
@@ -37,6 +40,27 @@ class TestProductCliAbsent(unittest.TestCase):
             with self.assertRaises(ImportError):
                 importlib.import_module(mod)
 
+    def test_help_points_product_build_at_uxcompose(self):
+        out = CliRunner().invoke(cli_app, ["--help"]).output
+        self.assertIn("uxcompose", out)
+        self.assertIn("build", out)
+
+
+class TestProductBuildRedirect(unittest.TestCase):
+    def test_product_app_py_teaches_uxcompose_build(self):
+        runner = CliRunner()
+        with TemporaryDirectory() as td:
+            (Path(td) / "app.py").write_text("# product composition root\n", encoding="utf-8")
+            prev = os.getcwd()
+            try:
+                os.chdir(td)
+                r = runner.invoke(cli_app, ["build"])
+            finally:
+                os.chdir(prev)
+        self.assertEqual(r.exit_code, 2, r.output)
+        joined = (r.output or "") + (getattr(r, "stderr", None) or "")
+        self.assertIn("uxcompose build", joined)
+
 
 class TestScaffoldFailClosed(unittest.TestCase):
     def test_cli_scaffold_teaches_uxcompose(self):
@@ -55,8 +79,67 @@ class TestScaffoldFailClosed(unittest.TestCase):
 
 
 class TestDirectoryRoutesTeaching(unittest.TestCase):
-    def test_package_doc_prefers_directory_routes(self):
-        # routing public surface documents DirectoryRoutes as primary path
-        from ux_dom.routing import core as core_mod
+    def test_package_doc_teaches_compose_routing(self):
+        from ux_dom.routing.core import DirectoryRoutes, ProductRoutingMoved
 
-        self.assertTrue(hasattr(core_mod, "DirectoryRoutes") or hasattr(core_mod, "RouterHooks"))
+        with self.assertRaises(ProductRoutingMoved) as ctx:
+            DirectoryRoutes(".")
+        self.assertIn("ux_compose.routing", str(ctx.exception))
+
+    def test_fastapi_host_teaches_compose(self):
+        from ux_dom.plugins.host import FastAPIHost, ProductHostMoved
+
+        with self.assertRaises(ProductHostMoved) as ctx:
+            FastAPIHost(title="x")
+        self.assertIn("ux_compose.build", str(ctx.exception))
+
+    def test_hotreload_plugin_teaches_compose(self):
+        from ux_dom.plugins.hmr import HotReload, ProductHmrMoved
+
+        with self.assertRaises(ProductHmrMoved) as ctx:
+            HotReload()
+        self.assertIn("uxcompose serve --hmr", str(ctx.exception))
+
+    def test_leftover_directory_router_still_importable(self):
+        from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
+
+        self.assertTrue(callable(DirectoryRouter))
+        self.assertTrue(callable(StreamingRoute))
+
+
+class TestProductCssFailClosed(unittest.TestCase):
+    def test_tailwind_command_teaches_uxcompose_build(self):
+        from ux_dom import TailwindCommand
+        from ux_dom.settings.commands import ProductCssMoved
+
+        with self.assertRaises(ProductCssMoved) as ctx:
+            TailwindCommand(file_path="x", webassets=None)
+        self.assertIn("uxcompose build", str(ctx.exception))
+
+    def test_cli_tailwind_module_does_not_compile(self):
+        from ux_dom.cli.tailwind import discover_css_io
+
+        with self.assertRaises(ImportError) as ctx:
+            discover_css_io(".")
+        self.assertIn("ux_compose.tailwind", str(ctx.exception))
+
+    def test_webassets_teaches_compose(self):
+        from ux_dom import WebAssets
+        from ux_dom.settings.document import ProductAssetsMoved
+
+        with self.assertRaises(ProductAssetsMoved) as ctx:
+            WebAssets(base_dir=".")
+        msg = str(ctx.exception)
+        self.assertIn("ux_compose", msg)
+        self.assertIn("WebAssets", msg)
+        self.assertIn("x_element.js", msg)
+
+    def test_document_has_no_webassets_field(self):
+        from dataclasses import fields
+
+        from ux_dom import Document
+
+        names = {f.name for f in fields(Document)}
+        self.assertNotIn("webassets", names)
+        with self.assertRaises(TypeError):
+            Document(head=[], webassets=object())

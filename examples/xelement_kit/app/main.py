@@ -9,12 +9,12 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from fastapi import FastAPI
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 from ux_dom.plugins import App, XElementRuntime
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
 
@@ -25,10 +25,9 @@ PACKAGE = Path(__file__).resolve().parent
 app = (
     App(debug=settings.DEBUG)
     .use(XElementRuntime())  # package mount — no dual assets/js copy
-    .use(FastAPIHost(title=settings.APP_TITLE, debug=settings.DEBUG))
     .use(DirectoryRouting(package_dir=PACKAGE, base_directory="routes", prefix=""))
     .use(HtmxControl(middleware=True, version="2.0.4"))
-    .build()
+    .build(asgi=FastAPI(title=settings.APP_TITLE, debug=settings.DEBUG))
 )
 
 if settings.ASSETS_DIR.exists():

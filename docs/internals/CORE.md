@@ -10,50 +10,53 @@ These are the long-lived surface. Breaking them breaks every app.
 | `ux_dom.dom.src.ext.Tags` | Attr dialects, control flags, walk-stream |
 | `ux_dom.dom.src.component` | Component / Fragment / ReactiveComponent |
 | `ux_dom.dom.htmldocument` | HtmlDocument shell |
-| `ux_dom.settings.document` | Document / WebAssets factories |
+| `ux_dom.settings.document` | Document factory (`WebAssets` fail-closed) |
 | `ux_dom.response` | HTML / Streaming response adapters |
 
 Public imports::
 
-    from ux_dom import Component, Document, Fragment, ReactiveComponent, WebAssets
+    from ux_dom import Component, Document, Fragment, ReactiveComponent
     from ux_dom.dom import div, button, ...
 
 ## Plugins (swappable)
 
 | Package | Role |
 |---------|------|
-| `ux_dom.plugins.host` | FastAPIHost — ASGI app + lifespan |
-| `ux_dom.plugins.routing` | DirectoryRouting — file routes |
+| `ux_dom.plugins.host` | FastAPIHost — fail-closed teaching stub |
+| `ux_dom.plugins.routing` | leftover DirectoryRouting (DirectoryRouter batteries) |
 | `ux_dom.plugins.control` | HtmxControl / NullControl |
-| `ux_dom.plugins.style` | TailwindStyle / NullStyle |
-| `ux_dom.plugins.hmr` | HotReload |
+| `ux_dom.plugins.style` | NullStyle (working); TailwindStyle fail-closed stub |
+| `ux_dom.plugins.hmr` | HotReload — fail-closed teaching stub |
 | `ux_dom.plugins.response` | endpoint wrappers |
 
-Compose::
+Leftover batteries (standalone FastAPI trees that cannot import compose)::
 
     from pathlib import Path
+    from fastapi import FastAPI
     from ux_dom.plugins import App
-    from ux_dom.plugins.host import FastAPIHost
     from ux_dom.plugins.routing import DirectoryRouting
     from ux_dom.plugins.control import HtmxControl
 
     api = (
         App(debug=True)
-        .use(FastAPIHost(title="MyApp"))
         .use(DirectoryRouting(package_dir=Path(__file__).parent, base_directory="app"))
         .use(HtmxControl(middleware=True))
-        .build()
+        .build(asgi=FastAPI(title="MyApp"))
     )
+
+Product apps: `uxcompose create-app` → `build()` / `App.mount` on **ux-compose**
+(`ux_compose.routing.DirectoryRoutes`). `FastAPIHost` and `plugins.hmr.HotReload`
+fail closed.
 
 ## CLI
 
 ```bash
 uxcompose create-app myapp
+uxcompose build
 uxcompose serve app:asgi --port 8080
 
 uxdom doctor
 uxdom lint
-uxdom build
 ```
 
-`plugins.App.use(FastAPIHost)` is **not** the product path. See [SYSTEM.md](SYSTEM.md).
+`plugins.App.build(asgi=FastAPI())` is leftover glue — **not** the product path. See [SYSTEM.md](SYSTEM.md).

@@ -13,7 +13,7 @@ import asyncio
 from pathlib import Path
 from typing import AsyncIterator, Callable
 
-from fastapi import Request
+from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse as ASGIStreamingResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.types import ASGIApp
@@ -21,7 +21,6 @@ from starlette.types import ASGIApp
 from ux_dom.dom import div, h2, p
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.response.starlette import StreamingResponse
 
@@ -58,7 +57,6 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
 
 _builder = (
     App(debug=settings.DEBUG)
-    .use(FastAPIHost(title=settings.APP_TITLE, debug=settings.DEBUG))
     .use(
         DirectoryRouting(
             package_dir=PACKAGE,
@@ -70,27 +68,23 @@ _builder = (
     .use(HtmxControl(middleware=True, version="2.0.4", sse=True))
 )
 
-if settings.WITH_TAILWIND:
-    from ux_dom.plugins.style import TailwindStyle
-
-    _builder.use(
-        TailwindStyle(
-            settings.webassets,
-            file_path=PACKAGE / "main.py",
-            input_css=settings.INPUT_CSS,
-            output_css=settings.OUTPUT_CSS,
-            minify=not settings.DEBUG,
-        )
-    )
+app = _builder.build(asgi=FastAPI(title=settings.APP_TITLE, debug=settings.DEBUG))
 
 if settings.WITH_HMR and settings.DEBUG:
-    from ux_dom.plugins.hmr import HotReload
+    from fastapi import WebSocket
 
-    _builder.use(
-        HotReload(watch_paths=[str(PACKAGE), str(settings.BASE_DIR / "assets")])
+    from ux_dom.reloader import HotReloadWebSocketRoute, WatchPath
+
+    hot = HotReloadWebSocketRoute(
+        websocket_type=WebSocket,
+        watch_paths=[
+            WatchPath(path=str(PACKAGE), on_reload=()),
+            WatchPath(path=str(settings.BASE_DIR / "assets"), on_reload=()),
+        ],
+        url_path="/hot-reload",
+        url_name="hot-reload",
     )
-
-app = _builder.build()
+    app.add_websocket_route(hot.url_path, hot, name=hot.url_name)
 app.add_middleware(SecurityHeadersMiddleware)
 
 try:

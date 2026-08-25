@@ -13,6 +13,7 @@ import unittest
 from pathlib import Path
 
 from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom import Component, Document, ReactiveComponent
@@ -22,7 +23,6 @@ from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.response.starlette import StreamingResponse
 from ux_dom.web_io import WebSocketAdapter, WebSocketEvents
@@ -213,20 +213,17 @@ class TestHttpIntegration(unittest.TestCase):
             try:
                 api = (
                     App(debug=False)
-                    .use(FastAPIHost(title="Chaos", debug=False))
                     .use(
                         DirectoryRouting(
                             package_dir=pkg, base_directory="app", prefix="/r"
                         )
                     )
                     .use(HtmxControl(middleware=True))
-                    .build()
+                    .build(asgi=FastAPI(title="Chaos", debug=False, default_response_class=HTMLResponse))
                 )
                 client = TestClient(api)
                 paths = [
-                    "/r/home/Home",
-                    "/r/home/Counter",
-                    "/r/home/Counter/inc",
+                    "/r/home",
                     "/r/users/u42",
                 ]
 
@@ -236,7 +233,7 @@ class TestHttpIntegration(unittest.TestCase):
                 with concurrent.futures.ThreadPoolExecutor(16) as ex:
                     codes = list(ex.map(hit, range(120)))
                 self.assertTrue(all(c == 200 for c in codes))
-                self.assertIn("home", client.get("/r/home/Home").text)
+                self.assertIn("home", client.get("/r/home").text)
                 self.assertIn("user-u42", client.get("/r/users/u42").text)
             finally:
                 sys.path.remove(str(rootp))

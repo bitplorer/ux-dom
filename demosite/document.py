@@ -14,7 +14,6 @@ __all__ = ["document"]
 
 
 document = Document(
-    webassets=settings.webassets,
     head=[
         # custom tailwindcss styles sheet
         link(href=f"/css/{tailwind.output_css}", rel="stylesheet"),

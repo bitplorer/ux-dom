@@ -5,6 +5,8 @@ from __future__ import annotations
 import re
 import unittest
 
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom.dom import div, script
@@ -15,7 +17,6 @@ from ux_dom.plugins.csp import (
     policy_prod,
     policy_report_only,
 )
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.response.starlette import HTMLResponse
 
@@ -85,7 +86,7 @@ class TestPresets(unittest.TestCase):
 class TestMiddlewarePresets(unittest.TestCase):
     def test_prod_header(self):
         set_hub(PluginHub())
-        app = App().use(Csp.prod(debug_header=True)).use(FastAPIHost(title="t")).build()
+        app = App().use(Csp.prod(debug_header=True)).build(asgi=FastAPI(title="t", default_response_class=HTMLResponse))
 
         @app.get("/")
         def home():
@@ -104,8 +105,7 @@ class TestMiddlewarePresets(unittest.TestCase):
         app = (
             App()
             .use(Csp.report_only(debug_header=True))
-            .use(FastAPIHost(title="t"))
-            .build()
+            .build(asgi=FastAPI(title="t", default_response_class=HTMLResponse))
         )
 
         @app.get("/")
@@ -120,7 +120,7 @@ class TestMiddlewarePresets(unittest.TestCase):
 
     def test_dev_has_cdn_and_style_inline(self):
         set_hub(PluginHub())
-        app = App().use(Csp.dev()).use(FastAPIHost(title="t")).build()
+        app = App().use(Csp.dev()).build(asgi=FastAPI(title="t", default_response_class=HTMLResponse))
 
         @app.get("/")
         def home():

@@ -11,6 +11,7 @@ Product lifecycle is **ux-compose**. This page is the render-layer walkthrough.
 pip install ux-compose ux-dom
 uxcompose create-app hello --host auto --level auto
 cd hello
+uxcompose build
 uxcompose serve app:asgi --port 8080
 ```
 
@@ -36,13 +37,13 @@ uxdom lint
 
 ## 3. DirectoryRoutes (when you bind FastAPI yourself)
 
-Preferred discovery is **pure `DirectoryRoutes` + a thin adapter**, not
-`DirectoryRouter` (batteries path for standalone FastAPI users of ux-dom).
+Preferred discovery is **product `ux_compose.routing.DirectoryRoutes`**.
+Leftover standalone FastAPI trees use `DirectoryRouter`.
 
 ```python
 from fastapi import FastAPI
-from ux_dom.routing.core import DirectoryRoutes
-from ux_dom.routing.adapters.fastapi import mount
+from ux_compose.routing import DirectoryRoutes
+from ux_compose.routing.adapters.fastapi import mount
 
 app = FastAPI()
 document.mount(app)
@@ -64,7 +65,7 @@ uxdom add route about
 ```python
 from ux_dom import Component
 from ux_dom.dom import div, h1, a
-from app.document import page
+from document import page
 
 class About(Component):
     routes = ["get"]
@@ -87,8 +88,8 @@ uxdom add xelement Badge
 ## 6. Production posture
 
 ```bash
+uxcompose build
 uxcompose deploy --provider docker
-uxdom build
 ```
 
 See [CLI.md](CLI.md) · ux-compose `docs/FLOW.md`.

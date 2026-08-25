@@ -4,8 +4,8 @@
 
 | Layer | CLI |
 |-------|-----|
-| **Product** lifecycle | `uxcompose create-app \| serve \| deploy \| doctor` |
-| **Pure-dom** tooling | `uxdom doctor \| lint \| build \| profile \| add` |
+| **Product** lifecycle | `uxcompose create-app \| build \| serve \| deploy \| doctor` |
+| **Pure-dom** tooling | `uxdom doctor \| lint \| profile \| add` |
 
 ## Hardened edges (render / routing)
 
@@ -15,7 +15,7 @@
 | Path params as query | Named path params in generated `get` |
 | Nested packages | `_ensure_route_packages` writes `__init__.py` |
 | Dual JS names | Single `x_element.js` / `x-tagname` |
-| Tailwind missing | `cli/tailwind.py` resolver |
+| Tailwind missing | product compile is `uxcompose build` (`ux_compose.tailwind`); `uxdom build` does not compile CSS |
 
 ## Stability gates
 
@@ -35,5 +35,6 @@ uxcompose doctor .   # product apps
 
 ## DX surface (stable)
 
-**uxcompose:** create-app · serve · deploy · doctor  
-**uxdom:** doctor · lint · build · profile · dashboard · add · ui
+**uxcompose:** create-app · build · serve · deploy · doctor  
+**uxdom:** doctor · lint · profile · dashboard · add · ui  
+(`uxdom build` is Document/static verify for leftover `app/main.py` trees.)

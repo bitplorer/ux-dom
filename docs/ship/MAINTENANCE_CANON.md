@@ -6,7 +6,7 @@
 |------|------------|
 | Core DOM / Document / dunders | Tests + SYSTEM.md |
 | Pure-dom CLI (doctor/lint/build) | tests + CLI.md |
-| Product scaffold / serve / deploy | **ux-compose** — not this repo |
+| Product scaffold / build / serve / deploy | **ux-compose** — not this repo |
 | CSP stamp | Document contributions |
 
 ## Must not regress

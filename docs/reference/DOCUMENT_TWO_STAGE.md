@@ -52,7 +52,8 @@ document(
 )
 ```
 
-`ctx` always includes `nonce`, `document`, `webassets`.
+`ctx` always includes `nonce`, `document`. App folders are not a Document
+concern (`from ux_compose import WebAssets`).
 
 ## Do not flatten
 

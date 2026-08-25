@@ -4,11 +4,10 @@
 # https://opensource.org/licenses/MIT
 
 from pathlib import Path
+from types import SimpleNamespace
 
 from starlette.config import Config
 from starlette.websockets import WebSocket
-
-from ux_dom import WebAssets
 
 BASE_DIR = Path(__file__).parent
 
@@ -18,8 +17,17 @@ config = Config(BASE_DIR / ".env")
 # set debug variable
 DEBUG = config("DEBUG", cast=bool, default=False)
 
-# defining webassets
-webassets = WebAssets(base_dir=BASE_DIR, sub_dir="assets")
+# Demo-local folders — not ux_dom.WebAssets (that class moved to ux-compose).
+ASSETS_DIR = BASE_DIR / "assets"
+webassets = SimpleNamespace(
+    dir=ASSETS_DIR,
+    static=SimpleNamespace(
+        css=ASSETS_DIR / "static" / "file" / "css",
+        js=ASSETS_DIR / "static" / "file" / "js",
+        image=ASSETS_DIR / "static" / "media" / "image",
+    ),
+    template=SimpleNamespace(dir=ASSETS_DIR / "templates"),
+)
 
 if DEBUG:
     from ux_dom import reloader

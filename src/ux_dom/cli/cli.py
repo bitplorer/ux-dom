@@ -4,8 +4,11 @@
 # https://opensource.org/licenses/MIT
 """uxdom CLI — pure Document / render tooling only.
 
-Product lifecycle (create-app · serve · deploy) lives on **uxcompose** only.
-See docs/internals/SYSTEM.md and ux-compose docs/FLOW.md / docs/CLI.md.
+Product lifecycle (create-app · build · serve · deploy) lives on **uxcompose** only.
+See docs/internals/SYSTEM.md and ux-compose docs/FLOW.md / docs/guides/CLI.md.
+
+XElement is served from the installed package at ``/ux-dom/static/x_element.js``
+(no app copy).
 """
 from pathlib import Path
 
@@ -16,7 +19,8 @@ from ux_dom.utils.logger import ux_dom_logger
 app = Typer(
     help=(
         "uxdom — pure Document/render tooling. "
-        "Product apps: uxcompose create-app | serve | deploy"
+        "Product lifecycle: uxcompose. "
+        "XElement URL: /ux-dom/static/x_element.js"
     ),
     no_args_is_help=True,
 )
@@ -70,6 +74,15 @@ def lint_cmd(path: str = Option(None, "--path")):
     raise SystemExit(1 if errors else 0)
 
 
+_PRODUCT_BUILD = (
+    "this is a product app (app.py from uxcompose). "
+    "Use: uxcompose build   "
+    "(uxdom build is Document/static verify for app/main.py trees; "
+    "it does not compile CSS). "
+    "XElement is served from the installed package at /ux-dom/static/x_element.js"
+)
+
+
 @app.command("build")
 def build_cmd(
     skip_tailwind: bool = Option(False, "--skip-tailwind"),
@@ -81,9 +94,22 @@ def build_cmd(
     name: str = Option(None, "--name"),
     json_out: bool = Option(False, "--json"),
 ):
-    """Tailwind / static verify for Document trees."""
+    """Document/static verify for pure-dom ``app/main.py`` trees.
+
+    Product apps (``app.py`` from uxcompose): use ``uxcompose build``.
+    This command does not compile CSS. Product CSS is ``uxcompose build``
+    (``ux_compose.tailwind``). ``--skip-tailwind`` is accepted and ignored.
+    XElement is served from the installed package at
+    ``/ux-dom/static/x_element.js`` (no app copy).
+    """
     import json as _json
     from pathlib import Path as _P
+
+    cwd = _P.cwd()
+    if (cwd / "app.py").is_file() and not (cwd / "app" / "main.py").is_file():
+        print(_PRODUCT_BUILD, flush=True)
+        ux_dom_logger.error(_PRODUCT_BUILD)
+        raise SystemExit(2)
 
     from ux_dom.cli.build import format_build_report, run_build
 

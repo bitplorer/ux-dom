@@ -26,7 +26,7 @@ def home():
 
 ```bash
 uxcompose create-app shop --host auto --level auto
-cd shop && uxcompose serve app:asgi --port 8080
+cd shop && uxcompose build && uxcompose serve app:asgi --port 8080
 ```
 
 ## HTMX partial
@@ -72,8 +72,11 @@ if ch:
 
 ## Tailwind
 
-Scaffold sets `WITH_TAILWIND` + `TailwindStyle` in lifespan.  
-WebAssets: [ASSETS.md](../security/ASSETS.md).
+Product apps: `uxcompose create-app` emits `assets/css/input.css`; compile with
+`uxcompose build` (`ux_compose.tailwind` finds / ensures the CLI). Document
+links `/css/output.css`. Do not run the compiler from Document / `TailwindStyle`
+/ `TailwindCommand`. App folders: `ux_compose.WebAssets`. Package static:
+[ASSETS.md](../security/ASSETS.md).
 
 ## Streaming HTML
 
@@ -93,9 +96,10 @@ class Price(Component):
         return span(f"${amount}")
 ```
 
-## Health check (scaffold)
+## Health check (leftover showcase)
 
-`GET /health` → `{ ok, app, debug, csp, runtimes, … }`.
+Leftover `app/main.py` trees may expose `GET /health`. Product `create-app`
+trees do not — use `uxcompose doctor` / `uxdom doctor`.
 
 
 ## Reactive counter

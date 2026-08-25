@@ -1,10 +1,9 @@
-# Copyright (c) 2026 ux_dom
 """Host helpers — **not** the product path.
 
 Product composition and delivery live in **ux-compose**.
-These modules remain for tests / pure-dom experiments only.
+``FastAPIHost`` is a fail-closed teaching stub.
 """
 
-from ux_dom.plugins.host.fastapi import FastAPIHost
+from ux_dom.plugins.host.fastapi import FastAPIHost, ProductHostMoved
 
-__all__ = ["FastAPIHost"]
+__all__ = ["FastAPIHost", "ProductHostMoved"]

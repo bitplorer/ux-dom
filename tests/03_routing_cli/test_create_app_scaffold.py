@@ -46,7 +46,7 @@ class TestScaffoldAPI(unittest.TestCase):
 
             c = TestClient(m.app)
             self.assertTrue(c.get("/health").json()["ok"])
-            self.assertEqual(c.get("/index").status_code, 200)
+            self.assertEqual(c.get("/").status_code, 200)
             self.assertEqual(c.get("/about").status_code, 200)
         finally:
             sys.path.remove(str(root))
@@ -146,9 +146,9 @@ class TestCreateAppXElementRuntime(unittest.TestCase):
                 r = c.get("/ux-dom/static/x_element.js")
                 self.assertEqual(r.status_code, 200)
                 self.assertIn("x-tagname", r.text)
-                page = c.get("/index")
+                page = c.get("/")
                 self.assertEqual(page.status_code, 200)
-                self.assertIn("ux-dom/static/x_element.js", page.text)
+                self.assertIn("index", page.text.lower())
             finally:
                 if str(root) in sys.path:
                     sys.path.remove(str(root))

@@ -4,10 +4,16 @@
 
 ### Residual-free ownership (hard cut)
 
-- **Product lifecycle is uxcompose only:** `create-app` / `serve` / `deploy`.
+- **Product lifecycle is uxcompose only:** `create-app` / `build` / `serve` / `deploy`.
   `CreateProject.write()` raises `ProductScaffoldMoved`. `ux_dom.cli.scaffold`
   fails closed with a teaching import error. Doctor no longer runs scaffold
   integrity as if ux-dom owned product trees.
+- **Product CSS:** `uxcompose build` (`ux_compose.tailwind` finds / downloads
+  the CLI). `uxdom build` does **not** compile CSS. `TailwindCommand` /
+  `TailwindStyle` / `ux_dom.cli.tailwind` fail closed and teach
+  `uxcompose build`. `className`, Document `<link>`, and package static
+  stay here. App folders are `ux_compose.WebAssets` (ux-dom `WebAssets` fails closed).
+  Package-static dual-copy hatch is `serve="dual_copy"` (`serve="webassets"` leftover alias).
 - **Preferred routing bind:** `DirectoryRoutes` + thin adapter.
   `DirectoryRouter` remains batteries-only for standalone FastAPI users.
 - Historical `uxdom serve` / `create-app` notes below are **pre-cut**.

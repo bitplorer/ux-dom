@@ -6,7 +6,7 @@ Purpose of each tree under `ux_dom/`. Prefer this over guessing from file names.
 
 ```text
 ux_dom/
-  settings/     Document factory, WebAssets, paths
+  settings/     Document factory (WebAssets fail-closed stub)
   dom/          Tags, Component, serialize, XElement types
   runtime/      Document-facing XElement / Htmx / Csp / Channel facades
   plugins/      Host, routing helper, CSP, SafeStatic, hub
@@ -17,14 +17,14 @@ ux_dom/
   ui/           Optional copy-in kit
 ```
 
-Public apps compose **Document + DirectoryRoutes + thin adapter**. Product
-scaffold is **uxcompose** ([DX.md](../guides/DX.md)).
+Public leftover apps compose **Document + leftover DirectoryRouter**. Product
+scaffold + DirectoryRoutes is **uxcompose** ([DX.md](../guides/DX.md)).
 
 | Path | Role | Public? |
 |------|------|---------|
 | `ux_dom/__init__.py` | Version + re-exports Document, Component, runtime facades | **Public** |
 | `ux_dom/runtime/` | Stable aliases: `XElement`, `Htmx`, `Csp`, `Channel` | **Public** |
-| `ux_dom/create/` | CreateAsgi (tests) · CreateProject.write() fails closed | Semi |
+| `ux_dom/create/` | CreateAsgi + CreateProject fail closed | Semi |
 | `ux_dom/compat/` | Runtime compat (e.g. valio PEP 649) | Private |
 | `ux_dom/diagnostics.py` | Error message builders for XElement checks | Private |
 | **`ux_dom/dom/`** | Tag constructors, Document HTML helpers, parse | **Public** |
@@ -39,7 +39,7 @@ scaffold is **uxcompose** ([DX.md](../guides/DX.md)).
 | `ux_dom/dom/src/html_string.py` | defHTML parse + sanitize | **Public** via dom |
 | `ux_dom/dom/uniqueid.py` | Unique id generator for trees | Semi |
 | `ux_dom/dom/src/ws_rpc.py` | Optional WS helpers (uses document.ux_domMessageHandler) | Advanced |
-| **`ux_dom/settings/`** | Document, WebAssets, paths, TailwindCommand | **Public** |
+| **`ux_dom/settings/`** | Document (`WebAssets` fail-closed stub) | **Public** |
 | **`ux_dom/plugins/`** | Hub, contributions, host, routing, CSP, control | Semi / **Public** facades |
 | `ux_dom/plugins/runtime.py` | XElementRuntime, UxChannelRuntime — package static | Semi |
 | `ux_dom/plugins/safe_static.py` | Allowlisted file mounts | Semi |

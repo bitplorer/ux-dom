@@ -18,7 +18,7 @@ Version: **0.1.0** (ux-dom production line).
 - [x] `HtmlDocument` placeholders + XTemplate/WC hoist
 - [x] `__render__` / `__async_render__` / `async with` (`__aenter__` / `__aexit__`)
 - [x] `uniqueid`, SVG tags, CSS tags, `defHTML` parse path
-- [x] Top-level `from ux_dom import Component, Fragment, Document, WebAssets`
+- [x] Top-level `from ux_dom import Component, Fragment, Document`
 
 ## Host / routing (HOST)
 
@@ -39,9 +39,8 @@ Version: **0.1.0** (ux-dom production line).
 
 ## Infra
 
-- [x] `WebAssets` / Dir family
-- [x] `TailwindCommand.is_tailwindcss_available` → **bool** (fixed)
-- [x] `async_run` watch mode **non-blocking** (fixed); `async_stop`
+- [x] App folders: `ux_compose.WebAssets` (ux-dom stub fails closed)
+- [x] `TailwindCommand` / `TailwindStyle` fail closed → `uxcompose build`
 - [x] HotReloadWebSocketRoute API preserved
 - [x] `x_element_js` + `x_element.js` (pairs with Python XElement / x-tagname) — see [XELEMENT.md](../guides/XELEMENT.md)
 
@@ -63,8 +62,8 @@ Version: **0.1.0** (ux-dom production line).
 - [x] Walk-stream `__async_render__` (compact open→children→close; pretty uses full engine)
 - [ ] watchfiles backend replace watchgod
 - [ ] `ux_dom[channel]` ControlPlugin package
-- [x] Product CLI moved: `uxcompose create-app | serve | deploy` (not uxdom)
-- [x] Standalone Tailwind CLI resolver (`cli/tailwind.py`)
+- [x] Product CLI moved: `uxcompose create-app | build | serve | deploy` (not uxdom)
+- [x] CSS compiler is `uxcompose build` (`ux_compose.tailwind`); ux-dom does not compile CSS
 - [x] DirectoryRoutes `[id]` → `{id}` + private `_*.py` skip
 - [x] FastAPIHost + DirectoryRouting + control/style/hmr plugins (quarantined, not product)
 

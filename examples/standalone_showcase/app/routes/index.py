@@ -20,7 +20,7 @@ class Index(Component):
             ("HTMX", "Partials and swaps without a JS SPA"),
             ("Streaming", "StreamingResponse for progressive HTML"),
             ("SSE", "Server-sent events for live ticks"),
-            ("Tailwind", "Utility CSS via TailwindStyle plugin"),
+            ("Tailwind", "Utility CSS via className + compiled /css/output.css"),
         ]
         return Shell(
             h1("UxDom Standalone Showcase", className="text-3xl font-bold mb-2"),

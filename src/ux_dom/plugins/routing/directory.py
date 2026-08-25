@@ -5,9 +5,13 @@ from typing import Any, Callable, Optional, Type
 
 
 class DirectoryRouting:
-    """Plugin wrapper around ``DirectoryRouter``.
+    """Leftover plugin wrapper around ``DirectoryRouter``.
 
-    Path law (DirectoryRouter SSoT):
+    Product page routing is ``ux_compose.routing.DirectoryRoutes``.
+    This wrapper stays for leftover standalone FastAPI trees that cannot
+    import compose.
+
+    Path law (DirectoryRouter leftover):
     * URL = filesystem only (folder + file stem). No ClassName segment.
     * Renderable unit always registers GET.
     * ``routes=`` only for extra verbs / subpaths.

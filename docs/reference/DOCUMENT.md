@@ -82,7 +82,7 @@ Document(
 )
 ```
 
-`ctx` keys: `document`, `nonce` (CSP middleware), `webassets`, plus call kwargs.
+`ctx` keys: `document`, `nonce` (CSP middleware), plus call kwargs.
 
 ---
 
@@ -343,7 +343,6 @@ Document(
     head=[...],           # stage A / init common_head seeds
     body=[...],
     ensure_csrf_token=False,
-    webassets=None,
 )
 
 document.use(*runtimes) -> Document     # chainable; validates plugin surface

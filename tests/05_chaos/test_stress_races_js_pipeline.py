@@ -13,6 +13,7 @@ import unittest
 from pathlib import Path
 
 from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom import Component
@@ -23,7 +24,6 @@ from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.reloader._notify import Notify
 from ux_dom.response.starlette import StreamingResponse
@@ -308,19 +308,18 @@ class TestHttpChaos(unittest.TestCase):
             try:
                 api = (
                     App(debug=False)
-                    .use(FastAPIHost(title="t", debug=False))
                     .use(
                         DirectoryRouting(
                             package_dir=pkg, base_directory="app", prefix="/x"
                         )
                     )
                     .use(HtmxControl(middleware=True))
-                    .build()
+                    .build(asgi=FastAPI(title="t", debug=False, default_response_class=HTMLResponse))
                 )
                 client = TestClient(api)
 
                 def hit(_):
-                    p = random.choice(["/x/ctr/Ctr", "/x/ctr/Ctr/add"])
+                    p = random.choice(["/x/ctr"])
                     r = client.get(p)
                     return r.status_code == 200 and "n=" in r.text
 

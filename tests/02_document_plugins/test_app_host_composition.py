@@ -1,4 +1,4 @@
-"""App + FastAPIHost + DirectoryRouting composition (production cut)."""
+"""Leftover App + DirectoryRouting composition (not product host)."""
 from __future__ import annotations
 
 import asyncio
@@ -8,12 +8,13 @@ import textwrap
 import unittest
 from pathlib import Path
 
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom import __version__, Component
 from ux_dom.dom import div, span, button
 from ux_dom.plugins import App
-from ux_dom.plugins.host import FastAPIHost
 from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.plugins.control import HtmxControl, NullControl
 from ux_dom.plugins.style import NullStyle
@@ -88,7 +89,6 @@ class TestAppHostComposition(unittest.TestCase):
             try:
                 api = (
                     App(debug=False)
-                    .use(FastAPIHost(title="CutApp", debug=False))
                     .use(
                         DirectoryRouting(
                             package_dir=pkg,
@@ -98,17 +98,17 @@ class TestAppHostComposition(unittest.TestCase):
                     )
                     .use(HtmxControl(middleware=True))
                     .use(NullStyle())
-                    .build()
+                    .build(asgi=FastAPI(title="CutApp", debug=False, default_response_class=HTMLResponse))
                 )
                 self.assertIsNotNone(api)
                 client = TestClient(api)
                 # HTMX middleware present
-                r = client.get("/api/home/Home")
+                r = client.get("/api/home")
                 self.assertEqual(r.status_code, 200)
                 self.assertIn("home-ok", r.text)
                 # openapi lists path
                 paths = api.openapi()["paths"]
-                self.assertTrue(any("Home" in p for p in paths))
+                self.assertTrue(any("home" in p.lower() for p in paths), paths)
             finally:
                 sys.path.remove(str(root))
 
@@ -131,12 +131,11 @@ class TestPluginSummary(unittest.TestCase):
             App()
             .use(NullStyle())
             .use(NullControl())
-            .use(FastAPIHost(title="x", debug=False))
         )
         summary = app.plugin_summary()
         self.assertIn("style:null", summary)
         self.assertIn("control:null", summary)
-        self.assertIn("host:fastapi", summary)
+        self.assertNotIn("host:fastapi", summary)
 
 
 if __name__ == "__main__":
