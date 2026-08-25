@@ -10,7 +10,7 @@ Version: **0.1.0** (ux-dom production line).
 
 - [x] `with` tree construction + `attr()` / `get_current()`
 - [x] Task/context-local stack (asyncio-safe; no bare thread-only key)
-- [x] Layered `clean_attribute`: L0 `dom_tag` / L1 `Tags` / L2 `StyleTags` (not a bug)
+- [x] Layered `clean_attribute`: L0 `dom_tag` / L1 `Tags` / L2 `StyleTags`
 - [x] Boolean True/False/None + dict JSON attrs + multiline class collapse
 - [x] `Component` transparent `_entry` + hash/eq rules
 - [x] `Fragment` / `MergeClassAttribute` / Alpine `DataSet`
@@ -20,14 +20,10 @@ Version: **0.1.0** (ux-dom production line).
 - [x] `uniqueid`, SVG tags, CSS tags, `defHTML` parse path
 - [x] Top-level `from ux_dom import Component, Fragment, Document`
 
-## Host / routing (HOST)
+## Response
 
-- [x] `StreamingRoute` + `HTMLRoute`
-- [x] **`DirectoryRoutes`** + thin adapters (preferred product bind)
-- [x] **`DirectoryRouter`** convenience batteries (standalone FastAPI only)
-- [x] Component `routes = [...]` convention
-- [x] Plugin wrapper `plugins.routing.DirectoryRouting` (non-product)
-- [x] Static mount pattern preserved in experiment trees (tests)
+- [x] `StreamingRoute` + `HTMLRoute` (response adapters)
+- [x] Component `routes = [...]` convention (when author wires explicitly)
 
 ## Control (CTRL)
 
@@ -37,12 +33,11 @@ Version: **0.1.0** (ux-dom production line).
 - [x] `data-channel-*` attrs for ux-channel peer plane (no core import of channel)
 - [x] `NullControl` for tests
 
-## Infra
+## Infra (render-only)
 
-- [x] App folders: `ux_compose.WebAssets` (ux-dom stub fails closed)
-- [x] `TailwindCommand` / `TailwindStyle` fail closed → `uxcompose build`
-- [x] HotReloadWebSocketRoute API preserved
-- [x] `x_element_js` + `x_element.js` (pairs with Python XElement / x-tagname) — see [XELEMENT.md](../guides/XELEMENT.md)
+- [x] Package static: `/ux-dom/static/x_element.js`
+- [x] `x_element_js` + `x_element.js` — see [XELEMENT.md](../guides/XELEMENT.md)
+- [x] App folders / Tailwind CLI / product HMR → **ux-compose** (fail-closed here)
 
 ## Feature packs (optional import)
 
@@ -53,20 +48,16 @@ Version: **0.1.0** (ux-dom production line).
 
 ## Plugin system
 
-- [x] `PluginHub` + `App.use(...)`
-- [x] Protocols: host, routing, response, assets, style, hmr, control
+- [x] `PluginHub` + Document `.use(...)`
 - [x] Explicit registration only (no silent entry-point autoload by default)
 
-## Known follow-ups (not regressions)
+## Product ownership (moved)
 
-- [x] Walk-stream `__async_render__` (compact open→children→close; pretty uses full engine)
-- [ ] watchfiles backend replace watchgod
-- [ ] `ux_dom[channel]` ControlPlugin package
-- [x] Product CLI moved: `uxcompose create-app | build | serve | deploy` (not uxdom)
-- [x] CSS compiler is `uxcompose build` (`ux_compose.tailwind`); ux-dom does not compile CSS
-- [x] DirectoryRoutes `[id]` → `{id}` + private `_*.py` skip
-- [x] FastAPIHost + DirectoryRouting + control/style/hmr plugins (quarantined, not product)
-
+- [x] Product CLI: `uxcompose create-app | build | serve | deploy`
+- [x] Product page routes: `ux_compose.routing.DirectoryRoutes`
+- [x] CSS compiler: `uxcompose build` (`ux_compose.tailwind`)
+- [x] App asset layout: `ux_compose.WebAssets`
+- [x] Host strategy / HMR / tunnel: `uxcompose serve`
 
 ## Idempotency gates (0.1+)
 
