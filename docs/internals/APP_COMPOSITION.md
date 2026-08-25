@@ -5,68 +5,73 @@
 
 ## Design overview
 
-An ux-dom app is **three explicit pieces** — never a mega-hub that guesses
-where tags go:
+**ux-dom renders.** Product composition (routes, host, assets, serve) is **ux-compose**.
 
 ```text
-Document  →  HTML shell (<head>/<body>), .use(runtimes), .mount(app)
-FastAPI   →  process, routes, lifespan, servers
-Routes    →  leftover DirectoryRouter, or product ux_compose.routing
+Document  →  HTML shell (<head>/<body>), .use(runtimes)
+ux-compose →  DirectoryRoutes, WebAssets, build(), serve, deploy
 ```
 
 | Piece | Owns | Does not own |
 |-------|------|--------------|
-| **Document** | Tag placement, runtime scripts, CSP stamp, static allowlist | ASGI process |
-| **FastAPI** | HTTP/WS lifecycle | Head/body order |
-| **DirectoryRouter** | Leftover file → path (demosite) | Document head |
+| **Document** | Tag placement, runtime scripts, CSP stamp, package static | ASGI process, product routes |
+| **ux-compose** | Page routes, host strategy, Tailwind, HMR, tunnel | DOM serialize |
 
-## Canonical assembly
+## Product assembly (only path)
+
+```bash
+uxcompose create-app myapp && cd myapp
+uxcompose build
+uxcompose serve app:asgi --port 8080
+```
+
+Composition root emitted by create-app:
 
 ```python
-from fastapi import FastAPI
+from pathlib import Path
+from ux_compose.build import build
+from document import document
+
+app, asgi, bundle = build(
+    Path(__file__).parent,
+    host="auto",
+    live="auto",
+    level=1,
+    document=document,
+)
+```
+
+Page routes: `from ux_compose.routing import DirectoryRoutes`.
+App CSS folders: `ux_compose.WebAssets`.
+
+## Document shell (this package)
+
+```python
 from ux_dom import Document
 from ux_dom.runtime import XElement, Htmx, Csp
-from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
-from app import PACKAGE  # package root for file routes
+from ux_dom.dom import div, h1
 
-document = Document(head=[], body=[], ensure_csrf_token=False).use(
+document = Document(head=[], body=[]).use(
     XElement(),
     Htmx(),
     Csp.auto(),
 )
-
-app = FastAPI(title="MyApp")
-document.mount(app)
-app.include_router(
-    DirectoryRouter(
-        base_directory="routes",
-        package_dir=PACKAGE,
-        route_class=StreamingRoute,
-    )
-)
+html = document(div(h1("Hi"))).__render__()
 ```
 
-Greenfield product apps: **`uxcompose create-app`**. Hand-assemble this
-render + host pattern only when extending composition contracts.
+Document.use stamps control, runtime, CSP — **not** HMR, host strategy, or product App.
 
-## Optional surfaces (not the document)
+## Forbidden residuals
 
-| API | Role |
-|-----|------|
-| `CreateAsgi` | One-liner sugar around FastAPI + document |
-| `ux_dom.plugins.App` / PluginHub | Optional hub registration; **tests / advanced only** |
-| `document(*page)` | Per-request two-stage head/body (see [DOCUMENT_TWO_STAGE.md](../reference/DOCUMENT_TWO_STAGE.md)) |
+| Concern | Home |
+|---------|------|
+| Product DirectoryRoutes | `ux_compose.routing` |
+| create-app / build / serve / deploy | `uxcompose` |
+| WebAssets / Tailwind CLI | `ux-compose` |
+| Host / HMR / tunnel | `uxcompose serve` |
 
-Product create-app is **uxcompose**; it does **not** use `App.web` as the document.
+Historical FastAPI batteries and host plugins on this package are fail-closed
+or non-product. Do not cite them in new apps.
 
-## Implementation map
-
-| Concern | Module |
-|---------|--------|
-| Document factory + `.use` / `.mount` | `ux_dom/settings/document.py` |
-| Runtime facades | `ux_dom/runtime/` |
-| DirectoryRoutes + adapters | `ux_dom/routing/core.py`, `routing/adapters/` |
-| Pure-dom add generators | `ux_dom/cli/adders.py` |
-
-**Further reading:** [DOCUMENT.md](../reference/DOCUMENT.md) · [ARCHITECTURE.md](ARCHITECTURE.md) ·
-[DOCUMENT_AND_APP.md](DOCUMENT_AND_APP.md) · [START_HERE.md](../START_HERE.md).
+**Further reading:** [DOCUMENT.md](../reference/DOCUMENT.md) · [SYSTEM.md](SYSTEM.md) ·
+ux-compose `docs/FLOW.md` · [START_HERE.md](../START_HERE.md).

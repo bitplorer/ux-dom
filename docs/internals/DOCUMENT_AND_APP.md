@@ -5,16 +5,16 @@
 
 ## Design overview
 
-**Document is the HTML SSoT.** “App” in everyday speech means the FastAPI
-process plus your routes — not a second document factory.
+**Document is the HTML SSoT.** Product “app” means the composition root on
+**ux-compose** (`build()`, DirectoryRoutes, serve) — not a second document factory.
 
 ```text
                     ┌──────────────┐
-  request ─────────►│   FastAPI    │── routes / middleware / lifespan
+  request ─────────►│  ux-compose  │── DirectoryRoutes / host / serve
                     └──────┬───────┘
-                           │ document.mount(app)
+                           │ document= from create-app
                     ┌──────▼───────┐
-                    │  Document    │── head/body · runtimes · static
+                    │  Document    │── head/body · runtimes · package static
                     └──────┬───────┘
                            │ document(*page)
                     ┌──────▼───────┐
@@ -25,24 +25,35 @@ process plus your routes — not a second document factory.
 
 ## Preferred pattern
 
+```bash
+uxcompose create-app myapp && cd myapp
+uxcompose build
+uxcompose serve app:asgi --port 8080
+```
+
 ```python
-document = Document(...).use(XElement(), Htmx(), Csp.auto())
-app = FastAPI(...)
-document.mount(app)
-# then DirectoryRoutes + adapter, or explicit routes
+from pathlib import Path
+from ux_compose.build import build
+from document import document
+
+app, asgi, bundle = build(
+    Path(__file__).parent,
+    host="auto",
+    live="auto",
+    level=1,
+    document=document,
+)
 ```
 
 ## What `App` means in code
 
 | Name | Meaning |
 |------|---------|
-| Everyday “app” | FastAPI instance + routes + Document |
-| `ux_dom.plugins.App` | Optional plugin hub registry (tests / advanced) — **not** the HTML shell |
-| `CreateAsgi` | Optional sugar; tests / pure-dom scripts only |
+| Everyday “app” | Product composition root on ux-compose |
+| `ux_compose.App` / `build()` | Product path |
+| `ux_dom.plugins.App` | Optional plugin hub (tests / advanced) — **not** the HTML shell |
 
 ## Automation
-
-Scaffold and keep composition via:
 
 ```bash
 uxcompose create-app myapp
@@ -50,7 +61,7 @@ uxcompose doctor .
 uxdom doctor          # pure Document health
 ```
 
-Do not hand-reintroduce a parallel “App owns head/body” path.
+Do not hand-reintroduce a parallel “App owns head/body” path on ux-dom.
 
 **Canonical deep dives:** [DOCUMENT.md](../reference/DOCUMENT.md) · [APP_COMPOSITION.md](APP_COMPOSITION.md) ·
-[ARCHITECTURE.md](ARCHITECTURE.md).
+[SYSTEM.md](SYSTEM.md) · ux-compose `docs/FLOW.md`.

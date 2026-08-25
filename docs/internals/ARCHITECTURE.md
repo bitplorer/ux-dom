@@ -7,62 +7,56 @@ guesswork and the ASGI host stays debuggable:
 
 ```text
 ┌─────────────────────────────────────────────────────────┐
-│  Your app                                                │
-│    routes/*.py   document.py   main.py                   │
-│    (prefer: uxcompose create-app for product files)      │
+│  Product app (ux-compose)                                │
+│    routes/*.py   document.py   app.py                    │
+│    uxcompose create-app | build | serve | deploy         │
 ├─────────────────────────────────────────────────────────┤
-│  Document (SSoT for HTML)                                │
-│    head/body · .use(runtimes) · .mount(app) · page()     │
+│  Document (SSoT for HTML) — ux-dom                       │
+│    head/body · .use(runtimes) · page()                   │
 ├─────────────────────────────────────────────────────────┤
 │  Runtimes                                                │
-│    XElement  Htmx  Csp  Channel.optional()               │
+│    XElement  Htmx  Csp                                   │
 ├─────────────────────────────────────────────────────────┤
 │  Core DOM                                                │
 │    Component · tags · render · with / async with         │
-├─────────────────────────────────────────────────────────┤
-│  FastAPI (process)                                       │
-│    routes · middleware · static · lifespan               │
 └─────────────────────────────────────────────────────────┘
 ```
 
 | Piece | Responsibility |
 |-------|----------------|
-| **`Document`** | Where tags go; runtime attach; `mount` static/middleware |
-| **`FastAPI`** | HTTP/WS process |
-| **`DirectoryRouter`** | Leftover FastAPI file router (demosite / examples) |
-| **`CreateProject` / CLI** | `write()` fails closed — product scaffold is uxcompose |
-| **`CreateAsgi`** | Fail-closed teaching stub |
-| **`App` / `PluginHub`** | Optional registry; leftover batteries — not product |
+| **`Document`** | Where tags go; runtime attach; CSP stamp |
+| **`ux-compose`** | Page routes (`DirectoryRoutes`), WebAssets, Tailwind, host, HMR, serve |
+| **Pure-dom CLI** | `uxdom doctor | lint | profile | add` |
 
-## Canonical assembly
+## Product assembly (only path)
+
+```bash
+uxcompose create-app myapp && cd myapp
+uxcompose build
+uxcompose serve app:asgi --port 8080
+```
 
 ```python
-from fastapi import FastAPI
-from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
-from app.document import document
+from pathlib import Path
+from ux_compose.build import build
+from document import document
 
-app = FastAPI(title="MyApp", debug=True)
-document.mount(app)
-app.include_router(
-    DirectoryRouter(
-        base_directory="routes",
-        package_dir=PACKAGE,
-        route_class=StreamingRoute,
-    )
+app, asgi, bundle = build(
+    Path(__file__).parent,
+    host="auto",
+    live="auto",
+    level=1,
+    document=document,
 )
 ```
 
-Greenfield: **`uxcompose create-app`**. Hand-roll this render bind only when
-extending composition itself ([DX.md](../guides/DX.md)).
-
 ## Runtime placement defaults
 
-| Runtime | Head | Body | On `mount` |
-|---------|------|------|------------|
+| Runtime | Head | Body | On product serve |
+|---------|------|------|------------------|
 | **XElement** | `x_element.js` script | — | `/ux-dom/static/…` |
-| **Htmx** | — | CDN/local scripts | HTMX middleware (optional) |
+| **Htmx** | — | CDN/local scripts | optional middleware |
 | **Csp** | — | — | CSP middleware + nonce |
-| **Channel** | boot scripts | — | (channel package attach) |
 
 ## Two-stage Document
 
@@ -77,15 +71,15 @@ See [DOCUMENT.md](../guides/DOCUMENT.md) and [DOCUMENT_TWO_STAGE.md](../guides/D
 
 | Concern | Module |
 |---------|--------|
-| Document `.use` / `.mount` / stages | `ux_dom/settings/document.py` |
+| Document `.use` / stages | `ux_dom/settings/document.py` |
 | HtmlDocument pre-render | `ux_dom/dom/htmldocument.py` |
 | Component / Reactive | `ux_dom/dom/src/component.py` |
 | Serialize / attr dialects | `ux_dom/dom/src/ext.py` |
 | XElement host/definition | `ux_dom/dom/htmlelement.py` |
-| DirectoryRoutes + adapters | `ux_dom/routing/core.py`, `routing/adapters/` |
-| DirectoryRouter (batteries) | `ux_dom/routing/fastapi.py` |
 | Package static | `ux_dom/plugins/safe_static.py`, `plugins/runtime.py` |
-| Pure-dom generators | `ux_dom/cli/adders.py` (scaffold teaches uxcompose) |
+| Pure-dom generators | `ux_dom/cli/adders.py` |
+| Product DirectoryRoutes | **ux-compose** `ux_compose.routing` |
+| Product WebAssets / Tailwind | **ux-compose** |
 
 Full path table: [MODULE_MAP.md](MODULE_MAP.md). Design intent: [DESIGN_CANON.md](DESIGN_CANON.md).
 

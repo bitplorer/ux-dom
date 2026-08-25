@@ -6,7 +6,7 @@
 
 Longer mental model: [docs/START_HERE.md](docs/START_HERE.md).
 **Map:** [docs/INDEX.md](docs/INDEX.md).
-**Cookbook:** [docs/guides/SNIPPETS.md](docs/guides/SNIPPETS.md) — Document, Component, Fragment, UI kit, DirectoryRoutes, CSP, CLI.
+**Cookbook:** [docs/guides/SNIPPETS.md](docs/guides/SNIPPETS.md).
 
 Python **3.14** required (`pyproject.toml`).
 
@@ -20,9 +20,10 @@ Python **3.14** required (`pyproject.toml`).
 | Owns | Does **not** own |
 |------|------------------|
 | Tag trees, Document, CSP stamp, package static | Intent / Cap / Result (`ux-channel`) |
-| Pure directory discovery | Product actions / MorphState (`ux-behavior`) |
-| Pure-dom CLI (`uxdom`) | Motion plans (`ux-motion`) |
+| Pure-dom CLI (`uxdom`) | Product actions / MorphState (`ux-behavior`) |
+| | Motion plans (`ux-motion`) |
 | | Product create-app / build / serve / deploy (`ux-compose`) |
+| | Product DirectoryRoutes / WebAssets / Tailwind / HMR |
 
 Product apps: **[ux-compose](https://github.com/bitplorer/ux-compose)** —
 `uxcompose create-app | build | serve | deploy`.
@@ -80,7 +81,7 @@ Product CSS is `uxcompose build`, not `uxdom build`.
 | Install variants (Poetry / extras) | [INSTALL.md](INSTALL.md) · [docs/INSTALL.md](docs/INSTALL.md) |
 | Document SSoT | [docs/guides/DOCUMENT.md](docs/guides/DOCUMENT.md) |
 | Component / Fragment | [docs/guides/COMPONENTS.md](docs/guides/COMPONENTS.md) |
-| Routing as pages | [docs/guides/ROUTING.md](docs/guides/ROUTING.md) |
+| Routing as pages | [docs/reference/ROUTING.md](docs/reference/ROUTING.md) |
 | XElement | [docs/guides/XELEMENT.md](docs/guides/XELEMENT.md) |
 | Ownership law | [docs/internals/SYSTEM.md](docs/internals/SYSTEM.md) |
 | Product lifecycle | ux-compose `docs/FLOW.md` |
