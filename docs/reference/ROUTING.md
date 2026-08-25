@@ -3,53 +3,34 @@
 > **Diátaxis:** reference · **Canonical:** `docs/reference/ROUTING.md` · **Layer:** ux-dom  
 > Map: [INDEX.md](../INDEX.md).
 
-**Product page routing is `ux_compose.routing.DirectoryRoutes`.** This page
-documents leftover `DirectoryRouter` batteries for standalone FastAPI trees
-that cannot import compose (demosite / leftover examples).
+**Product page routing lives on ux-compose:**
+`from ux_compose.routing import DirectoryRoutes`.
 
-## Design overview
+This package owns **render**. Page-unit discovery for product apps is not
+taught here as a primary path. Use compose.
 
-File-based routing maps a **directory tree of Python modules** onto URL
-paths — Python-native, filesystem-first.
-
-**Product bind:** `from ux_compose.routing import DirectoryRoutes` + thin adapter.
-**Leftover bind:** `DirectoryRouter` (this package).
-
+## Product path (only)
 
 ```text
-app/routes/
+routes/
   hello.py                 →  GET /hello     (page unit: class Hello)
   shop/cart.py             →  GET /shop/cart (page unit: class Cart)
   users/[id]/profile.py   →  GET /users/{id}/profile
-  index.py                 →  GET /          (folder prefix)
+  index.py                 →  GET /
 ```
 
-| Layer | Role |
-|-------|------|
-| **On disk** | Package layout under `base_directory` (default `routes`) |
-| **Discovery** | `DirectoryRoutes` / `DirectoryRouter` walks modules; prefers `__all__` |
-| **Page unit** | Renderable class whose **name matches the module stem** (`cart.py` → `Cart`) |
-| **HTTP** | Synthetic page GET via `resolve_unit` / `cls()`, or explicit `get`/`post`/… on the class |
-| **URL cleaning** | Strip package root; map `[id]` → `{id}`; drop private `_` segments |
+| Rule | Detail |
+|------|--------|
+| **URL** | Filesystem only (folder + file stem). Class name never in the path. |
+| **Page unit** | Renderable class whose name matches the module stem (`cart.py` → `Cart`) |
+| **Params** | `[id]` → `{id}` |
+| **Private** | `_*.py` and `_` path segments skipped |
+| **Ambiguity** | Fail closed |
 
-### Path law (fixed)
-
-* URL = **filesystem only** (folder + file stem). **Class name never appears in the path.**
-* `route.py` / `index.py` → folder prefix (or `/`).
-
-### Page unit (default product path)
-
-* Exports from `__all__` when present (Python-native allow-list).
-* Page type = class whose name matches the module stem.
-* Ambiguous page picks **fail closed** (`DirectoryRouterError`).
-* GET: explicit `get` on the class if present, else synthetic page GET.
-* Other HTTP verbs only when explicit methods exist (advanced opt-in).
-
-### Generic hooks (host-agnostic)
-
-Preferred (product — ux-compose):
+### Mount (ux-compose)
 
 ```python
+from pathlib import Path
 from ux_compose.routing import DirectoryRoutes, RouterHooks
 from ux_compose.routing.adapters.fastapi import mount
 
@@ -59,7 +40,7 @@ hooks = RouterHooks(
     ),
 )
 core = DirectoryRoutes(
-    PACKAGE,
+    Path(__file__).resolve().parent,
     base_directory="routes",
     hooks=hooks,
     fail_closed=True,
@@ -68,70 +49,37 @@ core.discover()
 mount(core, app)
 ```
 
-Batteries (standalone FastAPI users of ux-dom only):
+Or the product composition root:
 
 ```python
-from ux_dom.routing.fastapi import DirectoryRouter, RouterHooks, StreamingRoute
+from pathlib import Path
+from ux_compose.build import build
+from document import document
 
-hooks = RouterHooks(
-    resolve_unit=lambda cls, path, name: registry.get(
-        str(getattr(cls, "id", None) or cls.__name__.lower())
-    ),
+app, asgi, bundle = build(
+    Path(__file__).parent,
+    host="auto",
+    live="auto",
+    level=1,
+    document=document,
 )
-router = DirectoryRouter(
-    base_directory="routes",
-    package_dir=PACKAGE,
-    route_class=StreamingRoute,
-    hooks=hooks,
-    fail_closed=True,
-)
-app.include_router(router)
 ```
 
-## Leftover core + adapter (fail-closed on ux-dom)
+Scaffold: `uxcompose create-app`.
 
-| Module | Role |
-|--------|------|
-| `ux_compose.routing.core` | **Product** path law, page unit, `DirectoryRoutes.discover()` |
-| `ux_compose.routing.adapters.fastapi` | **Product** materialize/mount |
-| `ux_dom.routing.fastapi.DirectoryRouter` | Leftover FastAPI batteries (demosite / examples) |
-| `ux_dom.routing.core` / `adapters` | Fail-closed teaching stubs |
+## What ux-dom does **not** own
 
-```python
-from ux_compose.routing import DirectoryRoutes, RouterHooks
-from ux_compose.routing.adapters.fastapi import mount
+| Concern | Use |
+|---------|-----|
+| Product DirectoryRoutes | `ux_compose.routing` |
+| create-app / build / serve | `uxcompose` |
+| Host strategy / HMR | `uxcompose serve` |
+| App CSS folders | `ux_compose.WebAssets` |
 
-core = DirectoryRoutes(PACKAGE, hooks=hooks, fail_closed=True)
-mount(core, api)
-```
-
-`DirectoryRouter` remains leftover FastAPI batteries for trees that cannot
-import compose. Product composition roots **must** use `ux_compose.routing`.
+Historical FastAPI batteries and host plugins on this package are fail-closed
+or non-product. Do not cite them in new apps.
 
 See ux-compose `docs/FLOW.md` for the ownership map.
-
-## Control plane (related)
-
-| Plugin | Role |
-|--------|------|
-| `ChannelControl` | Day-1 default — semantic `data-ux-*` attrs |
-| `HtmxControl` | **Opt-in** HTMX |
-| `NullControl` | Tests / static |
-
-```python
-from ux_dom.plugins.control import ChannelControl, HtmxControl
-document.use(ChannelControl())   # preferred
-# document.use(HtmxControl())    # opt-in only
-```
-
-See [ARCHITECTURE.md](../internals/ARCHITECTURE.md) · [CLI.md](../guides/CLI.md).
-
-## `[id]` path segments
-
-| On disk | FastAPI path |
-|---------|--------------|
-| `routes/users/[id]/` | `/users/{id}/…` |
-| `routes/users/[id]/profile.py` | `/users/{id}/profile` |
 
 ## Page unit example
 
@@ -150,21 +98,14 @@ class Hello(Component):
             className="flex items-center gap-3",
         )
 
+    @classmethod
+    def get(cls):
+        from document import page
+        return page(cls().render())
+
     @action(caps=())
     def inc(self):
         self.n = int(self.n) + 1
 ```
 
-## Compose product path
-
-```python
-from pathlib import Path
-from fastapi import FastAPI
-from ux_compose import App
-
-api = FastAPI()
-app = App.boot("Shop", level="auto")
-bundle = app.mount(Path(__file__).parent, asgi_app=api, base="routes")
-```
-
-Scaffold (`uxcompose create-app`) emits this layout. HTMX is **opt-in**, not a hard dependency.
+HTMX is **opt-in** at the Document layer, not a hard dependency.
