@@ -97,7 +97,6 @@ exclude = [
   "ux_dom/dom/ui.py",
   "ux_dom/elements/",
   "ux_dom/examples/",
-  "demosite/",
 ]
 
 [tool.ruff]
@@ -115,7 +114,6 @@ omit = [
   "ux_dom/dom/ui.py",
   "ux_dom/elements/*",
   "ux_dom/examples/*",
-  "ux_dom/demosite/*",
   "ux_dom/alpinejs/*",
   "*/__main__.py",
 ]

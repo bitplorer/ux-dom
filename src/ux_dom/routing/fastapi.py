@@ -6,10 +6,11 @@
 """Leftover FastAPI DirectoryRouter batteries.
 
 Product page routing is ``ux_compose.routing.DirectoryRoutes``.
-This module stays so leftover demosite / examples that cannot import
-compose keep a working FastAPI file router.
+This module stays so leftover examples that cannot import compose keep a
+working FastAPI file router.
 
 Do not use this from product ``app.py`` trees.
+The in-tree ``demosite/`` teaching app is retired.
 """
 from __future__ import annotations
 

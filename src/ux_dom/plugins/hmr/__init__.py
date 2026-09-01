@@ -5,8 +5,9 @@
 """Removed from the product path.
 
 Dev HMR is ``uxcompose serve --hmr`` (``ux_compose.hmr``).
-Leftover demosite that cannot import compose still uses
+Leftover examples that cannot import compose still use
 ``ux_dom.reloader.HotReloadWebSocketRoute`` directly.
+The in-tree ``demosite/`` teaching app is retired.
 """
 from __future__ import annotations
 
@@ -16,7 +17,7 @@ from typing import Any, Optional, Sequence
 _TEACH = (
     "HotReload is not a Document.use / ux-dom product API. "
     "Dev HMR is uxcompose serve --hmr (ux_compose.hmr). "
-    "Leftover demosite: ux_dom.reloader.HotReloadWebSocketRoute."
+    "Leftover examples: ux_dom.reloader.HotReloadWebSocketRoute."
 )
 
 
