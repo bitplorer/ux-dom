@@ -21,6 +21,7 @@ See ``docs/internals/SYSTEM.md``.
 """
 
 from ux_dom.response.serialize import (
+    extract_by_id,
     is_html_renderable,
     is_stream_renderable,
     prepare_html_body,
@@ -44,6 +45,7 @@ __all__ = [
     "prepare_html_stream",
     "is_html_renderable",
     "is_stream_renderable",
+    "extract_by_id",
     "HTMLResponse",
     "html_response",
     "StreamingResponse",

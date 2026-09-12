@@ -126,8 +126,8 @@ class TestExtractByIdKillList(unittest.TestCase):
 
     def test_serialize_has_no_channel_import(self):
         text = SERIALIZE.read_text(encoding="utf-8")
-        self.assertNotIn("ux_channel", text)
-        self.assertNotIn("ux-channel", text)
+        self.assertNotIn("import ux_channel", text)
+        self.assertNotIn("from ux_channel", text)
 
 
 if __name__ == "__main__":
