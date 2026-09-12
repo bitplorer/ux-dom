@@ -32,6 +32,15 @@ Product lifecycle CLI: **`uxcompose`** (`create-app` · `build` · `serve` · `d
 
 HTML tags, parse helpers, serialize via `node.__render__` / `__async_render__`.
 
+## Serialize (`from ux_dom.response.serialize import …`)
+
+| Symbol | Kind | Notes |
+|--------|------|--------|
+| `to_html_bytes` | fn | Tree / Component / str → UTF-8 HTML bytes |
+| `extract_by_id` | fn | Outer-HTML slice for `#id` (C2). `Fragment` builds trees; this extracts. Compose `_fragment_for_target` KEEP until callers USE this. Channel `_guess_target_from_html` is selector leftover — not extract. Not on root `__all__`. |
+
+HTTP adapters (`HTMLResponse`, …) stay optional. Product delivery is ux-compose.
+
 ---
 
 ## Document shell

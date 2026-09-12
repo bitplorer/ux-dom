@@ -31,5 +31,6 @@ Product CSS: `uxcompose build`.
 
 - `Document.use(...)` — shell contributions (control, runtime, CSP, style)
 - `Component` / tags / `__render__` / `__async_render__`
+- `extract_by_id` — owned `#id` slice of serialized HTML (`serialize.__all__`; not `Fragment`)
 
 Product page routes, HTTP host, and HMR: **ux-compose**, not Document.use.

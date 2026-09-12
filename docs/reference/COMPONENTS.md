@@ -92,7 +92,9 @@ See [REACTIVE.md](REACTIVE.md) for stateful re-render components.
 
 ## Fragment
 
-`Fragment` merges children without an extra wrapper element.
+`Fragment` merges children without an extra wrapper element. It is a
+**tree builder**, not extract. Post-serialize `#id` strip is
+`extract_by_id` on `ux_dom.response.serialize`.
 
 ## Render phases
 
