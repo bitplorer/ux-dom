@@ -15,7 +15,8 @@ This file is the map. It does not replace the guides.
 | `docs/examples/` | examples | Worked recipes / pointers | Law |
 | `docs/adr/` | ADR | Decisions (or an index of them) | Mixed how-to |
 
-Specialized folders (`security/`, `ship/`, `design/`, `tutorial/`, `patterns/`, `archive/`) stay.
+Specialized folders (`security/`, `ship/`, `design/`, `tutorial/`, `patterns/`, `archive/`, `plans/`) stay.
+`plans/` is projection, not law.
 `docs/INDEX.md` is the map. Do not add a second competing map.
 
 Old paths keep a 5-line stub. Do not cite stubs as canonical.
@@ -126,6 +127,7 @@ behavior, motion IR, or product lifecycle.
 | [adr/README.md](adr/README.md) | ADR index |
 | [adr/DESIGN_DECISIONS.md](adr/DESIGN_DECISIONS.md) | Design decisions |
 | [adr/OWNERSHIP_COUNCIL.md](adr/OWNERSHIP_COUNCIL.md) | Ownership council |
+| [plans/2026-09-12-extract-by-id.md](plans/2026-09-12-extract-by-id.md) | PLAN-ONLY extract-by-id (C2; projection) |
 
 ---
 
