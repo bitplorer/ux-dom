@@ -36,6 +36,8 @@ class TestProductCliAbsent(unittest.TestCase):
             "ux_dom.cli.serve",
             "ux_dom.cli.tunnel",
             "ux_dom.cli.deploy",
+            "ux_dom.cli.scaffold",
+            "ux_dom.cli.tailwind",
         ):
             with self.assertRaises(ImportError):
                 importlib.import_module(mod)
@@ -63,42 +65,31 @@ class TestProductBuildRedirect(unittest.TestCase):
 
 
 class TestScaffoldFailClosed(unittest.TestCase):
-    def test_cli_scaffold_teaches_uxcompose(self):
-        import ux_dom.cli.scaffold as sc
+    def test_cli_scaffold_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.cli.scaffold  # noqa: F401
 
-        with self.assertRaises(ImportError) as ctx:
-            sc.available_templates()
-        self.assertIn("uxcompose", str(ctx.exception).lower())
-
-    def test_create_project_write_fail_closed(self):
-        from ux_dom.create.project import CreateProject, ProductScaffoldMoved
-
-        with self.assertRaises(ProductScaffoldMoved) as ctx:
-            CreateProject("x").write("/tmp/should-not-exist-uxdom-scaffold")
-        self.assertIn("uxcompose", str(ctx.exception).lower())
+    def test_create_project_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.create  # noqa: F401
+        with self.assertRaises(ImportError):
+            import ux_dom.create.project  # noqa: F401
 
 
 class TestDirectoryRoutesTeaching(unittest.TestCase):
-    def test_package_doc_teaches_compose_routing(self):
-        from ux_dom.routing.core import DirectoryRoutes, ProductRoutingMoved
+    def test_routing_core_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.routing.core  # noqa: F401
+        with self.assertRaises(ImportError):
+            import ux_dom.routing.facade  # noqa: F401
 
-        with self.assertRaises(ProductRoutingMoved) as ctx:
-            DirectoryRoutes(".")
-        self.assertIn("ux_compose.routing", str(ctx.exception))
+    def test_fastapi_host_module_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.plugins.host  # noqa: F401
 
-    def test_fastapi_host_teaches_compose(self):
-        from ux_dom.plugins.host import FastAPIHost, ProductHostMoved
-
-        with self.assertRaises(ProductHostMoved) as ctx:
-            FastAPIHost(title="x")
-        self.assertIn("ux_compose.build", str(ctx.exception))
-
-    def test_hotreload_plugin_teaches_compose(self):
-        from ux_dom.plugins.hmr import HotReload, ProductHmrMoved
-
-        with self.assertRaises(ProductHmrMoved) as ctx:
-            HotReload()
-        self.assertIn("uxcompose serve --hmr", str(ctx.exception))
+    def test_hotreload_plugin_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.plugins.hmr  # noqa: F401
 
     def test_leftover_directory_router_still_importable(self):
         from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
@@ -106,33 +97,36 @@ class TestDirectoryRoutesTeaching(unittest.TestCase):
         self.assertTrue(callable(DirectoryRouter))
         self.assertTrue(callable(StreamingRoute))
 
+    def test_app_fastapi_still_refuses(self):
+        from ux_dom.plugins.hub import App, ProductHostMoved
+
+        with self.assertRaises(ProductHostMoved) as ctx:
+            App().fastapi()
+        self.assertIn("ux_compose.build", str(ctx.exception))
+
 
 class TestProductCssFailClosed(unittest.TestCase):
-    def test_tailwind_command_teaches_uxcompose_build(self):
-        from ux_dom import TailwindCommand
-        from ux_dom.settings.commands import ProductCssMoved
+    def test_tailwind_command_is_not_public(self):
+        import ux_dom
 
-        with self.assertRaises(ProductCssMoved) as ctx:
-            TailwindCommand(file_path="x", webassets=None)
-        self.assertIn("uxcompose build", str(ctx.exception))
+        self.assertFalse(hasattr(ux_dom, "TailwindCommand"))
+        with self.assertRaises(ImportError):
+            import ux_dom.settings.commands  # noqa: F401
 
-    def test_cli_tailwind_module_does_not_compile(self):
-        from ux_dom.cli.tailwind import discover_css_io
+    def test_cli_tailwind_module_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.cli.tailwind  # noqa: F401
 
-        with self.assertRaises(ImportError) as ctx:
-            discover_css_io(".")
-        self.assertIn("ux_compose.tailwind", str(ctx.exception))
+    def test_webassets_is_not_public(self):
+        import ux_dom
 
-    def test_webassets_teaches_compose(self):
-        from ux_dom import WebAssets
-        from ux_dom.settings.document import ProductAssetsMoved
+        self.assertFalse(hasattr(ux_dom, "WebAssets"))
 
-        with self.assertRaises(ProductAssetsMoved) as ctx:
-            WebAssets(base_dir=".")
-        msg = str(ctx.exception)
-        self.assertIn("ux_compose", msg)
-        self.assertIn("WebAssets", msg)
-        self.assertIn("x_element.js", msg)
+    def test_tailwind_style_is_absent(self):
+        from ux_dom.plugins import style
+
+        self.assertFalse(hasattr(style, "TailwindStyle"))
+        self.assertEqual(style.__all__, ["NullStyle"])
 
     def test_document_has_no_webassets_field(self):
         from dataclasses import fields

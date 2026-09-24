@@ -243,6 +243,19 @@ def _mount_package_static(app: Any, hub: PluginHub) -> None:
     install_safe_static(app, files)
 
 
+class ProductHostMoved(RuntimeError):
+    """App.web and App.fastapi are not a host. Product host is ux-compose."""
+
+    def __init__(self, message: str | None = None):
+        super().__init__(
+            message
+            or (
+                "App.web() / App.fastapi() is not the product path. "
+                "Use: uxcompose create-app / ux_compose.build(host=)."
+            )
+        )
+
+
 @dataclass
 class App:
     """Feature registry + ASGI wiring — **not** the HTML shell.
@@ -366,8 +379,6 @@ class App:
         return self.use(Csp(**kwargs))
 
     def fastapi(self, **kwargs: Any) -> "App":
-        from ux_dom.plugins.host import ProductHostMoved
-
         raise ProductHostMoved()
 
     def routes(
@@ -414,8 +425,6 @@ class App:
         htmx_version: str = "2.0.4",
         **host_kwargs: Any,
     ) -> "App":
-        from ux_dom.plugins.host import ProductHostMoved
-
         raise ProductHostMoved(
             "App.web() is not the product path. "
             "Use: uxcompose create-app / ux_compose.build(host=)."
@@ -458,8 +467,6 @@ class App:
         Leftover App does **not** invent FastAPI. Pass ``asgi=FastAPI()``.
         Product apps: ``ux_compose.build(host=)``.
         """
-        from ux_dom.plugins.host import ProductHostMoved
-
         set_hub(self.hub)
         app = asgi if asgi is not None else self._built
         for name, host in self.hub.hosts.items():
@@ -474,8 +481,7 @@ class App:
         if app is None:
             raise ProductHostMoved(
                 "leftover plugins.App.build() does not create a host. "
-                "Pass asgi=FastAPI() or use ux_compose.build(host=). "
-                "FastAPIHost is fail-closed."
+                "Pass asgi=FastAPI() or use ux_compose.build(host=)."
             )
         # Document is SSoT: it mounts its own runtimes/static/middleware
         doc = self.document

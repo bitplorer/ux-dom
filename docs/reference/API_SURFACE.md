@@ -23,8 +23,8 @@ Product lifecycle CLI: **`uxcompose`** (`create-app` · `build` · `serve` · `d
 | `Document` | class | HTML shell SSoT |
 | `Component` / `Fragment` / `ReactiveComponent` | class | Trees |
 | `XElement` / `Htmx` / `Csp` / `Channel` | facades | `ux_dom.runtime` |
-| `WebAssets` | stub | Fail-closed — `from ux_compose import WebAssets` |
-| `TailwindCommand` | stub | Fail-closed — use `uxcompose build` |
+
+`WebAssets` and `TailwindCommand` are not on this package. App folders are `from ux_compose import WebAssets`. CSS minify is `uxcompose build`.
 
 ---
 
@@ -57,7 +57,8 @@ Product HTTP delivery / host strategy: **ux-compose**, not Document.use.
 ## Discovery
 
 Product page routing is **ux-compose** (`ux_compose.routing.DirectoryRoutes`).
-Constructing `DirectoryRoutes` from this package fails closed.
+This package does not export `DirectoryRoutes`. The leftover that still
+runs is `ux_dom.routing.fastapi.DirectoryRouter`.
 
 ---
 
@@ -79,4 +80,5 @@ Constructing `DirectoryRoutes` from this package fails closed.
 
 * Underscored render internals
 * `docs/archive/*`
-* Historical host / routing leftovers on this package (fail-closed; use ux-compose)
+* Deleted product shells (`WebAssets`, `TailwindCommand`, `CreateProject`, host / HMR plugins) are absent — not fail-closed classes
+* Leftover that still runs: `ux_dom.routing.fastapi.DirectoryRouter`

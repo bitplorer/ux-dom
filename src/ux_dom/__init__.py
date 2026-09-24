@@ -52,7 +52,7 @@ from .compat.valio_pep649 import ensure_valio_pep649_compat
 
 ensure_valio_pep649_compat()
 
-from .settings import *  # Document; WebAssets/TailwindCommand are fail-closed  # isort: skip
+from .settings import *  # Document  # isort: skip
 from .slots import *  #Slots, WebComponentSlot, …  # isort: skip
 
 from ux_dom.dom.src.component import (  # noqa: E402
@@ -61,7 +61,6 @@ from ux_dom.dom.src.component import (  # noqa: E402
     MergeClassAttribute as MergeClassAttribute,
     ReactiveComponent as ReactiveComponent,
 )
-from ux_dom.create import CreateProject as CreateProject  # noqa: E402
 from ux_dom.runtime import (  # noqa: E402
     Channel as Channel,
     Csp as Csp,

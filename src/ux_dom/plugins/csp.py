@@ -308,8 +308,13 @@ def build_csp_header(
 
     style_parts = [f"'nonce-{nonce}'", "'self'", *style_hosts]
     if style_unsafe_inline:
-        # Needed for element style="..." / many Tailwind+Alpine patterns.
+        # Element style="" is style-src-attr, not style-src. A nonce in
+        # style-src makes browsers ignore 'unsafe-inline' there (CSP3),
+        # which blocks Channel toasts and Alpine style attributes.
         style_parts.append("'unsafe-inline'")
+        directives_style_attr = "'unsafe-inline'"
+    else:
+        directives_style_attr = None
 
     directives: dict[str, str] = {
         "default-src": "'self'",
@@ -323,6 +328,8 @@ def build_csp_header(
         "frame-ancestors": frame_ancestors,
         "form-action": form_action,
     }
+    if directives_style_attr:
+        directives["style-src-attr"] = directives_style_attr
     if upgrade_insecure:
         directives["upgrade-insecure-requests"] = ""
     if report_uri:
@@ -403,7 +410,7 @@ def policy_dev(**overrides: Any) -> CspPolicy:
     base = CspPolicy(
         strict_dynamic=True,
         script_hosts=_DEFAULT_SCRIPT_HOSTS,
-        style_unsafe_inline=True,  # style="..." + Tailwind CDN patterns
+        style_unsafe_inline=True,  # style-src-attr for style="" ; style-src token is legacy-only
         connect_src=("'self'", "ws:", "wss:"),
         debug_header=False,
     )

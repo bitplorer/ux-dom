@@ -69,7 +69,7 @@ Do not analogize this layer to React / Next / htmx as its identity.
 
 **Product:** `uxcompose create-app → build → serve → deploy`
 **Pure-dom:** `uxdom doctor | lint | profile | add`
-**CSS compiler:** `ux_compose.tailwind` / `uxcompose build`. **App folders:** `ux_compose.WebAssets`. This package keeps `className`, Document `<link>`, package static. `TailwindCommand` / `WebAssets` are fail-closed.
+**CSS compiler:** `ux_compose.tailwind` / `uxcompose build`. **App folders:** `ux_compose.WebAssets`. This package keeps `className`, Document `<link>`, package static. It does not export `TailwindCommand` or `WebAssets`.
 
 ## Tests
 

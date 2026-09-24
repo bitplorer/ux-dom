@@ -22,10 +22,8 @@ ROOT = Path(__file__).resolve().parents[2]
 
 class TestTemplates(unittest.TestCase):
     def test_product_templates_not_on_uxdom(self):
-        import ux_dom.cli.scaffold as sc
-        with self.assertRaises(ImportError) as ctx:
-            sc.available_templates()
-        self.assertIn("uxcompose create-app", str(ctx.exception))
+        with self.assertRaises(ImportError):
+            import ux_dom.cli.scaffold  # noqa: F401
 
 
 class TestTutorialScaffold(unittest.TestCase):

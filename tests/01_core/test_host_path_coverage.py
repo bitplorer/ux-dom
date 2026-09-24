@@ -10,18 +10,9 @@ from fastapi.testclient import TestClient
 
 
 class TestCreateAsgiCoverage(unittest.TestCase):
-    def test_build_with_document(self):
-        from ux_dom.create import CreateAsgi, ProductAsgiMoved
-
-        with self.assertRaises(ProductAsgiMoved) as ctx:
-            CreateAsgi(title="cov", debug=True).directory_routes(".", "routes")
-        self.assertIn("uxcompose", str(ctx.exception).lower())
-
-    def test_create_asgi_existing_app(self):
-        from ux_dom.create import CreateAsgi, ProductAsgiMoved
-
-        with self.assertRaises(ProductAsgiMoved):
-            CreateAsgi(title="x", app=FastAPI(), debug=False).build()
+    def test_create_package_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.create  # noqa: F401
 
 
 class TestStaticArtifactAndPackageStatic(unittest.TestCase):
@@ -116,12 +107,11 @@ class TestResponseCoverage(unittest.TestCase):
 
 
 class TestFastAPIHostCoverage(unittest.TestCase):
-    def test_host_mount(self):
-        from ux_dom.plugins.host.fastapi import FastAPIHost, ProductHostMoved
-
-        with self.assertRaises(ProductHostMoved) as ctx:
-            FastAPIHost(title="H", debug=True)
-        self.assertIn("ux_compose.build", str(ctx.exception))
+    def test_host_package_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.plugins.host  # noqa: F401
+        with self.assertRaises(ImportError):
+            import ux_dom.plugins.host.fastapi  # noqa: F401
 
 
 class TestStyleTokensFunctional(unittest.TestCase):
@@ -190,7 +180,8 @@ class TestCLIModulesImport(unittest.TestCase):
     def test_imports(self):
         import ux_dom.cli.build  # noqa: F401
         import ux_dom.cli.lint  # noqa: F401
-        import ux_dom.cli.scaffold  # noqa: F401  teaching stub
+        with self.assertRaises(ImportError):
+            import ux_dom.cli.scaffold  # noqa: F401
 
 
 class TestReloaderSmoke(unittest.TestCase):
@@ -217,11 +208,9 @@ if __name__ == "__main__":
 
 
 class TestCreateAsgiStyleHmr(unittest.TestCase):
-    def test_use_style_and_hmr_no_crash(self):
-        from ux_dom.create import CreateAsgi, ProductAsgiMoved
-
-        with self.assertRaises(ProductAsgiMoved):
-            CreateAsgi(title="s", debug=True).use(object())
+    def test_create_asgi_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.create.asgi  # noqa: F401
 
 
 class TestFunctionalModule(unittest.TestCase):
@@ -251,18 +240,9 @@ class TestFunctionalModule(unittest.TestCase):
 
 
 class TestHostLifespan(unittest.TestCase):
-    def test_mount_with_static_and_debug(self):
-        from ux_dom.plugins.host.fastapi import FastAPIHost, ProductHostMoved
-
-        with TemporaryDirectory() as td:
-            d = Path(td)
-            (d / "f.txt").write_text("x")
-            with self.assertRaises(ProductHostMoved):
-                FastAPIHost(
-                    title="L",
-                    debug=True,
-                    static_mounts=[("/static", d)],
-                )
+    def test_fastapi_host_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.plugins.host.fastapi  # noqa: F401
 
 
 class TestPackageStaticMore(unittest.TestCase):

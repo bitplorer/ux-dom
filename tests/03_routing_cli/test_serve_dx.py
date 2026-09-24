@@ -58,27 +58,11 @@ class TestProductCliAbsent(unittest.TestCase):
 
 
 class TestCssCompilerNotOnUxDom(unittest.TestCase):
-    """Path helpers and compiler invocation left ux-dom. Compose owns them."""
+    """Compiler invocation left ux-dom. Compose owns it."""
 
-    def test_discover_css_io_fail_closed(self):
-        from ux_dom.cli.tailwind import discover_css_io
-
-        with self.assertRaises(ImportError) as ctx:
-            discover_css_io(Path("."))
-        self.assertIn("uxcompose build", str(ctx.exception).lower())
-
-    def test_argv_with_io_fail_closed(self):
-        from ux_dom.cli.tailwind import argv_with_io
-
+    def test_tailwind_module_is_absent(self):
         with self.assertRaises(ImportError):
-            argv_with_io(["tw"], input_css=Path("in.css"), output_css=Path("out.css"))
-
-    def test_module_does_not_download(self):
-        src = (ROOT / "src" / "ux_dom" / "cli" / "tailwind.py").read_text(encoding="utf-8")
-        self.assertNotIn("_download_standalone", src)
-        self.assertNotIn("npx --yes", src)
-        self.assertNotIn("def resolve_tailwind", src)
-        self.assertIn("ux_compose.tailwind", src)
+            import ux_dom.cli.tailwind  # noqa: F401
 
 
 class TestEnvFiles(unittest.TestCase):
@@ -110,19 +94,14 @@ class TestEnvFiles(unittest.TestCase):
 
 
 class TestTailwindCommandFailClosed(unittest.TestCase):
-    def test_construct_raises(self):
-        from ux_dom.settings.commands import ProductCssMoved, TailwindCommand
+    def test_command_module_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.settings.commands  # noqa: F401
 
-        with self.assertRaises(ProductCssMoved) as ctx:
-            TailwindCommand(file_path="x", webassets=None)
-        self.assertIn("uxcompose build", str(ctx.exception))
+    def test_style_construct_is_absent(self):
+        from ux_dom.plugins import style
 
-    def test_style_construct_raises(self):
-        from ux_dom.plugins.style import TailwindStyle
-        from ux_dom.settings.commands import ProductCssMoved
-
-        with self.assertRaises(ProductCssMoved):
-            TailwindStyle(webassets=None)
+        self.assertFalse(hasattr(style, "TailwindStyle"))
 
 
 class TestDoctorReportsProductCss(unittest.TestCase):

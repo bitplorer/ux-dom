@@ -30,7 +30,7 @@ class TestSemantic(unittest.TestCase):
         from fastapi import FastAPI
         from fastapi.responses import HTMLResponse
 
-        from ux_dom.plugins.host import ProductHostMoved
+        from ux_dom.plugins.hub import ProductHostMoved
 
         set_hub(PluginHub())
         with self.assertRaises(ProductHostMoved):
