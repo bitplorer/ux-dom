@@ -4,17 +4,14 @@
 # https://opensource.org/licenses/MIT
 """Style pipeline plugins.
 
-``NullStyle`` is the only working style plugin (no CSS compile).
-``TailwindStyle`` is a fail-closed teaching stub — product compile is
-``uxcompose build`` (``ux_compose.tailwind``). Document still links
-stylesheets; it does not run the compiler.
+``NullStyle`` is the only style plugin. It does not compile CSS.
+Product compile is ``uxcompose build`` (``ux_compose.tailwind``).
+Document still links stylesheets; it does not run the compiler.
 """
 
 from __future__ import annotations
 
 from typing import Any
-
-from ux_dom.settings.commands import ProductCssMoved
 
 
 class NullStyle:
@@ -31,14 +28,4 @@ class NullStyle:
         return None
 
 
-class TailwindStyle:
-    """Fail-closed. Compile CSS with ``uxcompose build``, not Document lifespan."""
-
-    plugin_kind = "style"
-    name = "tailwind"
-
-    def __init__(self, *args, **kwargs):
-        raise ProductCssMoved()
-
-
-__all__ = ["NullStyle", "ProductCssMoved", "TailwindStyle"]
+__all__ = ["NullStyle"]

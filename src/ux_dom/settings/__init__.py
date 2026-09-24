@@ -3,13 +3,9 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-"""Document + fail-closed product stubs.
+"""Document settings.
 
-``WebAssets`` and ``TailwindCommand`` raise teaching errors.
-App layout: ``from ux_compose import WebAssets``.
-Product CSS: ``uxcompose build``.
+App layout is ``from ux_compose import WebAssets``.
+Product CSS is ``uxcompose build``.
 """
 from .document import *
-
-from .commands import ProductCssMoved as ProductCssMoved  # isort: skip
-from .commands import TailwindCommand as TailwindCommand  # isort: skip

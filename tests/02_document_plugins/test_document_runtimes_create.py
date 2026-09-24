@@ -3,14 +3,11 @@
 from __future__ import annotations
 
 import unittest
-from pathlib import Path
-from tempfile import TemporaryDirectory
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from ux_dom import Document
-from ux_dom.create import CreateProject
 from ux_dom.dom import meta, title
 from ux_dom.runtime import Csp, Htmx, XElement, XELEMENT_JS_URL
 
@@ -51,17 +48,8 @@ class TestDocumentUse(unittest.TestCase):
 
 
 class TestCreateProject(unittest.TestCase):
-    def test_write_teaches_uxcompose(self):
-        from ux_dom.create import ProductScaffoldMoved
-
-        with TemporaryDirectory() as td:
-            builder = (
-                CreateProject("s", dest=Path(td) / "s")
-                .force()
-                .with_tailwind(False)
-            )
-            with self.assertRaises(ProductScaffoldMoved) as ctx:
-                builder.write()
-            self.assertIn("uxcompose create-app", str(ctx.exception))
+    def test_create_package_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.create  # noqa: F401
 
 

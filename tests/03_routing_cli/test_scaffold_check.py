@@ -11,21 +11,9 @@ from helpers import ScaffoldOptions, create_app
 
 
 class TestProductScaffoldMoved(unittest.TestCase):
-    def test_cli_scaffold_raises(self):
-        from ux_dom.cli import scaffold as sc
-
-        with self.assertRaises(ImportError) as ctx:
-            sc.create_app()
-        self.assertIn("uxcompose create-app", str(ctx.exception))
-
+    def test_cli_scaffold_is_absent(self):
         with self.assertRaises(ImportError):
-            sc.available_templates()
-
-        with self.assertRaises(ImportError):
-            sc.ScaffoldOptions("x")
-
-        with self.assertRaises(ImportError):
-            sc.validate_scaffold(Path("."))
+            import ux_dom.cli.scaffold  # noqa: F401
 
     def test_scaffold_check_module_gone(self):
         with self.assertRaises(ImportError):

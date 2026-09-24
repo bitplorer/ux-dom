@@ -10,7 +10,6 @@ from ux_dom import (
     Document,
     Fragment,
     ReactiveComponent,
-    WebAssets,
     __version__,
 )
 from ux_dom.plugins import App, PluginHub, get_hub, set_hub
@@ -22,7 +21,9 @@ class TestPublicAPI(unittest.TestCase):
     def test_version_bump_area(self):
         self.assertTrue(__version__)
         self.assertEqual(ux_dom.__version__, __version__)
-        self.assertTrue(callable(WebAssets))  # fail-closed stub; still public
+        self.assertFalse(hasattr(ux_dom, "WebAssets"))
+        self.assertFalse(hasattr(ux_dom, "TailwindCommand"))
+        self.assertFalse(hasattr(ux_dom, "CreateProject"))
 
     def test_component_top_level(self):
         class Box(Component):

@@ -1,59 +1,30 @@
-"""TailwindCommand / TailwindStyle fail closed — compiler is uxcompose build."""
+"""Product CSS is not on ux-dom. Compiler is uxcompose build."""
 from __future__ import annotations
 
 import unittest
-from pathlib import Path
-
-from ux_dom import TailwindCommand
-from ux_dom.settings.commands import ProductCssMoved
 
 
-class TestTailwindCommandFailClosed(unittest.TestCase):
-    def test_construct_teaches_uxcompose_build(self):
-        with self.assertRaises(ProductCssMoved) as ctx:
-            TailwindCommand()
-        msg = str(ctx.exception).lower()
-        self.assertIn("uxcompose build", msg)
-        self.assertIn("classname", msg)
+class TestTailwindCommandAbsent(unittest.TestCase):
+    def test_not_a_public_export(self):
+        import ux_dom
 
-    def test_public_import_still_resolves(self):
-        from ux_dom.settings.commands import TailwindCommand as TC
-
-        self.assertIs(TC, TailwindCommand)
+        self.assertFalse(hasattr(ux_dom, "TailwindCommand"))
+        with self.assertRaises(ImportError):
+            import ux_dom.settings.commands  # noqa: F401
 
 
-class TestTailwindStyleFailClosed(unittest.TestCase):
-    def test_construct_teaches_uxcompose_build(self):
-        from ux_dom.plugins.style import TailwindStyle
+class TestTailwindStyleAbsent(unittest.TestCase):
+    def test_only_null_style(self):
+        from ux_dom.plugins import style
 
-        with self.assertRaises(ProductCssMoved) as ctx:
-            TailwindStyle(webassets=None)
-        self.assertIn("uxcompose build", str(ctx.exception))
+        self.assertFalse(hasattr(style, "TailwindStyle"))
+        self.assertTrue(callable(style.NullStyle))
 
 
-class TestCliTailwindFailClosed(unittest.TestCase):
-    def test_discover_css_io_teaches_compose(self):
-        from ux_dom.cli import tailwind as tw
-
-        with self.assertRaises(ImportError) as ctx:
-            tw.discover_css_io(Path("."))
-        self.assertIn("uxcompose build", str(ctx.exception).lower())
-        self.assertIn("ux_compose.tailwind", str(ctx.exception))
-
-    def test_module_does_not_download(self):
-        from pathlib import Path as P
-
-        src = (
-            P(__file__).resolve().parents[2]
-            / "src"
-            / "ux_dom"
-            / "cli"
-            / "tailwind.py"
-        ).read_text(encoding="utf-8")
-        self.assertNotIn("_download_standalone", src)
-        self.assertNotIn("npx --yes", src)
-        self.assertNotIn("def resolve_tailwind", src)
-        self.assertIn("fail", src.lower())
+class TestCliTailwindAbsent(unittest.TestCase):
+    def test_module_is_gone(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.cli.tailwind  # noqa: F401
 
 
 if __name__ == "__main__":

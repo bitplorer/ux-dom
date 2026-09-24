@@ -29,6 +29,7 @@ class TestBuildHeader(unittest.TestCase):
         m = re.search(r"style-src ([^;]+)", h)
         self.assertIsNotNone(m)
         self.assertIn("'unsafe-inline'", m.group(1))
+        self.assertIn("style-src-attr 'unsafe-inline'", h)
 
     def test_extra_directives(self):
         h = build_csp_header("n", extra_directives={"frame-src": "'none'"})
@@ -58,6 +59,7 @@ class TestPresets(unittest.TestCase):
         h = p.build("X")
         self.assertIn("https://cdn.tailwindcss.com", h)
         self.assertIn("'unsafe-inline'", re.search(r"style-src ([^;]+)", h).group(1))
+        self.assertIn("style-src-attr 'unsafe-inline'", h)
 
     def test_prod(self):
         p = policy_prod()
@@ -68,6 +70,7 @@ class TestPresets(unittest.TestCase):
         self.assertNotIn("unpkg.com", h)
         self.assertIn("upgrade-insecure-requests", h)
         self.assertIn("worker-src", h)
+        self.assertNotIn("style-src-attr", h)
 
     def test_report_only_flag(self):
         p = policy_report_only()

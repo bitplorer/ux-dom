@@ -6,11 +6,11 @@ Purpose of each tree under `ux_dom/`. Prefer this over guessing from file names.
 
 ```text
 ux_dom/
-  settings/     Document factory (WebAssets fail-closed stub)
+  settings/     Document factory
   dom/          Tags, Component, serialize, XElement types
   runtime/      Document-facing XElement / Htmx / Csp / Channel facades
   plugins/      Document contributions (CSP, SafeStatic, hub)
-  routing/      fail-closed leftover (product routes are ux-compose)
+  routing/      leftover DirectoryRouter (product routes are ux-compose)
   response/     HTML / streaming adapters
   scripts/      x_element.js (package-mounted)
   cli/          doctor, lint, profile, add, dashboard (pure-dom)
@@ -18,13 +18,13 @@ ux_dom/
 ```
 
 Product scaffold + DirectoryRoutes is **uxcompose** ([DX.md](../guides/DX.md)).
-Routing symbols on this package fail closed.
+This package does not ship `CreateProject`, `DirectoryRoutes`, `WebAssets`, or `TailwindCommand`.
+`DirectoryRouter` remains as a leftover discovery helper.
 
 | Path | Role | Public? |
 |------|------|---------|
 | `ux_dom/__init__.py` | Version + re-exports Document, Component, runtime facades | **Public** |
 | `ux_dom/runtime/` | Stable aliases: `XElement`, `Htmx`, `Csp`, `Channel` | **Public** |
-| `ux_dom/create/` | CreateAsgi + CreateProject fail closed | Semi |
 | `ux_dom/compat/` | Runtime compat (e.g. valio PEP 649) | Private |
 | `ux_dom/diagnostics.py` | Error message builders for XElement checks | Private |
 | **`ux_dom/dom/`** | Tag constructors, Document HTML helpers, parse | **Public** |
@@ -39,11 +39,11 @@ Routing symbols on this package fail closed.
 | `ux_dom/dom/src/html_string.py` | defHTML parse + sanitize | **Public** via dom |
 | `ux_dom/dom/uniqueid.py` | Unique id generator for trees | Semi |
 | `ux_dom/dom/src/ws_rpc.py` | Optional WS helpers (uses document.ux_domMessageHandler) | Advanced |
-| **`ux_dom/settings/`** | Document (`WebAssets` fail-closed stub) | **Public** |
+| **`ux_dom/settings/`** | Document | **Public** |
 | **`ux_dom/plugins/`** | Hub, contributions, CSP, control, package static | Semi / **Public** facades |
 | `ux_dom/plugins/runtime.py` | XElementRuntime, UxChannelRuntime — package static | Semi |
 | `ux_dom/plugins/safe_static.py` | Allowlisted file mounts | Semi |
-| **`ux_dom/routing/`** | Fail-closed leftover; product routes are `ux_compose.routing` | Leftover |
+| **`ux_dom/routing/`** | Leftover `DirectoryRouter`; product routes are `ux_compose.routing` | Leftover |
 | **`ux_dom/response/`** | HTMLResponse, StreamingResponse | **Public** |
 | **`ux_dom/scripts/`** | `x_element.js` + `x_element_js` embed helper | **Public** helper |
 | **`ux_dom/cli/`** | Typer DX: doctor, lint, profile, add (not product scaffold) | CLI |

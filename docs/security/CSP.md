@@ -102,9 +102,9 @@ Hosts **do** apply. CDNs in `script_hosts` are real allowlists.
 
 | Flag | Effect |
 |------|--------|
-| default `style-src 'nonce-…' 'self'` | Nonced `<style>` + same-origin stylesheets |
-| `style_unsafe_inline=True` (`Csp.dev()`) | Also allows `style="…"` attributes (Alpine/Tailwind DX) |
-| prod default | Prefer nonced styles; avoid inline attrs or add flag consciously |
+| default `style-src 'nonce-…' 'self'` | Nonced `<style>` + same-origin stylesheets. Element `style=""` stays blocked. |
+| `style_unsafe_inline=True` (`Csp.dev()`) | Sets `style-src-attr 'unsafe-inline'` so element `style=""` works (Channel toasts, Alpine). Also appends `'unsafe-inline'` to `style-src` for legacy browsers. A nonce in `style-src` makes modern browsers ignore that token there (CSP3) — it does not allow attributes. |
+| prod default | No `style-src-attr`. Prefer nonced `<style>`; inline attributes stay blocked. |
 
 ---
 
@@ -115,7 +115,7 @@ Hosts **do** apply. CDNs in `script_hosts` are real allowlists.
 | `strict_dynamic` | Add `'strict-dynamic'` to script-src |
 | `script_hosts` | Extra script origins (legacy / non-strict-dynamic) |
 | `style_hosts` | Extra style origins |
-| `style_unsafe_inline` | Add `'unsafe-inline'` to style-src |
+| `style_unsafe_inline` | Dev: `style-src-attr 'unsafe-inline'` for element `style=""`. Also appends `'unsafe-inline'` to `style-src` for legacy browsers; modern CSP ignores that once a nonce is present. Prod leaves the flag off, so `style-src-attr` is omitted. |
 | `script_unsafe_inline_legacy` | Add `'unsafe-inline'` to script-src (ignored when nonce present in modern CSP) |
 | `img_src` / `connect_src` / `font_src` | Fetch classes |
 | `form_action` | Where forms may submit (default `'self'`) |

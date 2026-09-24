@@ -35,8 +35,6 @@ from ux_dom.dom.src import ext
 
 __all__ = [
     "Document",
-    "ProductAssetsMoved",
-    "WebAssets",
 ]
 
 
@@ -412,26 +410,3 @@ class Document(object):
             common_body=common_body if common_body else None,
             **kwargs,
         )
-
-
-_ASSETS_TEACH = (
-    "WebAssets is product app layout, not a Document API. "
-    "Use: from ux_compose import WebAssets  "
-    "(create-app / build / /css mount live on ux-compose). "
-    "ux-dom keeps className, Document <link>, and package static "
-    "/ux-dom/static/x_element.js."
-)
-
-
-class ProductAssetsMoved(RuntimeError):
-    """Raised when a caller constructs app asset layout from ux-dom."""
-
-    def __init__(self, message: str = _ASSETS_TEACH):
-        super().__init__(message)
-
-
-class WebAssets:
-    """Fail-closed. App folders are ``ux_compose.assets.WebAssets``."""
-
-    def __init__(self, *args, **kwargs):
-        raise ProductAssetsMoved()
