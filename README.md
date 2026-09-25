@@ -138,7 +138,7 @@ Canonical pages live under `docs/reference/`, `docs/guides/`, `docs/internals/`,
 | Tutorial | [START_HERE.md](START_HERE.md) · [docs/guides/TUTORIAL.md](docs/guides/TUTORIAL.md) |
 | How-to | [docs/guides/SNIPPETS.md](docs/guides/SNIPPETS.md) · [docs/guides/CLI.md](docs/guides/CLI.md) · [docs/guides/COOKBOOK.md](docs/guides/COOKBOOK.md) · [docs/guides/DX.md](docs/guides/DX.md) |
 | Reference | [docs/reference/DOCUMENT.md](docs/reference/DOCUMENT.md) · [docs/reference/COMPONENTS.md](docs/reference/COMPONENTS.md) · [docs/reference/FEATURES.md](docs/reference/FEATURES.md) · [docs/reference/API_SURFACE.md](docs/reference/API_SURFACE.md) |
-| Explanation | [docs/internals/SYSTEM.md](docs/internals/SYSTEM.md) · [docs/internals/ARCHITECTURE.md](docs/internals/ARCHITECTURE.md) |
+| Explanation | [docs/internals/PLACE.md](docs/internals/PLACE.md) · [docs/internals/SYSTEM.md](docs/internals/SYSTEM.md) · [docs/internals/ARCHITECTURE.md](docs/internals/ARCHITECTURE.md) |
 
 ## API
 

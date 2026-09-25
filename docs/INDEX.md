@@ -101,6 +101,7 @@ behavior, motion IR, or product lifecycle.
 
 | Doc | Description |
 |-----|-------------|
+| [internals/PLACE.md](internals/PLACE.md) | This library among the others, and the doors it has |
 | [internals/c4.md](internals/c4.md) | C4-style context / containers |
 | [internals/SYSTEM.md](internals/SYSTEM.md) | Render boundary |
 | [internals/ARCHITECTURE.md](internals/ARCHITECTURE.md) | Architecture |
