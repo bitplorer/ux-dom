@@ -5,9 +5,11 @@
 
 
 """Optional DOM UI helpers. Prefer ``ux_dom.ui`` kit for product UIs."""
+
 import asyncio
 import typing
 import uuid
+import warnings as _warnings
 from dataclasses import dataclass
 from datetime import datetime, time
 from enum import Enum, IntEnum
@@ -15,9 +17,16 @@ from pathlib import Path
 from uuid import UUID
 
 import valio
-from tortoise import Model, Tortoise
 
-from ux_dom import dom, elements
+_warnings.warn(
+    "ux_dom.dom.ui is a deprecated Tortoise form helper.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+from tortoise import Model, Tortoise  # noqa: E402
+
+from ux_dom import dom, elements  # noqa: E402
 
 valio.Validator.register(Model)
 

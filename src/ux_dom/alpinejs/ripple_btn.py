@@ -4,8 +4,17 @@
 # https://opensource.org/licenses/MIT
 
 """Alpine demo widget: ripple_btn. Sample only; prefer AlpineComponent for apps."""
+
+import warnings as _warnings
+
 from ux_dom.alpinejs import DataSet, dataset_ripple  # , dataset_pressed
 from ux_dom.dom import *
+
+_warnings.warn(
+    "ux_dom.alpinejs.ripple_btn is deprecated and will be removed in a future release.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 
 def data_ripple(className="[&>[data-ripple=true]]:bg-white/30", **kwargs):
