@@ -1,7 +1,8 @@
 """Task A boundary and Task B public-module deprecation shims.
 
 Task A stops: ux-dom must not import ux-compose (new dependency and a cycle).
-Task B: public modules with no in-repo consumers stay, and warn on import.
+Task B: public modules stay and warn on import. The MRO walkers import every
+module, so a second import must still warn.
 """
 
 from __future__ import annotations
@@ -28,14 +29,34 @@ DOM_UI_PUBLIC_NAMES = (
 )
 
 
-def _imported_deprecations(module_name: str, *, extra_pops: tuple[str, ...] = ()):
-    """Import ``module_name`` from a real file so the warning names that file."""
+def _imported_deprecations(
+    module_name: str,
+    *,
+    extra_pops: tuple[str, ...] = (),
+    prime: bool = False,
+):
+    """Import ``module_name`` from a real file so the warning names that file.
+
+    ``prime`` repeats the MRO walkers: import once with warnings ignored, leave
+    any package attribute in place, then pop ``sys.modules`` and import again.
+    """
     pops = "\n".join(
         f"sys.modules.pop({name!r}, None)" for name in (module_name, *extra_pops)
     )
+    prime_source = ""
+    if prime:
+        prime_source = (
+            "with warnings.catch_warnings():\n"
+            "    warnings.simplefilter('ignore')\n"
+            "    try:\n"
+            f"        import {module_name}\n"
+            "    except Exception:\n"
+            "        pass\n"
+        )
     source = (
         "import sys\n"
         "import warnings\n"
+        f"{prime_source}"
         f"{pops}\n"
         "with warnings.catch_warnings(record=True) as caught:\n"
         "    warnings.simplefilter('always')\n"
@@ -163,7 +184,7 @@ class TestPublicBloatModulesStay(unittest.TestCase):
 
 
 class TestPublicBloatDeprecationWarnings(unittest.TestCase):
-    """Importing a public zero-consumer module warns; it is not removed."""
+    """Importing a public bloat module warns; it is not removed."""
 
     def test_each_importable_bloat_module_warns(self):
         for module_name in (
@@ -185,9 +206,10 @@ class TestPublicBloatDeprecationWarnings(unittest.TestCase):
                 )
 
     def test_dom_ui_warns_before_optional_tortoise_import(self):
+        self.assertFalse((SRC / "dom" / "_ui_deprecation.py").is_file())
         importer, deprecations, error = _imported_deprecations(
             "ux_dom.dom.ui",
-            extra_pops=("ux_dom.dom._ui_deprecation",),
+            prime=True,
         )
         self.assertIsNotNone(error)
         self.assertIn("tortoise", str(error).lower())
@@ -204,6 +226,8 @@ class TestPublicBloatDeprecationWarnings(unittest.TestCase):
     def test_dom_ui_does_not_bind_ux_dom(self):
         bound = _bound_import_names(SRC / "dom" / "ui.py")
         self.assertNotIn("ux_dom", bound)
+        self.assertNotIn("warnings", bound)
+        self.assertIn("_warnings", bound)
 
 
 class TestPytestWorkflow(unittest.TestCase):
