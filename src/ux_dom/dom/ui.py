@@ -5,6 +5,9 @@
 
 
 """Optional DOM UI helpers. Prefer ``ux_dom.ui`` kit for product UIs."""
+
+import ux_dom.dom._ui_deprecation  # isort: skip  # noqa: F401
+
 import asyncio
 import typing
 import uuid
