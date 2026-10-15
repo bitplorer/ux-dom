@@ -6,11 +6,11 @@
 
 """Sphinx/docutils-oriented tags. Niche; not required for apps."""
 
-import warnings
+import warnings as _warnings
 
 from ux_dom.dom.src.main import extension
 
-warnings.warn(
+_warnings.warn(
     "ux_dom.dom.src.sphinxtags is deprecated and will be removed in a future release.",
     DeprecationWarning,
     stacklevel=2,

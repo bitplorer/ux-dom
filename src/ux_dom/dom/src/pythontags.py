@@ -6,11 +6,11 @@
 
 """Python-oriented tag helpers (niche catalog). Prefer htmltags for apps."""
 
-import warnings
+import warnings as _warnings
 
 from ux_dom.dom.src.main import extension
 
-warnings.warn(
+_warnings.warn(
     "ux_dom.dom.src.pythontags is deprecated and will be removed in a future release.",
     DeprecationWarning,
     stacklevel=2,

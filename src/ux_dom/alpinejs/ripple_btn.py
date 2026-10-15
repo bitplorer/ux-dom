@@ -5,12 +5,12 @@
 
 """Alpine demo widget: ripple_btn. Sample only; prefer AlpineComponent for apps."""
 
-import warnings
+import warnings as _warnings
 
 from ux_dom.alpinejs import DataSet, dataset_ripple  # , dataset_pressed
 from ux_dom.dom import *
 
-warnings.warn(
+_warnings.warn(
     "ux_dom.alpinejs.ripple_btn is deprecated and will be removed in a future release.",
     DeprecationWarning,
     stacklevel=2,

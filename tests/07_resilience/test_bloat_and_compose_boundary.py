@@ -8,9 +8,10 @@ from __future__ import annotations
 
 import ast
 import importlib
+import importlib.util
 import sys
+import tempfile
 import unittest
-import warnings
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -27,12 +28,54 @@ DOM_UI_PUBLIC_NAMES = (
 )
 
 
-def _fresh_import(module_name: str):
-    sys.modules.pop(module_name, None)
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always")
-        module = importlib.import_module(module_name)
-    return module, caught
+def _imported_deprecations(module_name: str, *, extra_pops: tuple[str, ...] = ()):
+    """Import ``module_name`` from a real file so the warning names that file."""
+    pops = "\n".join(
+        f"sys.modules.pop({name!r}, None)" for name in (module_name, *extra_pops)
+    )
+    source = (
+        "import sys\n"
+        "import warnings\n"
+        f"{pops}\n"
+        "with warnings.catch_warnings(record=True) as caught:\n"
+        "    warnings.simplefilter('always')\n"
+        "    try:\n"
+        f"        import {module_name}\n"
+        "    except ImportError as exc:\n"
+        "        import_error = exc\n"
+        "    else:\n"
+        "        import_error = None\n"
+        "deprecations = [\n"
+        "    item\n"
+        "    for item in caught\n"
+        "    if issubclass(item.category, DeprecationWarning)\n"
+        "]\n"
+    )
+    with tempfile.TemporaryDirectory() as directory:
+        importer = Path(directory) / "importer.py"
+        importer.write_text(source, encoding="utf-8")
+        spec = importlib.util.spec_from_file_location(
+            "bloat_boundary_importer", importer
+        )
+        if spec is None or spec.loader is None:
+            raise AssertionError("importer spec missing")
+        module = importlib.util.module_from_spec(spec)
+        sys.modules.pop("bloat_boundary_importer", None)
+        spec.loader.exec_module(module)
+        return importer.resolve(), list(module.deprecations), module.import_error
+
+
+def _bound_import_names(path: Path) -> list[str]:
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    bound: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                bound.append(alias.asname or alias.name.split(".")[0])
+        elif isinstance(node, ast.ImportFrom):
+            for alias in node.names:
+                bound.append(alias.asname or alias.name)
+    return bound
 
 
 class TestComposeDependencyDirection(unittest.TestCase):
@@ -129,34 +172,38 @@ class TestPublicBloatDeprecationWarnings(unittest.TestCase):
             "ux_dom.alpinejs.ripple_btn",
         ):
             with self.subTest(module_name=module_name):
-                _module, caught = _fresh_import(module_name)
-                messages = [
-                    str(item.message)
-                    for item in caught
-                    if issubclass(item.category, DeprecationWarning)
-                ]
-                self.assertTrue(
-                    any(module_name in message for message in messages),
-                    messages,
+                importer, deprecations, error = _imported_deprecations(module_name)
+                self.assertIsNone(error)
+                self.assertEqual(len(deprecations), 1, deprecations)
+                warning = deprecations[0]
+                self.assertEqual(Path(warning.filename).resolve(), importer)
+                self.assertIn(module_name, str(warning.message))
+                loaded = sys.modules[module_name]
+                self.assertFalse(
+                    hasattr(loaded, "warnings"),
+                    "import must not publish a warnings attribute",
                 )
 
     def test_dom_ui_warns_before_optional_tortoise_import(self):
-        sys.modules.pop("ux_dom.dom.ui", None)
-        sys.modules.pop("ux_dom.dom._ui_deprecation", None)
-        with warnings.catch_warnings(record=True) as caught:
-            warnings.simplefilter("always")
-            try:
-                importlib.import_module("ux_dom.dom.ui")
-            except ImportError as exc:
-                self.assertIn("tortoise", str(exc).lower())
-        messages = [
-            str(item.message)
-            for item in caught
-            if issubclass(item.category, DeprecationWarning)
-        ]
-        self.assertTrue(
-            any("ux_dom.dom.ui" in message for message in messages), messages
+        importer, deprecations, error = _imported_deprecations(
+            "ux_dom.dom.ui",
+            extra_pops=("ux_dom.dom._ui_deprecation",),
         )
+        self.assertIsNotNone(error)
+        self.assertIn("tortoise", str(error).lower())
+        self.assertEqual(len(deprecations), 1, deprecations)
+        warning = deprecations[0]
+        self.assertEqual(Path(warning.filename).resolve(), importer)
+        self.assertEqual(
+            str(warning.message),
+            "ux_dom.dom.ui is a deprecated Tortoise form helper.",
+        )
+        self.assertNotIn("remains importable", str(warning.message))
+        self.assertNotIn("ux_dom.ui", str(warning.message))
+
+    def test_dom_ui_does_not_bind_ux_dom(self):
+        bound = _bound_import_names(SRC / "dom" / "ui.py")
+        self.assertNotIn("ux_dom", bound)
 
 
 class TestPytestWorkflow(unittest.TestCase):
@@ -164,9 +211,14 @@ class TestPytestWorkflow(unittest.TestCase):
         path = ROOT / ".github" / "workflows" / "pytest.yml"
         self.assertTrue(path.is_file(), "pytest workflow missing")
         text = path.read_text(encoding="utf-8")
-        self.assertIn("pytest", text)
-        self.assertIn("3.14", text)
+        self.assertIn('python-version: "3.14"', text)
         self.assertIn("poetry install", text)
+        self.assertIn("run: poetry run pytest tests/", text)
+        self.assertNotIn("continue-on-error", text)
+        self.assertIn(
+            "Red because of failures already on main at 356dd0d.",
+            text,
+        )
 
 
 if __name__ == "__main__":

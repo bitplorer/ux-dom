@@ -1,5 +1,7 @@
 name: pytest
 
+# Red because of failures already on main at 356dd0d.
+
 on:
   pull_request:
   push:

@@ -11,8 +11,7 @@ third-party imports (tortoise) run.
 import warnings
 
 warnings.warn(
-    "ux_dom.dom.ui is deprecated; prefer ux_dom.ui for product UIs. "
-    "This module remains importable.",
+    "ux_dom.dom.ui is a deprecated Tortoise form helper.",
     DeprecationWarning,
     stacklevel=3,
 )
