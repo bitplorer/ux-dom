@@ -17,26 +17,26 @@ class TestHypermediaShop(unittest.TestCase):
 
     def test_health_and_catalog(self):
         self.assertTrue(self.client.get("/health").json()["ok"])
-        r = self.client.get("/shop/index/Index")
+        r = self.client.get("/shop/")
         self.assertEqual(r.status_code, 200)
         self.assertIn("Hypermedia", r.text)
-        r = self.client.get("/shop/products/list/ProductList")
+        r = self.client.get("/shop/products/list")
         self.assertIn("Aurora", r.text)
         r = self.client.get("/shop/products/sku-a/")
         self.assertIn("Aurora Ring", r.text)
 
     def test_cart_get_post(self):
-        r = self.client.get("/shop/cart/counter/CartCounter")
+        r = self.client.get("/shop/cart/counter")
         self.assertIn("cart-root", r.text)
-        r = self.client.post("/shop/cart/counter/CartCounter")
+        r = self.client.post("/shop/cart/counter")
         self.assertEqual(r.status_code, 200)
         self.assertIn("cart-root", r.text)
         # DOM get not broken on class
         from examples.ux_dom_only.hypermedia_shop.shop_routes.cart.counter import (
-            CartCounter,
+            Counter,
         )
 
-        inst = CartCounter()
+        inst = Counter()
         self.assertTrue(inst.get(id="count"))
 
 

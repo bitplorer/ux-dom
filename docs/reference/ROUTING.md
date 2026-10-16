@@ -67,6 +67,31 @@ app, asgi, bundle = build(
 
 Scaffold: `uxcompose create-app`.
 
+## Pure-dom `DirectoryRouter` (examples, `uxdom add route`)
+
+`ux_dom.routing.fastapi.DirectoryRouter` (or the `DirectoryRouting` plugin)
+serves the examples and `uxdom add route` stubs. It uses the same path law,
+and it fails closed wherever a mistake would otherwise be a silent 404:
+
+| Rule | Detail |
+|------|--------|
+| **Stem match** | Case- and underscore-insensitive: `my_page.py` → `MyPage`, `wc.py` → `WC` |
+| **No page unit** | A module that exports renderable classes but none matches the stem raises `DirectoryRouterError` (logged instead when `fail_closed=False`) |
+| **Explicit `get`** | A `get` classmethod is served as-is (for example to wrap the page in a Document); the synthetic page GET is used only when there is none |
+| **Sub-actions** | Non-verb names in `routes=` become `GET /<stem>/<name>`: `routes = ["get", "partial"]` → `/htmx/partial`. A listed name with no method on the class raises |
+| **URLs in `routes=`** | Rejected: the URL comes from the file path, so `routes = ["/x/[id]"]` raises |
+| **`route.py` / `index.py`** | Map to the folder prefix; `route.py` uses module-level verb functions (`def get(id: str)`) |
+
+```text
+routes/
+  index.py                 →  GET /           (class Index)
+  htmx.py                  →  GET /htmx, GET /htmx/partial  (class Htmx, routes=["get", "partial"])
+  my_page.py               →  GET /my_page    (class MyPage)
+  orgs/[org]/teams/[team]/route.py  →  GET /orgs/{org}/teams/{team}/  (def get(org, team))
+```
+
+`uxdom add route NAME [--methods get,post]` writes files that follow these rules.
+
 ## What ux-dom does **not** own
 
 | Concern | Use |
@@ -76,7 +101,7 @@ Scaffold: `uxcompose create-app`.
 | Host strategy / HMR | `uxcompose serve` |
 | App CSS folders | `ux_compose.WebAssets` |
 
-See ux-compose `docs/FLOW.md` for the ownership map.
+See [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md) for the ownership map.
 
 ## Page unit example
 

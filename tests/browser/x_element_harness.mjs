@@ -12,7 +12,7 @@ import { createServer } from "node:http";
 import { readFileSync, mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromium } from "/workspace/node_modules/playwright/index.mjs";
+import { chromium } from "playwright";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "../..");
@@ -312,7 +312,7 @@ async function run() {
     const kitUrl = process.env.KIT_URL;
     if (kitUrl) {
       await page.setViewportSize({ width: 1100, height: 900 });
-      const kr = await page.goto(kitUrl.replace(/\/$/, "") + "/wc/WcDemo", {
+      const kr = await page.goto(kitUrl.replace(/\/$/, "") + "/wc", {
         waitUntil: "networkidle",
         timeout: 45000,
       });

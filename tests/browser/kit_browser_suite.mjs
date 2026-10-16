@@ -11,7 +11,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromium } from "/workspace/node_modules/playwright/index.mjs";
+import { chromium } from "playwright";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "../..");
@@ -76,7 +76,7 @@ async function run() {
 
     // ── Index ───────────────────────────────────────────────────────
     {
-      const r = await goto(page, "/index/Index");
+      const r = await goto(page, "/");
       phases.index = { status: r.status, hasRuntime: (await page.locator('script[src*="x_element"]').count()) > 0 };
       if (r.status !== 200) fail(`index ${r.status}`);
       if (!phases.index.hasRuntime) fail("index: missing x_element.js script");
@@ -85,7 +85,7 @@ async function run() {
 
     // ── Light DOM ───────────────────────────────────────────────────
     {
-      const r = await goto(page, "/lightdom/LightDomDemo");
+      const r = await goto(page, "/lightdom");
       await page.waitForTimeout(500);
       const details = await page.evaluate(() => {
         const hosts = ["x-hello-light", "x-info-banner", "x-action-card"];
@@ -127,7 +127,7 @@ async function run() {
 
     // ── Shadow DOM ──────────────────────────────────────────────────
     {
-      const r = await goto(page, "/shadowdom/ShadowDomDemo");
+      const r = await goto(page, "/shadowdom");
       await page.waitForTimeout(600);
       const details = await page.evaluate(() => {
         const tags = ["x-shell-shadow", "x-profile-card", "x-callout-shadow"];
@@ -172,7 +172,7 @@ async function run() {
 
     // ── Alpine ──────────────────────────────────────────────────────
     {
-      const r = await goto(page, "/alpine/AlpineDemo");
+      const r = await goto(page, "/alpine");
       await page.waitForFunction(
         () => customElements.get("x-toggle") && customElements.get("x-counter"),
         { timeout: 15000 }
@@ -211,7 +211,7 @@ async function run() {
 
     // ── HTMX partial + XElement re-upgrade ──────────────────────────
     {
-      const r = await goto(page, "/htmx/HtmxDemo");
+      const r = await goto(page, "/htmx");
       await page.waitForTimeout(400);
       phases.htmx = { status: r.status, steps: [] };
       if (r.status !== 200) fail(`htmx ${r.status}`);
@@ -265,7 +265,7 @@ async function run() {
 
     // ── Slots demo ──────────────────────────────────────────────────
     {
-      const r = await goto(page, "/slots/SlotsDemo");
+      const r = await goto(page, "/slots");
       await page.waitForTimeout(500);
       const details = await page.evaluate(() => {
         const panel = document.querySelector("x-named-panel");
@@ -298,7 +298,7 @@ async function run() {
 
     // ── WC quick demo ───────────────────────────────────────────────
     {
-      const r = await goto(page, "/wc/WcDemo");
+      const r = await goto(page, "/wc");
       await page.waitForTimeout(400);
       const ok = await page.evaluate(
         () =>
@@ -313,7 +313,7 @@ async function run() {
 
     // ── Jinja (server HTML only) ────────────────────────────────────
     {
-      const r = await goto(page, "/jinja/JinjaDemo");
+      const r = await goto(page, "/jinja");
       const text = await page.locator("#jinja-demo").innerText();
       phases.jinja = {
         status: r.status,
@@ -328,7 +328,7 @@ async function run() {
     // ── Mobile viewport on shadow page ──────────────────────────────
     {
       await page.setViewportSize({ width: 390, height: 844 });
-      await goto(page, "/shadowdom/ShadowDomDemo");
+      await goto(page, "/shadowdom");
       await page.waitForTimeout(300);
       const overflow = await page.evaluate(() => {
         return {

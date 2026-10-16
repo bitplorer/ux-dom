@@ -89,6 +89,7 @@ behavior, motion IR, or product lifecycle.
 | [security/CSP.md](security/CSP.md) | Nonce CSP |
 | [security/SAFE_STATIC.md](security/SAFE_STATIC.md) | Package static |
 | [security/SCRIPT_INJECTION.md](security/SCRIPT_INJECTION.md) | Script injection |
+| [security/ATTRIBUTES.md](security/ATTRIBUTES.md) | Attribute escaping, unsafe URL schemes |
 | [security/ASSETS.md](security/ASSETS.md) | Asset policy |
 | [security/WHY_JS_URL.md](security/WHY_JS_URL.md) | JS URL policy |
 | [ship/CAPABILITIES.md](ship/CAPABILITIES.md) | Capabilities |
@@ -139,8 +140,12 @@ behavior, motion IR, or product lifecycle.
 |-----|------|
 | [archive/README.md](archive/README.md) | Historical audits / migration notes |
 
-Dead names (must not reappear as live teaching): `docs/CONSISTENCY_REPORT.md`,
-`docs/BUGS_AUDIT.md`, `MIGRATION_0.1.md`, `QUICKSTART.md`.
+Removed docs (must not reappear as live teaching):
+
+- removed: `docs/CONSISTENCY_REPORT.md`
+- removed: `docs/BUGS_AUDIT.md`
+- removed: `MIGRATION_0.1.md`
+- removed: `QUICKSTART.md`
 
 ---
 

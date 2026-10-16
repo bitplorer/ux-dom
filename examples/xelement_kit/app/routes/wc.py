@@ -7,15 +7,15 @@ from ux_dom.dom import a, div, h1, h2, p, span
 from app.components.x_widgets import HelloCustom, ShadowCard
 from app.document import page
 
-__all__ = ["WcDemo"]
+__all__ = ["WC"]
 
 
-class WcDemo(Component):
+class WC(Component):
     routes = ["get"]
 
     def render(self):
         return div(
-            a("← Home", href="/index/Index", className="text-sm text-sky-600"),
+            a("← Home", href="/", className="text-sm text-sky-600"),
             h1("Web Components", className="text-3xl font-bold mt-4 mb-2"),
             p(
                 "HelloCustom() / ShadowCard(...) place hosts; definitions auto-emit.",

@@ -171,24 +171,24 @@ class TestKitHypermediaPages(unittest.TestCase):
             sys.path.remove(cls._path)
 
     def test_alpine_page(self):
-        r = self.client.get("/alpine/AlpineDemo")
+        r = self.client.get("/alpine")
         self.assertEqual(r.status_code, 200)
         self.assertIn("x-tagname", r.text)
         self.assertIn("x_element.js", r.text)
 
     def test_htmx_page(self):
-        r = self.client.get("/htmx/HtmxDemo")
+        r = self.client.get("/htmx")
         self.assertEqual(r.status_code, 200)
         self.assertIn("hx-", r.text.lower())
 
     def test_jinja_page(self):
-        r = self.client.get("/jinja/JinjaDemo")
+        r = self.client.get("/jinja")
         self.assertEqual(r.status_code, 200)
         self.assertIn("jinja", r.text.lower())
         self.assertIn("Alpha", r.text)
 
     def test_slots_page(self):
-        r = self.client.get("/slots/SlotsDemo")
+        r = self.client.get("/slots")
         self.assertEqual(r.status_code, 200)
         self.assertIn("slot", r.text.lower())
         self.assertIn("x_element.js", r.text)

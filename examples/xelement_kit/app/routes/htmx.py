@@ -7,17 +7,19 @@ from ux_dom.dom import a, button, div, h1, p, span
 from app.components.x_widgets import HelloCustom
 from app.document import page
 
-__all__ = ["HtmxDemo", "Partial"]
+__all__ = ["Htmx"]
 
 _N = {"v": 0}
 
 
-class HtmxDemo(Component):
-    routes = ["get"]
+class Htmx(Component):
+    """GET /htmx (page) and GET /htmx/partial (HTMX fragment)."""
+
+    routes = ["get", "partial"]
 
     def render(self):
         return div(
-            a("← Home", href="/index/Index", className="text-sm text-sky-600"),
+            a("← Home", href="/", className="text-sm text-sky-600"),
             h1("HTMX + XElement", className="text-3xl font-bold mt-4 mb-2"),
             p(
                 "Hosts only on the page and in partials — definitions auto-collected.",
@@ -27,7 +29,7 @@ class HtmxDemo(Component):
             button(
                 "Load partial",
                 type="button",
-                hx_get="/htmx/Partial",
+                hx_get="/htmx/partial",
                 hx_target="#panel",
                 hx_swap="innerHTML",
                 className="rounded-lg bg-slate-900 text-white px-4 py-2 text-sm",
@@ -46,11 +48,8 @@ class HtmxDemo(Component):
     def get(cls):
         return page(cls(), page_title="HTMX · Kit")
 
-
-class Partial(Component):
-    routes = ["get"]
-
-    def render(self):
+    @classmethod
+    def partial(cls):
         _N["v"] += 1
         return div(
             HelloCustom(),
@@ -58,7 +57,3 @@ class Partial(Component):
             id="partial-root",
             **{"data-partial": str(_N["v"])},
         )
-
-    @classmethod
-    def get(cls):
-        return cls()

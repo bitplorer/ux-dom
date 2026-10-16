@@ -33,7 +33,8 @@ Product apps::
     uxcompose create-app myapp
     uxcompose build
     uxcompose serve app:asgi
-    # composition root + CSS compile + delivery — see ux-compose docs/FLOW.md
+    # composition root + CSS compile + delivery — see ux-compose FLOW:
+    # https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md
 
 Pure document (no product host)::
 
@@ -45,7 +46,8 @@ Pure document (no product host)::
         XElement(), Htmx(), Csp.auto()
     )
 
-See ``docs/internals/SYSTEM.md`` and ux-compose ``docs/FLOW.md``.
+See ``docs/internals/SYSTEM.md`` and ux-compose FLOW:
+https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md
 """
 
 from .compat.valio_pep649 import ensure_valio_pep649_compat
@@ -68,4 +70,4 @@ from ux_dom.runtime import (  # noqa: E402
     XElement as XElement,
 )
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"

@@ -32,7 +32,7 @@ class Cart(Component):
                 button(
                     "+1",
                     type="button",
-                    hx_post="/cart/Cart",
+                    hx_post="/cart",
                     hx_target="#cart-root",
                     hx_swap="outerHTML",
                     # Queue rapid clicks so concurrent presses don't drop updates

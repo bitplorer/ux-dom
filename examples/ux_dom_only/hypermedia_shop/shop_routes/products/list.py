@@ -1,7 +1,7 @@
 from ux_dom import Component, Document
 from ux_dom.dom import a, div, h2, li, span, ul
 
-__all__ = ['ProductList']
+__all__ = ['List']
 
 PRODUCTS = [
     {"id": "sku-a", "name": "Aurora Ring", "price": 120},
@@ -10,7 +10,7 @@ PRODUCTS = [
 ]
 
 
-class ProductList(Component):
+class List(Component):
     routes = ["get"]
 
     def render(self):
@@ -28,7 +28,7 @@ class ProductList(Component):
         return div(
             h2("Catalog"),
             ul(*items, id="catalog"),
-            span(a("← Home", href="/shop/index/Index")),
+            span(a("← Home", href="/shop/")),
             id="product-list",
         )
 

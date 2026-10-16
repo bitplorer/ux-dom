@@ -21,7 +21,7 @@ class PageHeader(Component):
         className: str = "",
         **attrs: Any,
     ):
-        left = [
+        left: list[Any] = [
             h1(title, className=cn(type_scale["display"])),
         ]
         if description:

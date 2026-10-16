@@ -15,11 +15,11 @@ class Shell(Component):
             header(
                 nav(
                     a("UxDom Showcase", href="/", className="brand"),
-                    link("Home", "/index/Index", "home"),
-                    link("Shop", "/shop/Shop", "shop"),
-                    link("Cart", "/cart/Cart", "cart"),
-                    link("Live SSE", "/sse/SseDemo", "sse"),
-                    link("Stream", "/stream/StreamDemo", "stream"),
+                    link("Home", "/", "home"),
+                    link("Shop", "/shop", "shop"),
+                    link("Cart", "/cart", "cart"),
+                    link("Live SSE", "/sse", "sse"),
+                    link("Stream", "/stream", "stream"),
                     className="nav",
                 ),
                 className="site-header",

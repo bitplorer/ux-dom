@@ -8,21 +8,21 @@ import subprocess
 import unittest
 from pathlib import Path
 
+from browser_gate import NODE, require_browser
+
 ROOT = Path(__file__).resolve().parents[2]
 HARNESS = ROOT / "tests" / "browser" / "x_element_harness.mjs"
 SHOT_DIR = ROOT / "screenshots"
 REPORT = SHOT_DIR / "xelement-browser-report.json"
-NODE = os.environ.get("NODE_BIN", "node")
 
 
-@unittest.skipUnless(HARNESS.is_file(), "browser harness missing")
 class TestXElementHeadlessBrowser(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        require_browser()
         SHOT_DIR.mkdir(parents=True, exist_ok=True)
-        # Prefer workspace playwright module path used by harness
+        REPORT.unlink(missing_ok=True)  # never read a stale report
         env = os.environ.copy()
-        env.setdefault("NODE_PATH", "/workspace/node_modules")
         proc = subprocess.run(
             [NODE, str(HARNESS)],
             cwd=str(ROOT),
