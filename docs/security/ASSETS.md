@@ -52,7 +52,7 @@ Product CSS minify: `uxcompose build`.
 ## Escape hatch (usually avoid)
 
 ```python
-XElementRuntime(serve="dual_copy")  # copies into assets/ — dual copy (legacy alias serve="webassets")
+XElementRuntime(serve="dual_copy")  # copies into assets/ — dual copy
 UxChannelRuntime(serve="dual_copy")
 ```
 

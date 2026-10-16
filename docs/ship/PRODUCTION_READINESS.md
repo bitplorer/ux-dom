@@ -1,4 +1,4 @@
-# Production readiness — ux-dom 0.1
+# Production readiness — ux-dom
 
 ### Brand lines
 

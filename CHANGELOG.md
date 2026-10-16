@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 — remove deprecations
+
+- Removed deprecated modules `ux_dom.dom.ui` (Tortoise form helper),
+  `ux_dom.dom.src.pythontags`, `ux_dom.dom.src.sphinxtags`, `ux_dom.alpinejs.ripple_btn`.
+- Removed `serve="webassets"` alias on `XElementRuntime` and
+  `PackageStaticContribution`.
+- **BREAKING:** any `serve=` value other than `"package_mount"` / `"dual_copy"`
+  now raises `ValueError` (before: unknown values were not rejected).
+- Removed `Carousel(default=)` alias. Use `index=`.
+
 ## 0.1.1
 
 ### Security (fail closed)
@@ -25,6 +35,11 @@
 - The unescaped-attribute opt-out is HTML-only (not XHTML).
 - `//host` links count as relative; see the open-redirect note in
   `docs/security/ATTRIBUTES.md`.
+- **`'` is escaped in attribute values.** `escape(quote=True)` now maps `'`
+  to `&#39;` (as MarkupSafe and `html.escape` do), so a value cannot break
+  out of a single-quoted attribute. Rendered output changes: `'` inside
+  attribute values now renders as `&#39;`, so HTML snapshot tests that
+  contain `'` in attributes need updating.
 
 ### DirectoryRouter (pure-dom, examples)
 
@@ -68,6 +83,11 @@
   behavior tests.
 - mypy: two type errors fixed (`response/serialize.py`, `ui/page_header.py`).
 
+### Dependencies
+
+- **`typingx` is declared** (`>=0.6.0,<0.7`). `ux_dom.compat.valio_pep649`
+  imports it directly; before, it was only installed transitively via valio.
+
 ### Earlier on main (ownership hard cut)
 
 ### Residual-free ownership (hard cut)
@@ -81,7 +101,7 @@
   `TailwindStyle` / `ux_dom.cli.tailwind` fail closed and teach
   `uxcompose build`. `className`, Document `<link>`, and package static
   stay here. App folders are `ux_compose.WebAssets` (ux-dom `WebAssets` fails closed).
-  Package-static dual-copy hatch is `serve="dual_copy"` (`serve="webassets"` leftover alias).
+  Package-static dual-copy hatch is `serve="dual_copy"`.
 - **Product routing bind:** `ux_compose.routing.DirectoryRoutes` + thin adapter.
   `DirectoryRoutes` constructed from this package fails closed.
 - Historical `uxdom serve` / `create-app` notes below are **pre-cut**.

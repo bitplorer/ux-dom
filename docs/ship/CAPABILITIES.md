@@ -2,9 +2,9 @@
 
 # ux-dom Capabilities Checklist
 
-Release gate: every row must stay true (for the 0.1 freeze).
+Release gate: every row must stay true (release freeze).
 
-Version: **0.1.0** (ux-dom production line).
+Version: **0.2.0** (ux-dom production line).
 
 ## Markup (CORE)
 

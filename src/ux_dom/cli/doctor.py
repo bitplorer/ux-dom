@@ -87,7 +87,7 @@ def run_doctor(
             "python",
             py_ok,
             f"{platform.python_version()} ({sys.executable})"
-            + ("" if py_ok else " — ux-dom 0.1 targets Python >= 3.14 (warn)"),
+            + ("" if py_ok else " — ux-dom targets Python >= 3.14 (warn)"),
             level="warn" if not py_ok else "info",
         )
     )

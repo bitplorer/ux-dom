@@ -4,7 +4,7 @@
 
 | Version | Supported |
 |---------|-----------|
-| 0.1.x   | Yes (best-effort while pre-1.0) |
+| 0.2.x   | Yes (best-effort while pre-1.0) |
 
 ## Threat model
 

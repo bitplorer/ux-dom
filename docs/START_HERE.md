@@ -1,4 +1,4 @@
-# Start here — ux-dom 0.1.0 (mental model)
+# Start here — ux-dom (mental model)
 
 > **5-minute path (root):** [../START_HERE.md](../START_HERE.md)
 > **Boundary:** [internals/SYSTEM.md](internals/SYSTEM.md)
