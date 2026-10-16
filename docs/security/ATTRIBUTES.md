@@ -48,6 +48,12 @@ another.
 Alpine and htmx names (`@click`, `:class`, `x-on:keyup.enter`, `hx-post`)
 are valid.
 
+**Never spread untrusted keys as attributes.** Name validation only stops a
+name from breaking out of the tag. A valid name can still be dangerous on its
+own: `onclick`, `@click`, `hx-on:*`, `x-html` and friends run script or
+inject HTML by design. Build attribute dicts from keys you choose, and pass
+untrusted data only as values.
+
 The checked text is what renders: `safe_attr_value` calls `str(value)` (or
 `__html__()`) once and returns that string, so an object cannot return a safe
 string to the check and a different one to the renderer.
