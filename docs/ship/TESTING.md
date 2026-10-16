@@ -1,4 +1,4 @@
-# Testing — ux-dom 0.1
+# Testing — ux-dom
 
 ### Brand lines
 
@@ -24,14 +24,14 @@ Layout: [`tests/README.md`](../../tests/README.md).
 | Core | `01_core/` | Component, Fragment, render, reactive |
 | Document | `02_document_plugins/` | Document, CSP, XElement, package static |
 | CLI / routes | `03_routing_cli/` | DirectoryRoutes, doctor, add (no product scaffold) |
-| Production | `04_production/` | Readiness + **0.1 lock** |
+| Production | `04_production/` | Readiness + **production lock** |
 | Chaos | `05_chaos/` | Parse / race / pentest |
 | Browser | `06_browser/` | Live Chromium when available |
 
 ## Production lock
 
 ```bash
-PYTHONPATH=. python -m pytest tests/04_production/test_production_0_1_lock.py -q
+PYTHONPATH=. python -m pytest tests/04_production/test_production_lock.py -q
 ```
 
 Peer channel: soft dependency — see [STACK.md](../STACK.md).
