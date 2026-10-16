@@ -89,12 +89,50 @@ class TestHtmxEventName(unittest.TestCase):
 
 
 class TestRouteNameDots(unittest.TestCase):
-    def test_no_colon_in_name_template(self):
-        root = Path(__file__).resolve().parents[2]
-        src = (root / "src" / "ux_dom" / "routing" / "fastapi.py").read_text()
-        self.assertNotIn('name = f"{module}.{klass_name}:{_method}"', src)
-        self.assertNotIn('name = f"{module}:{fn_name}"', src)
-        self.assertIn('name = f"{module}.{klass_name}.{_method}"', src)
+    """Component and file-function route names are dotted (no ':'), so they
+    are valid url_for names. Checked on a real router, not on source text."""
+
+    def test_route_names_are_dotted(self):
+        import sys
+        import textwrap
+        from tempfile import TemporaryDirectory
+
+        from ux_dom.routing.fastapi import DirectoryRouter
+
+        with TemporaryDirectory() as td:
+            pkg = Path(td) / "dotpkg"
+            (pkg / "app").mkdir(parents=True)
+            (pkg / "__init__.py").write_text("")
+            (pkg / "app" / "__init__.py").write_text("")
+            (pkg / "app" / "counter.py").write_text(textwrap.dedent("""
+                from ux_dom.dom import Component, div
+                __all__ = ["Counter"]
+                class Counter(Component):
+                    routes = ["get", "add"]
+                    def render(self):
+                        return div("c")
+                    @classmethod
+                    def get(cls):
+                        return cls()
+                    @classmethod
+                    def add(cls):
+                        return cls()
+                """))
+            (pkg / "app" / "ping.py").write_text("def get():\n    return 'pong'\n")
+            sys.path.insert(0, td)
+            try:
+                router = DirectoryRouter(base_directory="app", package_dir=pkg)
+            finally:
+                sys.path.remove(td)
+        names = sorted(r["name"] for r in router.route_table)
+        self.assertEqual(
+            names,
+            [
+                "dotpkg.app.counter.Counter.add",
+                "dotpkg.app.counter.Counter.get",
+                "dotpkg.app.ping.get",
+            ],
+        )
 
 
 if __name__ == "__main__":
