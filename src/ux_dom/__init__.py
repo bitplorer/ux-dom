@@ -70,4 +70,4 @@ from ux_dom.runtime import (  # noqa: E402
     XElement as XElement,
 )
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"

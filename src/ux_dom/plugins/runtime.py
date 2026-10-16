@@ -9,7 +9,7 @@ from typing import Any, Literal, Optional, Sequence
 from ux_dom.plugins.contribution import StaticArtifact
 from ux_dom.plugins.safe_static import SafeStaticFile
 
-ServeMode = Literal["package_mount", "dual_copy", "webassets"]
+ServeMode = Literal["package_mount", "dual_copy"]
 
 XELEMENT_STATIC_PREFIX = "/ux-dom/static"
 XELEMENT_JS_URL = f"{XELEMENT_STATIC_PREFIX}/x_element.js"
@@ -27,16 +27,10 @@ class XElementRuntime:
     name = "ux_dom.xelement"
 
     def __init__(self, *, serve: ServeMode = "package_mount") -> None:
-        if serve == "webassets":
-            import warnings
-
-            warnings.warn(
-                "XElementRuntime(serve='webassets') is the dual-copy hatch; "
-                "prefer serve='package_mount' (default) or serve='dual_copy'. "
-                "This is NOT ux_compose.assets.WebAssets.",
-                stacklevel=2,
+        if serve not in ("package_mount", "dual_copy"):
+            raise ValueError(
+                f"XElementRuntime(serve={serve!r}); use 'package_mount' or 'dual_copy'"
             )
-            serve = "dual_copy"
         self.serve = serve
 
     def served_files(self) -> Sequence[SafeStaticFile]:

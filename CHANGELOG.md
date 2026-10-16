@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 — remove deprecations
+
+- Removed deprecated modules `ux_dom.dom.ui` (Tortoise form helper),
+  `ux_dom.dom.src.pythontags`, `ux_dom.dom.src.sphinxtags`, `ux_dom.alpinejs.ripple_btn`.
+- Removed `serve="webassets"` alias on `XElementRuntime` and
+  `PackageStaticContribution`.
+- **BREAKING:** any `serve=` value other than `"package_mount"` / `"dual_copy"`
+  now raises `ValueError` (before: unknown values were not rejected).
+- Removed `Carousel(default=)` alias. Use `index=`.
+
 ## 0.1.1
 
 ### Security (fail closed)
@@ -87,7 +97,7 @@
   `TailwindStyle` / `ux_dom.cli.tailwind` fail closed and teach
   `uxcompose build`. `className`, Document `<link>`, and package static
   stay here. App folders are `ux_compose.WebAssets` (ux-dom `WebAssets` fails closed).
-  Package-static dual-copy hatch is `serve="dual_copy"` (`serve="webassets"` leftover alias).
+  Package-static dual-copy hatch is `serve="dual_copy"`.
 - **Product routing bind:** `ux_compose.routing.DirectoryRoutes` + thin adapter.
   `DirectoryRoutes` constructed from this package fails closed.
 - Historical `uxdom serve` / `create-app` notes below are **pre-cut**.

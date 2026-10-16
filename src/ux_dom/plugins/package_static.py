@@ -13,7 +13,7 @@ ux-channel pattern (gold standard)::
 
 ux-dom mirrors that for every library contribution.
 
-``serve="dual_copy"`` (legacy alias ``serve="webassets"``) remains as an
+``serve="dual_copy"`` remains as an
 **escape hatch** only (air-gapped tree without site-packages). Prefer
 ``package_mount`` (default). This string is **not** ``ux_compose.WebAssets``.
 """
@@ -28,7 +28,7 @@ from typing import Any, Callable, Literal, Mapping, Sequence
 
 from ux_dom.plugins.contribution import StaticArtifact
 
-ServeMode = Literal["package_mount", "dual_copy", "webassets"]
+ServeMode = Literal["package_mount", "dual_copy"]
 Inject = Literal["head", "body", "none"]
 
 
@@ -106,11 +106,14 @@ class PackageStaticContribution:
             self.public_url_prefix = f"/ux-pkg/{self.name}/static"
         if not self.mount_package and self.files:
             self.mount_package = self.files[0].package
-        if self.serve in ("webassets", "dual_copy"):
-            alias = self.serve
-            self.serve = "dual_copy"  # type: ignore[misc]
+        if self.serve not in ("package_mount", "dual_copy"):
+            raise ValueError(
+                f"PackageStaticContribution({self.name!r}): serve={self.serve!r}; "
+                "use 'package_mount' or 'dual_copy'"
+            )
+        if self.serve == "dual_copy":
             warnings.warn(
-                f"PackageStaticContribution({self.name!r}): serve={alias!r} "
+                f"PackageStaticContribution({self.name!r}): serve='dual_copy' "
                 "is the dual-copy hatch (library JS into app assets/). "
                 "It is NOT ux_compose.assets.WebAssets. Prefer package_mount "
                 "(default) unless you have an air-gapped tree without pip packages.",

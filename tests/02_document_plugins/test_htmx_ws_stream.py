@@ -19,8 +19,8 @@ from ux_dom.web_io import WebSocketAdapter, WebSocketEvents
 
 
 class TestVersion(unittest.TestCase):
-    def test_version_0_1(self):
-        self.assertTrue(__version__.startswith("0.1"))
+    def test_version_0_2(self):
+        self.assertTrue(__version__.startswith("0.2"))
 
 
 class TestHtmxPureASGI(unittest.TestCase):
