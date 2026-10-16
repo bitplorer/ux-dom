@@ -71,7 +71,7 @@ def run_build(
     archive: bool = False,
     out_dir: Optional[Path] = None,
     package_name: Optional[str] = None,
-    minify: bool = True,
+    minify: Optional[bool] = None,
 ) -> BuildReport:
     """
     Production verify pipeline (not product CSS compile):
@@ -84,7 +84,14 @@ def run_build(
 
     Product CSS minify is ``uxcompose build``. ``skip_tailwind`` is accepted
     and ignored so leftover scripts do not crash.
+
+    ``minify`` fails closed: this pipeline never minifies, so passing it
+    raises instead of pretending.
     """
+    if minify is not None:
+        raise ValueError(
+            "run_build does not minify CSS; product CSS minify is `uxcompose build`."
+        )
     root = _find_app_root(cwd)
     report = BuildReport(root=root)
 
