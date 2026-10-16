@@ -2,7 +2,6 @@
 """Carousel — Channel-first slide index (no Alpine).
 
 Active index comes from the server (ux-behavior ``select``). Renders one slide.
-``default=`` is accepted as an alias for ``index=`` (historical name).
 """
 from __future__ import annotations
 
@@ -30,7 +29,6 @@ class Carousel(Component):
         slides: Sequence[Any] = (),
         *,
         index: int = 0,
-        default: int | None = None,
         label: str = "Carousel",
         empty: Any = None,
         select_action: str | None = None,
@@ -56,8 +54,7 @@ class Carousel(Component):
             )
 
         n = len(items)
-        start = index if default is None else default
-        idx = max(0, min(int(start), n - 1))
+        idx = max(0, min(int(index), n - 1))
         body = items[idx]
 
         def nav_btn(visible: str, aria: str, target_idx: int, *, disabled: bool):
