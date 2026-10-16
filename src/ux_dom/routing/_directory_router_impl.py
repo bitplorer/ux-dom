@@ -137,6 +137,11 @@ def _is_renderable_unit(klass: type) -> bool:
     )
 
 
+def _stem_key(name: str) -> str:
+    """Case- and underscore-insensitive key: my_page.py matches MyPage."""
+    return name.replace("_", "").lower()
+
+
 def _pick_page_type(
     route_file: Any,
     exported: list,
@@ -171,7 +176,7 @@ def _pick_page_type(
                 continue
         if not _is_renderable_unit(obj):
             continue
-        if obj.__name__.lower() == stem:
+        if _stem_key(obj.__name__) == _stem_key(stem):
             matches.append(obj)
     if len(matches) > 1:
         names = [m.__name__ for m in matches]
@@ -204,6 +209,31 @@ def _explicit_http_handlers(klass: type) -> dict:
             if callable(attr):
                 found[verb] = getattr(klass, verb)
     return found
+
+
+def _declared_sub_actions(klass: type, module: str) -> list:
+    """Non-verb names in ``klass.routes``: each becomes GET /<stem>/<name>.
+
+    Fails closed: a declared name with no callable on the class raises,
+    because a silently missing action is a 404 nobody notices.
+    """
+    actions = []
+    for name in getattr(klass, "routes", None) or ():
+        if not isinstance(name, str) or name.lower() in _HTTP_VERBS:
+            continue
+        if name.startswith("/"):
+            raise DirectoryRouterError(
+                f"{module}.{klass.__name__}.routes contains URL {name!r}; under "
+                "DirectoryRouter the URL comes from the file path, and routes= "
+                "lists only verbs and sub-action method names"
+            )
+        if not callable(getattr(klass, name, None)):
+            raise DirectoryRouterError(
+                f"{module}.{klass.__name__}.routes declares {name!r} "
+                "but the class has no such callable"
+            )
+        actions.append(name)
+    return actions
 
 
 def _page_get_endpoint(
@@ -539,7 +569,9 @@ class DirectoryRouter(routing.APIRouter):
                     explicit = _explicit_http_handlers(page_cls)
                     for verb, fn in explicit.items():
                         class_map[kname][verb] = fn
-                    if "get" not in class_map and _is_renderable_unit(page_cls):
+                    for action in _declared_sub_actions(page_cls, module):
+                        class_map[kname][action] = getattr(page_cls, action)
+                    if "get" not in class_map[kname] and _is_renderable_unit(page_cls):
                         class_map[kname]["get"] = _page_get_endpoint(
                             page_cls,
                             path="",
@@ -554,6 +586,24 @@ class DirectoryRouter(routing.APIRouter):
                     methods_payload = file_fns
                     kind = "file_fns"
                 else:
+                    unmatched = [
+                        n
+                        for n in exported
+                        if isinstance(getattr(route_file, n, None), type)
+                        and _is_renderable_unit(getattr(route_file, n))
+                    ]
+                    if unmatched:
+                        # Fail closed: a route module with page-like classes but
+                        # no stem-matching unit would otherwise vanish (404).
+                        msg = (
+                            f"no page unit in {module}: exports {unmatched} but no "
+                            f"class is named after the file stem {file.stem!r} "
+                            f"(path law: {file.stem}.py -> class "
+                            f"{''.join(p.capitalize() for p in file.stem.split('_'))})."
+                        )
+                        if self._fail_closed:
+                            raise DirectoryRouterError(msg)
+                        logger.error("%s", msg)
                     kind = "empty"
                     methods_payload = {}
 

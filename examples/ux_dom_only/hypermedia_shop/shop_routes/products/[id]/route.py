@@ -18,7 +18,7 @@ def get(id: str):
         h2(prod["name"]),
         p(prod["desc"]),
         span(f"${prod['price']}", className="price"),
-        p(a("← Catalog", href="/shop/products/list/ProductList")),
+        p(a("← Catalog", href="/shop/products/list")),
         id="product",
         data_product_id=id,
     )

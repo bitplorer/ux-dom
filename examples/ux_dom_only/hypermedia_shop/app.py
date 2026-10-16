@@ -14,9 +14,9 @@ Capabilities shown
 DirectoryRouting URL shape (leftover DirectoryRouter)::
 
     shop_routes/index.py::Index.get
-        → GET /{prefix}/index/Index   e.g. /shop/index/Index
-    shop_routes/products/list.py::ProductList.get
-        → GET /shop/products/list/ProductList
+        → GET /{prefix}/   e.g. /shop/
+    shop_routes/products/list.py::List.get
+        → GET /shop/products/list
 
 Run::
 
@@ -36,7 +36,7 @@ from ux_dom.plugins.routing import DirectoryRouting
 PACKAGE = Path(__file__).resolve().parent
 
 # Canonical home route produced by leftover DirectoryRouting for shop_routes/index.py
-HOME = "/shop/index/Index"
+HOME = "/shop/"
 
 app = (
     App(debug=False)

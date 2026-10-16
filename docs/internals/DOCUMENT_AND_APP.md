@@ -63,4 +63,4 @@ uxdom doctor          # pure Document health
 Do not hand-reintroduce a parallel “App owns head/body” path on ux-dom.
 
 **Canonical deep dives:** [DOCUMENT.md](../reference/DOCUMENT.md) · [APP_COMPOSITION.md](APP_COMPOSITION.md) ·
-[SYSTEM.md](SYSTEM.md) · ux-compose `docs/FLOW.md`.
+[SYSTEM.md](SYSTEM.md) · [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md).

@@ -2,13 +2,13 @@
 from ux_dom import Component, Document
 from ux_dom.dom import button, div, h2, span
 
-__all__ = ["CartCounter"]
+__all__ = ["Counter"]
 
 # process-local demo store (single worker)
 _CART = {"n": 0}
 
 
-class CartCounter(Component):
+class Counter(Component):
     routes = ["get", "post"]
 
     def render(self, n: int | None = None):
@@ -19,7 +19,7 @@ class CartCounter(Component):
             button(
                 "+1",
                 type="button",
-                hx_post="/shop/cart/counter/CartCounter",
+                hx_post="/shop/cart/counter",
                 hx_target="#cart-root",
                 hx_swap="outerHTML",
                 id="add-btn",

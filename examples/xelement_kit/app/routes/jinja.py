@@ -7,10 +7,10 @@ from ux_dom.dom.src.jinjatags import For, Var
 
 from app.document import page
 
-__all__ = ["JinjaDemo"]
+__all__ = ["Jinja"]
 
 
-class JinjaDemo(Component):
+class Jinja(Component):
     routes = ["get"]
 
     def render(self):
@@ -23,7 +23,7 @@ class JinjaDemo(Component):
         expanded_html = str(expanded)
 
         return div(
-            a("← Home", href="/index/Index", className="text-sm text-sky-600"),
+            a("← Home", href="/", className="text-sm text-sky-600"),
             h1("Jinja DSL", className="text-3xl font-bold mt-4 mb-2"),
             p(
                 "Server-side templates via ",

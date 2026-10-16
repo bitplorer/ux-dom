@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import RedirectResponse
 
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
@@ -20,7 +19,3 @@ _builder = (
 )
 app = _builder.build(asgi=FastAPI(title=settings.APP_TITLE, debug=settings.DEBUG))
 
-
-@app.get("/")
-def _root():
-    return RedirectResponse("/index/Index")

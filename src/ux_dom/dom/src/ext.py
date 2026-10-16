@@ -27,7 +27,13 @@ from jinja2.utils import htmlsafe_json_dumps
 
 from ux_dom.dom.src.dom1core import dom1core
 from ux_dom.dom.src.dom_tag import dom_tag, unicode
-from ux_dom.dom.src.utils.dom_util import dom_text, escape
+from ux_dom.dom.src.utils.dom_util import (
+    dom_text,
+    escape,
+    checked_attr_name,
+    escape_attr_minimal,
+    safe_attr_value,
+)
 
 __all__ = [
     "Tags",
@@ -84,9 +90,14 @@ class Tags(dom_tag, dom1core):
     )
     file_extension = ".html"
     attribute_prefix_map: dict = {}
-    safe_attributes: dict = {}
+    # Per-instance map: attribute -> False opts that attribute out of full
+    # escaping (it still gets escape_attr_minimal). Never a shared class dict,
+    # or one tag's opt-out would disable escaping for every tag.
+    safe_attributes: dict
 
     def __init__(self, *args, **kwargs):
+        # Before super().__init__, which may already set attributes.
+        self.safe_attributes = {}
         super(Tags, self).__init__(*args, **kwargs)
 
     def _control(self, key, default=False):
@@ -173,6 +184,7 @@ class Tags(dom_tag, dom1core):
                 continue
             if value is False:
                 continue
+            attribute = checked_attr_name(attribute)
             if value is None:
                 yield " %s" % attribute
                 continue
@@ -181,10 +193,11 @@ class Tags(dom_tag, dom1core):
                     value, indent_level, indent_str, pretty
                 )
             if not isinstance(value, (dict, list)):
+                value = safe_attr_value(attribute, value)
                 if self.safe_attributes.get(attribute, True):
                     yield ' %s="%s"' % (attribute, escape(unicode(value), True))
                 else:
-                    yield ' %s="%s"' % (attribute, unicode(value))
+                    yield ' %s="%s"' % (attribute, escape_attr_minimal(value))
             else:
                 dumped = htmlsafe_json_dumps(value)
                 yield " %s='%s'" % (
@@ -795,10 +808,13 @@ class StyleTags(Tags):
         attribute_items = self.attributes.items()
 
         for attribute, value in attribute_items:
+            if value is not False:
+                attribute = checked_attr_name(attribute)
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely
-                sb.append(attribute_joiner % (attribute, escape(unicode(value), True)))
+                safe = escape(unicode(safe_attr_value(attribute, value)), True)
+                sb.append(attribute_joiner % (attribute, safe))
 
             if value is None:  # minified xhtml attributes are added
                 sb.append(" %s" % attribute)
@@ -827,10 +843,13 @@ class StyleTags(Tags):
         attribute_joiner = self.attribute_joiner
 
         for attribute, value in self.attributes.items():
+            if value is not False:
+                attribute = checked_attr_name(attribute)
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely
-                r.append(attribute_joiner % (attribute, escape(unicode(value), True)))
+                safe = escape(unicode(safe_attr_value(attribute, value)), True)
+                r.append(attribute_joiner % (attribute, safe))
 
             if value is None:  # minified xhtml attributes are added
                 r.append(" %s" % attribute)
