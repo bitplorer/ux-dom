@@ -7,10 +7,10 @@ from ux_dom.dom import div, h1, p, span
 from app.components.layout import Shell
 from app.document import page
 
-__all__ = ["StreamDemo"]
+__all__ = ["Stream"]
 
 
-class StreamDemo(Component):
+class Stream(Component):
     routes = ["get"]
 
     def render(self):

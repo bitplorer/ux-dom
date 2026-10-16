@@ -7,10 +7,10 @@ from ux_dom.dom import div, h1, p
 from app.components.layout import Shell
 from app.document import page
 
-__all__ = ["SseDemo"]
+__all__ = ["Sse"]
 
 
-class SseDemo(Component):
+class Sse(Component):
     routes = ["get"]
 
     def render(self):
