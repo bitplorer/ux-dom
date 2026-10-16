@@ -1,6 +1,6 @@
 # ux-dom System Boundary (hard cut)
 
-> Companion to ux-compose `docs/FLOW.md`.
+> Companion to [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md).
 
 ## One rule
 
