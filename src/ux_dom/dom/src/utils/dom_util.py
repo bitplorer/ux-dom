@@ -41,6 +41,7 @@ __all__ = [
     "include",
     "system",
     "escape",
+    "escape_attr_minimal",
     "unescape",
     "url_escape",
     "url_unescape",
@@ -113,6 +114,16 @@ _SAFE_SCHEMES = frozenset({"http", "https", "mailto", "tel"})
 _SAFE_DATA_URL = re.compile(r"data:image/(?:png|jpeg|jpg|gif|webp)(?:[;,]|$)")
 
 
+def escape_attr_minimal(data):
+    """Escape only ``&`` and ``"``: the least that keeps a value inside ``"..."``.
+
+    Used for attributes that opt out of full escaping (Alpine JSON and
+    handlers keep ``'``, ``<`` and ``>`` readable). The browser decodes the
+    entities back, so the value is unchanged; it just cannot close the quote.
+    """
+    return str(data).replace("&", "&amp;").replace('"', "&quot;")
+
+
 def _is_safe_url(text):
     """True for relative URLs, allow-listed schemes, and raster data: images."""
     # Browsers decode entities before parsing the URL; check what they see.
@@ -136,6 +147,9 @@ def safe_attr_value(attribute, value):
 
     HTML attributes (``srcdoc``) are refused unless the value implements
     ``__html__``; then that HTML is returned (it is still attribute-escaped).
+
+    For checked attributes the return value is always the ``str`` that was
+    checked, so the renderer never stringifies the original object again.
     """
     name = str(attribute).lower()
     if name in HTML_ATTRIBUTES:
@@ -143,7 +157,10 @@ def safe_attr_value(attribute, value):
         return str(html_method()) if callable(html_method) else UNSAFE_URL
     if name not in URL_ATTRIBUTES:
         return value
-    return value if _is_safe_url(str(value)) else UNSAFE_URL
+    # Stringify once and return that text: re-stringifying ``value`` later
+    # could yield something other than what was checked.
+    text = str(value)
+    return text if _is_safe_url(text) else UNSAFE_URL
 
 
 _unescape = {

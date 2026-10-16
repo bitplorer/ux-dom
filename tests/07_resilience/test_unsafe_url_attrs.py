@@ -160,6 +160,7 @@ def test_srcdoc_allowed_with_explicit_html_opt_in():
         "blob:https://x/1",
         "livescript:x",
         "ftp://example.com/x",
+        "sms:+911234567890",
     ],
 )
 def test_schemes_outside_allow_list_are_blocked(value):
