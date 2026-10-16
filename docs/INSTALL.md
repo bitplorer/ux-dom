@@ -9,7 +9,7 @@
 | **CLI** | **`uxdom`** (pure-dom tooling) |
 | **Product CLI** | **`uxcompose`** |
 
-## From this source tree (0.1.0)
+## From this source tree (0.1.1)
 
 ```bash
 cd <checkout>

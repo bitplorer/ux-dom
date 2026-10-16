@@ -45,7 +45,7 @@ async function main() {
   }
 
   // 2) Shop
-  res = await page.goto(BASE + "/shop/Shop", { waitUntil: "networkidle", timeout: 30000 });
+  res = await page.goto(BASE + "/shop", { waitUntil: "networkidle", timeout: 30000 });
   log(!!res && res.ok(), "shop status", `status=${res?.status()}`);
   const shopText = await page.locator("body").innerText();
   log(shopText.length > 20, "shop has body text", shopText.slice(0, 100));
@@ -66,12 +66,12 @@ async function main() {
   }
 
   // 3) Cart
-  res = await page.goto(BASE + "/cart/Cart", { waitUntil: "networkidle", timeout: 30000 });
+  res = await page.goto(BASE + "/cart", { waitUntil: "networkidle", timeout: 30000 });
   log(!!res && res.ok(), "cart status", `status=${res?.status()}`);
   await page.screenshot({ path: path.join(OUT, "ux_dom-cart.png"), fullPage: true });
 
   // 4) SSE demo
-  res = await page.goto(BASE + "/sse/SseDemo", { waitUntil: "domcontentloaded", timeout: 30000 });
+  res = await page.goto(BASE + "/sse", { waitUntil: "domcontentloaded", timeout: 30000 });
   log(!!res && res.ok(), "sse status", `status=${res?.status()}`);
   await page.waitForTimeout(1500);
   const sseText = await page.locator("body").innerText();
@@ -79,7 +79,7 @@ async function main() {
   await page.screenshot({ path: path.join(OUT, "ux_dom-sse.png"), fullPage: true });
 
   // 5) Stream
-  res = await page.goto(BASE + "/stream/StreamDemo", { waitUntil: "networkidle", timeout: 30000 });
+  res = await page.goto(BASE + "/stream", { waitUntil: "networkidle", timeout: 30000 });
   log(!!res && res.ok(), "stream status", `status=${res?.status()}`);
   await page.screenshot({ path: path.join(OUT, "ux_dom-stream.png"), fullPage: true });
 
@@ -91,7 +91,7 @@ async function main() {
 
   // 7) Mobile viewport
   await page.setViewportSize({ width: 390, height: 844 });
-  res = await page.goto(BASE + "/index/Index", { waitUntil: "networkidle", timeout: 30000 });
+  res = await page.goto(BASE + "/", { waitUntil: "networkidle", timeout: 30000 });
   log(!!res && res.ok(), "mobile home status", `status=${res?.status()}`);
   const overflow = await page.evaluate(() => {
     return {

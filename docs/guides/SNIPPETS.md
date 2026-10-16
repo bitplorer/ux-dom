@@ -205,7 +205,7 @@ from ux_compose.routing import DirectoryRoutes, RouterHooks
 # or: ux_compose.build(...) / App.mount / uxcompose serve
 ```
 
-See ux-compose `docs/guides/SNIPPETS.md` and `docs/FLOW.md`.
+See ux-compose `docs/guides/SNIPPETS.md` and [FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md).
 
 
 ## CLI

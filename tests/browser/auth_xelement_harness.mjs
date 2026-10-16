@@ -11,7 +11,7 @@ import { createServer } from "node:http";
 import { readFileSync, writeFileSync, mkdirSync } from "node:fs";
 import { join, resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
-import { chromium } from "/workspace/node_modules/playwright/index.mjs";
+import { chromium } from "playwright";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "../..");

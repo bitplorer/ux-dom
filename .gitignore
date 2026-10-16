@@ -64,3 +64,6 @@ demosite/assets/static/
 # Test / harness outputs
 screenshots/
 reports/
+
+# Browser test toolchain (npm ci --prefix tests/browser)
+node_modules/

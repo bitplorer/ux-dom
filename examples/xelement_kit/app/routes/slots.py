@@ -6,11 +6,11 @@ from ux_dom.dom import a, code, div, h1, h2, li, p, span, ul
 from ux_dom.dom import slot as html_slot
 from ux_dom.dom import template
 from ux_dom.dom.htmlelement import WebComponent
-from ux_dom.slots import Slots
+from ux_dom.slots import Slots as SlotsDefinition
 
 from app.document import page
 
-__all__ = ["SlotsDemo"]
+__all__ = ["Slots"]
 
 
 class NamedPanel(WebComponent):
@@ -30,7 +30,7 @@ class NamedPanel(WebComponent):
         )
 
 
-class SlotsDemo(Component):
+class Slots(Component):
     routes = ["get"]
 
     def render(self):
@@ -39,7 +39,7 @@ class SlotsDemo(Component):
             span("Default slot body copy."),
         )
 
-        slots_def = Slots(
+        slots_def = SlotsDefinition(
             tag_name="multi-slot",
             slot_names=["left", "right"],
             classes={"multi-slot": "flex gap-3 p-3 bg-slate-100 rounded-xl"},
@@ -50,7 +50,7 @@ class SlotsDemo(Component):
         )
 
         return div(
-            a("← Home", href="/index/Index", className="text-sm text-sky-600"),
+            a("← Home", href="/", className="text-sm text-sky-600"),
             h1("Slots", className="text-3xl font-bold mt-4 mb-2"),
             p(
                 code("NamedPanel(...)"),

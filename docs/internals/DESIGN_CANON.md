@@ -26,4 +26,4 @@ Product create-app / build / serve / deploy: **uxcompose** (not this package).
 
 ## See also
 
-[SYSTEM.md](SYSTEM.md) · ux-compose `docs/FLOW.md`
+[SYSTEM.md](SYSTEM.md) · [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md)

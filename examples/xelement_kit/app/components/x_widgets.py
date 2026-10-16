@@ -2,8 +2,8 @@
 
 For full Light / Shadow documentation see:
 
-* ``light_dom.py`` + route ``/lightdom/LightDomDemo``
-* ``shadow_dom.py`` + route ``/shadowdom/ShadowDomDemo``
+* ``light_dom.py`` + route ``/lightdom``
+* ``shadow_dom.py`` + route ``/shadowdom``
 * Library guide: ``docs/guides/XELEMENT.md``
 
 Contract reminder: ``x-tagname`` only · runtime ``x_element.js``.

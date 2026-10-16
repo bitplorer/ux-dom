@@ -54,66 +54,6 @@ class TestScaffoldAPI(unittest.TestCase):
                 if k == "app" or k.startswith("app."):
                     del sys.modules[k]
 
-    def test_shop_cart_post(self):
-        self.skipTest("shop template is uxcompose product path, not ux-dom")
-        root = create_app(
-            ScaffoldOptions(
-                "t_shop",
-                dest=Path("/tmp/ux_dom_test_scaffold_shop"),
-                template="shop",
-                force=True,
-            )
-        )
-        sys.path.insert(0, str(root))
-        for k in list(sys.modules):
-            if k == "app" or k.startswith("app."):
-                del sys.modules[k]
-        try:
-            import app.main as m
-
-            c = TestClient(m.app)
-            self.assertEqual(c.get("/shop/Shop").status_code, 200)
-            r = c.post("/cart/Cart")
-            self.assertEqual(r.status_code, 200)
-            self.assertIn("cart-root", r.text)
-        finally:
-            sys.path.remove(str(root))
-            for k in list(sys.modules):
-                if k == "app" or k.startswith("app."):
-                    del sys.modules[k]
-
-    def test_live_with_channel(self):
-        self.skipTest("live template is uxcompose product path, not ux-dom")
-        try:
-            import ux_channel  # noqa: F401
-        except ImportError:
-            self.skipTest("uxchannel not installed")
-        root = create_app(
-            ScaffoldOptions(
-                "t_live",
-                dest=Path("/tmp/ux_dom_test_scaffold_live"),
-                template="live",
-                force=True,
-            )
-        )
-        sys.path.insert(0, str(root))
-        for k in list(sys.modules):
-            if k == "app" or k.startswith("app."):
-                del sys.modules[k]
-        try:
-            import app.main as m
-
-            c = TestClient(m.app)
-            self.assertTrue(c.get("/health").json()["channel"])
-            r = c.get("/live/Live")
-            self.assertEqual(r.status_code, 200)
-            self.assertIn("Bump", r.text)
-        finally:
-            sys.path.remove(str(root))
-            for k in list(sys.modules):
-                if k == "app" or k.startswith("app."):
-                    del sys.modules[k]
-
 
 class TestCreateAppXElementRuntime(unittest.TestCase):
     def test_ships_and_loads_x_element_js(self):

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import json
 import os
 import subprocess
 import sys
@@ -13,9 +12,9 @@ from tempfile import TemporaryDirectory
 from ux_dom.cli.adders import AddError, add_component, add_route, add_xelement
 from ux_dom.cli.doctor import run_doctor
 from ux_dom.cli.lint import lint_project
-from helpers import ScaffoldOptions, available_templates, create_app
+from helpers import ScaffoldOptions, create_app
 from ux_dom.dom import div, template
-from ux_dom.dom.htmlelement import CustomElement, WebComponent, XElement
+from ux_dom.dom.htmlelement import CustomElement, XElement
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -24,57 +23,6 @@ class TestTemplates(unittest.TestCase):
     def test_product_templates_not_on_uxdom(self):
         with self.assertRaises(ImportError):
             import ux_dom.cli.scaffold  # noqa: F401
-
-
-class TestTutorialScaffold(unittest.TestCase):
-    def test_creates_guided_routes(self):
-        self.skipTest("tutorial template is uxcompose product path, not ux-dom")
-        with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "learn",
-                    dest=Path(td) / "learn",
-                    template="tutorial",
-                    force=True,
-                )
-            )
-            for rel in [
-                "app/routes/htmx_demo.py",
-                "app/routes/xelement_demo.py",
-                "app/routes/recipes.py",
-                "app/components/x_hello.py",
-            ]:
-                self.assertTrue((root / rel).is_file(), rel)
-            self.assertTrue(
-                "CreateAsgi" in (root / "app/main.py").read_text()
-                or "XElement" in (root / "app/document.py").read_text()
-            )
-            # boot routes
-            sys.path.insert(0, str(root))
-            for k in list(sys.modules):
-                if k == "app" or k.startswith("app."):
-                    del sys.modules[k]
-            try:
-                from fastapi.testclient import TestClient
-                from app.main import app
-
-                c = TestClient(app)
-                self.assertEqual(c.get("/health").status_code, 200)
-                for path in [
-                    "/",
-                    "/htmx_demo",
-                    "/xelement_demo",
-                    "/recipes",
-                    "/about",
-                ]:
-                    r = c.get(path)
-                    self.assertEqual(r.status_code, 200, path)
-            finally:
-                for k in list(sys.modules):
-                    if k == "app" or k.startswith("app."):
-                        del sys.modules[k]
-                if str(root) in sys.path:
-                    sys.path.remove(str(root))
 
 
 class TestDoctor(unittest.TestCase):

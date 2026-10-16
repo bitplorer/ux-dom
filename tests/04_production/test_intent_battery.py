@@ -253,8 +253,8 @@ class TestStandaloneShopApp(unittest.TestCase):
                     """))
             (pkg / "app" / "products" / "list.py").write_text(textwrap.dedent("""
                     from ux_dom.dom import Component, div, span
-                    __all__ = ["ProductList"]
-                    class ProductList(Component):
+                    __all__ = ["List"]
+                    class List(Component):
                         routes = ["get"]
                         def render(self):
                             return div(span("Products", id="plist-title"), id="plist")
@@ -269,8 +269,8 @@ class TestStandaloneShopApp(unittest.TestCase):
             )
             (pkg / "app" / "cart" / "counter.py").write_text(textwrap.dedent("""
                     from ux_dom.dom import Component, div, button
-                    __all__ = ["CartCounter"]
-                    class CartCounter(Component):
+                    __all__ = ["Counter"]
+                    class Counter(Component):
                         routes = ["get", "add", "clear"]
                         def render(self, n=0):
                             return div(f"cart={n}", id="cart")
@@ -320,6 +320,17 @@ class TestStandaloneShopApp(unittest.TestCase):
                 self.assertEqual(r.status_code, 200)
                 self.assertIn("Welcome", r.text)
 
+                r = client.get("/shop/products/list")
+                self.assertEqual(r.status_code, 200)
+                self.assertIn("plist-title", r.text)
+
+                r = client.get("/shop/cart/counter")
+                self.assertEqual(r.status_code, 200)
+                self.assertIn("cart=0", r.text)
+                r = client.get("/shop/cart/counter/add")
+                self.assertEqual(r.status_code, 200)
+                self.assertIn("cart=1", r.text)
+
                 r = client.get("/shop/products/sku99/")
                 self.assertEqual(r.status_code, 200)
                 self.assertIn("product-sku99", r.text)
@@ -333,6 +344,8 @@ class TestStandaloneShopApp(unittest.TestCase):
                     "/shop/products/sku99/",
                     "/shop/api.v1/",
                     "/shop/products/p1/",
+                    "/shop/products/list",
+                    "/shop/cart/counter",
                 ]
 
                 def hit(_):

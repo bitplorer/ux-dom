@@ -107,4 +107,4 @@ uxcompose build
 uxcompose deploy --provider docker
 ```
 
-See [CLI.md](CLI.md) · ux-compose `docs/FLOW.md`.
+See [CLI.md](CLI.md) · [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md).

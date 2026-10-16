@@ -26,6 +26,7 @@ Public License along with Dominate.  If not, see
 <http://www.gnu.org/licenses/>.
 """
 
+import html
 import re
 
 from ux_dom.dom.src.dom_tag import dom_tag
@@ -40,6 +41,9 @@ __all__ = [
     "include",
     "system",
     "escape",
+    "escape_attr_minimal",
+    "InvalidAttributeName",
+    "checked_attr_name",
     "unescape",
     "url_escape",
     "url_unescape",
@@ -91,6 +95,97 @@ def escape(data, quote=True):
         data = data.replace('"', "&" + "quot;")
         data = data.replace("'", "&" + "#39;")
     return data
+
+
+# URL-bearing attributes. A script-capable scheme here is an XSS sink, so the
+# renderer fails closed: the value becomes UNSAFE_URL (inert, like Closure's
+# "about:invalid#zClosurez"). Applies to every render path, including
+# attributes marked unescaped, because no caller needs an executable URL.
+URL_ATTRIBUTES = frozenset(
+    {
+        "href", "src", "action", "formaction", "xlink:href", "poster",
+        "cite", "background", "data", "codebase", "longdesc",
+        "manifest", "ping", "icon", "archive", "usemap", "profile",
+        "lowsrc", "dynsrc", "hx-get", "hx-post", "hx-put", "hx-patch",
+        "hx-delete",
+    }
+)
+# Attributes whose value is a whole HTML document, not a URL. A scheme check
+# is meaningless there, so they are refused unless the value explicitly opts
+# in through the ``__html__`` protocol (MarkupSafe's ``Markup`` and friends).
+HTML_ATTRIBUTES = frozenset({"srcdoc"})
+UNSAFE_URL = "about:invalid#ux-dom-unsafe-url"
+_URL_NOISE = re.compile(r"[\x00-\x20\x7f]+")
+# Allow-list, not deny-list: anything not listed here fails closed.
+_SAFE_SCHEMES = frozenset({"http", "https", "mailto", "tel"})
+_SAFE_DATA_URL = re.compile(r"data:image/(?:png|jpeg|jpg|gif|webp)(?:[;,]|$)")
+
+
+class InvalidAttributeName(ValueError):
+    """An attribute name that could break out of the tag (fail closed)."""
+
+
+# HTML attribute names may not contain whitespace, quotes, ">", "/", "=" or
+# control characters (WHATWG "attribute name"). Such a name, e.g. from a
+# ``**user_dict`` spread, could inject a new attribute such as onmouseover.
+_BAD_ATTR_NAME = re.compile(r"[\s\"'>/=\x00-\x1f\x7f]")
+
+
+def checked_attr_name(name):
+    """Return ``name`` as text, or raise InvalidAttributeName."""
+    text = str(name)
+    if not text or _BAD_ATTR_NAME.search(text):
+        raise InvalidAttributeName(f"invalid attribute name: {text!r}")
+    return text
+
+
+def escape_attr_minimal(data):
+    """Escape only ``&`` and ``"``: the least that keeps a value inside ``"..."``.
+
+    Used for attributes that opt out of full escaping (Alpine JSON and
+    handlers keep ``'``, ``<`` and ``>`` readable). The browser decodes the
+    entities back, so the value is unchanged; it just cannot close the quote.
+    """
+    return str(data).replace("&", "&amp;").replace('"', "&quot;")
+
+
+def _is_safe_url(text):
+    """True for relative URLs, allow-listed schemes, and raster data: images."""
+    # Browsers decode entities before parsing the URL; check what they see.
+    probe = _URL_NOISE.sub("", html.unescape(text)).lower()
+    head = re.split(r"[/?#]", probe, maxsplit=1)[0]
+    if ":" not in head:
+        return True  # relative: "/a", "a/b", "?q", "#f", "//host/x"
+    scheme = head.split(":", 1)[0]
+    if scheme == "data":
+        return _SAFE_DATA_URL.match(probe) is not None
+    return scheme in _SAFE_SCHEMES
+
+
+def safe_attr_value(attribute, value):
+    """Return ``value``, or UNSAFE_URL if it is not safe for ``attribute``.
+
+    URL attributes keep only relative URLs, ``http``, ``https``, ``mailto``,
+    ``tel`` and ``data:image/{png,jpeg,gif,webp}`` (never SVG). The check runs
+    on ``str(value)`` after HTML entities are decoded and the C0 controls and
+    spaces that browsers ignore inside a scheme are removed.
+
+    HTML attributes (``srcdoc``) are refused unless the value implements
+    ``__html__``; then that HTML is returned (it is still attribute-escaped).
+
+    For checked attributes the return value is always the ``str`` that was
+    checked, so the renderer never stringifies the original object again.
+    """
+    name = str(attribute).lower()
+    if name in HTML_ATTRIBUTES:
+        html_method = getattr(value, "__html__", None)
+        return str(html_method()) if callable(html_method) else UNSAFE_URL
+    if name not in URL_ATTRIBUTES:
+        return value
+    # Stringify once and return that text: re-stringifying ``value`` later
+    # could yield something other than what was checked.
+    text = str(value)
+    return text if _is_safe_url(text) else UNSAFE_URL
 
 
 _unescape = {

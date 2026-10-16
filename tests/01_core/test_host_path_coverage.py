@@ -164,16 +164,15 @@ class TestParseEscape(unittest.TestCase):
 
         self.assertIn("&lt;", escape("<x>", False))
 
-    def test_parse_html(self):
-        try:
-            from ux_dom.dom.src.parse_html import parse_html
-        except ImportError:
-            self.skipTest("parse_html missing")
-        try:
-            tree = parse_html("<div class='a'>hi</div>")
-            self.assertIsNotNone(tree)
-        except Exception as e:
-            self.skipTest(str(e))
+    def test_tokenize_html(self):
+        from ux_dom.dom.src.parse_html import Data, Tag, tokenize_html
+
+        root = tokenize_html("<div class='a'>hi</div>")
+        self.assertEqual(len(root), 1)
+        div_ = root[0]
+        self.assertIsInstance(div_, Tag)
+        self.assertEqual(dict(div_.attrs), {"class": "a"})
+        self.assertIsInstance(div_[0], Data)
 
 
 class TestCLIModulesImport(unittest.TestCase):
