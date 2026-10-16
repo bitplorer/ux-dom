@@ -88,6 +88,37 @@ def escape(data, quote=True):  # stolen from std lib cgi
     return data
 
 
+# URL-bearing attributes. A script-capable scheme here is an XSS sink, so the
+# renderer fails closed: the value becomes UNSAFE_URL (inert, like Closure's
+# "about:invalid#zClosurez"). Applies to every render path, including
+# attributes marked unescaped, because no caller needs an executable URL.
+URL_ATTRIBUTES = frozenset(
+    {
+        "href", "src", "action", "formaction", "xlink:href", "poster",
+        "cite", "background", "srcdoc", "data", "codebase", "longdesc",
+        "manifest", "ping", "hx-get", "hx-post", "hx-put", "hx-patch",
+        "hx-delete",
+    }
+)
+UNSAFE_URL = "about:invalid#ux-dom-unsafe-url"
+_URL_NOISE = re.compile(r"[\x00-\x20\x7f]+")
+_UNSAFE_SCHEMES = ("javascript:", "vbscript:", "data:text/html")
+
+
+def safe_attr_value(attribute, value):
+    """Return ``value``, or UNSAFE_URL if it is a script URL in a URL attribute.
+
+    Browsers ignore C0 controls and whitespace inside a scheme
+    ("java\tscript:"), so those are removed before the scheme check.
+    """
+    if str(attribute).lower() not in URL_ATTRIBUTES or not isinstance(value, str):
+        return value
+    probe = _URL_NOISE.sub("", value).lower()
+    if probe.startswith(_UNSAFE_SCHEMES):
+        return UNSAFE_URL
+    return value
+
+
 _unescape = {
     "quot": 34,
     "amp": 38,

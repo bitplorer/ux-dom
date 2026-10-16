@@ -844,7 +844,8 @@ class dom_tag(object):
 
         for attribute, value in sorted(self.attributes.items()):
             if value is not False:  # False values must be omitted completely
-                sb.append(' %s="%s"' % (attribute, escape(unicode(value), True)))
+                safe = safe_attr_value(attribute, value)
+                sb.append(' %s="%s"' % (attribute, escape(unicode(safe), True)))
 
         sb.append(" />" if self.is_single and xhtml else ">")
 
@@ -988,4 +989,4 @@ def attr(*args, **kwargs):
 
 
 # escape() is used in render
-from ux_dom.dom.src.utils.dom_util import escape
+from ux_dom.dom.src.utils.dom_util import escape, safe_attr_value

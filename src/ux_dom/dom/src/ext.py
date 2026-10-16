@@ -27,7 +27,7 @@ from jinja2.utils import htmlsafe_json_dumps
 
 from ux_dom.dom.src.dom1core import dom1core
 from ux_dom.dom.src.dom_tag import dom_tag, unicode
-from ux_dom.dom.src.utils.dom_util import dom_text, escape
+from ux_dom.dom.src.utils.dom_util import dom_text, escape, safe_attr_value
 
 __all__ = [
     "Tags",
@@ -181,6 +181,7 @@ class Tags(dom_tag, dom1core):
                     value, indent_level, indent_str, pretty
                 )
             if not isinstance(value, (dict, list)):
+                value = safe_attr_value(attribute, value)
                 if self.safe_attributes.get(attribute, True):
                     yield ' %s="%s"' % (attribute, escape(unicode(value), True))
                 else:
@@ -798,7 +799,8 @@ class StyleTags(Tags):
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely
-                sb.append(attribute_joiner % (attribute, escape(unicode(value), True)))
+                safe = escape(unicode(safe_attr_value(attribute, value)), True)
+                sb.append(attribute_joiner % (attribute, safe))
 
             if value is None:  # minified xhtml attributes are added
                 sb.append(" %s" % attribute)
@@ -830,7 +832,8 @@ class StyleTags(Tags):
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely
-                r.append(attribute_joiner % (attribute, escape(unicode(value), True)))
+                safe = escape(unicode(safe_attr_value(attribute, value)), True)
+                r.append(attribute_joiner % (attribute, safe))
 
             if value is None:  # minified xhtml attributes are added
                 r.append(" %s" % attribute)
