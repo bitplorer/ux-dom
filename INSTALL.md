@@ -1,4 +1,4 @@
-# ux-dom 0.1.0 — Installation
+# ux-dom 0.2.0 — Installation
 
 Python **3.14** required. Package layout: `src/ux_dom` (Poetry).
 
@@ -9,7 +9,7 @@ git clone https://github.com/bitplorer/ux-dom.git
 cd ux-dom
 poetry env use python3.14
 poetry install --with dev,test --extras fastapidev
-poetry run python -c "from ux_dom import __version__; print(__version__)"  # 0.1.0
+poetry run python -c "from ux_dom import __version__; print(__version__)"  # 0.2.0
 ```
 
 ## pip / editable
