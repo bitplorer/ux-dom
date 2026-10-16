@@ -1,6 +1,56 @@
 # Changelog
 
-## Unreleased
+## 0.1.1
+
+### Security (fail closed)
+
+- **Script URLs in attributes are neutralized.** In URL attributes (`href`,
+  `src`, `action`, `formaction`, `xlink:href`, `hx-get`, ...), values with a
+  `javascript:`, `vbscript:` or `data:text/html` scheme render as
+  `about:invalid#ux-dom-unsafe-url`. Browser-ignored whitespace and control
+  characters (`java\tscript:`) and letter case cannot bypass it. Applies to
+  every renderer, including unescaped attributes. See
+  `docs/security/ATTRIBUTES.md`.
+
+### DirectoryRouter (pure-dom, examples)
+
+- **Fail closed on unroutable modules.** A route module that exports renderable
+  classes but none matching the file stem now raises `DirectoryRouterError`.
+  Before, it was dropped silently and every URL in it returned 404.
+- **Fixed: an explicit `get` classmethod was overwritten** by the synthetic
+  page GET (the guard checked the wrong dict level), so pages lost their
+  Document shell.
+- **`routes=` sub-actions work as documented:** non-verb names become
+  `GET /<stem>/<name>`. A listed name with no method raises, and URL-style
+  entries (`"/x/[id]"`) are rejected.
+- Stem matching ignores underscores: `my_page.py` → `MyPage`.
+
+### CLI
+
+- **Fixed: `uxdom add route` crashed** (`add_route()` had no `methods`
+  parameter). It now writes files that follow the router law: `[param]` folders,
+  `route.py` verb functions for param leaves, `--methods get,post`.
+- **Fixed: `uxdom add route` / `add component` imported `Component` from the
+  wrong module**, so generated files failed to import.
+
+### Examples, tests, CI
+
+- Examples migrated to the path law (`/alpine`, not `/alpine/AlpineDemo`;
+  `/htmx/partial` sub-action). Self-redirect loops on `/` removed.
+- standalone_showcase HMR: `add_websocket_route` (removed in FastAPI 0.141)
+  replaced with a Starlette `WebSocketRoute`. The reloader's watcher now
+  starts and stops through the app lifespan (before, it never started).
+- Browser tests run in CI for real: `tests/browser/package.json` pins
+  Playwright 1.64.1, CI installs Chromium, and `UX_DOM_REQUIRE_BROWSER=1` turns
+  a missing toolchain into a failure instead of a skip. The hardcoded
+  `/workspace/node_modules` import path is gone, and stale report files are
+  never read.
+- Dead tests for features that moved to ux-compose (always skipped) were
+  replaced by boundary assertions. Source-text assertions were replaced by
+  behavior tests.
+- mypy: two type errors fixed (`response/serialize.py`, `ui/page_header.py`).
+
+### Earlier on main (ownership hard cut)
 
 ### Residual-free ownership (hard cut)
 

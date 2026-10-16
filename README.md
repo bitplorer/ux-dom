@@ -15,7 +15,7 @@ This layer **renders**. It does not own Intent, Caps, Result ops, product state 
 | **Import** | `ux_dom` |
 | **CLI** | **`uxdom`** (pure-dom tooling) |
 | **Product CLI** | **`uxcompose`** ([ux-compose](https://github.com/bitplorer/ux-compose)) |
-| **Version** | `0.1.0` |
+| **Version** | `0.1.1` |
 | **Python** | ≥ 3.14 (full stack) |
 | **License** | [MIT](LICENSE) |
 
@@ -77,6 +77,8 @@ document = Document(head=[], body=[]).use(
 # Product HTTP host / routes: ux-compose App.mount
 html = document(div(h1("Hi"))).__render__()
 ```
+
+`XElement()` adds one script tag for the browser runtime, `x_element.js`, served from the installed package at `/ux-dom/static/x_element.js` (`ux_dom.plugins.runtime.XELEMENT_JS_URL`). It upgrades every `<template x-tagname="…">` definition into a custom element, and re-runs after HTMX swaps. See [docs/reference/XELEMENT.md](docs/reference/XELEMENT.md).
 
 Serialize SSoT: `tree.__render__()` / `tree.__async_render__()`. Optional HTTP adapters under `ux_dom.response` are **not** the product path.
 
