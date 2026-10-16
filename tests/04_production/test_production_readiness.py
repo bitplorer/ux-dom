@@ -21,7 +21,7 @@ class TestVersionAndPython(unittest.TestCase):
         m = re.search(r'^version\s*=\s*"([^"]+)"', text, re.M)
         self.assertIsNotNone(m)
         self.assertEqual(ux_dom.__version__, m.group(1))
-        self.assertEqual(ux_dom.__version__, "0.1.0")
+        self.assertEqual(ux_dom.__version__, "0.2.0")
 
     def test_python_requires_314(self):
         text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
@@ -60,8 +60,8 @@ class TestDocsConsistency(unittest.TestCase):
     def test_readme_install_mention_314_and_version(self):
         readme = (ROOT / "README.md").read_text(encoding="utf-8")
         install = (ROOT / "INSTALL.md").read_text(encoding="utf-8")
-        self.assertIn("0.1.0", readme)
-        self.assertIn("0.1.0", install)
+        self.assertIn("0.2.0", readme)
+        self.assertIn("0.2.0", install)
         self.assertIn("3.14", readme)
         self.assertIn("3.14", install)
         self.assertNotIn("(required) required", install)
