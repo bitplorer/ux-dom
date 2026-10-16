@@ -128,7 +128,7 @@ class TestBuildDeployHardening(unittest.TestCase):
                     with_tailwind=False,
                 )
             )
-            rep = run_build(cwd=root, skip_tailwind=True)
+            rep = run_build(cwd=root)
             self.assertTrue(rep.ok, rep.steps)
 
 

@@ -107,7 +107,7 @@ class TestScaffoldSingleCopy(unittest.TestCase):
                 )
             )
             rep = run_build(
-                cwd=root, skip_tailwind=True, package=True, package_name="bp"
+                cwd=root, package=True, package_name="bp"
             )
             self.assertTrue(rep.ok, rep.steps)
             # package should not claim dual-copy requirement
