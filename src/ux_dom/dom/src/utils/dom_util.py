@@ -26,6 +26,7 @@ Public License along with Dominate.  If not, see
 <http://www.gnu.org/licenses/>.
 """
 
+import html
 import re
 
 from ux_dom.dom.src.dom_tag import dom_tag
@@ -95,28 +96,54 @@ def escape(data, quote=True):  # stolen from std lib cgi
 URL_ATTRIBUTES = frozenset(
     {
         "href", "src", "action", "formaction", "xlink:href", "poster",
-        "cite", "background", "srcdoc", "data", "codebase", "longdesc",
-        "manifest", "ping", "hx-get", "hx-post", "hx-put", "hx-patch",
+        "cite", "background", "data", "codebase", "longdesc",
+        "manifest", "ping", "icon", "archive", "usemap", "profile",
+        "lowsrc", "dynsrc", "hx-get", "hx-post", "hx-put", "hx-patch",
         "hx-delete",
     }
 )
+# Attributes whose value is a whole HTML document, not a URL. A scheme check
+# is meaningless there, so they are refused unless the value explicitly opts
+# in through the ``__html__`` protocol (MarkupSafe's ``Markup`` and friends).
+HTML_ATTRIBUTES = frozenset({"srcdoc"})
 UNSAFE_URL = "about:invalid#ux-dom-unsafe-url"
 _URL_NOISE = re.compile(r"[\x00-\x20\x7f]+")
-_UNSAFE_SCHEMES = ("javascript:", "vbscript:", "data:text/html")
+# Allow-list, not deny-list: anything not listed here fails closed.
+_SAFE_SCHEMES = frozenset({"http", "https", "mailto", "tel"})
+_SAFE_DATA_URL = re.compile(r"data:image/(?:png|jpeg|jpg|gif|webp)(?:[;,]|$)")
+
+
+def _is_safe_url(text):
+    """True for relative URLs, allow-listed schemes, and raster data: images."""
+    # Browsers decode entities before parsing the URL; check what they see.
+    probe = _URL_NOISE.sub("", html.unescape(text)).lower()
+    head = re.split(r"[/?#]", probe, maxsplit=1)[0]
+    if ":" not in head:
+        return True  # relative: "/a", "a/b", "?q", "#f", "//host/x"
+    scheme = head.split(":", 1)[0]
+    if scheme == "data":
+        return _SAFE_DATA_URL.match(probe) is not None
+    return scheme in _SAFE_SCHEMES
 
 
 def safe_attr_value(attribute, value):
-    """Return ``value``, or UNSAFE_URL if it is a script URL in a URL attribute.
+    """Return ``value``, or UNSAFE_URL if it is not safe for ``attribute``.
 
-    Browsers ignore C0 controls and whitespace inside a scheme
-    ("java\tscript:"), so those are removed before the scheme check.
+    URL attributes keep only relative URLs, ``http``, ``https``, ``mailto``,
+    ``tel`` and ``data:image/{png,jpeg,gif,webp}`` (never SVG). The check runs
+    on ``str(value)`` after HTML entities are decoded and the C0 controls and
+    spaces that browsers ignore inside a scheme are removed.
+
+    HTML attributes (``srcdoc``) are refused unless the value implements
+    ``__html__``; then that HTML is returned (it is still attribute-escaped).
     """
-    if str(attribute).lower() not in URL_ATTRIBUTES or not isinstance(value, str):
+    name = str(attribute).lower()
+    if name in HTML_ATTRIBUTES:
+        html_method = getattr(value, "__html__", None)
+        return str(html_method()) if callable(html_method) else UNSAFE_URL
+    if name not in URL_ATTRIBUTES:
         return value
-    probe = _URL_NOISE.sub("", value).lower()
-    if probe.startswith(_UNSAFE_SCHEMES):
-        return UNSAFE_URL
-    return value
+    return value if _is_safe_url(str(value)) else UNSAFE_URL
 
 
 _unescape = {

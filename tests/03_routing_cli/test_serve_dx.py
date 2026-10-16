@@ -9,6 +9,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from click import unstyle
 from typer.testing import CliRunner
 
 from ux_dom.cli.cli import app as cli_app
@@ -138,7 +139,9 @@ class TestDoctorReportsProductCss(unittest.TestCase):
         runner = CliRunner()
         result = runner.invoke(cli_app, ["doctor", "--help"])
         self.assertEqual(result.exit_code, 0, result.output)
-        self.assertIn("--path", result.output)
+        # Typer forces Rich colour when GITHUB_ACTIONS/FORCE_COLOR is set, and
+        # Rich styles "-" and "-path" separately, so compare the plain text.
+        self.assertIn("--path", unstyle(result.output))
 
 
 if __name__ == "__main__":
