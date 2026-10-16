@@ -64,14 +64,12 @@ def _find_app_root(start: Optional[Path] = None) -> Path:
 def run_build(
     *,
     cwd: Optional[Path] = None,
-    skip_tailwind: bool = False,
     skip_import: bool = False,
     skip_static_sync: bool = False,
     package: bool = False,
     archive: bool = False,
     out_dir: Optional[Path] = None,
     package_name: Optional[str] = None,
-    minify: Optional[bool] = None,
 ) -> BuildReport:
     """
     Production verify pipeline (not product CSS compile):
@@ -82,16 +80,10 @@ def run_build(
     4. Soft doctor
     5. Optional: materialize ``dist/<name>/`` runnable package
 
-    Product CSS minify is ``uxcompose build``. ``skip_tailwind`` is accepted
-    and ignored so leftover scripts do not crash.
-
-    ``minify`` fails closed: this pipeline never minifies, so passing it
-    raises instead of pretending.
+    This pipeline never compiles or minifies CSS; product CSS is
+    ``uxcompose build``. There are deliberately no ``minify`` /
+    ``skip_tailwind`` parameters: passing them is a ``TypeError``.
     """
-    if minify is not None:
-        raise ValueError(
-            "run_build does not minify CSS; product CSS minify is `uxcompose build`."
-        )
     root = _find_app_root(cwd)
     report = BuildReport(root=root)
 
@@ -158,9 +150,7 @@ def run_build(
             "css",
             True,
             "product CSS compile is uxcompose build "
-            "(this command does not run the Tailwind CLI"
-            + ("; --skip-tailwind ignored" if skip_tailwind else "")
-            + ")",
+            "(this command does not run the Tailwind CLI)",
         )
     )
     css_dir = root / "assets" / "css"

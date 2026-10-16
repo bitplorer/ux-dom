@@ -86,7 +86,6 @@ _PRODUCT_BUILD = (
 
 @app.command("build")
 def build_cmd(
-    skip_tailwind: bool = Option(False, "--skip-tailwind"),
     skip_import: bool = Option(False, "--skip-import"),
     skip_static_sync: bool = Option(False, "--skip-static-sync"),
     package: bool = Option(False, "--package", "-p"),
@@ -99,7 +98,7 @@ def build_cmd(
 
     Product apps (``app.py`` from uxcompose): use ``uxcompose build``.
     This command does not compile CSS. Product CSS is ``uxcompose build``
-    (``ux_compose.tailwind``). ``--skip-tailwind`` is accepted and ignored.
+    (``ux_compose.tailwind``).
     XElement is served from the installed package at
     ``/ux-dom/static/x_element.js`` (no app copy).
     """
@@ -116,7 +115,6 @@ def build_cmd(
 
     try:
         report = run_build(
-            skip_tailwind=skip_tailwind,
             skip_import=skip_import,
             skip_static_sync=skip_static_sync,
             package=package or archive,
