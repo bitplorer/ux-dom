@@ -79,7 +79,6 @@ class TestBuildNoUnintendedWrites(unittest.TestCase):
             before = _snapshot(root)
             rep = run_build(
                 cwd=root,
-                skip_tailwind=True,
                 skip_import=True,
                 package=False,
                 archive=False,
@@ -101,7 +100,6 @@ class TestBuildNoUnintendedWrites(unittest.TestCase):
             )
             rep = run_build(
                 cwd=root,
-                skip_tailwind=True,
                 skip_import=True,
                 package=True,
                 out_dir=Path(td) / "dist-out",
