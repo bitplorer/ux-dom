@@ -25,6 +25,11 @@
 - The unescaped-attribute opt-out is HTML-only (not XHTML).
 - `//host` links count as relative; see the open-redirect note in
   `docs/security/ATTRIBUTES.md`.
+- **`'` is escaped in attribute values.** `escape(quote=True)` now maps `'`
+  to `&#39;` (as MarkupSafe and `html.escape` do), so a value cannot break
+  out of a single-quoted attribute. Rendered output changes: `'` inside
+  attribute values now renders as `&#39;`, so HTML snapshot tests that
+  contain `'` in attributes need updating.
 
 ### DirectoryRouter (pure-dom, examples)
 
