@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "ux-dom"
 version = "0.2.0"
-description = "ux-dom 0.1 — Python hypermedia render library (tree → HTML / stream)"
+description = "ux-dom — Python hypermedia render library (tree → HTML / stream)"
 authors = ["bitplorer <bitplorer@outlook.com>"]
 license = "MIT"
 readme = "README.md"
