@@ -78,8 +78,12 @@ def system(cmd, data=None):
 _CTRL_ATTR = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
 
 
-def escape(data, quote=True):  # stolen from std lib cgi
-    """Escape HTML special chars; strip C0 controls in attribute mode."""
+def escape(data, quote=True):
+    """Escape HTML special chars; strip C0 controls in attribute mode.
+
+    ``quote=True`` escapes both ``"`` and ``'`` (``&#39;``, same as MarkupSafe),
+    so output is safe in either attribute quoting style.
+    """
     if not isinstance(data, str):
         data = str(data)
     if quote:
@@ -89,6 +93,7 @@ def escape(data, quote=True):  # stolen from std lib cgi
     data = data.replace(">", "&" + "gt;")
     if quote:
         data = data.replace('"', "&" + "quot;")
+        data = data.replace("'", "&" + "#39;")
     return data
 
 

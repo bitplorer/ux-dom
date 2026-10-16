@@ -35,6 +35,11 @@
 - The unescaped-attribute opt-out is HTML-only (not XHTML).
 - `//host` links count as relative; see the open-redirect note in
   `docs/security/ATTRIBUTES.md`.
+- **`'` is escaped in attribute values.** `escape(quote=True)` now maps `'`
+  to `&#39;` (as MarkupSafe and `html.escape` do), so a value cannot break
+  out of a single-quoted attribute. Rendered output changes: `'` inside
+  attribute values now renders as `&#39;`, so HTML snapshot tests that
+  contain `'` in attributes need updating.
 
 ### DirectoryRouter (pure-dom, examples)
 
@@ -73,6 +78,11 @@
   replaced by boundary assertions. Source-text assertions were replaced by
   behavior tests.
 - mypy: two type errors fixed (`response/serialize.py`, `ui/page_header.py`).
+
+### Dependencies
+
+- **`typingx` is declared** (`>=0.6.0,<0.7`). `ux_dom.compat.valio_pep649`
+  imports it directly; before, it was only installed transitively via valio.
 
 ### Earlier on main (ownership hard cut)
 

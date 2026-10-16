@@ -41,6 +41,8 @@ valio = ">=0.1.0b6,<0.2"
 marko = ">=2.0,<3"
 anyio = ">=4.0,<5"
 typer = ">=0.12,<1"
+# Imported directly by ux_dom.compat.valio_pep649; declared, not borrowed from valio.
+typingx = ">=0.6.0,<0.7"
 
 # Optional runtime extras
 pytailwindcss = { version = ">=0.3.0", optional = true }
