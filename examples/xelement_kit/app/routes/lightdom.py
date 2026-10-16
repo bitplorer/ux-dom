@@ -7,17 +7,17 @@ from ux_dom.dom import a, code, div, h1, h2, li, ol, p, pre, span, ul
 from app.components.light_dom import ActionCardLight, HelloLight, InfoBannerLight
 from app.document import page
 
-__all__ = ["LightDomDemo"]
+__all__ = ["LightDom"]
 
 
-class LightDomDemo(Component):
+class LightDom(Component):
     """Hosts only — definitions come from the class registry automatically."""
 
     routes = ["get"]
 
     def render(self):
         return div(
-            a("← Home", href="/index/Index", className="text-sm text-sky-600"),
+            a("← Home", href="/", className="text-sm text-sky-600"),
             h1("Light DOM · CustomElement", className="text-3xl font-bold mt-4 mb-2"),
             p(
                 "Construct the class to place a host: ",

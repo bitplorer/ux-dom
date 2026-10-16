@@ -7,10 +7,10 @@ from ux_dom.dom import a, code, div, h1, h2, p, pre, span
 from app.components.shadow_dom import CalloutShadow, ProfileCardShadow, ShellShadow
 from app.document import page
 
-__all__ = ["ShadowDomDemo"]
+__all__ = ["ShadowDom"]
 
 
-class ShadowDomDemo(Component):
+class ShadowDom(Component):
     routes = ["get"]
 
     def render(self):
@@ -26,7 +26,7 @@ class ShadowDomDemo(Component):
         )
 
         return div(
-            a("← Home", href="/index/Index", className="text-sm text-sky-600"),
+            a("← Home", href="/", className="text-sm text-sky-600"),
             h1("Shadow DOM · WebComponent", className="text-3xl font-bold mt-4 mb-2"),
             p(
                 "Construct ",
