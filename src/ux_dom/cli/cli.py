@@ -5,7 +5,8 @@
 """uxdom CLI — pure Document / render tooling only.
 
 Product lifecycle (create-app · build · serve · deploy) lives on **uxcompose** only.
-See docs/internals/SYSTEM.md and ux-compose docs/FLOW.md / docs/guides/CLI.md.
+See docs/internals/SYSTEM.md, docs/guides/CLI.md and ux-compose FLOW:
+https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md
 
 XElement is served from the installed package at ``/ux-dom/static/x_element.js``
 (no app copy).
