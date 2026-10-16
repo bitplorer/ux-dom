@@ -20,8 +20,10 @@ from ux_dom.scripts import x_element_js_text
 
 
 class TestBrandAndVersion(unittest.TestCase):
-    def test_version_0_1(self):
-        self.assertEqual(ux_dom.__version__, "0.1.0")
+    def test_version_is_0_1_line(self):
+        # 0.1.x line; the exact value is pinned to pyproject by
+        # test_production_readiness.test_version_matches_pyproject.
+        self.assertRegex(ux_dom.__version__, r"^0\.1\.\d+$")
 
 
 class TestDocumentRuntimes(unittest.TestCase):
