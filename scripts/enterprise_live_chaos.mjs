@@ -32,11 +32,11 @@ function warn(name, detail = "") {
 
 const PAGES = [
   { path: "/", expect: /Showcase|UxDom|Home/i, name: "root-redirect" },
-  { path: "/index/Index", expect: /Showcase|UxDom|Components/i, name: "home" },
-  { path: "/shop/Shop", expect: /Catalog|Shop|Aurora/i, name: "shop" },
-  { path: "/cart/Cart", expect: /Cart|items/i, name: "cart" },
-  { path: "/sse/SseDemo", expect: /SSE|tick|waiting/i, name: "sse" },
-  { path: "/stream/StreamDemo", expect: /Stream/i, name: "stream" },
+  { path: "/", expect: /Showcase|UxDom|Components/i, name: "home" },
+  { path: "/shop", expect: /Catalog|Shop|Aurora/i, name: "shop" },
+  { path: "/cart", expect: /Cart|items/i, name: "cart" },
+  { path: "/sse", expect: /SSE|tick|waiting/i, name: "sse" },
+  { path: "/stream", expect: /Stream/i, name: "stream" },
   { path: "/health", expect: /ok|true|ux_dom/i, name: "health", json: true },
   { path: "/api/stream", expect: /Streamed|fragment/i, name: "api-stream" },
 ];
@@ -53,11 +53,11 @@ const XSS_PAYLOADS = [
 
 const PATH_TRAVERSAL = [
   "/../../../etc/passwd",
-  "/shop/Shop/../../etc/passwd",
+  "/shop/../../etc/passwd",
   "/css/../../main.py",
   "/assets/../../../etc/passwd",
-  "/index/Index%00.html",
-  "/shop/Shop%2e%2e%2f",
+  "/%00.html",
+  "/shop%2e%2e%2f",
   "/%2e%2e/%2e%2e/etc/passwd",
 ];
 
@@ -69,9 +69,9 @@ const FUZZ_PATHS = [
   "/docs",
   "/api/sse",
   "/api/../health",
-  "/shop/Shop/" + "A".repeat(4000),
-  "/cart/Cart?" + "q=" + encodeURIComponent("<script>alert(1)</script>"),
-  "/index/Index?x=" + encodeURIComponent(`"><img src=x onerror=alert(1)>`),
+  "/shop/" + "A".repeat(4000),
+  "/cart?" + "q=" + encodeURIComponent("<script>alert(1)</script>"),
+  "/?x=" + encodeURIComponent(`"><img src=x onerror=alert(1)>`),
 ];
 
 async function main() {
@@ -118,7 +118,7 @@ async function main() {
   {
     const page = await browser.newPage();
     // Cart HTMX
-    await page.goto(BASE + "/cart/Cart", { waitUntil: "networkidle" });
+    await page.goto(BASE + "/cart", { waitUntil: "networkidle" });
     const htmx = await page.evaluate(() => typeof window.htmx !== "undefined");
     rec(htmx, "htmx-loaded");
     const c0 = await page.locator("#count").innerText();
@@ -133,7 +133,7 @@ async function main() {
     await page.screenshot({ path: path.join(OUT, "ent-cart.png"), fullPage: true });
 
     // SSE live ticks
-    await page.goto(BASE + "/sse/SseDemo", { waitUntil: "networkidle" });
+    await page.goto(BASE + "/sse", { waitUntil: "networkidle" });
     const sseExt = await page.evaluate(
       () => !!document.querySelector('script[src*="htmx-ext-sse"]')
     );
@@ -170,7 +170,7 @@ async function main() {
   // ─── Pass C: mobile viewport ─────────────────────────────────────────
   {
     const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
-    for (const pg of ["/index/Index", "/shop/Shop", "/cart/Cart", "/sse/SseDemo"]) {
+    for (const pg of ["/", "/shop", "/cart", "/sse"]) {
       await page.goto(BASE + pg, { waitUntil: "networkidle" });
       const ov = await page.evaluate(() => ({
         sw: document.documentElement.scrollWidth,
@@ -191,7 +191,7 @@ async function main() {
 
     // D1: XSS reflection via query strings on pages
     for (const payload of XSS_PAYLOADS) {
-      const url = `${BASE}/index/Index?q=${encodeURIComponent(payload)}&x=${encodeURIComponent(payload)}`;
+      const url = `${BASE}/?q=${encodeURIComponent(payload)}&x=${encodeURIComponent(payload)}`;
       await page.goto(url, { waitUntil: "domcontentloaded" });
       const flags = await page.evaluate(() => ({
         p: window.__XSS_P,
@@ -214,7 +214,7 @@ async function main() {
 
     // D2: POST cart with XSS body (should not store-exec)
     for (const payload of XSS_PAYLOADS.slice(0, 3)) {
-      const res = await page.request.post(BASE + "/cart/Cart", {
+      const res = await page.request.post(BASE + "/cart", {
         data: payload,
         headers: { "Content-Type": "text/plain", "HX-Request": "true" },
       });
@@ -242,14 +242,14 @@ async function main() {
 
     // D4: method abuse
     for (const method of ["PUT", "DELETE", "PATCH", "OPTIONS"]) {
-      const res = await page.request.fetch(BASE + "/cart/Cart", { method });
+      const res = await page.request.fetch(BASE + "/cart", { method });
       // should not 500
       rec(res.status() !== 500, `method-${method}-no-500`, `status=${res.status()}`);
     }
 
     // D5: header injection / oversized
     try {
-      const res = await page.request.get(BASE + "/index/Index", {
+      const res = await page.request.get(BASE + "/", {
         headers: {
           "X-Forwarded-Host": "evil.com",
           "X-Original-URL": "/admin",
@@ -279,7 +279,7 @@ async function main() {
     }
 
     // D7: SSE flood reconnect
-    await page.goto(BASE + "/sse/SseDemo", { waitUntil: "domcontentloaded" });
+    await page.goto(BASE + "/sse", { waitUntil: "domcontentloaded" });
     for (let i = 0; i < 5; i++) {
       await page.reload({ waitUntil: "domcontentloaded" });
     }
@@ -294,7 +294,7 @@ async function main() {
     }
 
     // D8: concurrent HTMX clicks
-    await page.goto(BASE + "/cart/Cart", { waitUntil: "networkidle" });
+    await page.goto(BASE + "/cart", { waitUntil: "networkidle" });
     const before = await page.locator("#count").innerText();
     await Promise.all(
       Array.from({ length: 10 }, () => page.locator("#add-btn").click({ force: true }).catch(() => {}))
@@ -311,7 +311,7 @@ async function main() {
     // D9: open redirect probes
     for (const redir of [
       "/?next=//evil.com",
-      "/index/Index?redirect=https://evil.com",
+      "/?redirect=https://evil.com",
       "//evil.com",
     ]) {
       const res = await page.request.get(BASE + redir, { maxRedirects: 0 });
@@ -336,11 +336,11 @@ async function main() {
         const page = await browser.newPage();
         try {
           const targets = [
-            "/index/Index",
-            "/shop/Shop",
-            "/cart/Cart",
-            "/sse/SseDemo",
-            "/stream/StreamDemo",
+            "/",
+            "/shop",
+            "/cart",
+            "/sse",
+            "/stream",
             "/api/stream",
             "/health",
           ];
@@ -366,7 +366,7 @@ async function main() {
     const posts = await Promise.all(
       Array.from({ length: 50 }, async () => {
         try {
-          const r = await page.request.post(BASE + "/cart/Cart", {
+          const r = await page.request.post(BASE + "/cart", {
             headers: { "HX-Request": "true" },
           });
           return r.status();
