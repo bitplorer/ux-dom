@@ -13,26 +13,13 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from helpers import ScaffoldOptions, available_templates, create_app
-from ux_dom.cli.adders import add_route, add_xelement
-from ux_dom.cli.build import run_build
-from ux_dom.cli.doctor import run_doctor
-from ux_dom.cli.lint import lint_project
+from ux_dom.cli.adders import add_route
 from ux_dom.dom import div, template
 from ux_dom.dom.htmlelement import CustomElement, WebComponent, XElement
-from ux_dom.ui import Button, Card, CardContent, Dialog, Input, Select, Tabs
+from ux_dom.ui import Button, Card, CardContent, Dialog, Select, Tabs
 from ux_dom.ui.catalog import CATALOG
 from ux_dom.ui.channel_bridge import live_button, stamp_region, to_fragment
 from ux_dom.ui.copy import copy_component
-
-try:
-    from ux_dom.cli.deploy import prepare_deploy
-except ImportError:  # product deploy lives on uxcompose
-    prepare_deploy = None
-
-
-def _require_deploy():
-    if prepare_deploy is None:
-        raise unittest.SkipTest("product deploy is uxcompose, not uxdom")
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -119,7 +106,7 @@ class TestScaffoldMatrix(unittest.TestCase):
                             from app.main import app
 
                             c = TestClient(app)
-                            r = c.get("/index")
+                            r = c.get("/")
                             self.assertEqual(r.status_code, 200, tmpl)
                             self.assertIn("x_element.js", r.text)
                     finally:
@@ -149,7 +136,7 @@ class TestDynamicRoutes(unittest.TestCase):
                 from app.main import app
 
                 c = TestClient(app)
-                r = c.get("/orgs/acme/teams/core/Page")
+                r = c.get("/orgs/acme/teams/core")
                 self.assertEqual(r.status_code, 200, r.text)
                 self.assertIn("acme", r.text)
                 self.assertIn("core", r.text)
@@ -160,23 +147,6 @@ class TestDynamicRoutes(unittest.TestCase):
                         del sys.modules[k]
                 if str(root) in sys.path:
                     sys.path.remove(str(root))
-
-
-class TestBuildDeployDoctor(unittest.TestCase):
-    def test_pipeline(self):
-        _require_deploy()
-        with tempfile.TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "prod", dest=Path(td) / "prod", force=True, with_tailwind=False
-                )
-            )
-            rep = run_build(cwd=root, skip_tailwind=True)
-            self.assertTrue(rep.ok, rep.steps)
-            self.assertTrue(run_doctor(cwd=root).ok)
-            self.assertFalse([i for i in lint_project(root) if i.level == "error"])
-            for p in ("docker", "checklist", "fly"):
-                prepare_deploy(p, cwd=root, force=True)
 
 
 class TestXElementContract(unittest.TestCase):
@@ -228,7 +198,7 @@ class TestUiGallery(unittest.TestCase):
             from app.main import app
 
             c = TestClient(app)
-            r = c.get("/index")
+            r = c.get("/")
             self.assertEqual(r.status_code, 200)
             self.assertIn("data-channel-id", r.text)
             self.assertIn("Gallery:card", r.text)

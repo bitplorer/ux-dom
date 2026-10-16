@@ -70,7 +70,7 @@ uxdom profile
 | **`document(*content)`** | HTML shell SSoT |
 | **`XElement`** | Custom element + definitions |
 
-Product page routes: `from ux_compose.routing import DirectoryRoutes` — see ux-compose `docs/FLOW.md`.
+Product page routes: `from ux_compose.routing import DirectoryRoutes` — see [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md).
 
 ## Next reading
 
@@ -78,7 +78,7 @@ Product page routes: `from ux_compose.routing import DirectoryRoutes` — see ux
 2. [SYSTEM.md](internals/SYSTEM.md)
 3. [DOCUMENT.md](reference/DOCUMENT.md)
 4. [CLI.md](guides/CLI.md) · [DX.md](guides/DX.md)
-5. ux-compose `docs/FLOW.md`
+5. [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md)
 6. [INDEX.md](INDEX.md)
 
 ## Assets

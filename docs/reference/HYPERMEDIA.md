@@ -10,11 +10,11 @@ Honest map of what ux-dom provides, how to use it, and how thoroughly it is test
 | Area | Library API | Examples | Unit tests | Headless browser |
 |------|-------------|----------|------------|------------------|
 | **XElement / CustomElement / WebComponent** | ✓ | ✓ xelement_kit light/shadow | ✓ strong | ✓ Playwright |
-| **AlpineComponent** | ✓ | ✓ `/alpine/AlpineDemo` | ✓ attr matrix + browser toggle | ✓ |
+| **AlpineComponent** | ✓ | ✓ `/alpine` | ✓ attr matrix + browser toggle | ✓ |
 | **HTMX attrs + middleware + partials** | ✓ | ✓ shop, showcase, kit | ✓ strong | partial (afterSwap in harness) |
 | **HTML `<slot>` + shadow projection** | ✓ tags + WebComponent demos | ✓ shadow gallery | ✓ browser slotAssigned | ✓ |
-| **`Slots` / `WebComponentSlot` helpers** | ✓ `ux_dom.slots` | ✓ kit `/slots/SlotsDemo` | ✓ render smoke | limited |
-| **Jinja tags (`For`/`If`/`Block`/…) ** | ✓ `ux_dom.dom.src.jinjatags` | ✓ kit `/jinja/JinjaDemo` | ✓ `TestJinja` + kit | n/a (server HTML) |
+| **`Slots` / `WebComponentSlot` helpers** | ✓ `ux_dom.slots` | ✓ kit `/slots` | ✓ render smoke | limited |
+| **Jinja tags (`For`/`If`/`Block`/…) ** | ✓ `ux_dom.dom.src.jinjatags` | ✓ kit `/jinja` | ✓ `TestJinja` + kit | n/a (server HTML) |
 | **`JinjaElement` class** | thin wrapper | documented | smoke | n/a |
 
 ## Alpine.js
@@ -71,7 +71,7 @@ tpl = For("name in names", li(Var("name")))
 html = tpl(names=["a", "b"])  # expanded HTML string/tree
 ```
 
-**See:** `tests/01_core/test_ux_dom.py::TestJinja`, kit `/jinja/JinjaDemo`.
+**See:** `tests/01_core/test_ux_dom.py::TestJinja`, kit `/jinja`.
 
 ## Slots
 
@@ -83,7 +83,7 @@ html = tpl(names=["a", "b"])  # expanded HTML string/tree
 
 Prefer plain `WebComponent` + `slot()` for new code (clearer, matches `x_element.js`).
 
-**See:** `examples/xelement_kit/.../shadow_dom.py`, `/slots/SlotsDemo`.
+**See:** `examples/xelement_kit/.../shadow_dom.py`, `/slots`.
 
 ## Web Components (summary)
 

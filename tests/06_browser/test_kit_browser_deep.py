@@ -12,13 +12,14 @@ import unittest
 import urllib.request
 from pathlib import Path
 
+from browser_gate import NODE, require_browser
+
 ROOT = Path(__file__).resolve().parents[2]
 KIT = ROOT / "examples" / "xelement_kit"
 KIT_SUITE = ROOT / "tests" / "browser" / "kit_browser_suite.mjs"
 STATIC_HARNESS = ROOT / "tests" / "browser" / "x_element_harness.mjs"
 SHOT_KIT = ROOT / "screenshots" / "kit"
 REPORT = SHOT_KIT / "browser-report.json"
-NODE = os.environ.get("NODE_BIN", "node")
 
 
 def _free_port() -> int:
@@ -43,7 +44,6 @@ def _wait_http(url: str, timeout: float = 20.0) -> None:
     raise TimeoutError(f"server not up: {url} last={last}")
 
 
-@unittest.skipUnless(KIT_SUITE.is_file(), "kit browser suite missing")
 class TestKitBrowserDeep(unittest.TestCase):
     server: subprocess.Popen | None = None
     port: int = 0
@@ -51,7 +51,9 @@ class TestKitBrowserDeep(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
+        require_browser()
         SHOT_KIT.mkdir(parents=True, exist_ok=True)
+        REPORT.unlink(missing_ok=True)  # never read a stale report
         cls.port = _free_port()
         env = os.environ.copy()
         env["PYTHONPATH"] = os.pathsep.join(
@@ -85,7 +87,6 @@ class TestKitBrowserDeep(unittest.TestCase):
             raise RuntimeError(f"kit failed to start:\n{err}") from None
 
         env["KIT_URL"] = base
-        env.setdefault("NODE_PATH", "/workspace/node_modules")
         proc = subprocess.run(
             [NODE, str(KIT_SUITE)],
             cwd=str(ROOT),
@@ -167,13 +168,12 @@ class TestKitBrowserDeep(unittest.TestCase):
             self.assertGreater(p.stat().st_size, 400)
 
 
-@unittest.skipUnless(STATIC_HARNESS.is_file(), "static harness missing")
 class TestStaticHarnessStillGreen(unittest.TestCase):
     """Keep the offline fixture harness in the deep-browser gate."""
 
     def test_static_harness(self):
+        require_browser()
         env = os.environ.copy()
-        env.setdefault("NODE_PATH", "/workspace/node_modules")
         # Don't require KIT_URL for static
         env.pop("KIT_URL", None)
         proc = subprocess.run(

@@ -52,4 +52,4 @@ uxdom lint
 uxdom profile
 ```
 
-See [SYSTEM.md](SYSTEM.md) and ux-compose `docs/FLOW.md`.
+See [SYSTEM.md](SYSTEM.md) and [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md).

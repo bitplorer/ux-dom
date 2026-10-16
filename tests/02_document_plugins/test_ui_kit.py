@@ -126,7 +126,7 @@ class TestGalleryApp(unittest.TestCase):
             from app.main import app
 
             c = TestClient(app)
-            r = c.get("/index/Index")
+            r = c.get("/")
             self.assertEqual(r.status_code, 200, r.text[:300])
             self.assertIn("UxDom UI kit", r.text)
             self.assertIn("Button", r.text or "Default")

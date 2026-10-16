@@ -14,25 +14,13 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from typer.testing import CliRunner
 
 from helpers import ScaffoldOptions, available_templates, create_app
 from ux_dom.cli.adders import AddError, add_component
 from ux_dom.cli.build import run_build
-from ux_dom.cli.cli import app as cli_app
 from ux_dom.cli.doctor import run_doctor
 from ux_dom.cli.lint import lint_project
 from ux_dom.cli.static_assets import sync_runtime_assets
-
-try:
-    from ux_dom.cli.deploy import prepare_deploy
-except ImportError:  # product deploy lives on uxcompose
-    prepare_deploy = None
-
-
-def _require_deploy():
-    if prepare_deploy is None:
-        raise unittest.SkipTest("product deploy is uxcompose, not uxdom")
 
 
 def _snapshot(root: Path) -> dict[str, int]:
@@ -78,45 +66,6 @@ class TestAddDeployForceGates(unittest.TestCase):
             with self.assertRaises(AddError):
                 add_component("Notice", root=root, force=False)
             add_component("Notice", root=root, force=True)
-
-    def test_deploy_skipped_on_uxdom(self):
-        _require_deploy()
-
-
-class TestCreateAppYesVsForce(unittest.TestCase):
-    def test_cli_yes_does_not_overwrite_nonempty(self):
-        self.skipTest("uxdom create-app removed; product scaffold is uxcompose")
-        with TemporaryDirectory() as td:
-            dest = Path(td) / "existing"
-            dest.mkdir()
-            (dest / "KEEP_ME.txt").write_text("precious", encoding="utf-8")
-            r = CliRunner().invoke(
-                cli_app,
-                [
-                    "create-app",
-                    "existing",
-                    "--dest",
-                    str(dest),
-                    "--yes",
-                    "--no-tailwind",
-                ],
-            )
-            self.assertNotEqual(r.exit_code, 0, f"stdout={r.stdout!r} exc={r.exception!r}")
-            self.assertEqual(
-                (dest / "KEEP_ME.txt").read_text(encoding="utf-8"), "precious"
-            )
-
-    def test_cli_noninteractive_without_yes_aborts(self):
-        self.skipTest("uxdom create-app removed; product scaffold is uxcompose")
-        with TemporaryDirectory() as td:
-            dest = Path(td) / "fresh"
-            # CliRunner is non-TTY → must require --yes
-            r = CliRunner().invoke(
-                cli_app,
-                ["create-app", "fresh", "--dest", str(dest), "--no-tailwind"],
-            )
-            self.assertEqual(r.exit_code, 2, f"stdout={r.stdout!r} exc={r.exception!r}")
-            self.assertFalse(dest.exists())
 
 
 class TestBuildNoUnintendedWrites(unittest.TestCase):
