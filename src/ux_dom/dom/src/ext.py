@@ -30,6 +30,7 @@ from ux_dom.dom.src.dom_tag import dom_tag, unicode
 from ux_dom.dom.src.utils.dom_util import (
     dom_text,
     escape,
+    checked_attr_name,
     escape_attr_minimal,
     safe_attr_value,
 )
@@ -183,6 +184,7 @@ class Tags(dom_tag, dom1core):
                 continue
             if value is False:
                 continue
+            attribute = checked_attr_name(attribute)
             if value is None:
                 yield " %s" % attribute
                 continue
@@ -806,6 +808,8 @@ class StyleTags(Tags):
         attribute_items = self.attributes.items()
 
         for attribute, value in attribute_items:
+            if value is not False:
+                attribute = checked_attr_name(attribute)
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely
@@ -839,6 +843,8 @@ class StyleTags(Tags):
         attribute_joiner = self.attribute_joiner
 
         for attribute, value in self.attributes.items():
+            if value is not False:
+                attribute = checked_attr_name(attribute)
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely

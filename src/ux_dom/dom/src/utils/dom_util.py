@@ -42,6 +42,8 @@ __all__ = [
     "system",
     "escape",
     "escape_attr_minimal",
+    "InvalidAttributeName",
+    "checked_attr_name",
     "unescape",
     "url_escape",
     "url_unescape",
@@ -112,6 +114,24 @@ _URL_NOISE = re.compile(r"[\x00-\x20\x7f]+")
 # Allow-list, not deny-list: anything not listed here fails closed.
 _SAFE_SCHEMES = frozenset({"http", "https", "mailto", "tel"})
 _SAFE_DATA_URL = re.compile(r"data:image/(?:png|jpeg|jpg|gif|webp)(?:[;,]|$)")
+
+
+class InvalidAttributeName(ValueError):
+    """An attribute name that could break out of the tag (fail closed)."""
+
+
+# HTML attribute names may not contain whitespace, quotes, ">", "/", "=" or
+# control characters (WHATWG "attribute name"). Such a name, e.g. from a
+# ``**user_dict`` spread, could inject a new attribute such as onmouseover.
+_BAD_ATTR_NAME = re.compile(r"[\s\"'>/=\x00-\x1f\x7f]")
+
+
+def checked_attr_name(name):
+    """Return ``name`` as text, or raise InvalidAttributeName."""
+    text = str(name)
+    if not text or _BAD_ATTR_NAME.search(text):
+        raise InvalidAttributeName(f"invalid attribute name: {text!r}")
+    return text
 
 
 def escape_attr_minimal(data):
