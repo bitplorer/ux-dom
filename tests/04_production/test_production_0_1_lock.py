@@ -2,7 +2,7 @@
 
 Locks:
 
-* package version ``0.1.0``
+* package version ``0.2.0`` (0.1 lock, bumped by chore/remove-deprecations)
 * ``x_element.js`` package mount + no legacy WS globals
 * soft ``UxChannelRuntime`` (tags only by default)
 * ``Channel`` alias is Document plugin, not action plane
@@ -20,10 +20,10 @@ from ux_dom.scripts import x_element_js_text
 
 
 class TestBrandAndVersion(unittest.TestCase):
-    def test_version_is_0_1_line(self):
-        # 0.1.x line; the exact value is pinned to pyproject by
+    def test_version_is_0_2_line(self):
+        # 0.2.x line; the exact value is pinned to pyproject by
         # test_production_readiness.test_version_matches_pyproject.
-        self.assertRegex(ux_dom.__version__, r"^0\.1\.\d+$")
+        self.assertRegex(ux_dom.__version__, r"^0\.2\.\d+$")
 
 
 class TestDocumentRuntimes(unittest.TestCase):
