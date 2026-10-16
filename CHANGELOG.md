@@ -69,6 +69,11 @@
   behavior tests.
 - mypy: two type errors fixed (`response/serialize.py`, `ui/page_header.py`).
 
+### Dependencies
+
+- **`typingx` is declared** (`>=0.6.0,<0.7`). `ux_dom.compat.valio_pep649`
+  imports it directly; before, it was only installed transitively via valio.
+
 ### Earlier on main (ownership hard cut)
 
 ### Residual-free ownership (hard cut)
