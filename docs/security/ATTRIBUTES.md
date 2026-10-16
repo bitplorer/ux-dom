@@ -31,7 +31,25 @@ URL-bearing attributes (`ux_dom.dom.src.utils.dom_util.URL_ATTRIBUTES`):
 `srcdoc`.
 
 Steps 2 and 3 also apply to attributes marked unescaped (`safe_attributes`),
-because no caller needs an executable URL.
+because no caller needs an executable URL. An unescaped attribute still has
+`&` and `"` escaped (`escape_attr_minimal`), so it can never close its quotes;
+only `'`, `<` and `>` stay literal, for Alpine JSON and handlers. The
+`safe_attributes` map is per tag instance; marking one tag never changes
+another.
+
+The checked text is what renders: `safe_attr_value` calls `str(value)` (or
+`__html__()`) once and returns that string, so an object cannot return a safe
+string to the check and a different one to the renderer.
+
+**Behaviour change: refused schemes.** Because this is an allow-list, every
+scheme not listed above is refused, including ones that were allowed before:
+`ftp:`, `sms:`, `file:`, `blob:`, `geo:`, `webcal:`, `data:image/svg+xml` and
+`data:text/plain`. Link to them through an `https:` URL instead.
+
+**Open-redirect note.** Scheme-relative URLs (`//host/x`), and the browser
+variants `\\host` and `/\host`, count as relative and pass. They are not XSS,
+but they can point off-site: never build a redirect or link target from
+untrusted input without checking the host yourself.
 
 Out of scope: Alpine bindings such as `:href` / `x-bind:href` hold JavaScript
 expressions, not URLs; never put untrusted text in them.

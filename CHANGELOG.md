@@ -4,12 +4,21 @@
 
 ### Security (fail closed)
 
-- **Script URLs in attributes are neutralized.** In URL attributes (`href`,
-  `src`, `action`, `formaction`, `xlink:href`, `hx-get`, ...), values with a
-  `javascript:`, `vbscript:` or `data:text/html` scheme render as
-  `about:invalid#ux-dom-unsafe-url`. Browser-ignored whitespace and control
-  characters (`java\tscript:`) and letter case cannot bypass it. Applies to
-  every renderer, including unescaped attributes. See
+- **URL attributes use an allow-list.** In URL attributes (`href`, `src`,
+  `action`, `formaction`, `xlink:href`, `hx-get`, `icon`, `lowsrc`, ...), only
+  relative URLs, `http:`, `https:`, `mailto:`, `tel:` and
+  `data:image/{png,jpeg,gif,webp}` pass; anything else renders as
+  `about:invalid#ux-dom-unsafe-url`. The check runs on `str(value)` after HTML
+  entities are decoded, ignores case and browser-ignored whitespace, and the
+  checked text is what renders. Applies to every renderer, including
+  unescaped attributes.
+- **Behaviour change:** schemes outside the allow-list are now refused, e.g.
+  `ftp:`, `sms:`, `file:`, `blob:`, `data:image/svg+xml`.
+- **`srcdoc` is refused** unless the value implements `__html__`.
+- **Unescaped attributes can no longer break out.** `safe_attributes` is now
+  per instance (it was a shared class dict, so one `DataSet` disabled
+  escaping process-wide), and opted-out values still escape `&` and `"`.
+- `//host` links count as relative; see the open-redirect note in
   `docs/security/ATTRIBUTES.md`.
 
 ### DirectoryRouter (pure-dom, examples)
