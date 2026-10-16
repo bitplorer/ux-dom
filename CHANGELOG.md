@@ -18,6 +18,11 @@
 - **Unescaped attributes can no longer break out.** `safe_attributes` is now
   per instance (it was a shared class dict, so one `DataSet` disabled
   escaping process-wide), and opted-out values still escape `&` and `"`.
+- **Attribute names are validated on every render path.** Names with
+  whitespace, quotes, `>`, `/`, `=` or control characters raise
+  `InvalidAttributeName` (a `ValueError`), closing attribute-name injection
+  through `**user_dict` spreads.
+- The unescaped-attribute opt-out is HTML-only (not XHTML).
 - `//host` links count as relative; see the open-redirect note in
   `docs/security/ATTRIBUTES.md`.
 

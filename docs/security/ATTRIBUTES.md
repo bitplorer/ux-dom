@@ -33,9 +33,20 @@ URL-bearing attributes (`ux_dom.dom.src.utils.dom_util.URL_ATTRIBUTES`):
 Steps 2 and 3 also apply to attributes marked unescaped (`safe_attributes`),
 because no caller needs an executable URL. An unescaped attribute still has
 `&` and `"` escaped (`escape_attr_minimal`), so it can never close its quotes;
-only `'`, `<` and `>` stay literal, for Alpine JSON and handlers. The
+only `'`, `<` and `>` stay literal, for Alpine JSON and handlers. This
+opt-out path is **HTML-only**: under XHTML/XML serialization a raw `<` in an
+attribute value is not well-formed, so do not opt attributes out when you
+render XHTML. The
 `safe_attributes` map is per tag instance; marking one tag never changes
 another.
+
+**Attribute names are validated.** On every render path (`dom_tag`,
+`ext.Tags`, `ext.StyleTags`), a name containing whitespace, `"`, `'`, `>`,
+`/`, `=` or a control character, or an empty name, raises
+`InvalidAttributeName` (a `ValueError`) instead of rendering. Without this,
+`span(**{'x" onmouseover="alert(1)': "1"})` would inject an event handler.
+Alpine and htmx names (`@click`, `:class`, `x-on:keyup.enter`, `hx-post`)
+are valid.
 
 The checked text is what renders: `safe_attr_value` calls `str(value)` (or
 `__html__()`) once and returns that string, so an object cannot return a safe
