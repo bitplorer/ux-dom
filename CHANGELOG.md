@@ -9,6 +9,10 @@
 - **BREAKING:** any `serve=` value other than `"package_mount"` / `"dual_copy"`
   now raises `ValueError` (before: unknown values were not rejected).
 - Removed `Carousel(default=)` alias. Use `index=`.
+- **BREAKING: `run_build()` lost `minify=` and `skip_tailwind=`, and
+  `uxdom build` lost `--skip-tailwind`.** Both were accepted and silently
+  ignored (this pipeline never compiles or minifies CSS). Passing them is now
+  a `TypeError` / "No such option" error. Product CSS is `uxcompose build`.
 
 ## 0.1.1
 

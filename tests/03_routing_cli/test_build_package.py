@@ -58,7 +58,7 @@ class TestRunnablePackage(unittest.TestCase):
                 )
             )
             rep = run_build(
-                cwd=root, skip_tailwind=True, package=True, package_name="run"
+                cwd=root, package=True, package_name="run"
             )
             self.assertTrue(rep.ok, rep.steps)
             sys.path.insert(0, str(root))
