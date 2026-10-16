@@ -28,7 +28,7 @@ class Shop(Component):
                 " ",
                 a(
                     "Add via cart →",
-                    href="/cart/Cart",
+                    href="/cart",
                     className="text-sky-600 text-sm underline ml-2",
                 ),
                 id=prod["id"],

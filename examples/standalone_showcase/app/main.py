@@ -10,12 +10,14 @@ From repo root::
 from __future__ import annotations
 
 import asyncio
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncIterator, Callable
 
 from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse, RedirectResponse, StreamingResponse as ASGIStreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse as ASGIStreamingResponse
 from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.routing import WebSocketRoute
 from starlette.types import ASGIApp
 
 from ux_dom.dom import div, h2, p
@@ -68,14 +70,15 @@ _builder = (
     .use(HtmxControl(middleware=True, version="2.0.4", sse=True))
 )
 
-app = _builder.build(asgi=FastAPI(title=settings.APP_TITLE, debug=settings.DEBUG))
-
-if settings.WITH_HMR and settings.DEBUG:
+def _hot_reload():
+    """Dev-only HMR route, or None. Its watcher runs via the app lifespan."""
+    if not (settings.WITH_HMR and settings.DEBUG):
+        return None
     from fastapi import WebSocket
 
     from ux_dom.reloader import HotReloadWebSocketRoute, WatchPath
 
-    hot = HotReloadWebSocketRoute(
+    return HotReloadWebSocketRoute(
         websocket_type=WebSocket,
         watch_paths=[
             WatchPath(path=str(PACKAGE), on_reload=()),
@@ -84,7 +87,29 @@ if settings.WITH_HMR and settings.DEBUG:
         url_path="/hot-reload",
         url_name="hot-reload",
     )
-    app.add_websocket_route(hot.url_path, hot, name=hot.url_name)
+
+
+_hot = _hot_reload()
+
+
+@asynccontextmanager
+async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    if _hot is not None:
+        await _hot.startup()
+    try:
+        yield
+    finally:
+        if _hot is not None:
+            await _hot.shutdown()
+
+
+app = _builder.build(
+    asgi=FastAPI(title=settings.APP_TITLE, debug=settings.DEBUG, lifespan=_lifespan)
+)
+
+if _hot is not None:
+    # HotReloadWebSocketRoute is a raw ASGI app; Starlette mounts it as-is.
+    app.router.routes.append(WebSocketRoute(_hot.url_path, _hot, name=_hot.url_name))
 app.add_middleware(SecurityHeadersMiddleware)
 
 try:
@@ -105,10 +130,6 @@ try:
 except Exception:
     pass
 
-
-@app.get("/")
-def _root():
-    return RedirectResponse("/index/Index")
 
 
 @app.get("/health", response_class=JSONResponse)

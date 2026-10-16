@@ -7,15 +7,15 @@ from ux_dom.dom import a, div, h1, h2, p
 from app.components.x_widgets import AlpineToggle, CounterX
 from app.document import page
 
-__all__ = ["AlpineDemo"]
+__all__ = ["Alpine"]
 
 
-class AlpineDemo(Component):
+class Alpine(Component):
     routes = ["get"]
 
     def render(self):
         return div(
-            a("← Home", href="/index/Index", className="text-sm text-sky-600"),
+            a("← Home", href="/", className="text-sm text-sky-600"),
             h1("Alpine + XElement", className="text-3xl font-bold mt-4 mb-2"),
             p(
                 "Construct Alpine components as hosts; definitions are registry SSoT.",

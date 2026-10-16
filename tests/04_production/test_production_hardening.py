@@ -238,14 +238,17 @@ class TestDirectoryRouterIntegration(unittest.TestCase):
                 client = TestClient(app)
                 paths = app.openapi()["paths"]
                 joined = " ".join(paths)
-                self.assertIn("Counter", joined)
-                self.assertIn("{id}", joined)
-                self.assertNotIn("Secret", joined)
+                # Path law: URL = folder + file stem, never the class name.
+                self.assertEqual(
+                    sorted(paths),
+                    ["/api/counter", "/api/counter/increment", "/api/users/{id}/"],
+                )
+                self.assertNotIn("secret", joined.lower())
                 self.assertNotIn("LEAK", joined)
-                r = client.get("/api/counter/Counter")
+                r = client.get("/api/counter")
                 self.assertEqual(r.status_code, 200)
                 self.assertIn("n=0", r.text)
-                r2 = client.get("/api/counter/Counter/increment")
+                r2 = client.get("/api/counter/increment")
                 self.assertEqual(r2.status_code, 200)
                 self.assertIn("n=1", r2.text)
                 r3 = client.get("/api/users/abc")

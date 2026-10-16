@@ -42,10 +42,10 @@ class Index(Component):
             ),
             h2("Try it", className="text-xl font-semibold mb-3"),
             ul(
-                li(a("Shop catalog →", href="/shop/Shop", className="text-sky-600 underline")),
-                li(a("HTMX cart counter →", href="/cart/Cart", className="text-sky-600 underline")),
-                li(a("SSE ticker →", href="/sse/SseDemo", className="text-sky-600 underline")),
-                li(a("Streamed HTML →", href="/stream/StreamDemo", className="text-sky-600 underline")),
+                li(a("Shop catalog →", href="/shop", className="text-sky-600 underline")),
+                li(a("HTMX cart counter →", href="/cart", className="text-sky-600 underline")),
+                li(a("SSE ticker →", href="/sse", className="text-sky-600 underline")),
+                li(a("Streamed HTML →", href="/stream", className="text-sky-600 underline")),
                 className="list-disc pl-6 space-y-2 text-slate-700",
             ),
             p(

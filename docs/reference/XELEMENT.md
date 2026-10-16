@@ -52,7 +52,7 @@ definition = HelloLight("hello-light")
 host = definition()  # <x-hello-light>
 ```
 
-Full gallery: `examples/xelement_kit` → `/lightdom/LightDomDemo`  
+Full gallery: `examples/xelement_kit` → `/lightdom`  
 Source: `examples/xelement_kit/app/components/light_dom.py`
 
 ## Shadow DOM — `WebComponent`
@@ -81,7 +81,7 @@ class ShellShadow(WebComponent):
 host = ShellShadow("shell-shadow")("projected light child")
 ```
 
-Full gallery: `/shadowdom/ShadowDomDemo`  
+Full gallery: `/shadowdom`  
 Source: `examples/xelement_kit/app/components/shadow_dom.py`
 
 ## Alpine — `AlpineComponent`

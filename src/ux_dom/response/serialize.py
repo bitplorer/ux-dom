@@ -171,9 +171,9 @@ def extract_by_id(html: str, target_id: str) -> str:
         if gt < 0:
             break
         if _open_tag_id(blob[i : gt + 1]) == tid:
-            end = _element_end(blob, i)
-            if end is not None:
-                return blob[i:end]
+            close = _element_end(blob, i)
+            if close is not None:
+                return blob[i:close]
         i = gt + 1
     return html
 

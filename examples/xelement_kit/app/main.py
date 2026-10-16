@@ -10,7 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from ux_dom.plugins import App, XElementRuntime
@@ -33,10 +33,6 @@ app = (
 if settings.ASSETS_DIR.exists():
     app.mount("/assets", StaticFiles(directory=str(settings.ASSETS_DIR)), name="assets")
 
-
-@app.get("/")
-def root():
-    return RedirectResponse("/index/Index")
 
 
 @app.get("/health", response_class=JSONResponse)

@@ -25,4 +25,4 @@
 Tailwind compiler: `ux_compose.tailwind`. App folders: `ux_compose.WebAssets`.
 Product command: `uxcompose build`.
 
-See `docs/guides/CLI.md` and ux-compose `docs/FLOW.md`.
+See `docs/guides/CLI.md` and [ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md).

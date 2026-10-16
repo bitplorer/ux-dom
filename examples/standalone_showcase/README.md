@@ -8,8 +8,8 @@ A **production-shaped** example app using only **UxDom + FastAPI** (no ux-channe
 |---------|--------|
 | Components + Document | `app/routes/*`, `app/document.py` |
 | File routes (leftover standalone demo) | `app/routes/` — product apps use ux-compose |
-| HTMX partials | `POST /cart/Cart` swaps `#cart-root` |
-| SSE | `GET /api/sse` + page `/sse/SseDemo` |
+| HTMX partials | `POST /cart` swaps `#cart-root` |
+| SSE | `GET /api/sse` + page `/sse` |
 | Streaming HTML | `GET /api/stream` |
 
 ## Run
@@ -45,11 +45,11 @@ Open http://127.0.0.1:8080/
 | Path | Description |
 |------|-------------|
 | `/` | → home |
-| `/index/Index` | Feature tour |
-| `/shop/Shop` | Catalog |
-| `/cart/Cart` | HTMX cart (GET page, POST partial) |
-| `/sse/SseDemo` | Live SSE UI |
-| `/stream/StreamDemo` | Stream docs |
+| `/` | Feature tour |
+| `/shop` | Catalog |
+| `/cart` | HTMX cart (GET page, POST partial) |
+| `/sse` | Live SSE UI |
+| `/stream` | Stream docs |
 | `/api/sse?n=5` | Finite SSE for tests |
 | `/api/stream` | StreamingResponse fragment |
 | `/health` | JSON health |

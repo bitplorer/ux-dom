@@ -12,8 +12,8 @@ class Index(Component):
             h1("UxDom Hypermedia Shop"),
             p("Pure ux_dom — DirectoryRouter + HTMX + Components."),
             ul(
-                li(a("Product list", href="/shop/products/list/ProductList")),
-                li(a("Cart counter", href="/shop/cart/counter/CartCounter")),
+                li(a("Product list", href="/shop/products/list")),
+                li(a("Cart counter", href="/shop/cart/counter")),
             ),
             id="home",
             className="page",

@@ -27,13 +27,13 @@ PYTHONPATH=../..:. uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 
 | Path | Content |
 |------|---------|
-| `/lightdom/LightDomDemo` | **Full** Light DOM gallery + explanation |
-| `/shadowdom/ShadowDomDemo` | **Full** Shadow DOM gallery + slots |
-| `/wc/WcDemo` | Short WC smoke |
-| `/alpine/AlpineDemo` | Alpine + XElement |
-| `/htmx/HtmxDemo` | HTMX partial re-upgrade |
-| `/jinja/JinjaDemo` | Jinja For/Var expansion |
-| `/slots/SlotsDemo` | Named slots + `ux_dom.slots.Slots` |
+| `/lightdom` | **Full** Light DOM gallery + explanation |
+| `/shadowdom` | **Full** Shadow DOM gallery + slots |
+| `/wc` | Short WC smoke |
+| `/alpine` | Alpine + XElement |
+| `/htmx` | HTMX partial re-upgrade |
+| `/jinja` | Jinja For/Var expansion |
+| `/slots` | Named slots + `ux_dom.slots.Slots` |
 
 ## Code map
 

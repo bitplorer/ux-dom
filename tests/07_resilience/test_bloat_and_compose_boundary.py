@@ -239,10 +239,10 @@ class TestPytestWorkflow(unittest.TestCase):
         self.assertIn("poetry install", text)
         self.assertIn("run: poetry run pytest tests/", text)
         self.assertNotIn("continue-on-error", text)
-        self.assertIn(
-            "Red because of failures already on main at 356dd0d.",
-            text,
-        )
+        # Browser tests run for real in CI: toolchain installed, skips forbidden.
+        self.assertIn('UX_DOM_REQUIRE_BROWSER: "1"', text)
+        self.assertIn("npm ci --prefix tests/browser", text)
+        self.assertIn("playwright install --with-deps chromium", text)
 
 
 if __name__ == "__main__":

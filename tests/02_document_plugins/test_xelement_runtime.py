@@ -277,7 +277,7 @@ class TestXElementKit(unittest.TestCase):
         self.assertIn("UxDom.XElement", js.text)
 
     def test_wc_page_definition_and_host(self):
-        r = self.client.get("/wc/WcDemo")
+        r = self.client.get("/wc")
         self.assertEqual(r.status_code, 200)
         self.assertIn("x-tagname", r.text)
         self.assertIn("x-hello", r.text)
@@ -285,7 +285,7 @@ class TestXElementKit(unittest.TestCase):
         self.assertIn("x_element.js", r.text)
 
     def test_alpine_page(self):
-        r = self.client.get("/alpine/AlpineDemo")
+        r = self.client.get("/alpine")
         self.assertEqual(r.status_code, 200)
         self.assertIn("x-tagname", r.text)
         self.assertIn("x-toggle", r.text)
@@ -293,11 +293,11 @@ class TestXElementKit(unittest.TestCase):
         self.assertIn("x_element.js", r.text)
 
     def test_htmx_demo_and_partial(self):
-        demo = self.client.get("/htmx/HtmxDemo")
+        demo = self.client.get("/htmx")
         self.assertEqual(demo.status_code, 200)
         self.assertIn("hx-get", demo.text.lower() or demo.text)
         # partial may include definition + host
-        partial = self.client.get("/htmx/Partial")
+        partial = self.client.get("/htmx/partial")
         self.assertEqual(partial.status_code, 200)
         self.assertTrue(
             "x-tagname" in partial.text or "x-hello" in partial.text,
@@ -305,13 +305,13 @@ class TestXElementKit(unittest.TestCase):
         )
 
     def test_light_and_shadow_galleries(self):
-        light = self.client.get("/lightdom/LightDomDemo")
+        light = self.client.get("/lightdom")
         self.assertEqual(light.status_code, 200)
         self.assertIn("Light DOM", light.text)
         self.assertIn("x-tagname", light.text)
         self.assertIn("hello-light", light.text)
         self.assertIn("x_element.js", light.text)
-        shadow = self.client.get("/shadowdom/ShadowDomDemo")
+        shadow = self.client.get("/shadowdom")
         self.assertEqual(shadow.status_code, 200)
         self.assertIn("Shadow DOM", shadow.text)
         self.assertIn("shadowroot", shadow.text)

@@ -32,8 +32,8 @@ cd shop && uxcompose build && uxcompose serve app:asgi --port 8080
 ## HTMX partial
 
 ```python
-button("Load", hx_get="/htmx_demo/Partial", hx_target="#panel", hx_swap="innerHTML")
-# Partial.get returns fragment only — see reference/ROUTING.md (product routes: ux-compose)
+button("Load", hx_get="/htmx_demo/partial", hx_target="#panel", hx_swap="innerHTML")
+# HtmxDemo.partial (classmethod in htmx_demo.py) returns the fragment only — see reference/ROUTING.md (product routes: ux-compose)
 ```
 
 ## XElement light DOM

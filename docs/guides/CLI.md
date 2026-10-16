@@ -14,7 +14,7 @@ uxcompose deploy --provider docker
 uxcompose doctor .
 ```
 
-See ux-compose `docs/guides/CLI.md` and `docs/FLOW.md`.
+See ux-compose `docs/guides/CLI.md` and [FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md).
 
 ---
 
