@@ -1,4 +1,4 @@
-"""Shared pytest fixtures for uxdom 0.1.
+"""Shared pytest fixtures for ux-dom.
 
 Test tree ontology
 ------------------
