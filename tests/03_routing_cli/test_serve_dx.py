@@ -56,6 +56,16 @@ class TestProductCliAbsent(unittest.TestCase):
         with self.assertRaises(ImportError):
             from ux_dom.cli.deploy import prepare_deploy  # noqa: F401
 
+    def test_product_commands_not_on_uxdom_cli(self):
+        """create-app / deploy / serve belong to uxcompose, not uxdom."""
+        from typer.main import get_command
+
+        from ux_dom.cli.cli import app as cli_app
+
+        names = set(get_command(cli_app).commands)
+        self.assertTrue({"add", "build", "doctor"} <= names, names)
+        self.assertFalse({"create-app", "deploy", "serve"} & names, names)
+
 
 class TestCssCompilerNotOnUxDom(unittest.TestCase):
     """Compiler invocation left ux-dom. Compose owns it."""
