@@ -24,10 +24,10 @@ class TestStandaloneShowcase(unittest.TestCase):
 
     def test_health_and_pages(self):
         self.assertTrue(self.client.get("/health").json()["ok"])
-        self.assertIn("Showcase", self.client.get("/index/Index").text)
-        self.assertIn("Aurora", self.client.get("/shop/Shop").text)
-        self.assertIn("cart-root", self.client.get("/cart/Cart").text)
-        self.assertEqual(self.client.post("/cart/Cart").status_code, 200)
-        self.assertIn("SSE", self.client.get("/sse/SseDemo").text)
+        self.assertIn("Showcase", self.client.get("/").text)
+        self.assertIn("Aurora", self.client.get("/shop").text)
+        self.assertIn("cart-root", self.client.get("/cart").text)
+        self.assertEqual(self.client.post("/cart").status_code, 200)
+        self.assertIn("SSE", self.client.get("/sse").text)
         self.assertIn("event: message", self.client.get("/api/sse?n=2").text)
         self.assertIn("Streamed", self.client.get("/api/stream").text)
