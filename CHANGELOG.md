@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 — remove deprecations
+
+- Removed deprecated modules `ux_dom.dom.ui` (Tortoise form helper),
+  `ux_dom.dom.src.pythontags`, `ux_dom.dom.src.sphinxtags`, `ux_dom.alpinejs.ripple_btn`.
+- Removed `serve="webassets"` alias on `XElementRuntime` and
+  `PackageStaticContribution`.
+- **BREAKING:** any `serve=` value other than `"package_mount"` / `"dual_copy"`
+  now raises `ValueError` (before: unknown values were not rejected).
+- Removed `Carousel(default=)` alias. Use `index=`.
+
 ## 0.1.1
 
 ### Security (fail closed)
@@ -65,16 +75,6 @@
 - mypy: two type errors fixed (`response/serialize.py`, `ui/page_header.py`).
 
 ### Earlier on main (ownership hard cut)
-
-### 0.2.0 — remove deprecations (local, unreleased)
-
-- Removed deprecated modules `ux_dom.dom.ui` (Tortoise form helper),
-  `ux_dom.dom.src.pythontags`, `ux_dom.dom.src.sphinxtags`, `ux_dom.alpinejs.ripple_btn`.
-- Removed `serve="webassets"` alias on `XElementRuntime` and
-  `PackageStaticContribution`.
-- **BREAKING:** any `serve=` value other than `"package_mount"` / `"dual_copy"`
-  now raises `ValueError` (before: unknown values were not rejected).
-- Removed `Carousel(default=)` alias. Use `index=`.
 
 ### Residual-free ownership (hard cut)
 
