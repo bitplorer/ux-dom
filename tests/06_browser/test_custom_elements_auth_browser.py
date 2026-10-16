@@ -18,6 +18,7 @@ from ux_dom.dom.htmlelement import xelement_registry
 from ux_dom.plugins import XElementRuntime
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
 
+from browser_gate import NODE, require_browser
 from tests.fixtures.auth_xelements import (
     AuthShell,
     LoginForm,
@@ -30,7 +31,6 @@ ROOT = Path(__file__).resolve().parents[2]
 HARNESS = ROOT / "tests" / "browser" / "auth_xelement_harness.mjs"
 X_JS = ROOT / "src" / "ux_dom" / "scripts" / "x_element.js"
 SHOT = ROOT / "screenshots" / "auth-xelements"
-NODE = os.environ.get("NODE_BIN", "node")
 
 
 def _build_auth_page_html() -> str:
@@ -82,9 +82,9 @@ def _build_auth_page_html() -> str:
     return str(doc(page))
 
 
-@unittest.skipUnless(HARNESS.is_file() and X_JS.is_file(), "auth harness or x_element.js missing")
 class TestAuthCustomElementsLiveBrowser(unittest.TestCase):
     def test_login_signup_live_upgrade_and_behaviour(self):
+        require_browser()
         SHOT.mkdir(parents=True, exist_ok=True)
         html = _build_auth_page_html()
         # Sanity: templates + hosts present server-side
@@ -129,7 +129,6 @@ class TestAuthCustomElementsLiveBrowser(unittest.TestCase):
         self.assertTrue(data.get("ok"), data.get("fails"))
 
 
-@unittest.skipUnless(HARNESS.is_file(), "harness missing")
 class TestAuthPageMarkupOnly(unittest.TestCase):
     """Fast path without browser — structure guarantees for CI without Chromium."""
 
