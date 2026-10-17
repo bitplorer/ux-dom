@@ -1,0 +1,12 @@
+/* Plain CSS so the page runs under the nonce CSP. */
+body { margin: 0; font: 16px/1.5 system-ui, sans-serif; color: #0f172a; background: #f8fafc; }
+.shell { max-width: 36rem; margin: 2rem auto; padding: 0 1rem; }
+.card { background: #fff; border: 1px solid #e2e8f0; border-radius: .75rem; padding: 1rem 1.25rem; }
+.label { margin: 0; color: #64748b; font-size: .875rem; }
+.value { display: block; font-size: 2.5rem; font-weight: 700; }
+.row { display: flex; gap: .5rem; margin: 1rem 0; }
+button { font: inherit; cursor: pointer; border-radius: .5rem; padding: .5rem 1rem; }
+button.primary { border: 0; background: #0f172a; color: #fff; }
+button.ghost { border: 1px solid #cbd5e1; background: transparent; color: #334155; }
+.hint { color: #64748b; font-size: .875rem; }
+.mono { font-family: ui-monospace, monospace; }
