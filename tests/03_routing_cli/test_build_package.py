@@ -39,7 +39,7 @@ class TestRunnablePackage(unittest.TestCase):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
-                    "pkg", dest=Path(td) / "pkg", force=True, with_tailwind=False
+                    "pkg", dest=Path(td) / "pkg", force=True
                 )
             )
             dest = write_runnable_package(root, name="pkg")
@@ -54,7 +54,7 @@ class TestRunnablePackage(unittest.TestCase):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
-                    "run", dest=Path(td) / "run", force=True, with_tailwind=False
+                    "run", dest=Path(td) / "run", force=True
                 )
             )
             rep = run_build(

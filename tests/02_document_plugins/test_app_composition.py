@@ -53,7 +53,7 @@ class TestAppWeb(unittest.TestCase):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
-                    "w", dest=Path(td) / "w", force=True, with_tailwind=False
+                    "w", dest=Path(td) / "w", force=True
                 )
             )
             main = (root / "app/main.py").read_text()

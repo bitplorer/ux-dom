@@ -84,7 +84,7 @@ class TestScaffoldServesPackageJs(unittest.TestCase):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
-                    "ps", dest=Path(td) / "ps", force=True, with_tailwind=False
+                    "ps", dest=Path(td) / "ps", force=True
                 )
             )
             sys.path.insert(0, str(root))

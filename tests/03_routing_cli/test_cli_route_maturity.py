@@ -20,7 +20,7 @@ class TestAddRejectsBadNames(unittest.TestCase):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
-                    "e", dest=Path(td) / "e", force=True, with_tailwind=False
+                    "e", dest=Path(td) / "e", force=True
                 )
             )
             old = Path.cwd()
@@ -37,7 +37,7 @@ class TestXElementAlpineGenerated(unittest.TestCase):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
-                    "x", dest=Path(td) / "x", force=True, with_tailwind=False
+                    "x", dest=Path(td) / "x", force=True
                 )
             )
             old = Path.cwd()
@@ -58,7 +58,6 @@ class TestBuildDeployHardening(unittest.TestCase):
                     "b",
                     dest=Path(td) / "b",
                     force=True,
-                    with_tailwind=False,
                 )
             )
             rep = run_build(cwd=root)

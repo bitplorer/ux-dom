@@ -19,7 +19,6 @@ class TestBuild(unittest.TestCase):
                     dest=Path(td) / "bapp",
                     force=True,
                     template="minimal",
-                    with_tailwind=False,
                 )
             )
             # import needs deps — skip_import if heavy; try full

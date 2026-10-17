@@ -36,7 +36,7 @@ class TestReadOnlyDxCommands(unittest.TestCase):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
-                    "ro", dest=Path(td) / "ro", force=True, with_tailwind=False
+                    "ro", dest=Path(td) / "ro", force=True
                 )
             )
             before = _snapshot(root)
@@ -58,7 +58,7 @@ class TestAddDeployForceGates(unittest.TestCase):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
-                    "ad", dest=Path(td) / "ad", force=True, with_tailwind=False
+                    "ad", dest=Path(td) / "ad", force=True
                 )
             )
             p = add_component("Notice", root=root, force=False)
@@ -73,7 +73,7 @@ class TestBuildNoUnintendedWrites(unittest.TestCase):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
-                    "bd", dest=Path(td) / "bd", force=True, with_tailwind=False
+                    "bd", dest=Path(td) / "bd", force=True
                 )
             )
             before = _snapshot(root)
@@ -95,7 +95,7 @@ class TestBuildNoUnintendedWrites(unittest.TestCase):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
-                    "pk", dest=Path(td) / "pk", force=True, with_tailwind=False
+                    "pk", dest=Path(td) / "pk", force=True
                 )
             )
             rep = run_build(

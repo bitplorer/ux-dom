@@ -82,8 +82,6 @@ class TestScaffoldMatrix(unittest.TestCase):
                             dest=Path(td) / tmpl,
                             force=True,
                             template=tmpl,
-                            with_tailwind=False,
-                            with_channel=False if tmpl != "live" else True,
                         )
                     )
                     # live still creates without channel package

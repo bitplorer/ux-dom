@@ -22,9 +22,6 @@ class ScaffoldOptions:
     app_name: str = "app"
     dest: Optional[Path] = None
     force: bool = False
-    with_tailwind: bool = False
-    with_channel: bool = False
-    with_hmr: bool = False
     with_csp: bool = True
     template: str = "minimal"
 
@@ -34,19 +31,12 @@ class ScaffoldOptions:
         dest: Path | str | None = None,
         *,
         force: bool = False,
-        with_tailwind: bool = False,
-        with_channel: bool = False,
-        with_hmr: bool = False,
         with_csp: bool = True,
         template: str = "minimal",
-        **_ignored,
     ):
         self.app_name = str(app_name or "app")
         self.dest = Path(dest) if dest is not None else None
         self.force = force
-        self.with_tailwind = with_tailwind
-        self.with_channel = with_channel
-        self.with_hmr = with_hmr
         self.with_csp = with_csp
         self.template = template or "minimal"
 
@@ -172,8 +162,6 @@ def scaffolded_app(
     name: str = "app",
     *,
     template: str = "minimal",
-    with_tailwind: bool = False,
-    with_channel: bool = False,
 ) -> Iterator[Path]:
     """Yield a temporary experiment tree (force=True)."""
     with TemporaryDirectory() as td:
@@ -183,8 +171,6 @@ def scaffolded_app(
                 dest=Path(td) / name,
                 force=True,
                 template=template,
-                with_tailwind=with_tailwind,
-                with_channel=with_channel,
             )
         )
         yield root

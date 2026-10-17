@@ -59,7 +59,6 @@ class TestScaffoldSingleCopy(unittest.TestCase):
                     dest=Path(td) / "sc",
                     force=True,
                     template="minimal",
-                    with_tailwind=False,
                 )
             )
             # Should NOT require dual copy
@@ -103,7 +102,7 @@ class TestScaffoldSingleCopy(unittest.TestCase):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
-                    "bp", dest=Path(td) / "bp", force=True, with_tailwind=False
+                    "bp", dest=Path(td) / "bp", force=True
                 )
             )
             rep = run_build(
