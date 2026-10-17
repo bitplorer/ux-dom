@@ -36,7 +36,8 @@ jobs:
           npx --prefix tests/browser playwright install --with-deps chromium
       - name: Lint (same gates as scripts/quality.sh)
         run: |
-          poetry run black --check src/ux_dom tests
+          poetry run black --check src/ux_dom tests examples scripts
+          poetry run ruff check tests examples scripts
           poetry run ruff check src/ux_dom --select F401,F841,F811,E9,F821
       - name: Run pytest
         run: poetry run pytest tests/ -q -rs

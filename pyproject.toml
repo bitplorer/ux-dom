@@ -111,6 +111,11 @@ src = ["src"]
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]
 
+[tool.ruff.lint.per-file-ignores]
+# Expected-output fixtures: long HTML / JS lines inside string literals.
+"tests/01_core/test_ux_dom.py" = ["E501"]
+"tests/02_document_plugins/test_xelement_runtime.py" = ["E501"]
+
 [tool.ruff.lint.isort]
 combine-as-imports = true
 
@@ -119,7 +124,6 @@ branch = false
 source = ["ux_dom"]
 omit = [
   "ux_dom/elements/*",
-  "ux_dom/examples/*",
   "ux_dom/alpinejs/*",
   "*/__main__.py",
 ]
