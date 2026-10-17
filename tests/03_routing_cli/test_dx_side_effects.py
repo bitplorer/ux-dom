@@ -42,7 +42,7 @@ class TestReadOnlyDxCommands(unittest.TestCase):
             before = _snapshot(root)
             run_doctor(cwd=root, port=59991)
             lint_project(root)
-            rep = sync_runtime_assets(root, force=True)
+            rep = sync_runtime_assets(root)
             self.assertEqual(rep.files, [])
             after = _snapshot(root)
             self.assertEqual(before, after)
