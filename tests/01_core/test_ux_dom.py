@@ -1,12 +1,11 @@
 import asyncio
+import tomllib
 import typing as t
 import unittest
-
-from markupsafe import Markup
 from dataclasses import dataclass
 from textwrap import dedent
 
-import tomllib
+from markupsafe import Markup
 
 from ux_dom import Document, __version__
 from ux_dom.alpinejs import DataSet
@@ -668,13 +667,13 @@ class TestJinja(unittest.TestCase):
 class TestEventManager(unittest.TestCase):
     def setUp(self) -> None:
         class ClickEvents(BaseEventManager):
-            def on_press(self, event: t.Union[str, t.Callable]) -> t.Callable:
+            def on_press(self, event: str | t.Callable) -> t.Callable:
                 return self.set_event(activity="click", event_name_or_method=event)
 
-            def on_mouseover(self, event: t.Union[str, t.Callable]):
+            def on_mouseover(self, event: str | t.Callable):
                 return self.set_event(activity="mouse", event_name_or_method=event)
 
-            def on_mousedown(self, event: t.Union[str, t.Callable]) -> t.Callable:
+            def on_mousedown(self, event: str | t.Callable) -> t.Callable:
                 return self.set_event(activity="mouse", event_name_or_method=event)
 
             @property

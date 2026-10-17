@@ -9,7 +9,6 @@ from ux_dom.plugins.csp import (
     bind_nonce_to_scope,
     clear_nonce,
     generate_nonce,
-    get_nonce,
     reset_nonce,
     resolve_nonce,
     set_nonce,

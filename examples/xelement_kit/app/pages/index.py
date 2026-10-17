@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from ux_dom import Component
-from ux_dom.dom import a, div, h1, h2, li, p, ul
-
 from app.document import page
+from ux_dom import Component
+from ux_dom.dom import a, div, h1, li, p, ul
 
 __all__ = ["Index"]
 

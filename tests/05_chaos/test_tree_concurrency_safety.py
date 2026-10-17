@@ -19,8 +19,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
 
 from ux_dom.dom import div, span
-from ux_dom.dom.src.concurrency import multi_tree_lock, root_of, tree_lock_for
 from ux_dom.dom.src.component import ReactiveComponent
+from ux_dom.dom.src.concurrency import multi_tree_lock, root_of, tree_lock_for
 
 
 @dataclass(eq=False)

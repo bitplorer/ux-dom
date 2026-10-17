@@ -1,11 +1,10 @@
 """Web Components — hosts only."""
 from __future__ import annotations
 
-from ux_dom import Component
-from ux_dom.dom import a, div, h1, h2, p, span
-
 from app.components.x_widgets import HelloCustom, ShadowCard
 from app.document import page
+from ux_dom import Component
+from ux_dom.dom import a, div, h1, h2, p, span
 
 __all__ = ["WC"]
 

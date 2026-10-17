@@ -1,10 +1,9 @@
 """HTML document shell for route handlers."""
 from __future__ import annotations
 
+from app import settings
 from ux_dom import Document
 from ux_dom.dom import link, meta, title
-
-from app import settings
 
 
 def page(*body, page_title: str | None = None):

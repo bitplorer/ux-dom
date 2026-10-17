@@ -3,13 +3,12 @@ import functools
 import logging
 import pathlib
 import string
+from collections.abc import Callable, Coroutine, Sequence
 from functools import lru_cache
-from typing import Callable, Coroutine, List, Sequence, Tuple, Type
 
 import anyio
 
-from ux_dom.web_io import Receive, Scope, Send
-from ux_dom.web_io import WebSocketProtocol as WebSocket
+from ux_dom.web_io import Receive, Scope, Send, WebSocketProtocol as WebSocket
 
 from ._models import WatchPath
 from ._notify import Notify
@@ -26,7 +25,7 @@ class _Template(string.Template):
     delimiter = "$reloader::"
 
 
-async def run_until_first_complete(*args: Tuple[Callable, dict]) -> None:
+async def run_until_first_complete(*args: tuple[Callable, dict]) -> None:
     # this method is taken from starlette
     async with anyio.create_task_group() as task_group:
 
@@ -41,13 +40,13 @@ async def run_until_first_complete(*args: Tuple[Callable, dict]) -> None:
 class HotReloadWebSocketRoute:
     def __init__(
         self,
-        websocket_type: Type[WebSocket],
+        websocket_type: type[WebSocket],
         watch_paths: Sequence[WatchPath],
         url_path: str,
         url_name: str,
         reconnect_interval: float = 0.50,
     ) -> None:
-        self.websocket_type: Type[WebSocket] = websocket_type
+        self.websocket_type: type[WebSocket] = websocket_type
         self.notify = Notify()
         self.watchers = [
             FileWatcher(
@@ -69,7 +68,7 @@ class HotReloadWebSocketRoute:
         return self._url_name
 
     async def _on_changes(
-        self, changeset: ChangeSet, *, on_reload: List[ReloadFunc]
+        self, changeset: ChangeSet, *, on_reload: list[ReloadFunc]
     ) -> None:
         description = ", ".join(
             f"file {event} at {', '.join(f'{event!r}' for event in changeset[event])}"

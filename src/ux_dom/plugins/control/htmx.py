@@ -1,7 +1,8 @@
 """HtmxControl — HTMX script tags and optional middleware (optional SSE ext)."""
 from __future__ import annotations
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from ux_dom.dom import script
 

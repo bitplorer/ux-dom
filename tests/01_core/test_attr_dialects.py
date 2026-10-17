@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import unittest
 
+from ux_dom.dom import div
 from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.ext import Tags
-from ux_dom.dom import div
 
 
 class TestAttrDialects(unittest.TestCase):

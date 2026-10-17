@@ -5,14 +5,14 @@ from __future__ import annotations
 
 import re
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal
 
 
 class AddError(RuntimeError):
     pass
 
 
-def _find_app_root(start: Optional[Path] = None) -> Path:
+def _find_app_root(start: Path | None = None) -> Path:
     cur = (start or Path.cwd()).resolve()
     for p in [cur, *cur.parents]:
         if (p / "app" / "__init__.py").is_file():
@@ -43,7 +43,7 @@ def _module_stem(name: str) -> str:
 
 
 def add_component(
-    name: str, *, root: Optional[Path] = None, force: bool = False
+    name: str, *, root: Path | None = None, force: bool = False
 ) -> Path:
     """Create ``app/components/{stem}.py`` with a Component stub."""
     app_root = _find_app_root(root)
@@ -78,7 +78,7 @@ def add_xelement(
     name: str,
     *,
     kind: XKind = "light",
-    root: Optional[Path] = None,
+    root: Path | None = None,
     force: bool = False,
 ) -> Path:
     """Create an XElement subclass under app/components/."""

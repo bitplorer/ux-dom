@@ -32,7 +32,7 @@ class CharLabel(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(CharLabel, self).__init__(
+        super().__init__(
             label=self.label, *args, className=self.className, **kwargs
         )
 
@@ -52,7 +52,7 @@ class CharLegend(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(CharLegend, self).__init__(
+        super().__init__(
             label=self.label, *args, className=self.className, **kwargs
         )
 
@@ -90,26 +90,26 @@ class CharInput(component.Component):
             return "false"
         return value
 
-    name: T.Union[str, None] = StringValidator(logger=False, debug=True)
-    type: T.Union[str, None] = StringValidator(
+    name: str | None = StringValidator(logger=False, debug=True)
+    type: str | None = StringValidator(
         in_choice=["text", "password", "hidden", "email", "search"],
         debug=True,
         logger=False,
         default="text",
     )
 
-    placeholder: T.Union[str, None] = StringValidator(logger=False, debug=True)
-    spell_check: T.Union[str, None] = spell_check_field
-    min_length: T.Union[str, None] = min_length_field
-    max_length: T.Union[str, None] = max_length_field
-    pattern: T.Union[str, None] = StringValidator(
+    placeholder: str | None = StringValidator(logger=False, debug=True)
+    spell_check: str | None = spell_check_field
+    min_length: str | None = min_length_field
+    max_length: str | None = max_length_field
+    pattern: str | None = StringValidator(
         logger=False, debug=True, default=None
     )
     className: str = StringValidator(logger=False, debug=True, default="")
-    value: T.Union[str, None] = StringValidator(logger=False, debug=True, default=None)
+    value: str | None = StringValidator(logger=False, debug=True, default=None)
 
     def __post_init__(self, *args, **kwargs):
-        super(CharInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -160,15 +160,15 @@ class CharInputValidator(Validator):
 class TextInput(component.Component):
     name: str
     placeholder: str
-    spell_check: T.Union[str, None] = field(default=None)
-    min_length: T.Union[str, None] = field(default=None)
-    max_length: T.Union[str, None] = field(default=None)
-    pattern: T.Union[str, None] = field(default=None)
+    spell_check: str | None = field(default=None)
+    min_length: str | None = field(default=None)
+    max_length: str | None = field(default=None)
+    pattern: str | None = field(default=None)
     className: str = field(default="")
-    value: T.Union[str, None] = field(default=None)
+    value: str | None = field(default=None)
 
     def __post_init__(self, *args, **kwargs):
-        super(TextInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -211,14 +211,14 @@ class TextInput(component.Component):
 class PasswordInput(component.Component):
     name: str
     placeholder: str
-    spell_check: T.Union[str, None] = field(default=None)
-    min_length: T.Union[str, None] = field(default=None)
-    max_length: T.Union[str, None] = field(default=None)
-    pattern: T.Union[str, None] = field(default=None)
+    spell_check: str | None = field(default=None)
+    min_length: str | None = field(default=None)
+    max_length: str | None = field(default=None)
+    pattern: str | None = field(default=None)
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(PasswordInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -260,14 +260,14 @@ class PasswordInput(component.Component):
 class HiddenInput(component.Component):
     name: str
     placeholder: str
-    spell_check: T.Union[str, None] = field(default=None)
-    min_length: T.Union[str, None] = field(default=None)
-    max_length: T.Union[str, None] = field(default=None)
-    pattern: T.Union[str, None] = field(default=None)
+    spell_check: str | None = field(default=None)
+    min_length: str | None = field(default=None)
+    max_length: str | None = field(default=None)
+    pattern: str | None = field(default=None)
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(HiddenInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -309,14 +309,14 @@ class HiddenInput(component.Component):
 class EmailInput(component.Component):
     name: str
     placeholder: str
-    spell_check: T.Union[str, None] = field(default=None)
-    min_length: T.Union[str, None] = field(default=None)
-    max_length: T.Union[str, None] = field(default=None)
-    pattern: T.Union[str, None] = field(default=None)
+    spell_check: str | None = field(default=None)
+    min_length: str | None = field(default=None)
+    max_length: str | None = field(default=None)
+    pattern: str | None = field(default=None)
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(EmailInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -358,14 +358,14 @@ class EmailInput(component.Component):
 class SearchInput(component.Component):
     name: str
     placeholder: str
-    spell_check: T.Union[str, None] = field(default=None)
-    min_length: T.Union[str, None] = field(default=None)
-    max_length: T.Union[str, None] = field(default=None)
-    pattern: T.Union[str, None] = field(default=None)
+    spell_check: str | None = field(default=None)
+    min_length: str | None = field(default=None)
+    max_length: str | None = field(default=None)
+    pattern: str | None = field(default=None)
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(SearchInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -414,7 +414,7 @@ class CharField(component.Component):
     type: str
 
     def __post_init__(self, *args, **kwargs):
-        super(CharField, self).__init__(
+        super().__init__(
             *args,
             label=self.label,
             name=self.name,

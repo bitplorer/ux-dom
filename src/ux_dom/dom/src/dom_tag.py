@@ -16,14 +16,12 @@ import copy
 
 # pylint: disable=bad-indentation, bad-whitespace, missing-docstring
 import numbers
-import typing
-
-from ux_dom.dom.src.concurrency import multi_tree_lock, tree_lock_for
 from collections import namedtuple
-from functools import wraps
-
 from collections.abc import Callable
 from contextvars import ContextVar
+from functools import wraps
+
+from ux_dom.dom.src.concurrency import multi_tree_lock, tree_lock_for
 
 __all__ = ["dom_string", "dom_tag", "get_current", "attr", "context_stack", "tree_lock_for", "multi_tree_lock"]
 
@@ -73,7 +71,7 @@ class dom_string(str):
     pass
 
 
-class dom_tag(object):
+class dom_tag:
     is_single = False  # Tag does not require matching end tag (ex. <hr/>)
     is_pretty = True  # Text inside the tag should be left as-is (ex. <pre>)
     # otherwise, text will be escaped() and whitespace may be
@@ -118,7 +116,7 @@ class dom_tag(object):
         # Tree model is list-backed (mutable DOM). Serialize streams *tokens*
         # lazily; membership must not re-materialize full match lists — see
         # ``_find`` / ``__contains__``.
-        self.children: typing.List[typing.Union[str, dom_tag]] = []
+        self.children: list[str | dom_tag] = []
         self.parent = None
         self.document = None
 
@@ -135,7 +133,7 @@ class dom_tag(object):
             self.set_attribute(*type(self).clean_pair(attr, value))
 
         # this is where the this class instance is added to the parent context via _add_to_context
-        self._ctx: typing.Optional[dom_tag.frame] = None
+        self._ctx: dom_tag.frame | None = None
         self._add_to_ctx()
 
     # context manager frames live in ContextVar ``_WITH_STACK`` (sync + async).

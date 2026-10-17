@@ -2,10 +2,9 @@
 from __future__ import annotations
 
 import unittest
-import warnings
 from dataclasses import dataclass
 
-from ux_dom import Component, Fragment, ReactiveComponent
+from ux_dom import Fragment, ReactiveComponent
 from ux_dom.dom import div, span
 from ux_dom.dom.src.html_string import defHTML
 from ux_dom.elements.chars import CharInput, TextInput

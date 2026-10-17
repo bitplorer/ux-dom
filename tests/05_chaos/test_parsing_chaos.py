@@ -10,7 +10,7 @@ import unittest
 from ux_dom import Component
 from ux_dom.dom import div
 from ux_dom.dom.src.html_string import defHTML
-from ux_dom.dom.src.parse_html import Attribute, tokenize_html, _normalize_attrs
+from ux_dom.dom.src.parse_html import Attribute, _normalize_attrs, tokenize_html
 from ux_dom.htmx.middleware import HtmxDetails
 from ux_dom.web_io import WebSocketEvents
 from ux_dom.web_io._adapter import WebSocketAdapter

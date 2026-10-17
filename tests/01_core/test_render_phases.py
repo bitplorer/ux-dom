@@ -7,8 +7,8 @@ import unittest
 
 from ux_dom import Document
 from ux_dom.dom import div, template
-from ux_dom.dom.htmlelement import CustomElement, xelement_registry
 from ux_dom.dom.htmldocument import HtmlDocument
+from ux_dom.dom.htmlelement import CustomElement, xelement_registry
 from ux_dom.dom.src.component import Component
 
 

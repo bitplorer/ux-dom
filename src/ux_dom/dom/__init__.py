@@ -18,11 +18,11 @@ from .htmldocument import *  # isort: skip
 
 from .jinja import *  # isort: skip
 
-from .src.component import *
-from .src.ext import *
-from .src.jinjatags import *
-from .src.svgtags import *
-from .src.htmltags import *  # HTML ``title`` last
+from .src.component import *  # isort: skip
+from .src.ext import *  # isort: skip
+from .src.jinjatags import *  # isort: skip
+from .src.svgtags import *  # isort: skip
+from .src.htmltags import *  # isort: skip  # HTML ``title`` wins over SVG's
 
 from .src.utils import *  # isort: skip
 from .src.dom_tag import *  # isort: skip

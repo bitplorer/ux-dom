@@ -2,12 +2,11 @@ from __future__ import annotations
 
 from fastapi import APIRouter, FastAPI
 
+from app import settings
+from app.pages import index
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
 from ux_dom.response.fastapi import StreamingRoute
-
-from app import settings
-from app.pages import index
 
 pages = APIRouter(route_class=StreamingRoute)
 pages.get("/")(index.get)

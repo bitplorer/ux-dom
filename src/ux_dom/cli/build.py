@@ -16,7 +16,7 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -30,7 +30,7 @@ class BuildStep:
 class BuildReport:
     root: Path
     steps: list[BuildStep] = field(default_factory=list)
-    package_path: Optional[Path] = None
+    package_path: Path | None = None
 
     @property
     def ok(self) -> bool:
@@ -47,7 +47,7 @@ class BuildReport:
         }
 
 
-def _find_app_root(start: Optional[Path] = None) -> Path:
+def _find_app_root(start: Path | None = None) -> Path:
     cur = (start or Path.cwd()).resolve()
     for p in [cur, *cur.parents]:
         if (p / "app" / "main.py").is_file():
@@ -63,13 +63,13 @@ def _find_app_root(start: Optional[Path] = None) -> Path:
 
 def run_build(
     *,
-    cwd: Optional[Path] = None,
+    cwd: Path | None = None,
     skip_import: bool = False,
     skip_static_sync: bool = False,
     package: bool = False,
     archive: bool = False,
-    out_dir: Optional[Path] = None,
-    package_name: Optional[str] = None,
+    out_dir: Path | None = None,
+    package_name: str | None = None,
 ) -> BuildReport:
     """
     Production verify pipeline (not product CSS compile):
@@ -115,8 +115,8 @@ def run_build(
 
     # Single-copy model: x_element.js lives in installed ux_dom package
     try:
-        from ux_dom.scripts import x_element_js_text
         from ux_dom.plugins.runtime import XELEMENT_JS_URL
+        from ux_dom.scripts import x_element_js_text
 
         src = x_element_js_text()
         report.steps.append(

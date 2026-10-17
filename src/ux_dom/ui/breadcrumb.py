@@ -2,7 +2,8 @@
 """Breadcrumb — server-rendered trail."""
 from __future__ import annotations
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import a, li, nav, ol, span

@@ -4,7 +4,8 @@
 from __future__ import annotations
 
 import re
-from typing import Any, Iterable, List
+from collections.abc import Iterable
+from typing import Any
 
 # Match src= or href= in rendered HTML (attribute order varies)
 _SRC_HREF = re.compile(r"""(?i)\b(?:src|href)\s*=\s*["']([^"']+)["']""")
@@ -65,7 +66,7 @@ def _norm(url: str) -> str:
     return u
 
 
-def dedupe_dom_nodes(nodes: Iterable[Any]) -> List[Any]:
+def dedupe_dom_nodes(nodes: Iterable[Any]) -> list[Any]:
     """Keep first node per external resource URL; preserve relative order."""
     seen: set[str] = set()
     out: list[Any] = []

@@ -1,8 +1,9 @@
 """Gallery of ux_dom.ui components."""
 from __future__ import annotations
 
+from app.document import page
 from ux_dom import Component
-from ux_dom.dom import a, div, h1, h2, p, span
+from ux_dom.dom import div, h1, h2, p
 from ux_dom.ui import (
     Alert,
     AlertDescription,
@@ -46,8 +47,6 @@ from ux_dom.ui.channel_bridge import (
     public_form,
     stamp_region,
 )
-
-from app.document import page
 
 __all__ = ["Index"]
 

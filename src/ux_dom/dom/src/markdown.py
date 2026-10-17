@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import html
-from typing import Callable, Optional
+from collections.abc import Callable
 
 import marko
 from marko.html_renderer import HTMLRenderer
@@ -25,7 +25,7 @@ _untrusted = marko.Markdown(renderer=_EscapingRenderer)
 
 
 def render_markdown(
-    text: str, *, trusted: bool = False, convert: Optional[Callable] = None
+    text: str, *, trusted: bool = False, convert: Callable | None = None
 ) -> str:
     """Convert Markdown to HTML.
 

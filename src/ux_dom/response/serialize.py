@@ -12,7 +12,8 @@ absorb. No ``fragment.py``. Soft 1/4 prefer-owner: no channel package import.
 from __future__ import annotations
 
 import re
-from typing import Any, AsyncIterator
+from collections.abc import AsyncIterator
+from typing import Any
 
 from ux_dom.dom.src import dom_tag
 

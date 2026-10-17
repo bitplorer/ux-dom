@@ -9,7 +9,7 @@ Mount in DEBUG apps::
 
 from __future__ import annotations
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from ux_dom.dom import code, div, h1, h2, p, pre
 

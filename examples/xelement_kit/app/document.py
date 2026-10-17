@@ -1,11 +1,10 @@
 """Document shell — plugin contributions inject XElement script URL."""
 from __future__ import annotations
 
+from app import settings
 from ux_dom import Document
 from ux_dom.dom import meta, script, title
 from ux_dom.plugins import get_hub, shell_fragments
-
-from app import settings
 
 
 def page(*body, page_title: str | None = None):

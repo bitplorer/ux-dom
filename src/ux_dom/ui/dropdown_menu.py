@@ -5,7 +5,8 @@ Use ux-behavior ``select`` / ``open`` for open state. No Alpine.
 """
 from __future__ import annotations
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import div, li, ul

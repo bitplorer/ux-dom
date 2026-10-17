@@ -22,9 +22,10 @@ from __future__ import annotations
 
 import importlib
 import warnings
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Literal, Mapping, Sequence
+from typing import Any, Literal
 
 from ux_dom.plugins.contribution import StaticArtifact
 

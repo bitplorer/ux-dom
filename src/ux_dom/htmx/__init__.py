@@ -43,21 +43,21 @@ class Htmx(HtmxEvents):
         return getattr(event, "__name__", str(event))
 
     def get(self, event):
-        wrapper = super(Htmx, self).get(event)
+        wrapper = super().get(event)
         return self.api.get(self._path(self._event_name(event)))(wrapper)
 
     def post(self, event):
-        wrapper = super(Htmx, self).post(event)
+        wrapper = super().post(event)
         return self.api.post(self._path(self._event_name(event)))(wrapper)
 
     def put(self, event):
-        wrapper = super(Htmx, self).put(event)
+        wrapper = super().put(event)
         return self.api.put(self._path(self._event_name(event)))(wrapper)
 
     def patch(self, event):
-        wrapper = super(Htmx, self).patch(event)
+        wrapper = super().patch(event)
         return self.api.patch(self._path(self._event_name(event)))(wrapper)
 
     def delete(self, event):
-        wrapper = super(Htmx, self).delete(event)
+        wrapper = super().delete(event)
         return self.api.delete(self._path(self._event_name(event)))(wrapper)

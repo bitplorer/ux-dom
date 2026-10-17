@@ -49,7 +49,7 @@ def _as_list(value: T.Any) -> list:
 
 
 @dataclass
-class Document(object):
+class Document:
     """
     Two-stage HTML shell — **order is deliberate** (see HtmlDocument.render).
 
@@ -91,12 +91,12 @@ class Document(object):
     Runtimes always feed **common_** head/body (stage A), never call-time lists.
     """
 
-    head: T.Optional[T.Union[ext.Tags, list[ext.Tags], T.Callable]] = None
-    body: T.Optional[T.Union[ext.Tags, list[ext.Tags], T.Callable]] = None
+    head: ext.Tags | list[ext.Tags] | T.Callable | None = None
+    body: ext.Tags | list[ext.Tags] | T.Callable | None = None
     ensure_csrf_token: bool = field(default=False)
     include_runtimes: bool = False  # optional hub merge into common_* only
     hub: T.Any = None
-    plugins: T.Optional[bool] = None
+    plugins: bool | None = None
     plugin_hub: T.Any = None
     _runtimes: list = field(default_factory=list, repr=False)
 
@@ -110,7 +110,7 @@ class Document(object):
 
     # ── runtimes → stage A (common_head / common_body) only ───────────────
 
-    def use(self, *runtimes: T.Any) -> "Document":
+    def use(self, *runtimes: T.Any) -> Document:
         """
         Attach runtimes on **this instance** (mutates shared shell).
 
@@ -130,7 +130,7 @@ class Document(object):
             self._runtimes.append(rt)
         return self
 
-    def using(self, *runtimes: T.Any) -> "Document":
+    def using(self, *runtimes: T.Any) -> Document:
         """Return a copy with extra runtimes; do not mutate this instance.
 
         Use for page-specific needs while keeping a shared module-level shell::
@@ -143,7 +143,7 @@ class Document(object):
         child.use(*runtimes)
         return child
 
-    def copy(self) -> "Document":
+    def copy(self) -> Document:
         """Shallow-copy head/body lists and the runtime list.
 
         Runtime *objects* are shared by reference; the list itself is new so
@@ -182,7 +182,7 @@ class Document(object):
     def runtimes(self) -> list:
         return list(self._runtimes)
 
-    def clear_runtimes(self) -> "Document":
+    def clear_runtimes(self) -> Document:
         self._runtimes.clear()
         return self
 
@@ -195,7 +195,7 @@ class Document(object):
         body: T.Any = None,
         hub: T.Any = None,
         **kwargs: T.Any,
-    ) -> "Document":
+    ) -> Document:
         h = hub
         if h is None and app is not None:
             h = getattr(app, "hub", None)

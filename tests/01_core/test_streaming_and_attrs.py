@@ -4,7 +4,6 @@ Includes dunder/control attrs, Htmx name dialects, shadowdom attribute spelling.
 """
 from __future__ import annotations
 
-
 import unittest
 
 from ux_dom.dom import div

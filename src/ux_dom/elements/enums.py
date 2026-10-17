@@ -5,7 +5,6 @@
 
 
 """Typed form elements: enums. Optional higher-level inputs over HTML tags."""
-import typing as T
 from enum import Enum, IntEnum
 
 from valio import (
@@ -60,7 +59,7 @@ class IntegerEnumInput(component.Component):
 
 
 class CharEnumInput(component.Component):
-    options: T.Union[str, Enum, None] = StringEnumValidator(logger=False, debug=True)
+    options: str | Enum | None = StringEnumValidator(logger=False, debug=True)
 
     def render(self, *args, options, **kwargs):
         self.options = options

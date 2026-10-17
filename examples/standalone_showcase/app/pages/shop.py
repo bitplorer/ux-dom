@@ -1,11 +1,10 @@
 """Catalog with product cards."""
 from __future__ import annotations
 
-from ux_dom import Component
-from ux_dom.dom import a, div, h1, h2, p, span
-
 from app.components.layout import Shell
 from app.document import page
+from ux_dom import Component
+from ux_dom.dom import a, div, h1, h2, p, span
 
 __all__ = ["Shop"]
 

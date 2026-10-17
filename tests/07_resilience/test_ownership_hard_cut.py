@@ -11,7 +11,6 @@ from typer.testing import CliRunner
 
 from ux_dom.cli.cli import app as cli_app
 
-
 _PRODUCT = ("create-app", "serve", "dev", "start", "deploy", "templates")
 
 

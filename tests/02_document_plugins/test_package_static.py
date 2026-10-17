@@ -2,22 +2,21 @@
 
 from __future__ import annotations
 
+import sys
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from fastapi.testclient import TestClient
+from channel_gate import require_channel
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
+from fastapi.testclient import TestClient
+from helpers import ScaffoldOptions, create_app
 
+from ux_dom.cli.build import run_build
 from ux_dom.plugins import App, XElementRuntime
 from ux_dom.plugins.hub import PluginHub, set_hub
-from ux_dom.plugins.package_static import PackageStaticContribution, PackagedFile
 from ux_dom.plugins.runtime import XELEMENT_JS_URL, UxChannelRuntime
-from helpers import ScaffoldOptions, create_app
-from ux_dom.cli.build import run_build
-from channel_gate import require_channel
-import sys
 
 
 class TestSingleCopyXElement(unittest.TestCase):

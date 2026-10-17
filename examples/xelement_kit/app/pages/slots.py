@@ -1,14 +1,23 @@
 """Slots gallery — hosts only."""
 from __future__ import annotations
 
+from app.document import page
 from ux_dom import Component
-from ux_dom.dom import a, code, div, h1, h2, li, p, span, ul
-from ux_dom.dom import slot as html_slot
-from ux_dom.dom import template
+from ux_dom.dom import (
+    a,
+    code,
+    div,
+    h1,
+    h2,
+    li,
+    p,
+    slot as html_slot,
+    span,
+    template,
+    ul,
+)
 from ux_dom.dom.htmlelement import WebComponent
 from ux_dom.slots import Slots as SlotsDefinition
-
-from app.document import page
 
 __all__ = ["Slots"]
 

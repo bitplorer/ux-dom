@@ -13,9 +13,10 @@ import json
 import pstats
 import statistics
 import time
+from collections.abc import Callable, Sequence
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Sequence
+from typing import Any
 
 
 @dataclass

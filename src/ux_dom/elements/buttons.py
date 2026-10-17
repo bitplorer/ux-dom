@@ -5,7 +5,6 @@
 
 
 """Typed form elements: buttons. Optional higher-level inputs over HTML tags."""
-import typing as T
 from dataclasses import dataclass, field
 
 from valio import StringValidator, Validator
@@ -32,11 +31,11 @@ class _Button(component.Component):
         in_choice=["submit", "reset", "button"], logger=False, debug=True
     )
     value: str = StringValidator(logger=False, debug=True)
-    icon: T.Union[dom_tag, None] = Validator(logger=False, debug=True, default=None)
+    icon: dom_tag | None = Validator(logger=False, debug=True, default=None)
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(_Button, self).__init__(
+        super().__init__(
             *args,
             label=self.label,
             type=self.type,
@@ -74,7 +73,7 @@ class _ButtonInput(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(_ButtonInput, self).__init__(
+        super().__init__(
             *args, type=self.type, value=self.value, className=self.className, **kwargs
         )
 
@@ -92,11 +91,11 @@ class _ButtonInput(component.Component):
 class Button(component.Component):
     label: str
     value: str
-    icon: T.Union[dom_tag, None] = None
+    icon: dom_tag | None = None
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(Button, self).__init__(
+        super().__init__(
             *args,
             label=self.label,
             value=self.value,
@@ -115,11 +114,11 @@ class Button(component.Component):
 class SubmitButton(component.Component):
     label: str
     value: str
-    icon: T.Union[dom_tag, None] = None
+    icon: dom_tag | None = None
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(SubmitButton, self).__init__(
+        super().__init__(
             *args,
             label=self.label,
             value=self.value,
@@ -138,11 +137,11 @@ class SubmitButton(component.Component):
 class ResetButton(component.Component):
     label: str
     value: str
-    icon: T.Union[dom_tag, None] = None
+    icon: dom_tag | None = None
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(ResetButton, self).__init__(
+        super().__init__(
             *args,
             label=self.label,
             value=self.value,

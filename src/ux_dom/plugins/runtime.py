@@ -3,7 +3,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal, Optional, Sequence
+from collections.abc import Sequence
+from typing import Any, Literal
 
 from ux_dom.plugins.contribution import StaticArtifact
 from ux_dom.plugins.safe_static import SafeStaticFile
@@ -132,7 +133,7 @@ class UxChannelRuntime:
             self._inner.mount_package = ""
 
     @classmethod
-    def optional(cls, **kwargs: Any) -> Optional["UxChannelRuntime"]:
+    def optional(cls, **kwargs: Any) -> UxChannelRuntime | None:
         try:
             return cls(**kwargs)
         except ImportError:

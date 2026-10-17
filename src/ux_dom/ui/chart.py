@@ -3,8 +3,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from html import escape as html_escape
-from typing import Any, Sequence
+from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import div, raw, span

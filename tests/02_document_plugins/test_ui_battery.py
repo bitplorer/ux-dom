@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import unittest
-from tempfile import TemporaryDirectory
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 from ux_dom.dom import div
 from ux_dom.ui import (

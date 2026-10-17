@@ -56,7 +56,7 @@ class HtmlDocument(component.Component):
     def __init__(self, *args, **kwargs):
         self.ensure_csrf_token = kwargs.pop("ensure_csrf_token", self.ensure_csrf_token)
         self.document = self
-        super(HtmlDocument, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._entry = self.body
         self._old_entry = None
 

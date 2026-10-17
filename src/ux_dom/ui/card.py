@@ -10,7 +10,7 @@ from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import div, h3, p
-from ux_dom.ui.tokens import cn, surface, type_scale, ink
+from ux_dom.ui.tokens import cn, ink, surface, type_scale
 
 __all__ = [
     "Card",

@@ -1,11 +1,10 @@
 """SSE demo page (stream endpoint lives on app.main)."""
 from __future__ import annotations
 
-from ux_dom import Component
-from ux_dom.dom import div, h1, p
-
 from app.components.layout import Shell
 from app.document import page
+from ux_dom import Component
+from ux_dom.dom import div, h1, p
 
 __all__ = ["Sse"]
 

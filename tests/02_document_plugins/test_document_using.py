@@ -6,7 +6,7 @@ import unittest
 
 from ux_dom import Document
 from ux_dom.dom import div, meta, title
-from ux_dom.runtime import Htmx, XElement, XELEMENT_JS_URL
+from ux_dom.runtime import XELEMENT_JS_URL, Htmx, XElement
 
 
 class TestInstanceUse(unittest.TestCase):

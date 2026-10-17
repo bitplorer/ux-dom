@@ -29,16 +29,13 @@ CDN scripts are still Contributions (empty artifacts, tags in body)::
 
 from __future__ import annotations
 
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import (
     Any,
-    Callable,
     Literal,
-    Mapping,
-    Optional,
     Protocol,
-    Sequence,
     runtime_checkable,
 )
 
@@ -135,7 +132,7 @@ def artifact_from_path(
     public_path: str,
     inject: Inject = "body",
     defer: bool = True,
-    attrs: Optional[Mapping[str, str]] = None,
+    attrs: Mapping[str, str] | None = None,
 ) -> StaticArtifact:
     """Build a StaticArtifact that loads bytes from a filesystem path."""
     path = Path(path)
@@ -162,7 +159,7 @@ def artifact_from_callable(
     loader: Callable[[], str | bytes],
     inject: Inject = "head",
     defer: bool = True,
-    attrs: Optional[Mapping[str, str]] = None,
+    attrs: Mapping[str, str] | None = None,
 ) -> StaticArtifact:
     def _load() -> bytes:
         data = loader()

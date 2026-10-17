@@ -4,21 +4,18 @@ from __future__ import annotations
 
 import asyncio
 import concurrent.futures
-import tempfile
 import threading
 import time
 import unittest
 from dataclasses import dataclass
-from pathlib import Path
-
 
 from ux_dom import Component, Document
-from ux_dom.dom import div, span, button
+from ux_dom.dom import button, div, span
+from ux_dom.dom.htmldocument import HtmlDocument
 from ux_dom.dom.src.ext import Tags
 from ux_dom.dom.uniqueid import uniqueid
+from ux_dom.response.starlette import HTMLResponse, StreamingResponse
 from ux_dom.utils.parameters import Parameters
-from ux_dom.response.starlette import StreamingResponse, HTMLResponse
-from ux_dom.dom.htmldocument import HtmlDocument
 
 
 class TestRenderIdempotency(unittest.TestCase):

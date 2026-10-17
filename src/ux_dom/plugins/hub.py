@@ -6,12 +6,12 @@
 
 from __future__ import annotations
 
-import threading
-
 import hashlib
+import threading
+from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Any
 
 from ux_dom.plugins.contribution import StaticArtifact
 from ux_dom.plugins.protocols import (
@@ -203,7 +203,7 @@ class PluginHub:
         return report
 
 
-_default_hub: Optional[PluginHub] = None
+_default_hub: PluginHub | None = None
 _HUB_LOCK = threading.Lock()
 
 
@@ -277,7 +277,7 @@ class App:
     hub: PluginHub = field(default_factory=PluginHub)
     _built: Any = None
 
-    def use(self, *plugins: Any) -> "App":
+    def use(self, *plugins: Any) -> App:
         """Register one or many plugins. ``None`` entries are skipped."""
         for plugin in plugins:
             self._use_one(plugin)
@@ -341,51 +341,51 @@ class App:
 
     # ── intention-revealing shortcuts (wrap .use) ─────────────────────────
 
-    def xelement(self, **kwargs: Any) -> "App":
+    def xelement(self, **kwargs: Any) -> App:
         """Ship XElement runtime (safe package file route + script tag)."""
         from ux_dom.plugins.runtime import XElementRuntime
 
         return self.use(XElementRuntime(**kwargs))
 
-    def channel(self, **kwargs: Any) -> "App":
+    def channel(self, **kwargs: Any) -> App:
         """uxchannel tags (optional; no-op if package missing)."""
         from ux_dom.plugins.runtime import UxChannelRuntime
 
         return self.use(UxChannelRuntime.optional(**kwargs))
 
-    def htmx(self, **kwargs: Any) -> "App":
+    def htmx(self, **kwargs: Any) -> App:
         from ux_dom.plugins.control import HtmxControl
 
         kwargs.setdefault("middleware", True)
         kwargs.setdefault("version", "2.0.4")
         return self.use(HtmxControl(**kwargs))
 
-    def csp(self, **kwargs: Any) -> "App":
+    def csp(self, **kwargs: Any) -> App:
         """CSP nonces via middleware — see ``docs/security/CSP.md``."""
         from ux_dom.plugins.csp import Csp
 
         return self.use(Csp(**kwargs))
 
-    def fastapi(self, **kwargs: Any) -> "App":
+    def fastapi(self, **kwargs: Any) -> App:
         raise ProductHostMoved()
 
-    def plugins(self, *plugins: Any) -> "App":
+    def plugins(self, *plugins: Any) -> App:
         """Alias of ``use(*plugins)`` — read as “install these features”."""
         return self.use(*plugins)
 
-    def use_host(self, plugin: HostPlugin) -> "App":
+    def use_host(self, plugin: HostPlugin) -> App:
         self.hub.add_host(plugin)
         return self
 
-    def use_control(self, plugin: ControlPlugin) -> "App":
+    def use_control(self, plugin: ControlPlugin) -> App:
         self.hub.add_control(plugin)
         return self
 
-    def use_style(self, plugin: StylePlugin) -> "App":
+    def use_style(self, plugin: StylePlugin) -> App:
         self.hub.add_style(plugin)
         return self
 
-    def use_hmr(self, plugin: HmrPlugin) -> "App":
+    def use_hmr(self, plugin: HmrPlugin) -> App:
         self.hub.add_hmr(plugin)
         return self
 

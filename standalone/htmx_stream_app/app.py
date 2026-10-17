@@ -4,7 +4,7 @@ from __future__ import annotations
 from fastapi import FastAPI, Request
 
 from ux_dom import Component, Document
-from ux_dom.dom import div, span, button, form, input_
+from ux_dom.dom import button, div, form, input_, span
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.response.starlette import HTMLResponse, StreamingResponse
 

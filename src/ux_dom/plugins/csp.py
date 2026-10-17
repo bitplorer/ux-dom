@@ -32,9 +32,10 @@ from __future__ import annotations
 
 import re
 import secrets
+from collections.abc import Iterable, Sequence
 from contextvars import ContextVar, Token
 from dataclasses import dataclass, field
-from typing import Any, Iterable, Optional, Sequence
+from typing import Any
 
 from ux_dom.plugins.control.htmx import CDN_SCRIPT_URLS
 
@@ -85,9 +86,9 @@ def clear_nonce() -> None:
 
 
 def resolve_nonce(
-    nonce: Optional[str] = None,
+    nonce: str | None = None,
     *,
-    scope: Optional[dict] = None,
+    scope: dict | None = None,
     request: Any = None,
     require: bool = False,
 ) -> str:
@@ -162,7 +163,7 @@ def bind_nonce_to_scope(scope: dict, nonce: str) -> None:
         state["ux_dom_csp_nonce"] = nonce
     elif state is not None:
         try:
-            setattr(state, "ux_dom_csp_nonce", nonce)
+            state.ux_dom_csp_nonce = nonce
         except Exception:
             pass
 
@@ -202,9 +203,9 @@ def _inject_nonce_html(html: str, nonce: str) -> str:
 
 def stamp_tree(
     node: Any,
-    nonce: Optional[str] = None,
+    nonce: str | None = None,
     *,
-    scope: Optional[dict] = None,
+    scope: dict | None = None,
     request: Any = None,
 ) -> Any:
     """Bake nonce into every ``script`` / ``style`` (in place).
@@ -240,10 +241,10 @@ def stamp_tree(
 
 def stamp_nonce(
     nodes: Iterable[Any] | Any,
-    nonce: Optional[str] = None,
+    nonce: str | None = None,
     *,
     tags: Sequence[str] = ("script", "style"),
-    scope: Optional[dict] = None,
+    scope: dict | None = None,
     request: Any = None,
 ) -> list[Any]:
     """Stamp a flat list of nodes (shell fragments)."""
@@ -289,8 +290,8 @@ def build_csp_header(
     object_src: str = "'none'",
     form_action: str = "'self'",
     upgrade_insecure: bool = False,
-    report_uri: Optional[str] = None,
-    extra_directives: Optional[dict[str, str]] = None,
+    report_uri: str | None = None,
+    extra_directives: dict[str, str] | None = None,
 ) -> str:
     """Build a ``Content-Security-Policy`` value for one response.
 
@@ -377,8 +378,8 @@ class CspPolicy:
     object_src: str = "'none'"
     form_action: str = "'self'"
     upgrade_insecure: bool = False
-    report_uri: Optional[str] = None
-    extra_directives: Optional[dict] = None
+    report_uri: str | None = None
+    extra_directives: dict | None = None
     report_only: bool = False
     debug_header: bool = False
     nonce_bytes: int = _NONCE_BYTES
@@ -466,7 +467,7 @@ class CspMiddleware:
         self,
         app: Any,
         *,
-        policy: Optional[CspPolicy] = None,
+        policy: CspPolicy | None = None,
         # flat kwargs accepted by App.use(Csp(...))
         strict_dynamic: bool = True,
         script_hosts: Sequence[str] = (),
@@ -481,8 +482,8 @@ class CspMiddleware:
         object_src: str = "'none'",
         form_action: str = "'self'",
         upgrade_insecure: bool = False,
-        report_uri: Optional[str] = None,
-        extra_directives: Optional[dict[str, str]] = None,
+        report_uri: str | None = None,
+        extra_directives: dict[str, str] | None = None,
         report_only: bool = False,
         debug_header: bool = False,
         nonce_bytes: int = _NONCE_BYTES,
@@ -607,19 +608,19 @@ class Csp:
     object_src: str = "'none'"
     form_action: str = "'self'"
     upgrade_insecure: bool = False
-    report_uri: Optional[str] = None
-    extra_directives: Optional[dict[str, str]] = None
+    report_uri: str | None = None
+    extra_directives: dict[str, str] | None = None
     is_report_only: bool = False
     enabled: bool = True
     debug_header: bool = False
     nonce_bytes: int = _NONCE_BYTES
     # optional prebuilt policy wins over flat fields when set
-    policy: Optional[CspPolicy] = None
+    policy: CspPolicy | None = None
 
     # ── presets ──────────────────────────────────────────────────────────
 
     @classmethod
-    def auto(cls, debug: Optional[bool] = None, **overrides: Any) -> "Csp":
+    def auto(cls, debug: bool | None = None, **overrides: Any) -> Csp:
         """Pick dev vs prod from DEBUG (env or argument) — zero-choice DX.
 
         * ``debug=True`` / ``DEBUG=1`` → :meth:`dev` (CDN + style attrs OK)
@@ -634,25 +635,25 @@ class Csp:
         return cls.dev(**overrides) if debug else cls.prod(**overrides)
 
     @classmethod
-    def dev(cls, **overrides: Any) -> "Csp":
+    def dev(cls, **overrides: Any) -> Csp:
         """Create-app / local DX: CDNs + style unsafe-inline."""
         pol = policy_dev(**overrides)
         return cls.from_policy(pol)
 
     @classmethod
-    def prod(cls, **overrides: Any) -> "Csp":
+    def prod(cls, **overrides: Any) -> Csp:
         """Production lock-down: no CDN script hosts, nonced styles preferred."""
         pol = policy_prod(**overrides)
         return cls.from_policy(pol)
 
     @classmethod
-    def report_only(cls, **overrides: Any) -> "Csp":
+    def report_only(cls, **overrides: Any) -> Csp:
         """Emit ``Content-Security-Policy-Report-Only`` (observe, don't block)."""
         pol = policy_report_only(**overrides)
         return cls.from_policy(pol)
 
     @classmethod
-    def from_policy(cls, policy: CspPolicy) -> "Csp":
+    def from_policy(cls, policy: CspPolicy) -> Csp:
         return cls(
             strict_dynamic=policy.strict_dynamic,
             script_hosts=list(policy.script_hosts),

@@ -5,10 +5,10 @@ It is not a product scaffold. Product apps: ``uxcompose create-app``.
 """
 from __future__ import annotations
 
+from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import Iterator, Optional
 
 
 def available_templates() -> tuple[str, ...]:
@@ -20,7 +20,7 @@ class ScaffoldOptions:
     """Test-only options for the experiment tree writer."""
 
     app_name: str = "app"
-    dest: Optional[Path] = None
+    dest: Path | None = None
     force: bool = False
     with_csp: bool = True
     template: str = "minimal"

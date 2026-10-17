@@ -9,13 +9,12 @@ from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom import __version__
-from ux_dom.dom import div, span, button
+from ux_dom.dom import button, div, span
 from ux_dom.plugins import App
-from ux_dom.response.starlette import html_response
 from ux_dom.plugins.control import HtmxControl, NullControl
-from ux_dom.plugins.style import NullStyle
 from ux_dom.plugins.response import StreamingResponsePlugin
-from ux_dom.response.starlette import StreamingResponse
+from ux_dom.plugins.style import NullStyle
+from ux_dom.response.starlette import StreamingResponse, html_response
 
 
 class TestVersion(unittest.TestCase):

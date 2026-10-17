@@ -8,8 +8,6 @@ Not a standalone public module — part of the Tags / dom_tag MRO.
 """
 from __future__ import annotations
 
-from typing import Union
-
 __license__ = """
 This file is part of Dominate.
 
@@ -30,7 +28,7 @@ Public License along with Dominate.  If not, see
 
 
 
-class dom1core(object):
+class dom1core:
     """
     Implements the Document Object Model (Core) Level 1
 
@@ -92,7 +90,7 @@ class dom1core(object):
         return self.children
 
     @property
-    def previousSibling(self) -> Union[dom1core, None]:
+    def previousSibling(self) -> dom1core | None:
         parentChildNodes = self.parentNode.childNodes
         prev_sib_idx = parentChildNodes.index(self) - 1
         try:
@@ -101,7 +99,7 @@ class dom1core(object):
             return None
 
     @property
-    def nextSibling(self) -> Union[dom1core, None]:
+    def nextSibling(self) -> dom1core | None:
         parentChildNodes = self.parentNode.childNodes
         next_sib_idx = parentChildNodes.index(self) + 1
         try:

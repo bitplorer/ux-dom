@@ -11,13 +11,12 @@ from fastapi import APIRouter, FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
+from app import settings
+from app.pages import alpine, htmx, index, jinja, lightdom, shadowdom, slots, wc
 from ux_dom.plugins import App, XElementRuntime
 from ux_dom.plugins.control import HtmxControl
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
 from ux_dom.response.fastapi import StreamingRoute
-
-from app import settings
-from app.pages import alpine, htmx, index, jinja, lightdom, shadowdom, slots, wc
 
 pages = APIRouter(route_class=StreamingRoute)
 for path, endpoint in (

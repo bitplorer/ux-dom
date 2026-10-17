@@ -8,6 +8,13 @@ from __future__ import annotations
 import unittest
 from concurrent.futures import ThreadPoolExecutor
 
+from tests.fixtures.auth_xelements import (
+    AuthShell,
+    LoginForm,
+    ProfileBadge,
+    SessionBanner,
+    SignupForm,
+)
 from ux_dom import Document
 from ux_dom.dom import div, span
 from ux_dom.dom.htmlelement import (
@@ -15,14 +22,6 @@ from ux_dom.dom.htmlelement import (
     WebComponent,
     XElement,
     xelement_registry,
-)
-
-from tests.fixtures.auth_xelements import (
-    AuthShell,
-    LoginForm,
-    ProfileBadge,
-    SessionBanner,
-    SignupForm,
 )
 
 

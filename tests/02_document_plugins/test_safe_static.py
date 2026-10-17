@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import unittest
-from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
@@ -14,7 +13,6 @@ from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.package_static import PackagedFile, PackageStaticContribution
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
 from ux_dom.plugins.safe_static import (
-    ALLOWED_EXTENSIONS,
     SafeStaticFile,
     UnsafeStaticError,
     allowlist_summary,

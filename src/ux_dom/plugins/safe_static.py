@@ -19,9 +19,10 @@ from __future__ import annotations
 import importlib
 import mimetypes
 import re
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Optional, Sequence
+from typing import Any
 
 # ---------------------------------------------------------------------------
 # Layer 1 — extensions a browser may load as assets
@@ -175,8 +176,8 @@ class SafeStaticFile:
         *,
         url: str,
         plugin: str = "",
-        content_type: Optional[str] = None,
-    ) -> "SafeStaticFile":
+        content_type: str | None = None,
+    ) -> SafeStaticFile:
         resource = _validate_resource(resource)
         url = _validate_url(url)
         root = _package_root(package)

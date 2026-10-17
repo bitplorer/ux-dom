@@ -29,7 +29,7 @@ class BooleanLabel(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(BooleanLabel, self).__init__(
+        super().__init__(
             self.label, *args, className=self.className, **kwargs
         )
 
@@ -49,7 +49,7 @@ class BooleanLegend(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(BooleanLegend, self).__init__(
+        super().__init__(
             self.label, *args, className=self.className, **kwargs
         )
 
@@ -65,7 +65,7 @@ class BooleanInput(component.Component):
     type: str = StringValidator(
         in_choice=["checkbox", "radio"], logger=False, debug=True, default="checkbox"
     )
-    checked: T.Union[str, bool] = Validator(
+    checked: str | bool = Validator(
         in_choice=["unchecked", "checked", "null", True, False],
         logger=False,
         debug=True,
@@ -74,7 +74,7 @@ class BooleanInput(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(BooleanInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             type=self.type,
@@ -101,7 +101,7 @@ class BooleanInputValidator(Validator):
 @dataclass(eq=False)
 class CheckboxInput(BooleanInput):
     name: str = StringValidator(logger=False, debug=True)
-    checked: T.Union[str, bool] = Validator(
+    checked: str | bool = Validator(
         in_choice=["unchecked", "checked", "null", True, False],
         logger=False,
         debug=True,
@@ -131,7 +131,7 @@ class CheckboxInput(BooleanInput):
 @dataclass(eq=False)
 class RadioInput(BooleanInput):
     name: str = StringValidator(logger=False, debug=True)
-    checked: T.Union[str, bool] = Validator(
+    checked: str | bool = Validator(
         in_choice=["unchecked", "checked", "null", True, False],
         logger=False,
         debug=True,
@@ -166,10 +166,10 @@ class BooleanField(component.Component):
     label: str
     name: str
     type: str
-    checked: T.Union[str, bool]
+    checked: str | bool
 
     def __post_init__(self, *args, **kwargs):
-        super(BooleanField, self).__init__(
+        super().__init__(
             *args,
             label=self.label,
             name=self.name,

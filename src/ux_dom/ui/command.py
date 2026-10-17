@@ -5,7 +5,8 @@ Markup only. Filtering/commit are Host Actions + preview, not client state.
 """
 from __future__ import annotations
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import div, input_, li, ol, p, span

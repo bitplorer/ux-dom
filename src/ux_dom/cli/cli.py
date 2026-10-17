@@ -63,6 +63,7 @@ def info_cmd(
 def lint_cmd(path: str = Option(None, "--path")):
     """Document convention checks."""
     from pathlib import Path as P
+
     from ux_dom.cli.lint import lint_project
 
     issues = lint_project(P(path) if path else None)
@@ -192,6 +193,7 @@ def add_cmd(
             path = add_xelement(name, kind=xkind, force=force)  # type: ignore[arg-type]
         elif kind == "ui":
             from pathlib import Path as P
+
             from ux_dom.ui.copy import UiCopyError, copy_component
 
             dest = P.cwd() / "app" / "components" / "ui"

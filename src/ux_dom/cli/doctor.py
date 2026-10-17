@@ -13,7 +13,7 @@ import socket
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -27,7 +27,7 @@ class Check:
 @dataclass
 class DoctorReport:
     checks: list[Check] = field(default_factory=list)
-    project_root: Optional[Path] = None
+    project_root: Path | None = None
 
     @property
     def ok(self) -> bool:
@@ -55,7 +55,7 @@ def _port_free(host: str, port: int) -> bool:
         return s.connect_ex((host, port)) != 0
 
 
-def _find_project(start: Path) -> Optional[Path]:
+def _find_project(start: Path) -> Path | None:
     cur = start.resolve()
     for p in [cur, *cur.parents]:
         if (p / ".ux_dom-scaffold.json").exists() or (
@@ -69,7 +69,7 @@ def _find_project(start: Path) -> Optional[Path]:
 
 def run_doctor(
     *,
-    cwd: Optional[Path] = None,
+    cwd: Path | None = None,
     port: int = 8080,
     prod: bool = False,
 ) -> DoctorReport:

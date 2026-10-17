@@ -9,14 +9,14 @@ import inspect
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-
-
 import typing as T
 from functools import wraps
 
 from starlette.background import BackgroundTask
-from starlette.responses import HTMLResponse as StarletteHTMLResponse
-from starlette.responses import StreamingResponse as StarletteStreamingResponse
+from starlette.responses import (
+    HTMLResponse as StarletteHTMLResponse,
+    StreamingResponse as StarletteStreamingResponse,
+)
 
 from ux_dom.response.serialize import (
     is_html_renderable,
@@ -45,9 +45,9 @@ class HTMLResponse(StarletteHTMLResponse):
         self,
         html_content: T.Any,
         status_code: int = 200,
-        headers: T.Optional[dict] = None,
-        media_type: T.Optional[str] = None,
-        background: T.Optional[BackgroundTask] = None,
+        headers: dict | None = None,
+        media_type: str | None = None,
+        background: BackgroundTask | None = None,
     ) -> None:
         super().__init__(html_content, status_code, headers, media_type, background)
 
@@ -58,7 +58,7 @@ class HTMLResponse(StarletteHTMLResponse):
 
 
 def html_response(
-    endpoint: T.Optional[CallableType] = None,
+    endpoint: CallableType | None = None,
 ) -> T.Callable[..., HTMLResponse]:
     def decorate_sync_async(endpoint):
         if inspect.iscoroutinefunction(endpoint):
@@ -101,9 +101,9 @@ class StreamingResponse(StarletteStreamingResponse):
         self,
         html_content,
         status_code: int = 200,
-        headers: T.Optional[dict] = None,
-        media_type: T.Optional[str] = None,
-        background: T.Optional[BackgroundTask] = None,
+        headers: dict | None = None,
+        media_type: str | None = None,
+        background: BackgroundTask | None = None,
     ) -> None:
         body = _coerce_streaming_body(html_content)
         super().__init__(
@@ -121,7 +121,7 @@ def _coerce_streaming_body(html_content):
 
 
 def streaming_response(
-    endpoint: T.Optional[CallableType] = None,
+    endpoint: CallableType | None = None,
 ) -> T.Callable[..., StreamingResponse]:
     def decorate_sync_async(endpoint):
         if inspect.iscoroutinefunction(endpoint):

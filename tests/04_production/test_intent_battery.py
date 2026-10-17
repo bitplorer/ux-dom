@@ -12,7 +12,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom import Component, Document, MergeClassAttribute
-from ux_dom.dom import div, span, button, attr, raw
+from ux_dom.dom import attr, button, div, raw, span
 from ux_dom.dom.src.dom_tag import get_current
 from ux_dom.dom.src.ext import Tags
 from ux_dom.dom.src.parse_html import tokenize_html

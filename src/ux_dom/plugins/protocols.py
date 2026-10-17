@@ -6,13 +6,11 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Sequence
 from typing import (
     Any,
-    Callable,
     Literal,
-    Optional,
     Protocol,
-    Sequence,
     runtime_checkable,
 )
 
@@ -61,7 +59,7 @@ class HmrPlugin(Protocol):
 
     def client_script(self) -> str: ...
 
-    def asgi_route(self) -> Optional[tuple[str, Any]]: ...
+    def asgi_route(self) -> tuple[str, Any] | None: ...
 
 
 @runtime_checkable

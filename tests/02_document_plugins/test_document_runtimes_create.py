@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 
 from ux_dom import Document
 from ux_dom.dom import meta, title
-from ux_dom.runtime import Csp, Htmx, XElement, XELEMENT_JS_URL
+from ux_dom.runtime import XELEMENT_JS_URL, Csp, Htmx, XElement
 
 
 class TestDocumentUse(unittest.TestCase):

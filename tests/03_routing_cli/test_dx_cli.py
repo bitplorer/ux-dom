@@ -9,10 +9,11 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
+from helpers import ScaffoldOptions, create_app
+
 from ux_dom.cli.adders import AddError, add_component, add_xelement
 from ux_dom.cli.doctor import run_doctor
 from ux_dom.cli.lint import lint_project
-from helpers import ScaffoldOptions, create_app
 from ux_dom.dom import div, template
 from ux_dom.dom.htmlelement import CustomElement, XElement
 

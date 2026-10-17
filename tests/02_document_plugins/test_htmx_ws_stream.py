@@ -3,17 +3,15 @@ from __future__ import annotations
 
 import asyncio
 import unittest
-from dataclasses import dataclass
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from starlette.requests import Request
-from starlette.responses import StreamingResponse as StarletteStreaming
 
 from ux_dom import __version__
 from ux_dom.dom import div
-from ux_dom.htmx.middleware import HtmxDetails, HtmxMiddleware
 from ux_dom.htmx import Htmx
+from ux_dom.htmx.middleware import HtmxDetails, HtmxMiddleware
 from ux_dom.response.starlette import StreamingResponse
 from ux_dom.web_io import WebSocketAdapter, WebSocketEvents
 

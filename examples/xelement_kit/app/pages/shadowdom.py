@@ -1,11 +1,10 @@
 """Full Shadow DOM (WebComponent) gallery — hosts only."""
 from __future__ import annotations
 
-from ux_dom import Component
-from ux_dom.dom import a, code, div, h1, h2, p, pre, span
-
 from app.components.shadow_dom import CalloutShadow, ProfileCardShadow, ShellShadow
 from app.document import page
+from ux_dom import Component
+from ux_dom.dom import a, code, div, h1, h2, p, pre, span
 
 __all__ = ["ShadowDom"]
 

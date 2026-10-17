@@ -12,7 +12,7 @@ from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import JSONResponse
 
 from ux_dom import Component
-from ux_dom.dom import div, span, ul, li, h2
+from ux_dom.dom import div, h2, li, span, ul
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.response.starlette import HTMLResponse
 

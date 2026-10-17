@@ -2,7 +2,7 @@
 import asyncio
 import itertools
 import logging
-from typing import Awaitable, Callable, Dict, List, Optional
+from collections.abc import Awaitable, Callable
 
 try:
     import watchfiles as _watchfiles  # optional dev extra
@@ -11,7 +11,7 @@ except ImportError:  # pragma: no cover
 
 logger = logging.getLogger(__name__)
 
-ChangeSet = Dict[str, List[str]]
+ChangeSet = dict[str, list[str]]
 
 
 def _change_labels():
@@ -33,7 +33,7 @@ class FileWatcher:
     ) -> None:
         self._path = path
         self._on_change = on_change
-        self._task: Optional[asyncio.Task] = None
+        self._task: asyncio.Task | None = None
 
     @property
     def _should_exit(self) -> asyncio.Event:

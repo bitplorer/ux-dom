@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from ux_dom.dom import body, head, html, link, meta, script, title as title_tag
+from ux_dom.dom import body, head, html, meta, script, title as title_tag
 from ux_dom.scripts import x_element_js
 
 

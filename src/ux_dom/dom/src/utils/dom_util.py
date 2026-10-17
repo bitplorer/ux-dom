@@ -243,7 +243,7 @@ class dom_text(dom_tag):
             self.text = _escape_text(_text)
         else:
             self.text = _text
-        super(dom_text, self).__init__()
+        super().__init__()
 
     def _render(self, sb, *a, **kw):
         sb.append(self.text)

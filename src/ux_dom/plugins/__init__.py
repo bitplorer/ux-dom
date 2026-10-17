@@ -18,16 +18,16 @@ See ``docs/internals/SYSTEM.md``.
 from ux_dom.plugins import protocols as protocols
 from ux_dom.plugins.contribution import StaticArtifact
 from ux_dom.plugins.csp import (
-    policy_report_only,
-    policy_prod,
-    policy_dev,
-    CspPolicy,
     Csp,
     CspMiddleware,
     CspNonce,
+    CspPolicy,
     build_csp_header,
     generate_nonce,
     get_nonce,
+    policy_dev,
+    policy_prod,
+    policy_report_only,
     resolve_nonce,
     shell_fragments_nonced,
     stamp_nonce,
@@ -36,8 +36,8 @@ from ux_dom.plugins.csp import (
 from ux_dom.plugins.dedupe import dedupe_dom_nodes, extract_script_srcs
 from ux_dom.plugins.hub import App, PluginHub, get_hub, set_hub
 from ux_dom.plugins.package_static import (
-    PackageStaticContribution,
     PackagedFile,
+    PackageStaticContribution,
     static_from_package,
     ux_channel_static,
 )

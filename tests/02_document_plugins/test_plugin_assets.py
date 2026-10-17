@@ -8,9 +8,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from fastapi.testclient import TestClient
-
 from helpers import ScaffoldOptions, create_app
-from ux_dom.plugins import App, XElementRuntime, shell_fragments
+
+from ux_dom.plugins import App, XElementRuntime
 from ux_dom.plugins.control import HtmxControl
 from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.runtime import XELEMENT_JS_URL

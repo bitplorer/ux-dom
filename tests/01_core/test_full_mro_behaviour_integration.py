@@ -16,7 +16,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom import Component, Document, Fragment, ReactiveComponent
-from ux_dom.dom import div, span, button
+from ux_dom.dom import button, div, span
 from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.ext import Tags
 from ux_dom.dom.src.parse_html import tokenize_html
@@ -179,6 +179,7 @@ class TestSharedProtocolParams(unittest.TestCase):
 
     def test_html_parser_param_names(self):
         from html.parser import HTMLParser
+
         from ux_dom.dom.src.parse_html import HtmlToAst
 
         for method in (

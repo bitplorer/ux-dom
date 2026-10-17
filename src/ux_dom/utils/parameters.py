@@ -4,14 +4,14 @@
 # https://opensource.org/licenses/MIT
 """Parameter/introspection helpers for CLI and diagnostics."""
 import inspect
-from typing import Callable, Type
+from collections.abc import Callable
 
 # from collections import OrderedDict as Odict
 
 
 __all__ = ["Parameters"]
 
-Odict: Type[dict] = dict
+Odict: type[dict] = dict
 # replaced dict with old Ordered dict as that is totally ordered by default since py 3.8
 
 PARAM = inspect.Parameter
@@ -103,7 +103,7 @@ def _parameters(func_signature):
     return get_parameters
 
 
-class Parameters(object):
+class Parameters:
     empty = inspect.Parameter.empty
 
     def __init__(

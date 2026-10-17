@@ -13,14 +13,13 @@ from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom import Component, Document
-from ux_dom.dom import div, span, button
+from ux_dom.dom import button, div, span
 from ux_dom.dom.src.dom_tag import get_current
 from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.response.starlette import html_response
-from ux_dom.response.starlette import StreamingResponse
+from ux_dom.response.starlette import StreamingResponse, html_response
 from ux_dom.web_io import WebSocketAdapter, WebSocketEvents
 
 

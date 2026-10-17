@@ -16,18 +16,19 @@ from __future__ import annotations
 
 import json
 import warnings
+from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from textwrap import dedent
-from typing import Iterable, List, Union
+from typing import Union
 
 from ux_dom.dom.src import htmltags, jinjatags, svgtags
 from ux_dom.dom.src.concurrency import multi_tree_lock
 from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.html_string import defHTML
+from ux_dom.dom.src.main import extension
 from ux_dom.dom.src.markdown import render_markdown
 from ux_dom.dom.src.utils.dom_util import dom_text
-from ux_dom.dom.src.main import extension
 from ux_dom.utils.parameters import Parameters
 
 __all__ = ["Component", "ReactiveComponent", "Fragment", "MergeClassAttribute"]
@@ -56,10 +57,10 @@ class Component(extension.Tags):
     file_extension: str = field(init=False, default=".html")
     render_tag: bool = field(init=False, default=False)
     attributes: dict = field(init=False, default_factory=dict)
-    children: List[Union[str, "dom_tag"]] = field(init=False, default_factory=list)
-    parent: Union["dom_tag", None] = field(init=False, default=None)
-    document: Union["dom_tag", None] = field(init=False, default=None)
-    files_directory: Union[str, Path, None] = field(init=False, default=None)
+    children: list[str | dom_tag] = field(init=False, default_factory=list)
+    parent: dom_tag | None = field(init=False, default=None)
+    document: dom_tag | None = field(init=False, default=None)
+    files_directory: str | Path | None = field(init=False, default=None)
     escape_string: bool = field(init=False, default=True)
     string_is_markdown: bool = field(init=False, default=False)
 
@@ -120,7 +121,7 @@ class Component(extension.Tags):
         return super().__new__(cls)
 
     def __init__(self, *args, **kwargs):
-        super(Component, self).__init__()
+        super().__init__()
 
         # Local converter only — never mutate module-global markdown
         md_convert = kwargs.pop("markdown", None)
@@ -177,7 +178,7 @@ class Component(extension.Tags):
         return defHTML(child, escape=self.escape_string)
 
     def __checks__(
-        self, element: Union[dom_tag, extension.Tags]
+        self, element: dom_tag | extension.Tags
     ) -> Union[dom_tag, extension.Tags]:  # noqa
         if self.render_tag:
             raise ValueError(f"{self.render_tag=} can not be true for Components")
@@ -195,7 +196,7 @@ class Component(extension.Tags):
         if not self.render_tag and hasattr(self, "_entry") and self._entry is not self:
             self._entry.set_attribute(key, value)
         else:
-            super(Component, self).set_attribute(key, value)
+            super().set_attribute(key, value)
 
     __setitem__ = set_attribute
 
@@ -203,7 +204,7 @@ class Component(extension.Tags):
         if not self.render_tag and hasattr(self, "_entry") and self._entry is not self:
             self._entry.delete_attribute(key)
         else:
-            super(Component, self).delete_attribute(key)
+            super().delete_attribute(key)
 
     __delitem__ = delete_attribute
 
@@ -230,7 +231,7 @@ class Component(extension.Tags):
                 if all(found is not r for r in results):
                     results.append(found)
             return results
-        return super(Component, self).get(tag, **kwargs)
+        return super().get(tag, **kwargs)
 
     def __contains__(self, item):
         """Own class/instance existence + subtree (see ``dom_tag``)."""
@@ -240,7 +241,7 @@ class Component(extension.Tags):
         if not self.render_tag:
             entry = None
             try:
-                entry: Union[dom_tag, extension.Tags] = object.__getattribute__(
+                entry: dom_tag | extension.Tags = object.__getattribute__(
                     self, "_entry"
                 )
             except AttributeError:
@@ -248,7 +249,7 @@ class Component(extension.Tags):
             if entry and entry is not self:
                 return entry.__getitem__(key)
 
-        return super(Component, self).__getitem__(key)
+        return super().__getitem__(key)
 
     __getattr__ = __getitem__
 
@@ -322,7 +323,7 @@ class Component(extension.Tags):
         )
 
     @classmethod
-    def _from_file(cls, file_name: Union[str, Path]) -> str:
+    def _from_file(cls, file_name: str | Path) -> str:
         file_location = None
 
         if isinstance(cls.files_directory, Path):
@@ -360,7 +361,7 @@ class Component(extension.Tags):
         return file_location.read_text()
 
     @classmethod
-    def from_file(cls, file_name: Union[str, Path]) -> "Component":
+    def from_file(cls, file_name: str | Path) -> Component:
         return cls(cls._from_file(file_name))
 
     def script(self, *args, **kwargs): ...
@@ -395,7 +396,7 @@ class Fragment(Component):
 
     def _add_attrs_to_child(
         self,
-        child: Union[extension.Tags, dom_tag],
+        child: extension.Tags | dom_tag,
         *,
         apply_unique: bool = True,
     ):
@@ -591,7 +592,7 @@ class ReactiveComponent(Component):
     def __init__(self, *args, **kwargs):
         # Constructor kwargs (attrs + field overrides) seed reactive state
         object.__setattr__(self, "_ux_dom_states", dict(kwargs))
-        super(ReactiveComponent, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self._snapshot_states()
 
     def __post_init__(self, *args, **kwargs):

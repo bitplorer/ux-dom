@@ -6,11 +6,11 @@ import concurrent.futures
 import unittest
 
 from fastapi.testclient import TestClient
-
 from standalone.htmx_stream_app.app import SearchBox, create_app as htmx_app
 from standalone.mcp_app.app import create_app as mcp_app
 from standalone.sse_app.app import create_app as sse_app
 from standalone.ws_app.app import create_app as ws_app
+
 from ux_dom.dom import div
 
 

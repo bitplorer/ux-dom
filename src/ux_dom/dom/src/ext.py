@@ -18,7 +18,6 @@ from __future__ import annotations
 import os
 import queue
 import threading
-import typing
 from pathlib import Path
 
 from ux_dom.dom.src.dom1core import dom1core
@@ -87,7 +86,7 @@ class Tags(dom_tag, dom1core):
     def __init__(self, *args, **kwargs):
         # Before super().__init__, which may already set attributes.
         self.safe_attributes = {}
-        super(Tags, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def _control(self, key, default=False):
         """Read control flag without permanently popping (idempotent re-render)."""
@@ -416,7 +415,7 @@ class Tags(dom_tag, dom1core):
         put_timeout=30.0,
         get_timeout=30.0,
     ):
-        q: "queue.Queue" = queue.Queue(maxsize=max(8, int(maxsize)))
+        q: queue.Queue = queue.Queue(maxsize=max(8, int(maxsize)))
         sentinel = object()
         error: list = []
         abandoned = threading.Event()
@@ -536,22 +535,22 @@ class Tags(dom_tag, dom1core):
                 yield name
                 yield self.right_delimiter
 
-    def __and__(self, other: dom_tag) -> "Tags":
+    def __and__(self, other: dom_tag) -> Tags:
         return (
             PlaceholderTag(__inline=self.is_inline, __pretty=self.is_pretty)
             & self
             & other
         )
 
-    def __iter__(self) -> typing.List[typing.Union[str, dom_tag, "Tags"]]:
+    def __iter__(self) -> list[str | dom_tag | Tags]:
         return super().__iter__()
 
     def save(
         self,
-        file_name: typing.Union[str, Path, None] = None,
-        folder_name: typing.Union[str, Path, None] = None,
+        file_name: str | Path | None = None,
+        folder_name: str | Path | None = None,
         current_dir: bool = False,
-        file_or_dir: typing.Union[str, Path, None] = None,
+        file_or_dir: str | Path | None = None,
     ):
         if file_or_dir is not None:
             assert (
@@ -667,7 +666,7 @@ class SingleTemplates(SingleTags):
                 )
             )
         )
-        super(SingleTemplates, self).__init__(
+        super().__init__(
             open_tag=open_tag,
             self_dedent=self_dedent or self.self_dedent,
             child_dedent=child_dedent or self.child_dedent,
@@ -717,7 +716,7 @@ class DoubleTemplates(DoubleTags):
                 self.right_delimiter,
             ]
         )
-        super(DoubleTemplates, self).__init__(
+        super().__init__(
             open_tag=open_tag,
             close_tag=close_tag,
             self_dedent=self_dedent or self.self_dedent,

@@ -10,7 +10,7 @@ from abc import ABC, abstractmethod
 from asyncio import create_task, gather, sleep
 from collections import defaultdict
 from json.decoder import JSONDecodeError
-from typing import Any, Optional, Type
+from typing import Any
 
 from ux_dom.web_io._events import WebSocketEvents
 from ux_dom.web_io._protocol import WebSocketProtocol as WebSocket
@@ -49,7 +49,7 @@ class GenericAdapter(ABC):
 
     @abstractmethod
     async def on_disconnect(
-        self, *args, websocket: WebSocket, message: Optional[MESSAGE], **kwargs
+        self, *args, websocket: WebSocket, message: MESSAGE | None, **kwargs
     ):
         pass
 
@@ -67,7 +67,7 @@ class GenericAdapter(ABC):
         *args,
         websocket: WebSocket,
         message: MESSAGE,
-        connections: Optional[set[WebSocket]] = None,
+        connections: set[WebSocket] | None = None,
         **kwargs,
     ):
         pass
@@ -100,7 +100,7 @@ class WebSocketAdapter(GenericAdapter):
         self,
         data_class: type,
         events: WebSocketEvents,
-        data_fetcher: Optional[DataFetcher] = None,
+        data_fetcher: DataFetcher | None = None,
         *,
         share_instance: bool = False,
     ):
@@ -112,9 +112,9 @@ class WebSocketAdapter(GenericAdapter):
                 Set True only for intentionally shared process-wide state
                 (shared-instance mode).
         """
-        self.data_class: Type = data_class
+        self.data_class: type = data_class
         self.events: WebSocketEvents = events
-        self.data_fetcher: Optional[DataFetcher] = data_fetcher
+        self.data_fetcher: DataFetcher | None = data_fetcher
         self.share_instance: bool = share_instance
         # Shared instance when share_instance=True
         self._shared_instance: Any = None
@@ -122,7 +122,7 @@ class WebSocketAdapter(GenericAdapter):
         self._instances: dict = {}
         self.connections: set = set()
 
-    def _instance_for(self, websocket: Optional[WebSocket] = None) -> Any:
+    def _instance_for(self, websocket: WebSocket | None = None) -> Any:
         if self.share_instance:
             return self._shared_instance
         if websocket is None:
@@ -181,7 +181,7 @@ class WebSocketAdapter(GenericAdapter):
         await websocket.close()
 
     async def on_disconnect(
-        self, *args, websocket: WebSocket, message: Optional[MESSAGE], **kwargs
+        self, *args, websocket: WebSocket, message: MESSAGE | None, **kwargs
     ):
         """
         Callback function called on WebSocket disconnection.
@@ -335,7 +335,7 @@ class WebSocketAdapter(GenericAdapter):
             )
 
 
-class WebSocketClientHandler(object):
+class WebSocketClientHandler:
     def __init__(self, adapters: dict[str, GenericAdapter]):
         self.adapters: dict[str, GenericAdapter] = adapters
         self.all_connections: defaultdict = defaultdict(set)

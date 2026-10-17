@@ -3,14 +3,13 @@ from __future__ import annotations
 
 import asyncio
 import json
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 
 from fastapi import FastAPI, Request
 from fastapi.responses import StreamingResponse as ASGIStreamingResponse
-from starlette.responses import Response
 
 from ux_dom import Component, Document
-from ux_dom.dom import div, span, button, script, h1, p
+from ux_dom.dom import div, h1, p
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.response.starlette import HTMLResponse, StreamingResponse
 
@@ -48,8 +47,8 @@ def create_app() -> FastAPI:
         while n == 0 or i < n:
             payload = {"topic": topic, "i": i, "msg": f"{topic}:{i}"}
             # comment + event + data lines
-            yield f": heartbeat\n"
-            yield f"event: message\n"
+            yield ": heartbeat\n"
+            yield "event: message\n"
             yield f"data: {json.dumps(payload)}\n\n"
             i += 1
             await asyncio.sleep(0.01)

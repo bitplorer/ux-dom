@@ -20,7 +20,6 @@ comments. Never pass user input to it.
 from __future__ import annotations
 
 import builtins
-import typing as T
 
 from ux_dom.dom.src import ext, htmltags, jinjatags, svgtags
 from ux_dom.dom.src.parse_html import Comment, Data, Element, tokenize_html
@@ -142,7 +141,7 @@ def _build(token: Element, trusted: bool, parent: str = "", pre: bool = False) -
             _build(child, trusted, name, pre)
 
 
-def defHTML(raw_string, escape: bool = True) -> T.List[ext.Tags]:  # noqa: N802
+def defHTML(raw_string, escape: bool = True) -> list[ext.Tags]:  # noqa: N802
     """Parse ``raw_string``; sanitize it unless ``escape=False`` (trusted)."""
     if raw_string is None:
         return []

@@ -4,7 +4,7 @@ from __future__ import annotations
 import unittest
 from html.parser import HTMLParser
 
-from ux_dom.dom import a, div, script
+from ux_dom.dom import a, div
 
 
 class TestAttrBreakout(unittest.TestCase):

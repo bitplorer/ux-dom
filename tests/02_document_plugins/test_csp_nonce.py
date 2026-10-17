@@ -6,7 +6,6 @@ import re
 import unittest
 
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse as FastAPIHTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom.dom import div, script
@@ -14,7 +13,6 @@ from ux_dom.plugins import App, Csp, XElementRuntime, shell_fragments
 from ux_dom.plugins.csp import (
     build_csp_header,
     generate_nonce,
-    get_nonce,
     reset_nonce,
     set_nonce,
     stamp_nonce,

@@ -55,10 +55,10 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
+from ux_dom import diagnostics as _diag
 from ux_dom.dom.src import component
 from ux_dom.dom.src.ext import DoubleTags
 from ux_dom.dom.src.jinjatags import render_jinja
-from ux_dom import diagnostics as _diag
 
 __all__ = [
     "HTMLElement",
@@ -92,10 +92,10 @@ class HTMLElement(component.Component):
     escape_string = False
 
     def __init__(self, *args, **kwargs):
-        super(HTMLElement, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __post_init__(self, *args, **kwargs):
-        super(HTMLElement, self).__post_init__(*args, **kwargs)
+        super().__post_init__(*args, **kwargs)
 
     def render(self, elem_or_str_or_path):
         # Pass-through: no extra wrapping — caller owns the tree shape.
@@ -121,7 +121,7 @@ class AMPElement(component.Component):
     tag_name: str
 
     def __post_init__(self, *args, **kwargs):
-        super(AMPElement, self).__init__(*args, tag_name=self.tag_name, **kwargs)
+        super().__init__(*args, tag_name=self.tag_name, **kwargs)
 
         class Element(DoubleTags):
             tagname = f"amp-{self.tag_name}"  # noqa
@@ -210,7 +210,7 @@ class XTemplate(DoubleTags):
             parent_path = Path(sys.modules["__main__"].__file__).parent
             self.xelement = HTMLElement(parent_path / kwargs.pop("filename"))
             self.tagname = f"x-{self.xelement['x-tagname']}"
-        super(XTemplate, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def __hash__(self) -> int:
         return super().__hash__()
@@ -305,7 +305,7 @@ class XElement(component.Component):
             if not getattr(self, "children", None) and not getattr(
                 self, "_entry", None
             ):
-                super(XElement, self).__init__(*args, tag_name=tag, **kwargs)
+                super().__init__(*args, tag_name=tag, **kwargs)
 
             class Template(XTemplate):
                 tagname = f"x-{tag}"  # noqa

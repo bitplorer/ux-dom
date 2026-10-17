@@ -6,7 +6,6 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 
 @dataclass
@@ -16,7 +15,7 @@ class LintIssue:
     level: str = "warn"  # warn | error
 
 
-def _find_app_root(start: Optional[Path] = None) -> Optional[Path]:
+def _find_app_root(start: Path | None = None) -> Path | None:
     cur = (start or Path.cwd()).resolve()
     for p in [cur, *cur.parents]:
         if (p / "app").is_dir():
@@ -26,7 +25,7 @@ def _find_app_root(start: Optional[Path] = None) -> Optional[Path]:
     return None
 
 
-def lint_project(root: Optional[Path] = None) -> list[LintIssue]:
+def lint_project(root: Path | None = None) -> list[LintIssue]:
     app_root = root or _find_app_root()
     issues: list[LintIssue] = []
     if app_root is None:

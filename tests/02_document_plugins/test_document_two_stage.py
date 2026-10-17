@@ -5,9 +5,9 @@ from __future__ import annotations
 import unittest
 
 from ux_dom import Document
-from ux_dom.dom import div, meta, script, title
+from ux_dom.dom import div, meta, title
 from ux_dom.plugins.csp import reset_nonce, set_nonce
-from ux_dom.runtime import Htmx, XElement, XELEMENT_JS_URL
+from ux_dom.runtime import XELEMENT_JS_URL, Htmx, XElement
 
 
 class TestTwoStageOrder(unittest.TestCase):

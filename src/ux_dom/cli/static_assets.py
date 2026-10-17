@@ -14,9 +14,9 @@ import hashlib
 import shutil
 import tarfile
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 @dataclass
@@ -157,8 +157,8 @@ def collect_package_files(root: Path) -> list[Path]:
 def write_runnable_package(
     root: Path,
     *,
-    out_dir: Optional[Path] = None,
-    name: Optional[str] = None,
+    out_dir: Path | None = None,
+    name: str | None = None,
     archive: bool = False,
 ) -> Path:
     """
@@ -212,7 +212,7 @@ exec uvicorn app.main:app --host "$HOST" --port "$PORT"
 
     (dest / "README.RUN.txt").write_text(
         f"""ux-dom runnable package — {pkg_name}
-Generated: {datetime.now(timezone.utc).isoformat()}
+Generated: {datetime.now(UTC).isoformat()}
 
 Library JavaScript is NOT duplicated into assets/.
 Install deps (ux_dom, ux-channel, …) then run — StaticFiles mounts
@@ -234,7 +234,7 @@ Package static mounts recorded at build:
 
     manifest = {
         "name": pkg_name,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "source_root": str(root),
         "served_files": [
             {"prefix": p, "directory": d} for p, d in sync.mounts

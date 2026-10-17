@@ -11,7 +11,6 @@ carries configuration fields (slot_names, classes, css).
 
 from __future__ import annotations
 
-import typing
 from dataclasses import dataclass
 
 from ux_dom.dom.htmlelement import XElement
@@ -37,7 +36,7 @@ class WebComponentSlot(XElement):
     """
 
     tag_name: str
-    slot_names: typing.Union[list, tuple]
+    slot_names: list | tuple
     classes: dict
     css: list[str]
     slot_class: str = ""
@@ -48,7 +47,7 @@ class WebComponentSlot(XElement):
         return super().__new__(cls, *args, **kw)
 
     def __post_init__(self):
-        super(WebComponentSlot, self).__post_init__(
+        super().__post_init__(
             slot_names=self.slot_names,
             classes=self.classes,
             css=self.css,
@@ -76,4 +75,4 @@ class WebComponentSlot(XElement):
         return XElement.__checks__(self, element)
 
     def __call__(self, *args, **kwargs):
-        return super(WebComponentSlot, self).__call__(*args, exportparts="*", **kwargs)
+        return super().__call__(*args, exportparts="*", **kwargs)

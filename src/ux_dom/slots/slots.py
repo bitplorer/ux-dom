@@ -41,7 +41,7 @@ class Slots(WebComponent):
         return super().__new__(cls, *args, **kw)
 
     def __post_init__(self):
-        super(Slots, self).__post_init__(
+        super().__post_init__(
             slot_names=self.slot_names,
             classes=self.classes,
             css=self.css,
@@ -72,4 +72,4 @@ class Slots(WebComponent):
         return slots
 
     def __call__(self, *args, **kwargs):
-        return super(Slots, self).__call__(*args, exportparts="*", **kwargs)
+        return super().__call__(*args, exportparts="*", **kwargs)

@@ -7,8 +7,8 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-
 from helpers import ScaffoldOptions, create_app
+
 from ux_dom.cli.adders import AddError, add_xelement
 from ux_dom.cli.build import run_build
 from ux_dom.dom import div, template

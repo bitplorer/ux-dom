@@ -5,7 +5,6 @@
 
 
 """Typed form elements: floats. Optional higher-level inputs over HTML tags."""
-import typing as T
 from dataclasses import dataclass, field
 
 from valio import StringValidator
@@ -28,7 +27,7 @@ class FloatLabel(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(FloatLabel, self).__init__(
+        super().__init__(
             self.label, *args, className=self.className, **kwargs
         )
 
@@ -44,7 +43,7 @@ class FloatLegend(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(FloatLegend, self)._init__(
+        super()._init__(
             self.label, *args, className=self.className, **kwargs
         )
 
@@ -80,7 +79,7 @@ class FloatInput(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(FloatInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -112,13 +111,13 @@ class FloatInput(component.Component):
 class FloatNumberInput(component.Component):
     name: str
     placeholder: str
-    min: T.Union[str, None] = None
-    max: T.Union[str, None] = None
-    pattern: T.Union[str, None] = None
+    min: str | None = None
+    max: str | None = None
+    pattern: str | None = None
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(FloatNumberInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -147,13 +146,13 @@ class FloatNumberInput(component.Component):
 class FloatRangeInput(component.Component):
     name: str
     placeholder: str
-    min: T.Union[str, None] = None
-    max: T.Union[str, None] = None
-    pattern: T.Union[str, None] = None
+    min: str | None = None
+    max: str | None = None
+    pattern: str | None = None
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(FloatRangeInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,

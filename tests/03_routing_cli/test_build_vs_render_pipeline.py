@@ -20,7 +20,7 @@ from __future__ import annotations
 import asyncio
 import unittest
 
-from ux_dom.dom import div, span, button
+from ux_dom.dom import button, div, span
 from ux_dom.dom.src.dom_tag import dom_tag
 
 

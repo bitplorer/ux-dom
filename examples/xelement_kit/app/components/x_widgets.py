@@ -13,7 +13,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ux_dom.dom import div, slot, span, template
-from ux_dom.dom.htmlelement import AlpineComponent, CustomElement, WebComponent, XElement
+from ux_dom.dom.htmlelement import (
+    AlpineComponent,
+    CustomElement,
+    WebComponent,
+    XElement,
+)
 
 __all__ = ["CounterX", "HelloCustom", "ShadowCard", "AlpineToggle"]
 

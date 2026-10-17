@@ -7,13 +7,14 @@ Prefer ``Document(...).use(...)`` in app code (SSoT).
 
 from __future__ import annotations
 
-from typing import Any, Optional, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from ux_dom.plugins.hub import PluginHub, get_hub
 
 
 def runtime_tags(
-    hub: Optional[PluginHub] = None,
+    hub: PluginHub | None = None,
     *extra_head: Any,
     extra_body: Sequence[Any] = (),
     dedupe: bool = True,
@@ -27,7 +28,7 @@ def runtime_tags(
 
 
 def shell_fragments(
-    hub: Optional[PluginHub] = None,
+    hub: PluginHub | None = None,
     *extra_head: Any,
     extra_body: Sequence[Any] = (),
     dedupe: bool = True,

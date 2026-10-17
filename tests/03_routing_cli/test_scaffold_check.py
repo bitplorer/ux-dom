@@ -6,8 +6,9 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from ux_dom.cli.doctor import run_doctor
 from helpers import ScaffoldOptions, create_app
+
+from ux_dom.cli.doctor import run_doctor
 
 
 class TestProductScaffoldMoved(unittest.TestCase):

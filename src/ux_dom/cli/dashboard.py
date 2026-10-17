@@ -40,15 +40,15 @@ class Asset:
     name: str = ""
 
     @staticmethod
-    def css(content: str, *, name: str = "") -> "Asset":
+    def css(content: str, *, name: str = "") -> Asset:
         return Asset(kind="css", content=content, name=name)
 
     @staticmethod
-    def js(content: str, *, name: str = "") -> "Asset":
+    def js(content: str, *, name: str = "") -> Asset:
         return Asset(kind="js", content=content, name=name)
 
     @staticmethod
-    def ce(content: str, *, name: str = "") -> "Asset":
+    def ce(content: str, *, name: str = "") -> Asset:
         return Asset(kind="ce", content=content, name=name or "ce")
 
 

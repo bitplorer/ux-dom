@@ -1,11 +1,10 @@
 """HTMX partial + XElement hosts (auto definitions)."""
 from __future__ import annotations
 
-from ux_dom import Component
-from ux_dom.dom import a, button, div, h1, p, span
-
 from app.components.x_widgets import HelloCustom
 from app.document import page
+from ux_dom import Component
+from ux_dom.dom import a, button, div, h1, p, span
 
 __all__ = ["Htmx"]
 

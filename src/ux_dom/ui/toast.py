@@ -2,7 +2,8 @@
 """ToastHost — morph target for notices. Server list is authority."""
 from __future__ import annotations
 
-from typing import Any, Mapping, Sequence
+from collections.abc import Mapping, Sequence
+from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import div, li, ol, p, span

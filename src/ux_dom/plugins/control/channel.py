@@ -8,7 +8,8 @@ HTMX remains a separate opt-in ControlPlugin (``HtmxControl``).
 """
 from __future__ import annotations
 
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 
 class ChannelControl:

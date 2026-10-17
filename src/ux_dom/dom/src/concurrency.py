@@ -26,10 +26,11 @@ import asyncio
 import os
 import threading
 import weakref
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from dataclasses import dataclass, replace
-from typing import Any, Callable, Iterable, Iterator, Optional, Sequence, TypeVar
+from typing import Any, TypeVar
 
 __all__ = [
     "ConcurrencySettings",
@@ -59,7 +60,7 @@ def _env_bool(name: str, default: bool) -> bool:
     return raw.strip().lower() in {"1", "true", "yes", "on"}
 
 
-def _env_int(name: str, default: Optional[int]) -> Optional[int]:
+def _env_int(name: str, default: int | None) -> int | None:
     raw = os.environ.get(name)
     if raw is None or raw.strip() == "":
         return default
@@ -78,12 +79,12 @@ class ConcurrencySettings:
     """
 
     parallel_enabled: bool = True
-    max_workers: Optional[int] = None  # None → auto
+    max_workers: int | None = None  # None → auto
     min_items_for_parallel: int = 2
     tree_locks_enabled: bool = True
 
     @classmethod
-    def from_env(cls) -> "ConcurrencySettings":
+    def from_env(cls) -> ConcurrencySettings:
         return cls(
             parallel_enabled=_env_bool("UX_DOM_PARALLEL", True),
             max_workers=_env_int("UX_DOM_MAX_WORKERS", None),
@@ -97,7 +98,7 @@ _SETTINGS_GUARD = threading.RLock()
 
 _LOCKS: dict[int, threading.RLock] = {}
 _LOCKS_GUARD = threading.RLock()
-_POOL: Optional[ThreadPoolExecutor] = None
+_POOL: ThreadPoolExecutor | None = None
 _POOL_GUARD = threading.Lock()
 _POOL_WORKERS: int = 0
 
@@ -109,10 +110,10 @@ def get_concurrency_settings() -> ConcurrencySettings:
 
 def configure_concurrency(
     *,
-    parallel_enabled: Optional[bool] = None,
-    max_workers: Optional[int] = None,
-    min_items_for_parallel: Optional[int] = None,
-    tree_locks_enabled: Optional[bool] = None,
+    parallel_enabled: bool | None = None,
+    max_workers: int | None = None,
+    min_items_for_parallel: int | None = None,
+    tree_locks_enabled: bool | None = None,
     reset_pool: bool = True,
 ) -> ConcurrencySettings:
     """Opt-in / opt-out parallel behaviour without changing call sites.
@@ -171,8 +172,8 @@ def default_workers() -> int:
 def should_parallelize(
     n_items: int,
     *,
-    max_workers: Optional[int] = None,
-    parallel: Optional[bool] = None,
+    max_workers: int | None = None,
+    parallel: bool | None = None,
 ) -> bool:
     """Whether multi-item helpers should use a pool (policy + kwargs)."""
     s = get_concurrency_settings()
@@ -189,7 +190,7 @@ def should_parallelize(
     return True
 
 
-def _shared_pool(max_workers: Optional[int] = None) -> ThreadPoolExecutor:
+def _shared_pool(max_workers: int | None = None) -> ThreadPoolExecutor:
     global _POOL, _POOL_WORKERS
     want = max_workers if max_workers is not None else default_workers()
     want = max(1, int(want))
@@ -299,8 +300,8 @@ def render_parallel(
     nodes: Sequence[Any],
     *,
     pretty: bool = False,
-    max_workers: Optional[int] = None,
-    parallel: Optional[bool] = None,
+    max_workers: int | None = None,
+    parallel: bool | None = None,
 ) -> list[str]:
     """Render many trees — parallel when policy allows, else sequential.
 
@@ -327,8 +328,8 @@ def build_parallel(
     fn: Callable[[T], R],
     items: Sequence[T],
     *,
-    max_workers: Optional[int] = None,
-    parallel: Optional[bool] = None,
+    max_workers: int | None = None,
+    parallel: bool | None = None,
 ) -> list[R]:
     """Map ``fn`` over items — parallel when policy allows, else sequential."""
     if not items:
@@ -346,8 +347,8 @@ def map_parallel(
     fn: Callable[[T], R],
     items: Iterable[T],
     *,
-    max_workers: Optional[int] = None,
-    parallel: Optional[bool] = None,
+    max_workers: int | None = None,
+    parallel: bool | None = None,
 ) -> list[R]:
     return build_parallel(fn, list(items), max_workers=max_workers, parallel=parallel)
 
@@ -357,7 +358,7 @@ async def render_async_gather(
     *,
     pretty: bool = False,
     chunk_size: int = 64,
-    parallel: Optional[bool] = None,
+    parallel: bool | None = None,
 ) -> list[str]:
     """Async render many trees; sequential await when parallel policy is off."""
     if not nodes:

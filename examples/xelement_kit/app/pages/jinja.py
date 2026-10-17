@@ -1,11 +1,10 @@
 """Jinja tag DSL demo — server-side expansion (orthogonal to XElement)."""
 from __future__ import annotations
 
-from ux_dom import Component
-from ux_dom.dom import a, code, div, h1, h2, li, p, pre, raw, ul
-from ux_dom.dom.src.jinjatags import For, Var
-
 from app.document import page
+from ux_dom import Component
+from ux_dom.dom import a, code, div, h1, h2, li, p, pre
+from ux_dom.dom.src.jinjatags import For, Var
 
 __all__ = ["Jinja"]
 

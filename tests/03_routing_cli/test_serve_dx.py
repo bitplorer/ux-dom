@@ -7,7 +7,6 @@ from __future__ import annotations
 
 import unittest
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
 from click import unstyle
 from typer.testing import CliRunner

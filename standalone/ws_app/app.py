@@ -1,13 +1,13 @@
 """Standalone WebSocket counter using WebSocketAdapter + ux_dom HTML."""
 from __future__ import annotations
 
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, WebSocket
 
 from ux_dom import Component, Document
-from ux_dom.dom import div, span, button, h1
+from ux_dom.dom import button, div, h1, span
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.response.starlette import HTMLResponse
-from ux_dom.web_io import WebSocketAdapter, WebSocketEvents, WebSocketClientHandler
+from ux_dom.web_io import WebSocketAdapter, WebSocketClientHandler, WebSocketEvents
 
 
 class CounterBox:

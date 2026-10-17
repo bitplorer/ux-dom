@@ -34,7 +34,7 @@ __all__ = [
 ]
 
 
-class JinjaBaseTag(object):
+class JinjaBaseTag:
     pass
 
 
@@ -64,7 +64,7 @@ class Block(JinjaDoubleTags):
         :param template_text:
         :param dom_elements: [optional] template
         """
-        super(Block, self).__init__("block", template_text, *dom_elements)
+        super().__init__("block", template_text, *dom_elements)
 
 
 class For(JinjaDoubleTags):
@@ -73,7 +73,7 @@ class For(JinjaDoubleTags):
         :param template_text:
         :param dom_elements: [optional] template
         """
-        super(For, self).__init__("for", template_text, *dom_elements)
+        super().__init__("for", template_text, *dom_elements)
 
 
 class If(JinjaDoubleTags):
@@ -82,7 +82,7 @@ class If(JinjaDoubleTags):
         :param template_text:
         :param dom_elements: [optional] template
         """
-        super(If, self).__init__("if", template_text, *dom_elements)
+        super().__init__("if", template_text, *dom_elements)
 
 
 class Elif(JinjaSingleTags):
@@ -95,7 +95,7 @@ class Elif(JinjaSingleTags):
         :param dom_elements: [optional] template
         """
 
-        super(Elif, self).__init__(
+        super().__init__(
             "elif",
             template_text,
             *dom_elements,
@@ -113,7 +113,7 @@ class Else(JinjaSingleTags):
         :param dom_elements: [optional] template
         """
 
-        super(Else, self).__init__("else", "", *dom_elements)
+        super().__init__("else", "", *dom_elements)
 
 
 class AutoEscape(JinjaSingleTags):
@@ -123,7 +123,7 @@ class AutoEscape(JinjaSingleTags):
         :param dom_elements: [optional] template
         """
 
-        super(AutoEscape, self).__init__("autoescape", template_text, *dom_elements)
+        super().__init__("autoescape", template_text, *dom_elements)
 
 
 class Include(JinjaSingleTags):
@@ -133,7 +133,7 @@ class Include(JinjaSingleTags):
         :param dom_elements: [optional] template
         """
 
-        super(Include, self).__init__("include", template_text, *dom_elements)
+        super().__init__("include", template_text, *dom_elements)
 
 
 class Cycle(JinjaSingleTags):
@@ -143,7 +143,7 @@ class Cycle(JinjaSingleTags):
         :param dom_elements: [optional] template
         """
 
-        super(Cycle, self).__init__("cycle", template_text, *dom_elements)
+        super().__init__("cycle", template_text, *dom_elements)
 
 
 class Comment(JinjaDoubleTags):
@@ -153,7 +153,7 @@ class Comment(JinjaDoubleTags):
         :param dom_elements: [optional] template
         """
 
-        super(Comment, self).__init__("comment", template_text, *dom_elements)
+        super().__init__("comment", template_text, *dom_elements)
 
 
 class Extends(JinjaSingleTags):
@@ -163,7 +163,7 @@ class Extends(JinjaSingleTags):
         :param dom_elements: [optional] template
         """
 
-        super(Extends, self).__init__("extends", template_text, *dom_elements)
+        super().__init__("extends", template_text, *dom_elements)
 
 
 class Load(JinjaSingleTags):
@@ -173,7 +173,7 @@ class Load(JinjaSingleTags):
         :param dom_elements: [optional] template
         """
 
-        super(Load, self).__init__("load", template_text, *dom_elements)
+        super().__init__("load", template_text, *dom_elements)
 
 
 class CSRFToken(JinjaSingleTags):
@@ -183,7 +183,7 @@ class CSRFToken(JinjaSingleTags):
         :param dom_elements: [optional] template
         """
 
-        super(CSRFToken, self).__init__("csrf_token", "", *dom_elements)
+        super().__init__("csrf_token", "", *dom_elements)
 
 
 class Var(JinjaSingleTags):
@@ -196,7 +196,7 @@ class Var(JinjaSingleTags):
         :param dom_elements: [optional] template
         """
 
-        super(Var, self).__init__("", template_text, *dom_elements)
+        super().__init__("", template_text, *dom_elements)
 
 
 def render_jinja(template, **options):

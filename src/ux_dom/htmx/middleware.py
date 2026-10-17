@@ -15,8 +15,9 @@ breaks streaming responses and contextvars under load). Usage is unchanged::
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from functools import cached_property
-from typing import Any, Mapping, Optional
+from typing import Any
 from urllib.parse import unquote
 
 __all__ = ["HtmxDetails", "HtmxMiddleware"]
@@ -47,7 +48,7 @@ class HtmxDetails:
             headers = {}
         self._headers = headers
 
-    def _get_header_value(self, name: str) -> Optional[str]:
+    def _get_header_value(self, name: str) -> str | None:
         headers = self._headers
         value = headers.get(name)
         if value is None and hasattr(headers, "get"):
@@ -69,7 +70,7 @@ class HtmxDetails:
         return self._get_header_value("HX-Boosted") == "true"
 
     @cached_property
-    def current_url(self) -> Optional[str]:
+    def current_url(self) -> str | None:
         return self._get_header_value("HX-Current-URL")
 
     @cached_property
@@ -77,19 +78,19 @@ class HtmxDetails:
         return self._get_header_value("HX-History-Restore-Request") == "true"
 
     @cached_property
-    def prompt(self) -> Optional[str]:
+    def prompt(self) -> str | None:
         return self._get_header_value("HX-Prompt")
 
     @cached_property
-    def target(self) -> Optional[str]:
+    def target(self) -> str | None:
         return self._get_header_value("HX-Target")
 
     @cached_property
-    def trigger(self) -> Optional[str]:
+    def trigger(self) -> str | None:
         return self._get_header_value("HX-Trigger")
 
     @cached_property
-    def trigger_name(self) -> Optional[str]:
+    def trigger_name(self) -> str | None:
         return self._get_header_value("HX-Trigger-Name")
 
     @cached_property

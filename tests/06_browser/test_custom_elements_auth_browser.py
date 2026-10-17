@@ -7,18 +7,12 @@ from __future__ import annotations
 
 import os
 import subprocess
-import sys
 import tempfile
 import unittest
 from pathlib import Path
 
-from ux_dom import Document
-from ux_dom.dom import div, h1, p, script, span
-from ux_dom.dom.htmlelement import xelement_registry
-from ux_dom.plugins import XElementRuntime
-from ux_dom.plugins.runtime import XELEMENT_JS_URL
-
 from browser_gate import NODE, require_browser
+
 from tests.fixtures.auth_xelements import (
     AuthShell,
     LoginForm,
@@ -26,6 +20,9 @@ from tests.fixtures.auth_xelements import (
     SessionBanner,
     SignupForm,
 )
+from ux_dom import Document
+from ux_dom.dom import div, h1, p, script, span
+from ux_dom.dom.htmlelement import xelement_registry
 
 ROOT = Path(__file__).resolve().parents[2]
 HARNESS = ROOT / "tests" / "browser" / "auth_xelement_harness.mjs"

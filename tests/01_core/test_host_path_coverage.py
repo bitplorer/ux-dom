@@ -2,11 +2,8 @@
 from __future__ import annotations
 
 import unittest
-from pathlib import Path
-from tempfile import TemporaryDirectory
 
 from fastapi import FastAPI
-from fastapi.testclient import TestClient
 
 
 class TestCreateAsgiCoverage(unittest.TestCase):

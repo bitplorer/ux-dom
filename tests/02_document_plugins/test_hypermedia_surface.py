@@ -15,7 +15,7 @@ from ux_dom.dom.htmlelement import (
     JinjaElement,
     WebComponent,
 )
-from ux_dom.dom.src.jinjatags import For, If, Var
+from ux_dom.dom.src.jinjatags import For, Var
 from ux_dom.htmx.middleware import HtmxDetails
 from ux_dom.slots import Slots
 

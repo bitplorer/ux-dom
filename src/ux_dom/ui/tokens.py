@@ -13,7 +13,7 @@ Public contract preserved: cn, variants, focus_ring, radius.
 
 from __future__ import annotations
 
-from typing import Iterable, Optional
+from collections.abc import Iterable
 
 __all__ = [
     "cn",
@@ -130,7 +130,7 @@ color = {
 }
 
 
-def cn(*parts: Optional[str | Iterable[str] | bool]) -> str:
+def cn(*parts: str | Iterable[str] | bool | None) -> str:
     """Merge class fragments (truthy strings only)."""
     out: list[str] = []
     for p in parts:

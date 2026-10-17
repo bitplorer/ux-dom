@@ -6,7 +6,7 @@ import asyncio
 import unittest
 
 from ux_dom import Component
-from ux_dom.dom import div, span, button
+from ux_dom.dom import button, div, span
 
 
 async def _collect(el):

@@ -5,11 +5,11 @@ import inspect
 #
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
-
 from asyncio import Queue
 from collections import defaultdict
+from collections.abc import Callable
 from functools import partial, wraps
-from typing import Any, Callable, Dict, List, Union
+from typing import Any
 from warnings import warn
 
 __all__ = ["BaseEventManager", "WebSocketEvents", "HtmxEvents"]
@@ -17,7 +17,7 @@ __all__ = ["BaseEventManager", "WebSocketEvents", "HtmxEvents"]
 CALLABLE = Callable[..., Any]
 
 
-class BaseEventManager(object):
+class BaseEventManager:
     def __init__(self):
         # events registered in registered_events list will be allowed to be added
         self.__registered_events: list[str] = []
@@ -108,11 +108,11 @@ class BaseEventManager(object):
         self.__registered_events.append(event_name)
 
     @property
-    def registered_activities(self) -> Dict[str, Dict[str, List[Callable]]]:
+    def registered_activities(self) -> dict[str, dict[str, list[Callable]]]:
         return self.__events_with_activities
 
     def _set_event_with_activity(
-        self, activity: str, event_name_or_method: Union[str, CALLABLE]
+        self, activity: str, event_name_or_method: str | CALLABLE
     ) -> CALLABLE:
         method = None
         event_name = None
@@ -131,45 +131,45 @@ class BaseEventManager(object):
             return self._on(activity, event_name)(method)
         return self._on(activity, event_name)
 
-    def _get_events_with_activity(self, activity: str) -> Dict[str, List[Callable]]:
+    def _get_events_with_activity(self, activity: str) -> dict[str, list[Callable]]:
         return self.registered_activities[activity]
 
     def set_event(
-        self, activity: str, event_name_or_method: Union[str, CALLABLE]
+        self, activity: str, event_name_or_method: str | CALLABLE
     ) -> CALLABLE:
         return self._set_event_with_activity(activity, event_name_or_method)
 
-    def get_events(self, activity: str) -> Dict[str, List[Callable]]:
+    def get_events(self, activity: str) -> dict[str, list[Callable]]:
         return self._get_events_with_activity(activity)
 
 
 class WebSocketEvents(BaseEventManager):
-    def on_relay(self, event_name_or_method: Union[str, CALLABLE]) -> CALLABLE:
+    def on_relay(self, event_name_or_method: str | CALLABLE) -> CALLABLE:
         return self.set_event("relay", event_name_or_method)
 
     @property
-    def relay_events(self) -> Dict[str, List[Callable]]:
+    def relay_events(self) -> dict[str, list[Callable]]:
         return self.get_events("relay")
 
-    def on_receive(self, event_name_or_method: Union[str, CALLABLE]) -> CALLABLE:
+    def on_receive(self, event_name_or_method: str | CALLABLE) -> CALLABLE:
         return self.set_event("receive", event_name_or_method)
 
     @property
-    def receive_events(self) -> Dict[str, List[Callable]]:
+    def receive_events(self) -> dict[str, list[Callable]]:
         return self.get_events("receive")
 
     def on_connect(self, method: CALLABLE) -> CALLABLE:
         return self.set_event("connect", method)
 
     @property
-    def connect_events(self) -> Dict[str, List[Callable]]:
+    def connect_events(self) -> dict[str, list[Callable]]:
         return self.get_events("connect")
 
     def on_disconnect(self, method: CALLABLE) -> CALLABLE:
         return self.set_event("disconnect", method)
 
     @property
-    def disconnect_events(self) -> Dict[str, List[Callable]]:
+    def disconnect_events(self) -> dict[str, list[Callable]]:
         return self.get_events("disconnect")
 
 
@@ -180,7 +180,7 @@ class HtmxEvents(BaseEventManager):
     Activity-specific accessors are ``*_events`` properties (like WebSocketEvents).
     """
 
-    def get(self, event: Union[str, Callable]) -> Callable:
+    def get(self, event: str | Callable) -> Callable:
         return super().set_event(activity="hx-get", event_name_or_method=event)
 
     @property
@@ -190,28 +190,28 @@ class HtmxEvents(BaseEventManager):
     # Attribute alias (not callable override of get_events)
     get_event_map = hx_get_events
 
-    def post(self, event: Union[str, Callable]) -> Callable:
+    def post(self, event: str | Callable) -> Callable:
         return super().set_event(activity="hx-post", event_name_or_method=event)
 
     @property
     def post_events(self):
         return super().get_events(activity="hx-post")
 
-    def put(self, event: Union[str, Callable]) -> Callable:
+    def put(self, event: str | Callable) -> Callable:
         return super().set_event(activity="hx-put", event_name_or_method=event)
 
     @property
     def put_events(self):
         return super().get_events(activity="hx-put")
 
-    def patch(self, event: Union[str, Callable]) -> Callable:
+    def patch(self, event: str | Callable) -> Callable:
         return super().set_event(activity="hx-patch", event_name_or_method=event)
 
     @property
     def patch_events(self):
         return super().get_events(activity="hx-patch")
 
-    def delete(self, event: Union[str, Callable]) -> Callable:
+    def delete(self, event: str | Callable) -> Callable:
         return super().set_event(activity="hx-delete", event_name_or_method=event)
 
     @property

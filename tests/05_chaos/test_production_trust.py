@@ -20,14 +20,13 @@ from ux_dom.dom import (
     input_,
     li,
     p,
-    script,
     span,
     style,
     ul,
 )
 from ux_dom.dom.src.component import Component, Fragment, ReactiveComponent
 from ux_dom.dom.src.concurrency import tree_lock_for
-from ux_dom.dom.src.ext import PlaceholderTag, Tags
+from ux_dom.dom.src.ext import Tags
 from ux_dom.dom.src.html_string import defHTML
 from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.plugins.control import HtmxControl, NullControl

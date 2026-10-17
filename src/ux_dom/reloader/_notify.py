@@ -1,7 +1,7 @@
 """Reloader internal: _notify. Dev hot-reload support; not a production public API."""
 import asyncio
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
-from typing import AsyncIterator, Set
 
 
 class Notify:
@@ -31,14 +31,14 @@ class _MemoryBroadcast:
                 yield await self._queue.get()
 
     def __init__(self) -> None:
-        self._subscriptions: Set[asyncio.Queue] = set()
+        self._subscriptions: set[asyncio.Queue] = set()
 
     async def publish(self, event: str) -> None:
         for queue in self._subscriptions:
             await queue.put(event)
 
     @asynccontextmanager
-    async def subscribe(self) -> AsyncIterator["Subscription"]:
+    async def subscribe(self) -> AsyncIterator[Subscription]:
         queue: asyncio.Queue = asyncio.Queue()
         self._subscriptions.add(queue)
         try:

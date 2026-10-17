@@ -8,10 +8,10 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from fastapi.testclient import TestClient
+from helpers import ScaffoldOptions, available_templates, create_app
 from typer.testing import CliRunner
 
 from ux_dom.cli.cli import app as cli_app
-from helpers import ScaffoldOptions, available_templates, create_app
 
 
 class TestScaffoldAPI(unittest.TestCase):
@@ -116,9 +116,10 @@ class TestCreateAppCLI(unittest.TestCase):
 
 class TestScaffoldCsp(unittest.TestCase):
     def test_default_wires_csp_auto(self):
-        from helpers import ScaffoldOptions, create_app
         import tempfile
         from pathlib import Path as P
+
+        from helpers import ScaffoldOptions, create_app
 
         td = P(tempfile.mkdtemp())
         try:
@@ -134,9 +135,10 @@ class TestScaffoldCsp(unittest.TestCase):
             shutil.rmtree(td)
 
     def test_no_csp_option(self):
-        from helpers import ScaffoldOptions, create_app
         import tempfile
         from pathlib import Path as P
+
+        from helpers import ScaffoldOptions, create_app
 
         td = P(tempfile.mkdtemp())
         try:

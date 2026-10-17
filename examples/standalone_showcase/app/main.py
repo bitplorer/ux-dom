@@ -10,24 +10,22 @@ From repo root::
 from __future__ import annotations
 
 import asyncio
+from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 from pathlib import Path
-from typing import AsyncIterator, Callable
 
 from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse as ASGIStreamingResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.routing import WebSocketRoute
-from starlette.types import ASGIApp
 
+from app import settings
+from app.pages import cart, index, shop, sse, stream
 from ux_dom.dom import div, h2, p
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
 from ux_dom.response.fastapi import StreamingRoute
 from ux_dom.response.starlette import StreamingResponse
-
-from app import settings
-from app.pages import cart, index, shop, sse, stream
 
 PACKAGE = Path(__file__).resolve().parent
 

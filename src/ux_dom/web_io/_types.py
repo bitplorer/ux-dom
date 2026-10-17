@@ -8,7 +8,8 @@
 Private module — not part of the supported app API. Types here support the
 internal adapter/protocol layer and may change without notice.
 """
-from typing import Any, Awaitable, Callable, MutableMapping
+from collections.abc import Awaitable, Callable, MutableMapping
+from typing import Any
 
 Scope = MutableMapping[str, Any]
 Message = MutableMapping[str, Any]

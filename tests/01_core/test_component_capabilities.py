@@ -6,7 +6,7 @@ import unittest
 from dataclasses import dataclass
 
 from ux_dom import Component, Document
-from ux_dom.dom import button, div, form, input_
+from ux_dom.dom import div
 
 
 class TestComponentPatterns(unittest.TestCase):

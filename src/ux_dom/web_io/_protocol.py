@@ -4,7 +4,8 @@
 # https://opensource.org/licenses/MIT
 
 """web_io protocol internals. Private transport layer."""
-from typing import Any, AsyncIterator, Optional, Protocol
+from collections.abc import AsyncIterator
+from typing import Any, Protocol
 
 from ux_dom.web_io._types import MESSAGE, Receive, Scope, Send
 
@@ -16,7 +17,7 @@ class WebSocketProtocol(Protocol):
 
     async def accept(self) -> None: ...
 
-    async def close(self, code: int = 1000, reason: Optional[str] = None) -> None: ...
+    async def close(self, code: int = 1000, reason: str | None = None) -> None: ...
 
     async def receive(self) -> MESSAGE: ...
 

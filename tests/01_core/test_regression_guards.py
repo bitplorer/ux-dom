@@ -9,7 +9,6 @@ import concurrent.futures
 import copy
 import unittest
 
-
 from ux_dom import Component, Document, Fragment, ReactiveComponent
 from ux_dom.dom import div, span
 from ux_dom.web_io import HtmxEvents

@@ -233,7 +233,7 @@ class DocType(extension.SingleTemplates):
         :param dom_elements: [optional] template
         """
 
-        super(DocType, self).__init__("DOCTYPE", template_text, *dom_elements)
+        super().__init__("DOCTYPE", template_text, *dom_elements)
 
 
 class html_tag(extension.Tags):
@@ -241,7 +241,7 @@ class html_tag(extension.Tags):
         """
         Creates a new html tag instance.
         """
-        super(html_tag, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     # def validate(self):
     #   '''
@@ -1421,4 +1421,4 @@ if __name__ == "__main__":
     print(div(div(div(img(div(div(img())))))))
     print(div(div(self_dedent=True), child_dedent=False))
     print(div(div(self_dedent=False), child_dedent=False))
-    print((div() & p() & div()))
+    print(div() & p() & div())

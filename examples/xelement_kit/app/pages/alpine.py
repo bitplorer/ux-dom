@@ -1,11 +1,10 @@
 """Alpine.js + AlpineComponent — hosts only."""
 from __future__ import annotations
 
-from ux_dom import Component
-from ux_dom.dom import a, div, h1, h2, p
-
 from app.components.x_widgets import AlpineToggle, CounterX
 from app.document import page
+from ux_dom import Component
+from ux_dom.dom import a, div, h1, h2, p
 
 __all__ = ["Alpine"]
 

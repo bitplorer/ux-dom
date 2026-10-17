@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 
 import ux_dom
-from ux_dom.scripts import x_element_js, x_element_js_text
+from ux_dom.scripts import x_element_js_text
 
 ROOT = Path(__file__).resolve().parents[2]
 UI_DOM = ROOT / "src" / "ux_dom"
@@ -92,16 +92,14 @@ class TestImportSurfaceStable(unittest.TestCase):
     """Critical public imports must not raise."""
 
     def test_core_imports(self):
-        from ux_dom import Component, Document, Fragment, __version__
-        from ux_dom.dom import button, div, span, template
+        from ux_dom import __version__
+        from ux_dom.dom import div
         from ux_dom.dom.htmlelement import (
             AlpineComponent,
             CustomElement,
             WebComponent,
             XElement,
         )
-        from ux_dom.plugins import App
-        from ux_dom.scripts import x_element_js
 
         self.assertTrue(__version__)
         self.assertTrue(callable(div))

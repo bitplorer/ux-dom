@@ -1,11 +1,10 @@
 """Landing — feature tour of pure UxDom."""
 from __future__ import annotations
 
-from ux_dom import Component
-from ux_dom.dom import a, div, h1, h2, li, p, span, ul
-
 from app.components.layout import Shell
 from app.document import page
+from ux_dom import Component
+from ux_dom.dom import a, div, h1, h2, li, p, span, ul
 
 __all__ = ["Index"]
 

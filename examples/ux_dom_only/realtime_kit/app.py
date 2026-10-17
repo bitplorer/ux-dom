@@ -9,13 +9,13 @@ from __future__ import annotations
 
 import asyncio
 import json
-from typing import AsyncIterator
+from collections.abc import AsyncIterator
 
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import StreamingResponse as ASGIStreamingResponse
 
 from ux_dom import Component, Document
-from ux_dom.dom import a, button, div, h1, h2, p, span
+from ux_dom.dom import a, div, h1, h2, p, span
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.response.starlette import HTMLResponse, StreamingResponse
 from ux_dom.web_io import WebSocketAdapter, WebSocketClientHandler, WebSocketEvents

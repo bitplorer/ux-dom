@@ -1,5 +1,6 @@
 """Reloader internal: _models. Dev hot-reload support; not a production public API."""
-from typing import NamedTuple, Sequence
+from collections.abc import Sequence
+from typing import NamedTuple
 
 from ._types import ReloadFunc
 

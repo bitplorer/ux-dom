@@ -17,7 +17,6 @@ from ux_dom.dom.htmlelement import (
     AlpineComponent,
     CustomElement,
     WebComponent,
-    XElement,
 )
 from ux_dom.scripts import (
     x_element_js,

@@ -31,7 +31,7 @@ class IntegerLabel(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(IntegerLabel, self).__init__(
+        super().__init__(
             *args, label=self.label, className=self.className, **kwargs
         )
 
@@ -51,7 +51,7 @@ class IntegerLegend(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(IntegerLegend, self).__init__(
+        super().__init__(
             label=self.label, className=self.className, *args, *kwargs
         )
 
@@ -87,7 +87,7 @@ class IntegerInput(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(IntegerInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -126,13 +126,13 @@ class IntegerInputValidator(Validator):
 class IntegerNumberInput(component.Component):
     name: str
     placeholder: str
-    min: T.Union[str, None] = field(default=None)
-    max: T.Union[str, None] = field(default=None)
-    pattern: T.Union[str, None] = field(default=None)
+    min: str | None = field(default=None)
+    max: str | None = field(default=None)
+    pattern: str | None = field(default=None)
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(IntegerNumberInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -168,13 +168,13 @@ class IntegerNumberInputValidator(Validator):
 class IntegerRangeInput(component.Component):
     name: str
     placeholder: str
-    min: T.Union[str, None] = field(default=None)
-    max: T.Union[str, None] = field(default=None)
-    pattern: T.Union[str, None] = field(default=None)
+    min: str | None = field(default=None)
+    max: str | None = field(default=None)
+    pattern: str | None = field(default=None)
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(IntegerRangeInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -218,13 +218,13 @@ class IntegerRangeInputValidator(Validator):
 class TelephoneInput(component.Component):
     name: str
     placeholder: str
-    min: T.Union[str, None] = field(default=None)
-    max: T.Union[str, None] = field(default=None)
-    pattern: T.Union[str, None] = field(default=None)
+    min: str | None = field(default=None)
+    max: str | None = field(default=None)
+    pattern: str | None = field(default=None)
     className: str = field(default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(TelephoneInput, self).__init__(
+        super().__init__(
             *args,
             name=self.name,
             placeholder=self.placeholder,
@@ -260,7 +260,7 @@ class IntegerField(component.Component):
     type: str
 
     def __post_init__(self, *args, **kwargs):
-        super(IntegerField, self).__init__(
+        super().__init__(
             *args,
             label=self.label,
             name=self.name,
@@ -285,7 +285,7 @@ class IntegerNumberField(component.Component):
     placeholder: str
 
     def __post_init__(self, *args, **kwargs):
-        super(IntegerNumberField, self).__init__(
+        super().__init__(
             *args,
             label=self.label,
             name=self.name,
@@ -309,7 +309,7 @@ class IntegerRangeField(component.Component):
     placeholder: str
 
     def __post_init__(self, *args, **kwargs):
-        super(IntegerRangeField, self).__init__(
+        super().__init__(
             *args,
             label=self.label,
             name=self.name,

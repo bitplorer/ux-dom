@@ -3,11 +3,10 @@ from __future__ import annotations
 
 import threading
 
-from ux_dom import Component
-from ux_dom.dom import button, div, h1, p, span
-
 from app.components.layout import Shell
 from app.document import page
+from ux_dom import Component
+from ux_dom.dom import button, div, h1, p, span
 
 __all__ = ["Cart"]
 
