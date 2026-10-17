@@ -1,10 +1,12 @@
 """Web Components — hosts only."""
+
 from __future__ import annotations
 
-from app.components.x_widgets import HelloCustom, ShadowCard
-from app.document import page
 from ux_dom import Component
 from ux_dom.dom import a, div, h1, h2, p, span
+
+from ..components.x_widgets import HelloCustom, ShadowCard
+from ..document import page
 
 __all__ = ["WC"]
 
@@ -20,7 +22,9 @@ class WC(Component):
             ),
             h2("CustomElement (light DOM)", className="text-xl font-semibold mb-2"),
             HelloCustom(),
-            h2("WebComponent (shadow DOM)", className="text-xl font-semibold mt-6 mb-2"),
+            h2(
+                "WebComponent (shadow DOM)", className="text-xl font-semibold mt-6 mb-2"
+            ),
             ShadowCard(span("Projected light content", className="text-sky-300")),
             className="max-w-2xl mx-auto px-4 py-10 space-y-3",
             id="wc",

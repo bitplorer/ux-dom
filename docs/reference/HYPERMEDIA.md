@@ -37,7 +37,7 @@ class Toggle(AlpineComponent):
         )
 ```
 
-**See:** [XELEMENT.md](XELEMENT.md), `examples/xelement_kit/app/pages/alpine.py`,  
+**See:** [XELEMENT.md](XELEMENT.md), `examples/xelement_kit/pages/alpine.py`,  
 `tests/02_document_plugins/test_xelement_runtime.py`, `tests/06_browser/test_xelement_browser.py`.
 
 ## HTMX
@@ -52,7 +52,7 @@ class Toggle(AlpineComponent):
 button("Load", hx_get="/partial", hx_target="#panel", hx_swap="innerHTML")
 ```
 
-**See:** showcase cart, hypermedia shop, `examples/xelement_kit/.../htmx.py`,  
+**See:** showcase cart, hypermedia shop, `examples/xelement_kit/pages/htmx.py`,  
 `ux_dom/htmx/middleware.py`, HTMX tests under `tests/`.
 
 ## Jinja
@@ -83,7 +83,7 @@ html = tpl(names=["a", "b"])  # expanded HTML string/tree
 
 Prefer plain `WebComponent` + `slot()` for new code (clearer, matches `x_element.js`).
 
-**See:** `examples/xelement_kit/.../shadow_dom.py`, `/slots`.
+**See:** `examples/xelement_kit/components/shadow_dom.py`, `/slots`.
 
 ## Web Components (summary)
 

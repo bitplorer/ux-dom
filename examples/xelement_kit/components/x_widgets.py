@@ -4,10 +4,11 @@ For full Light / Shadow documentation see:
 
 * ``light_dom.py`` + route ``/lightdom``
 * ``shadow_dom.py`` + route ``/shadowdom``
-* Library guide: ``docs/guides/XELEMENT.md``
+* Library guide: ``docs/reference/XELEMENT.md``
 
 Contract reminder: ``x-tagname`` only · runtime ``x_element.js``.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -26,6 +27,7 @@ __all__ = ["CounterX", "HelloCustom", "ShadowCard", "AlpineToggle"]
 @dataclass(eq=False)
 class CounterX(XElement):
     """Bare XElement with Alpine markup inside the template (light DOM clone)."""
+
     tag_name = "counter"
 
     def render(self, tag_name: str = "counter"):
@@ -49,6 +51,7 @@ class CounterX(XElement):
 @dataclass(eq=False)
 class HelloCustom(CustomElement):
     """Light-DOM hello (same family as ``light_dom.HelloLight``)."""
+
     tag_name = "hello"
 
     def render(self, tag_name: str = "hello"):
@@ -58,7 +61,9 @@ class HelloCustom(CustomElement):
                 span("CustomElement", className="font-semibold text-sky-700"),
                 " / ",
                 span(f"x-{tag_name}", className="font-mono text-sm"),
-                className="rounded-lg border border-slate-200 bg-white px-3 py-2 shadow-sm",
+                className=(
+                    "rounded-lg border border-slate-200 " "bg-white px-3 py-2 shadow-sm"
+                ),
             ),
             **{"x-tagname": tag_name},
         )
@@ -67,6 +72,7 @@ class HelloCustom(CustomElement):
 @dataclass(eq=False)
 class ShadowCard(WebComponent):
     """Shadow card with default slot (see ``shadow_dom.ShellShadow``)."""
+
     tag_name = "shadow-card"
 
     def render(self, tag_name: str = "shadow-card"):
@@ -74,7 +80,9 @@ class ShadowCard(WebComponent):
             div(
                 span(
                     "Shadow DOM card",
-                    className="block text-xs uppercase tracking-wide text-slate-400 mb-2",
+                    className=(
+                        "block text-xs uppercase tracking-wide " "text-slate-400 mb-2"
+                    ),
                 ),
                 slot(),
                 className="p-3 rounded-xl bg-slate-900 text-slate-100",
@@ -86,6 +94,7 @@ class ShadowCard(WebComponent):
 @dataclass(eq=False)
 class AlpineToggle(AlpineComponent):
     """Requires x-tagname + x-data (AlpineComponent checks both)."""
+
     tag_name = "toggle"
 
     def render(self, tag_name: str = "toggle"):

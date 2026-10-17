@@ -54,7 +54,7 @@ host = HelloLight()  # <x-hello-light>; Document emits the template once
 ```
 
 Full gallery: `examples/xelement_kit` → `/lightdom`  
-Source: `examples/xelement_kit/app/components/light_dom.py`
+Source: `examples/xelement_kit/components/light_dom.py`
 
 ## Shadow DOM — `WebComponent`
 
@@ -83,7 +83,7 @@ host = ShellShadow("shell-shadow")("projected light child")
 ```
 
 Full gallery: `/shadowdom`  
-Source: `examples/xelement_kit/app/components/shadow_dom.py`
+Source: `examples/xelement_kit/components/shadow_dom.py`
 
 ## Alpine — `AlpineComponent`
 

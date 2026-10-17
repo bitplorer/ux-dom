@@ -1,10 +1,12 @@
 """Full Shadow DOM (WebComponent) gallery — hosts only."""
+
 from __future__ import annotations
 
-from app.components.shadow_dom import CalloutShadow, ProfileCardShadow, ShellShadow
-from app.document import page
 from ux_dom import Component
 from ux_dom.dom import a, code, div, h1, h2, p, pre, span
+
+from ..components.shadow_dom import CalloutShadow, ProfileCardShadow, ShellShadow
+from ..document import page
 
 __all__ = ["ShadowDom"]
 
@@ -35,11 +37,14 @@ class ShadowDom(Component):
             div(shell_host, profile_host, callout_host, className="space-y-4"),
             h2("Mental model", className="text-xl font-semibold mt-8 mb-2"),
             pre(
-                'class ShellShadow(WebComponent):\n'
+                "class ShellShadow(WebComponent):\n"
                 '    tag_name = "shell-shadow"\n'
                 "    def render(...): return template(..., shadowroot=...)\n\n"
                 "ShellShadow(span('light child'))  # host only",
-                className="text-xs bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto",
+                className=(
+                    "text-xs bg-slate-900 text-slate-100 "
+                    "p-4 rounded-lg overflow-x-auto"
+                ),
             ),
             className="max-w-2xl mx-auto px-4 py-10",
         )

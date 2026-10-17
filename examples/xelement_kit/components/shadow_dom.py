@@ -28,6 +28,7 @@ Load runtime::
 
     script(src="/assets/js/x_element.js", defer=None)
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -55,6 +56,7 @@ class ShellShadow(WebComponent):
           </div>
         </template>
     """
+
     tag_name = "shell-shadow"
 
     def render(self, tag_name: str = "shell-shadow"):
@@ -63,7 +65,10 @@ class ShellShadow(WebComponent):
             div(
                 span(
                     "Shadow chrome",
-                    className="block text-[10px] uppercase tracking-wider text-slate-400 mb-2",
+                    className=(
+                        "block text-[10px] uppercase tracking-wider "
+                        "text-slate-400 mb-2"
+                    ),
                     **{"data-part": "chrome"},
                 ),
                 # Default slot: light children of <x-shell-shadow> appear here.
@@ -86,6 +91,7 @@ class ProfileCardShadow(WebComponent):
           <p>Rear Admiral · Compiler pioneer</p>
         </x-profile-card>
     """
+
     tag_name = "profile-card"
 
     def render(self, tag_name: str = "profile-card"):
@@ -119,6 +125,7 @@ class CalloutShadow(WebComponent):
     Uses ``shadowdom="open"`` (synonym path) so authors see both attributes
     are accepted by :class:`WebComponent` / ``x_element.js``.
     """
+
     tag_name = "callout-shadow"
 
     def render(self, tag_name: str = "callout-shadow"):
@@ -129,7 +136,10 @@ class CalloutShadow(WebComponent):
                     className="font-semibold text-emerald-300 text-sm mb-1",
                 ),
                 p(
-                    "Inner styles live in the shadow tree. Project details via the slot.",
+                    (
+                        "Inner styles live in the shadow tree. "
+                        "Project details via the slot."
+                    ),
                     className="text-xs text-slate-400 mb-2",
                 ),
                 div(

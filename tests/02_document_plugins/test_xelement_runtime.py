@@ -1,16 +1,16 @@
-"""XElement ↔ x_element.js contract, subclass matrix, host factory, kit smoke."""
+"""XElement ↔ x_element.js contract, subclass matrix, host factory.
+
+The kit pages are tested in tests/08_examples/test_xelement_kit.py.
+"""
 
 from __future__ import annotations
 
 import re
 import shutil
 import subprocess
-import sys
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-
-from fastapi.testclient import TestClient
 
 from ux_dom.dom import div, slot, template
 from ux_dom.dom.htmlelement import (
@@ -24,7 +24,6 @@ from ux_dom.scripts import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-KIT = ROOT / "examples" / "xelement_kit"
 RUNTIME_JS = ROOT / "src" / "ux_dom" / "scripts" / "x_element.js"
 
 
@@ -234,88 +233,6 @@ class TestXElementHostFactory(unittest.TestCase):
         self.assertEqual(m.group(1), name)
         host_html = str(Hello())
         self.assertIn(f"<x-{name}", host_html)
-
-
-class TestXElementKit(unittest.TestCase):
-    """Production-shaped example app (HTMX / Alpine / Web Components)."""
-
-    client: TestClient
-
-    @classmethod
-    def setUpClass(cls):
-        cls._kit_path = str(KIT.resolve())
-        if cls._kit_path not in sys.path:
-            sys.path.insert(0, cls._kit_path)
-        for k in list(sys.modules):
-            if k == "app" or k.startswith("app."):
-                del sys.modules[k]
-        from app.main import app
-
-        cls.client = TestClient(app)
-
-    @classmethod
-    def tearDownClass(cls):
-        for k in list(sys.modules):
-            if k == "app" or k.startswith("app."):
-                del sys.modules[k]
-        if getattr(cls, "_kit_path", None) in sys.path:
-            sys.path.remove(cls._kit_path)
-
-    def test_health_runtime_name(self):
-        h = self.client.get("/health").json()
-        self.assertTrue(h["ok"])
-        self.assertEqual(h.get("runtime"), "x_element.js")
-        self.assertEqual(h.get("python"), "XElement")
-
-    def test_serves_x_element_js(self):
-        js = self.client.get("/ux-dom/static/x_element.js")
-        self.assertEqual(js.status_code, 200)
-        self.assertIn("customElements.define", js.text)
-        self.assertIn("x-tagname", js.text)
-        # same contract as package runtime
-        self.assertIn("UxDom.XElement", js.text)
-
-    def test_wc_page_definition_and_host(self):
-        r = self.client.get("/wc")
-        self.assertEqual(r.status_code, 200)
-        self.assertIn("x-tagname", r.text)
-        self.assertIn("x-hello", r.text)
-        self.assertIn("x-shadow-card", r.text)
-        self.assertIn("x_element.js", r.text)
-
-    def test_alpine_page(self):
-        r = self.client.get("/alpine")
-        self.assertEqual(r.status_code, 200)
-        self.assertIn("x-tagname", r.text)
-        self.assertIn("x-toggle", r.text)
-        self.assertIn("x-counter", r.text)
-        self.assertIn("x_element.js", r.text)
-
-    def test_htmx_demo_and_partial(self):
-        demo = self.client.get("/htmx")
-        self.assertEqual(demo.status_code, 200)
-        self.assertIn("hx-get", demo.text.lower() or demo.text)
-        # partial may include definition + host
-        partial = self.client.get("/htmx/partial")
-        self.assertEqual(partial.status_code, 200)
-        self.assertTrue(
-            "x-tagname" in partial.text or "x-hello" in partial.text,
-            partial.text[:300],
-        )
-
-    def test_light_and_shadow_galleries(self):
-        light = self.client.get("/lightdom")
-        self.assertEqual(light.status_code, 200)
-        self.assertIn("Light DOM", light.text)
-        self.assertIn("x-tagname", light.text)
-        self.assertIn("hello-light", light.text)
-        self.assertIn("x_element.js", light.text)
-        shadow = self.client.get("/shadowdom")
-        self.assertEqual(shadow.status_code, 200)
-        self.assertIn("Shadow DOM", shadow.text)
-        self.assertIn("shadowroot", shadow.text)
-        self.assertIn("profile-card", shadow.text)
-        self.assertIn("x_element.js", shadow.text)
 
 
 if __name__ == "__main__":

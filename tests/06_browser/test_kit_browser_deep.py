@@ -15,7 +15,6 @@ from pathlib import Path
 from browser_gate import NODE, require_browser
 
 ROOT = Path(__file__).resolve().parents[2]
-KIT = ROOT / "examples" / "xelement_kit"
 KIT_SUITE = ROOT / "tests" / "browser" / "kit_browser_suite.mjs"
 STATIC_HARNESS = ROOT / "tests" / "browser" / "x_element_harness.mjs"
 SHOT_KIT = ROOT / "screenshots" / "kit"
@@ -56,16 +55,13 @@ class TestKitBrowserDeep(unittest.TestCase):
         REPORT.unlink(missing_ok=True)  # never read a stale report
         cls.port = _free_port()
         env = os.environ.copy()
-        env["PYTHONPATH"] = os.pathsep.join(
-            [str(ROOT), str(KIT.resolve()), env.get("PYTHONPATH", "")]
-        )
-        # Start kit uvicorn
+        env["PYTHONPATH"] = os.pathsep.join([str(ROOT), env.get("PYTHONPATH", "")])
         cls.server = subprocess.Popen(
             [
                 sys.executable,
                 "-m",
                 "uvicorn",
-                "app.main:app",
+                "examples.xelement_kit.main:app",
                 "--host",
                 "127.0.0.1",
                 "--port",
@@ -73,7 +69,7 @@ class TestKitBrowserDeep(unittest.TestCase):
                 "--log-level",
                 "warning",
             ],
-            cwd=str(KIT),
+            cwd=str(ROOT),
             env=env,
             stdout=subprocess.DEVNULL,
             stderr=subprocess.PIPE,
@@ -102,7 +98,8 @@ class TestKitBrowserDeep(unittest.TestCase):
         if proc.returncode != 0 and not cls.report:
             cls._teardown_server()
             raise AssertionError(
-                f"kit suite rc={proc.returncode}\nstdout={proc.stdout[-2500:]}\nstderr={proc.stderr[-2500:]}"
+                f"kit suite rc={proc.returncode}\n"
+                f"stdout={proc.stdout[-2500:]}\nstderr={proc.stderr[-2500:]}"
             )
 
     @classmethod

@@ -1,7 +1,7 @@
 """Slots gallery — hosts only."""
+
 from __future__ import annotations
 
-from app.document import page
 from ux_dom import Component
 from ux_dom.dom import (
     a,
@@ -18,6 +18,8 @@ from ux_dom.dom import (
 )
 from ux_dom.dom.htmlelement import WebComponent
 from ux_dom.slots import Slots as SlotsDefinition
+
+from ..document import page
 
 __all__ = ["Slots"]
 
@@ -64,9 +66,15 @@ class Slots(Component):
                 " places a host; definition is registry SSoT — no hidden list.",
                 className="text-slate-600 text-sm mb-6",
             ),
-            h2("Named + default slot (WebComponent)", className="text-lg font-semibold mb-2"),
+            h2(
+                "Named + default slot (WebComponent)",
+                className="text-lg font-semibold mb-2",
+            ),
             panel_host,
-            h2("Slots helper (multi named)", className="text-lg font-semibold mt-8 mb-2"),
+            h2(
+                "Slots helper (multi named)",
+                className="text-lg font-semibold mt-8 mb-2",
+            ),
             slots_host,
             h2("Rules", className="text-lg font-semibold mt-8 mb-2"),
             ul(

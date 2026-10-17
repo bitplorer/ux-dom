@@ -1,10 +1,12 @@
 """HTMX partial + XElement hosts (auto definitions)."""
+
 from __future__ import annotations
 
-from app.components.x_widgets import HelloCustom
-from app.document import page
 from ux_dom import Component
 from ux_dom.dom import a, button, div, h1, p, span
+
+from ..components.x_widgets import HelloCustom
+from ..document import page
 
 __all__ = ["Htmx"]
 
@@ -35,7 +37,10 @@ class Htmx(Component):
             div(
                 span("panel empty — click Load", className="text-slate-400 text-sm"),
                 id="panel",
-                className="mt-4 min-h-[4rem] rounded-xl border border-dashed border-slate-300 p-4",
+                className=(
+                    "mt-4 min-h-[4rem] rounded-xl border "
+                    "border-dashed border-slate-300 p-4"
+                ),
             ),
             className="max-w-2xl mx-auto px-4 py-10",
             id="htmx-demo",

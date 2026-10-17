@@ -1,10 +1,12 @@
 """Jinja tag DSL demo — server-side expansion (orthogonal to XElement)."""
+
 from __future__ import annotations
 
-from app.document import page
 from ux_dom import Component
 from ux_dom.dom import a, code, div, h1, h2, li, p, pre
 from ux_dom.dom.src.jinjatags import For, Var
+
+from ..document import page
 
 __all__ = ["Jinja"]
 
@@ -31,13 +33,19 @@ class Jinja(Component):
             h2("1. Python → Jinja source", className="text-lg font-semibold mb-2"),
             pre(
                 source_html,
-                className="text-xs bg-slate-900 text-slate-100 rounded-lg p-4 mb-4 overflow-x-auto",
+                className=(
+                    "text-xs bg-slate-900 text-slate-100 "
+                    "rounded-lg p-4 mb-4 overflow-x-auto"
+                ),
                 id="jinja-source",
             ),
             h2("2. Expanded with context", className="text-lg font-semibold mb-2"),
             pre(
                 expanded_html,
-                className="text-xs bg-emerald-950 text-emerald-100 rounded-lg p-4 overflow-x-auto",
+                className=(
+                    "text-xs bg-emerald-950 text-emerald-100 "
+                    "rounded-lg p-4 overflow-x-auto"
+                ),
                 id="jinja-expanded",
             ),
             p(

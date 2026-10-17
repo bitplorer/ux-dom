@@ -1,10 +1,12 @@
 """Full Light DOM (CustomElement) gallery — hosts only."""
+
 from __future__ import annotations
 
-from app.components.light_dom import ActionCardLight, HelloLight, InfoBannerLight
-from app.document import page
 from ux_dom import Component
 from ux_dom.dom import a, code, div, h1, h2, p, pre
+
+from ..components.light_dom import ActionCardLight, HelloLight, InfoBannerLight
+from ..document import page
 
 __all__ = ["LightDom"]
 
@@ -37,10 +39,13 @@ class LightDom(Component):
                 "class HelloLight(CustomElement):\n"
                 '    tag_name = "hello-light"\n'
                 "    def render(self, tag_name=...):\n"
-                "        return template(..., **{\"x-tagname\": tag_name})\n\n"
+                '        return template(..., **{"x-tagname": tag_name})\n\n'
                 "HelloLight()   # host <x-hello-light>\n"
                 "# Document auto-emits one <template x-tagname=hello-light>",
-                className="text-xs bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto",
+                className=(
+                    "text-xs bg-slate-900 text-slate-100 "
+                    "p-4 rounded-lg overflow-x-auto"
+                ),
             ),
             className="max-w-2xl mx-auto px-4 py-10",
         )

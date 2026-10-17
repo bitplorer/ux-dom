@@ -80,7 +80,7 @@ pages = APIRouter(route_class=StreamingRoute)
 pages.get("/")(lambda: page(Index()))
 ```
 
-See `examples/xelement_kit/app/main.py` for a full route table.
+See `examples/xelement_kit/main.py` for a full route table.
 
 ## What ux-dom does **not** own
 

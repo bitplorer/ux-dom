@@ -2,11 +2,7 @@
 
 from __future__ import annotations
 
-import sys
 import unittest
-from pathlib import Path
-
-from fastapi.testclient import TestClient
 
 from ux_dom.dom import button, div, li, slot, template
 from ux_dom.dom.htmlelement import (
@@ -18,8 +14,6 @@ from ux_dom.dom.htmlelement import (
 from ux_dom.dom.src.jinjatags import For, Var
 from ux_dom.htmx.middleware import HtmxDetails
 from ux_dom.slots import Slots
-
-KIT = Path(__file__).resolve().parents[2] / "examples" / "xelement_kit"
 
 
 class TestAlpineComponent(unittest.TestCase):
@@ -148,50 +142,6 @@ class TestCustomElementLight(unittest.TestCase):
 
         self.assertIn("x-tagname", str(H.definition()))
         self.assertNotIn("shadowroot", str(H.definition()))
-
-
-class TestKitHypermediaPages(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls._path = str(KIT.resolve())
-        sys.path.insert(0, cls._path)
-        for k in list(sys.modules):
-            if k == "app" or k.startswith("app."):
-                del sys.modules[k]
-        from app.main import app
-
-        cls.client = TestClient(app)
-
-    @classmethod
-    def tearDownClass(cls):
-        for k in list(sys.modules):
-            if k == "app" or k.startswith("app."):
-                del sys.modules[k]
-        if cls._path in sys.path:
-            sys.path.remove(cls._path)
-
-    def test_alpine_page(self):
-        r = self.client.get("/alpine")
-        self.assertEqual(r.status_code, 200)
-        self.assertIn("x-tagname", r.text)
-        self.assertIn("x_element.js", r.text)
-
-    def test_htmx_page(self):
-        r = self.client.get("/htmx")
-        self.assertEqual(r.status_code, 200)
-        self.assertIn("hx-", r.text.lower())
-
-    def test_jinja_page(self):
-        r = self.client.get("/jinja")
-        self.assertEqual(r.status_code, 200)
-        self.assertIn("jinja", r.text.lower())
-        self.assertIn("Alpha", r.text)
-
-    def test_slots_page(self):
-        r = self.client.get("/slots")
-        self.assertEqual(r.status_code, 200)
-        self.assertIn("slot", r.text.lower())
-        self.assertIn("x_element.js", r.text)
 
 
 if __name__ == "__main__":

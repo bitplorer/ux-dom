@@ -24,6 +24,7 @@ Load runtime in the document::
 
     Document(head=[], body=[]).use(XElement())
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -52,6 +53,7 @@ class HelloLight(CustomElement):
 
         <x-hello-light></x-hello-light>
     """
+
     tag_name = "hello-light"
 
     def render(self, tag_name: str = "hello-light"):
@@ -79,6 +81,7 @@ class InfoBannerLight(CustomElement):
     Children passed to the host factory are *additional* light children
     (the template still provides the default chrome).
     """
+
     tag_name = "info-banner"
 
     def render(self, tag_name: str = "info-banner"):
@@ -108,6 +111,7 @@ class InfoBannerLight(CustomElement):
 @dataclass(eq=False)
 class ActionCardLight(CustomElement):
     """Interactive light-DOM card (plain button; no Shadow, no Alpine required)."""
+
     tag_name = "action-card"
 
     def render(self, tag_name: str = "action-card"):
@@ -115,7 +119,10 @@ class ActionCardLight(CustomElement):
             div(
                 p("Action card (light DOM)", className="font-medium text-slate-900"),
                 p(
-                    "Click counts stay in the page tree — HTMX can replace this host whole.",
+                    (
+                        "Click counts stay in the page tree "
+                        "— HTMX can replace this host whole."
+                    ),
                     className="text-xs text-slate-500 mt-1 mb-3",
                 ),
                 button(
@@ -126,7 +133,10 @@ class ActionCardLight(CustomElement):
                         "px-3 py-1.5 hover:bg-slate-800"
                     ),
                     # plain progressive enhancement; Alpine optional elsewhere
-                    onclick="this.dataset.n=(+this.dataset.n||0)+1; this.textContent='Clicked '+this.dataset.n",
+                    onclick=(
+                        "this.dataset.n=(+this.dataset.n||0)+1;"
+                        " this.textContent='Clicked '+this.dataset.n"
+                    ),
                     **{"data-n": "0"},
                 ),
                 className=(
