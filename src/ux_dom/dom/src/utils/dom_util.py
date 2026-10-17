@@ -34,8 +34,6 @@ from jinja2.utils import htmlsafe_json_dumps
 from ux_dom.dom.src.dom_tag import dom_tag
 
 __all__ = [
-    "include",
-    "system",
     "escape",
     "escape_attr_minimal",
     "InvalidAttributeName",
@@ -44,35 +42,9 @@ __all__ = [
     "safe_attr_value",
     "cross_origin",
     "CrossOriginURL",
-    "unescape",
-    "url_escape",
-    "url_unescape",
-    "lazy",
     "dom_text",
     "raw",
 ]
-
-
-def include(f):
-    """
-    includes the contents of a file on disk.
-    takes a filename
-    """
-    fl = open(f, "r")
-    data = fl.read()
-    fl.close()
-    return raw(data)
-
-
-def system(cmd, data=None):
-    """
-    pipes the output of a program
-    """
-    import subprocess
-
-    s = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
-    out, err = s.communicate(data)
-    return out.decode("utf8")
 
 
 _CTRL_ATTR = re.compile(r"[\x00-\x08\x0b\x0c\x0e-\x1f]")
@@ -255,84 +227,9 @@ def safe_attr_value(attribute, value):
     return text if _is_safe_url(text) else UNSAFE_URL
 
 
-_unescape = {
-    "quot": 34,
-    "amp": 38,
-    "lt": 60,
-    "gt": 62,
-    "nbsp": 32,
-    # more here
-    # http://www.w3.org/TR/html4/sgml/entities.html
-    "yuml": 255,
-}
-str_escape = escape
+_escape_text = escape  # dom_text's ``escape`` parameter shadows the function
 
 
-def unescape(data):
-    """
-    unescapes html entities. the opposite of escape.
-    """
-    cc = re.compile(r"&(?:(?:#(\d+))|([^;]+));")
-
-    result = []
-    m = cc.search(data)
-    while m:
-        result.append(data[0 : m.start()])
-        d = m.group(1)
-        if d:
-            d = int(d)
-            result.append(chr(d))
-        else:
-            d = _unescape.get(m.group(2), ord("?"))
-            result.append(chr(d))
-
-        data = data[m.end() :]
-        m = cc.search(data)
-
-    result.append(data)
-    return "".join(result)
-
-
-_reserved = ";/?:@&=+$, "
-_replace_map = dict((c, "%%%2X" % ord(c)) for c in _reserved)
-
-
-def url_escape(data):
-    return "".join(_replace_map.get(c, c) for c in data)
-
-
-def url_unescape(data):
-    return re.sub("%([0-9a-fA-F]{2})", lambda m: chr(int(m.group(1), 16)), data)
-
-
-class lazy(dom_tag):
-    """
-    delays function execution until rendered
-    """
-
-    def __new__(_cls, *args, **kwargs):
-        """
-        Need to reset this special method or else
-        dom_tag will think it's being used as a dectorator.
-
-        This means lazy() can't be used as a dectorator, but
-        thinking about when you might want that just confuses me.
-        """
-        return object.__new__(_cls)
-
-    def __init__(self, func, *args, **kwargs):
-        super(lazy, self).__init__()
-        self.func = func
-        self.args = args
-        self.kwargs = kwargs
-
-    def _render(self, sb, *a, **kw):
-        r = self.func(*self.args, **self.kwargs)
-        sb.append(str(r))
-        return sb
-
-
-# Alias: ``raw`` is the preferred public name (see below).
 class dom_text(dom_tag):
     """
     Just a string. useful for inside context managers
@@ -343,7 +240,7 @@ class dom_text(dom_tag):
 
     def __init__(self, _text, escape=True):
         if escape:
-            self.text = str_escape(_text)
+            self.text = _escape_text(_text)
         else:
             self.text = _text
         super(dom_text, self).__init__()

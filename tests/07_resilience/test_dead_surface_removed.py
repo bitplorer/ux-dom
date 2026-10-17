@@ -39,3 +39,30 @@ def test_css_tags_removed():
     assert not hasattr(ext, "StyleTags")
     with pytest.raises(ModuleNotFoundError):
         importlib.import_module("ux_dom.dom.src.csstags")
+
+
+def test_unsafe_dom_util_helpers_removed():
+    # system() ran shell=True, include() read files as raw HTML and
+    # lazy() rendered unescaped; none had a consumer.
+    import ux_dom.dom as dom
+    from ux_dom.dom.src.utils import dom_util
+
+    removed = (
+        "system", "include", "lazy", "unescape", "url_escape", "url_unescape",
+    )
+    for name in removed:
+        assert not hasattr(dom_util, name), name
+        assert not hasattr(dom, name), name
+
+
+def test_import_time_icon_trees_removed():
+    import importlib.util
+
+    assert importlib.util.find_spec("ux_dom.dom.icons") is None
+
+
+def test_top_level_all_is_importable():
+    import ux_dom
+
+    for name in ux_dom.__all__:
+        assert hasattr(ux_dom, name), name

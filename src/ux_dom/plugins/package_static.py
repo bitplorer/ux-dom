@@ -77,7 +77,7 @@ class PackagedFile:
         sub = "js" if self.kind == "js" else "css"
         return f"assets/{sub}/vendor/{plugin}/{self.public_name}"
 
-    def public_path_webassets(self, plugin: str) -> str:
+    def public_path_under_assets(self, plugin: str) -> str:
         sub = "js" if self.kind == "js" else "css"
         return f"/assets/{sub}/vendor/{plugin}/{self.public_name}"
 
@@ -155,7 +155,7 @@ class PackageStaticContribution:
                 StaticArtifact(
                     key=f.public_name,
                     disk_path=f.disk_path_under_assets(self.name),
-                    public_path=f.public_path_webassets(self.name),
+                    public_path=f.public_path_under_assets(self.name),
                     loader=loader_for(f.package, f.resource),
                     inject=f.inject,
                     tag="script" if f.kind == "js" else "link",

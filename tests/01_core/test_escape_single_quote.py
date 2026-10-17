@@ -18,6 +18,7 @@ def test_attribute_single_quote_is_escaped():
 
 
 def test_escape_round_trips_through_unescape():
-    from ux_dom.dom.src.utils.dom_util import unescape
+    # Oracle is the stdlib decoder (browsers decode the same entities).
+    from html import unescape
 
     assert unescape(escape("it's <b>&\"")) == "it's <b>&\""

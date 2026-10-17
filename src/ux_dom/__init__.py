@@ -19,7 +19,7 @@ scaffold live in **ux-compose**.
 
 | Layer | Package | Role |
 |-------|---------|------|
-| **Shell** | ``Document`` | HTML head/body SSoT — ``.use`` (control, runtime tags, CSP stamp) |
+| **Shell** | ``Document`` | HTML head/body SSoT — ``.use`` (runtime tags, CSP) |
 | **Core** | ``Component``, ``Fragment``, ``ReactiveComponent`` | Build trees |
 | **DOM** | ``ux_dom.dom`` | Tags, parse, ``__render__`` / ``__async_render__`` |
 | **UI kit** | ``ux_dom.ui`` | Optional copy-in components |
@@ -49,20 +49,32 @@ See ``docs/internals/SYSTEM.md`` and ux-compose FLOW:
 https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md
 """
 
-from .settings import *  # Document  # isort: skip
-from .slots import *  #Slots, WebComponentSlot, …  # isort: skip
+from ux_dom.dom.src.component import (
+    Component,
+    Fragment,
+    MergeClassAttribute,
+    ReactiveComponent,
+)
+from ux_dom.runtime import Channel, Csp, Htmx, XElement
+from ux_dom.settings import Document
+from ux_dom.slots.custom_element_slot import SlotElement, x_slot
+from ux_dom.slots.slots import Slots
+from ux_dom.slots.web_component_slot import WebComponentSlot
 
-from ux_dom.dom.src.component import (  # noqa: E402
-    Component as Component,
-    Fragment as Fragment,
-    MergeClassAttribute as MergeClassAttribute,
-    ReactiveComponent as ReactiveComponent,
-)
-from ux_dom.runtime import (  # noqa: E402
-    Channel as Channel,
-    Csp as Csp,
-    Htmx as Htmx,
-    XElement as XElement,
-)
+__all__ = [
+    "Channel",
+    "Component",
+    "Csp",
+    "Document",
+    "Fragment",
+    "Htmx",
+    "MergeClassAttribute",
+    "ReactiveComponent",
+    "SlotElement",
+    "Slots",
+    "WebComponentSlot",
+    "XElement",
+    "x_slot",
+]
 
 __version__ = "0.2.0"

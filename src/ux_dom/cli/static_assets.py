@@ -68,7 +68,7 @@ def sync_runtime_assets(
     Prepare browser surface for an app root.
 
     Ensure hub has XElementRuntime; record package mount URLs; materialize
-    **only** contributions that still use the webassets escape hatch.
+    **only** contributions that still use the ``dual_copy`` escape hatch.
     """
     root = Path(root).resolve()
     if hub is None:
@@ -87,7 +87,7 @@ def sync_runtime_assets(
     except Exception as e:
         report.notes.append(f"served_static_files: {e}")
 
-    # Only materialize non-empty artifacts (explicit webassets escape hatch)
+    # Only materialize non-empty artifacts (explicit dual_copy escape hatch)
     rep = hub.materialize(root)
     for f in rep.files:
         report.files.append(
@@ -100,7 +100,7 @@ def sync_runtime_assets(
             )
         )
     if not report.mounts and not report.files:
-        report.notes.append("no package mounts or webassets artifacts on hub")
+        report.notes.append("no package mounts or dual_copy artifacts on hub")
     return report
 
 
@@ -239,7 +239,7 @@ Package static mounts recorded at build:
         "served_files": [
             {"prefix": p, "directory": d} for p, d in sync.mounts
         ],
-        "webassets_copies": [
+        "dual_copy_files": [
             {"rel": f.rel, "sha256": f.sha256, "action": f.action} for f in sync.files
         ],
         "files": manifest_files,
