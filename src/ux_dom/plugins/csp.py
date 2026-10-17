@@ -36,6 +36,8 @@ from contextvars import ContextVar, Token
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Optional, Sequence
 
+from ux_dom.plugins.control.htmx import CDN_SCRIPT_URLS
+
 # ── secure generation ─────────────────────────────────────────────────────
 
 # 32 bytes → ~43 urlsafe chars; unguessable for CSP nonce budgets.
@@ -345,11 +347,10 @@ def build_csp_header(
 
 # ── Policy presets (dev / prod / report-only) ─────────────────────────────
 
-_DEFAULT_SCRIPT_HOSTS = (
-    "https://unpkg.com",
-    "https://cdn.jsdelivr.net",
-    "https://cdn.tailwindcss.com",
-)
+# Dev default: the exact pinned htmx/idiomorph/SSE files HtmxControl can emit
+# (not whole CDN hosts, which serve every npm package) plus the Tailwind play
+# CDN used by demos. Prod allows no script hosts. Add others via script_hosts=.
+_DEFAULT_SCRIPT_HOSTS = (*CDN_SCRIPT_URLS, "https://cdn.tailwindcss.com")
 
 
 @dataclass(frozen=True)

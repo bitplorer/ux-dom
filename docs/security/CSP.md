@@ -35,8 +35,8 @@ After stamp, serialize is **read-agnostic** (attributes carry the nonce).
 
 | Preset | Scripts | Styles | Other |
 |--------|---------|--------|--------|
-| **`Csp()` / historical** | CDN hosts + nonce + strict-dynamic | nonce + `'self'` | form-action `'self'` |
-| **`Csp.dev()`** | CDNs (unpkg, jsDelivr, Tailwind CDN) | + **`style_unsafe_inline`** | DX for Alpine/Tailwind attrs |
+| **`Csp()` / historical** | pinned CDN files + nonce + strict-dynamic | nonce + `'self'` | form-action `'self'` |
+| **`Csp.dev()`** | exact pinned htmx/idiomorph/SSE files + Tailwind CDN | + **`style_unsafe_inline`** | DX for Alpine/Tailwind attrs |
 | **`Csp.prod()`** | **no CDN hosts** | nonced `<style>` only | `upgrade-insecure-requests`, `worker-src 'self'` |
 | **`Csp.report_only()`** | like prod knobs | like prod | header is **Report-Only** (no block) |
 
@@ -74,10 +74,15 @@ When **`'strict-dynamic'` is present** with a **nonce or hash**:
 So with defaults:
 
 ```text
-https://unpkg.com in the header  ≠  “any unpkg script can run”
+a CDN file in the header  ≠  “that script can run”
 ```
 
-Unpkg only helps if:
+The dev default lists **exact files** (the pinned htmx / idiomorph / SSE
+URLs from `HtmxControl`, plus the Tailwind play CDN), never a whole CDN host:
+a host like unpkg serves every npm package, so a host allowlist is an XSS
+gadget on legacy browsers. Add other files with `script_hosts=[...]`.
+
+A listed CDN file only helps if:
 
 - a **nonced** bootstrap loads it, or  
 - the browser is **legacy** and does not understand `strict-dynamic`.

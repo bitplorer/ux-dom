@@ -55,7 +55,10 @@ class TestPresets(unittest.TestCase):
     def test_dev(self):
         p = policy_dev()
         self.assertTrue(p.style_unsafe_inline)
-        self.assertIn("https://unpkg.com", p.script_hosts)
+        # Exact pinned files, never a whole CDN host (review M3).
+        self.assertNotIn("https://unpkg.com", p.script_hosts)
+        self.assertNotIn("https://cdn.jsdelivr.net", p.script_hosts)
+        self.assertIn("https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js", p.script_hosts)
         h = p.build("X")
         self.assertIn("https://cdn.tailwindcss.com", h)
         self.assertIn("'unsafe-inline'", re.search(r"style-src ([^;]+)", h).group(1))

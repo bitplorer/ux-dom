@@ -159,7 +159,7 @@ document(Live(), head=[title("Live")], use=[Channel.optional()])
 | App-wide XElement + HTMX | `document.use(XElement(), Htmx())` once |
 | One admin page needs CSP meta debug | callable in `head=` or `using` not required |
 | One live page needs channel scripts | `document.using(Channel.optional())(…)` |
-| Replace HTMX version on one page | `using(Htmx(version="2.0.4"))` (same name replaces on **child** only) |
+| Replace HTMX version on one page | `using(Htmx(version="2.0.4"))` (same name replaces on **child** only). Versions are pinned with SRI: `1.9.12` (default) or `2.0.4`; anything else raises unless `cdn=False` (self-host) |
 | Parent must stay clean | always prefer `using` / `use=` over `use` on the shared instance |
 
 ### Limits
