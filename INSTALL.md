@@ -46,8 +46,8 @@ Pure-dom health: `uxdom doctor`.
 ## Showcase example
 
 ```bash
-cd examples/standalone_showcase
-PYTHONPATH=../../src:. poetry run uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
+# from the repository root
+poetry run uvicorn examples.showcase.main:app --reload
 ```
 
 ## Source layout

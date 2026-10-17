@@ -13,13 +13,13 @@ which owns that API.
 | App | Path | Stack | Port |
 |-----|------|-------|------|
 | Realtime kit | [`ux_dom_only/realtime_kit`](ux_dom_only/realtime_kit/) | SSE, WebSocketAdapter, streaming HTML | 8092 |
-| **Standalone showcase** | [`standalone_showcase`](standalone_showcase/) | ux_dom-only full demo (shop, HTMX, SSE, stream) | 8080 |
+| **Showcase** | [`showcase`](showcase/) | ux_dom-only full demo (shop, cart, guestbook, SSE, stream) | 8000 |
 | XElement kit | [`xelement_kit`](xelement_kit/) | Light/Shadow DOM, HTMX, Alpine, slots | 8080 |
 | UI kit gallery | [`ux_kit`](ux_kit/) | `ux_dom.ui` components | 8080 |
 
 ## Capability matrix
 
-| Capability | realtime_kit | standalone_showcase |
+| Capability | realtime_kit | showcase |
 |------------|:---:|:---:|
 | Components / Document | ✓ | ✓ |
 | Explicit FastAPI routes (`StreamingRoute`) | | ✓ |
