@@ -25,7 +25,7 @@ This package does not ship `CreateProject`, `DirectoryRoutes`, `WebAssets`, or `
 |------|------|---------|
 | `ux_dom/__init__.py` | Version + re-exports Document, Component, runtime facades | **Public** |
 | `ux_dom/runtime/` | Stable aliases: `XElement`, `Htmx`, `Csp`, `Channel` | **Public** |
-| `ux_dom/compat/` | Runtime compat (e.g. valio PEP 649) | Private |
+| `ux_dom/elements/_valio_pep649.py` | valio PEP 649 patch, applied on `import ux_dom.elements` | Private |
 | `ux_dom/diagnostics.py` | Error message builders for XElement checks | Private |
 | **`ux_dom/dom/`** | Tag constructors, Document HTML helpers, parse | **Public** |
 | `ux_dom/dom/htmlelement.py` | XElement / CustomElement / WebComponent / Alpine* | **Public** |

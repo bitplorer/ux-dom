@@ -12,6 +12,6 @@ def _declared() -> set[str]:
 
 
 def test_typingx_is_declared():
-    # compat/valio_pep649.py imports typingx directly; valio pulling it in
+    # elements/_valio_pep649.py imports typingx directly; valio pulling it in
     # transitively is an accident, not a contract.
     assert "typingx" in _declared()

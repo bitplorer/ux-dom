@@ -35,13 +35,13 @@ include = [
 [tool.poetry.dependencies]
 python = ">=3.14,<3.15"
 Jinja2 = ">=3.1.6,<4"
-# 0.1.0b6 works with the in-tree PEP 649 compat layer (ux_dom.compat).
+# 0.1.0b6 works with the in-tree PEP 649 patch (ux_dom.elements._valio_pep649).
 # Prefer ≥0.1.0b7 once published (native PEP 649 fix in valio).
 valio = ">=0.1.0b6,<0.2"
 marko = ">=2.0,<3"
 anyio = ">=4.0,<5"
 typer = ">=0.12,<1"
-# Imported directly by ux_dom.compat.valio_pep649; declared, not borrowed from valio.
+# Imported directly by ux_dom.elements._valio_pep649; declared, not borrowed from valio.
 typingx = ">=0.6.0,<0.7"
 
 # Optional runtime extras

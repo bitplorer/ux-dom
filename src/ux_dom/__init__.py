@@ -50,10 +50,6 @@ See ``docs/internals/SYSTEM.md`` and ux-compose FLOW:
 https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md
 """
 
-from .compat.valio_pep649 import ensure_valio_pep649_compat
-
-ensure_valio_pep649_compat()
-
 from .settings import *  # Document  # isort: skip
 from .slots import *  #Slots, WebComponentSlot, …  # isort: skip
 
