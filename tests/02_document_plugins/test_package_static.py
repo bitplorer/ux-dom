@@ -16,6 +16,7 @@ from ux_dom.plugins.package_static import PackageStaticContribution, PackagedFil
 from ux_dom.plugins.runtime import XELEMENT_JS_URL, UxChannelRuntime
 from helpers import ScaffoldOptions, create_app
 from ux_dom.cli.build import run_build
+from channel_gate import require_channel
 import sys
 
 
@@ -115,10 +116,12 @@ class TestScaffoldSingleCopy(unittest.TestCase):
 
 
 class TestUxChannelSingleCopy(unittest.TestCase):
+    def setUp(self):
+        require_channel()
+
     def test_default_no_artifacts(self):
         rt = UxChannelRuntime.optional()
-        if rt is None:
-            self.skipTest("uxchannel not installed")
+        self.assertIsNotNone(rt)
         self.assertEqual(list(rt.artifacts()), [])
         # default: tags only; channel host serves bytes
         self.assertEqual(list(rt.served_files()), [])
@@ -127,8 +130,7 @@ class TestUxChannelSingleCopy(unittest.TestCase):
 
     def test_ux_dom_can_serve_if_requested(self):
         rt = UxChannelRuntime.optional(mount_via_ux_dom=True)
-        if rt is None:
-            self.skipTest("uxchannel not installed")
+        self.assertIsNotNone(rt)
         files = list(rt.served_files())
         self.assertTrue(len(files) >= 1)
         self.assertTrue(all(f.url.startswith("/ux-channel/static/") for f in files))

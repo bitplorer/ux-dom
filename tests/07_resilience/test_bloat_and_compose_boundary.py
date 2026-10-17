@@ -57,6 +57,9 @@ class TestPytestWorkflow(unittest.TestCase):
         self.assertIn('UX_DOM_REQUIRE_BROWSER: "1"', text)
         self.assertIn("npm ci --prefix tests/browser", text)
         self.assertIn("playwright install --with-deps chromium", text)
+        # ux-channel integration runs against a pinned commit, never skipped.
+        self.assertIn('UX_DOM_REQUIRE_CHANNEL: "1"', text)
+        self.assertRegex(text, r"ux-channel\.git@[0-9a-f]{40}#subdirectory=python")
 
 
 if __name__ == "__main__":

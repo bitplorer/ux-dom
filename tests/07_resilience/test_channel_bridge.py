@@ -5,12 +5,13 @@ import html
 import json
 import re
 
-import pytest
-
+from channel_gate import require_channel
 from ux_dom.ui import channel_bridge
 from ux_dom.ui.channel_bridge import action_button_attrs, live_button
 
-pytest.importorskip("ux_channel")  # CI installs it; REQUIRE flag enforced in conftest
+
+def setup_module():
+    require_channel()
 
 
 def _attr(markup: str, name: str) -> str:
