@@ -17,23 +17,13 @@ from __future__ import annotations
 
 import os
 import queue
-import re
-import textwrap
 import threading
 import typing
 from pathlib import Path
 
-from jinja2.utils import htmlsafe_json_dumps
-
 from ux_dom.dom.src.dom1core import dom1core
 from ux_dom.dom.src.dom_tag import dom_tag, unicode
-from ux_dom.dom.src.utils.dom_util import (
-    dom_text,
-    escape,
-    checked_attr_name,
-    escape_attr_minimal,
-    safe_attr_value,
-)
+from ux_dom.dom.src.utils.dom_util import dom_text, iter_attributes
 
 __all__ = [
     "Tags",
@@ -172,37 +162,12 @@ class Tags(dom_tag, dom1core):
 
         return attribute
 
-    def _wrap_attr_value(self, value, indent_level, indent_str, pretty):
-        value = textwrap.dedent(value)
-        return re.sub(r"\s+", " ", value.strip())
-
     def _iter_html_attrs(self, indent_level=None, indent_str=None, pretty=None):
         """Yield HTML attribute fragments (list-render and token-walk share this)."""
-        for attribute, value in sorted(self.attributes.items()):
-            if attribute in getattr(self, "CONTROL_ATTRS", ()):
-                continue
-            if value is False:
-                continue
-            attribute = checked_attr_name(attribute)
-            if value is None:
-                yield " %s" % attribute
-                continue
-            if attribute == "class":
-                value = self._wrap_attr_value(
-                    value, indent_level, indent_str, pretty
-                )
-            if not isinstance(value, (dict, list)):
-                value = safe_attr_value(attribute, value)
-                if self.safe_attributes.get(attribute, True):
-                    yield ' %s="%s"' % (attribute, escape(unicode(value), True))
-                else:
-                    yield ' %s="%s"' % (attribute, escape_attr_minimal(value))
-            else:
-                dumped = htmlsafe_json_dumps(value)
-                yield " %s='%s'" % (
-                    attribute,
-                    escape(unicode(dumped), quote=False),
-                )
+        unescaped = {k for k, v in self.safe_attributes.items() if not v}
+        return iter_attributes(
+            self.attributes, unescaped=unescaped, skip=self.CONTROL_ATTRS
+        )
 
     def _render_attribute(self, sb, indent_level, indent_str, pretty):
         for tok in self._iter_html_attrs(indent_level, indent_str, pretty):

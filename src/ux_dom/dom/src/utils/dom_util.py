@@ -29,6 +29,8 @@ Public License along with Dominate.  If not, see
 import html
 import re
 
+from jinja2.utils import htmlsafe_json_dumps
+
 from ux_dom.dom.src.dom_tag import dom_tag
 
 try:
@@ -44,6 +46,8 @@ __all__ = [
     "escape_attr_minimal",
     "InvalidAttributeName",
     "checked_attr_name",
+    "iter_attributes",
+    "safe_attr_value",
     "unescape",
     "url_escape",
     "url_unescape",
@@ -147,6 +151,31 @@ def escape_attr_minimal(data):
     entities back, so the value is unchanged; it just cannot close the quote.
     """
     return str(data).replace("&", "&amp;").replace('"', "&quot;")
+
+
+def iter_attributes(attributes, *, unescaped=frozenset(), skip=frozenset()):
+    """Yield `` name="value"`` fragments: the one attribute serializer.
+
+    Every renderer uses this, so name validation, the URL allow-list and
+    escaping cannot drift apart. ``False`` omits an attribute, ``None``
+    renders it bare, dict/list values render as single-quoted JSON, and names
+    in ``unescaped`` keep ``'``, ``<`` and ``>`` readable (``&`` and ``"``
+    are still escaped).
+    """
+    for name, value in sorted(attributes.items()):
+        if name in skip or value is False:
+            continue
+        name = checked_attr_name(name)
+        if value is None:
+            yield f" {name}"
+        elif isinstance(value, (dict, list)):
+            yield " %s='%s'" % (name, escape(htmlsafe_json_dumps(value), quote=False))
+        else:
+            if name == "class":
+                value = " ".join(str(value).split())
+            value = safe_attr_value(name, value)
+            text = escape_attr_minimal(value) if name in unescaped else escape(value)
+            yield f' {name}="{text}"'
 
 
 def _is_safe_url(text):

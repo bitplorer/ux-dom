@@ -41,7 +41,7 @@ render XHTML. The
 another.
 
 **Attribute names are validated.** On every render path (`dom_tag`,
-`ext.Tags`, `ext.StyleTags`), a name containing whitespace, `"`, `'`, `>`,
+`ext.Tags`), a name containing whitespace, `"`, `'`, `>`,
 `/`, `=` or a control character, or an empty name, raises
 `InvalidAttributeName` (a `ValueError`) instead of rendering. Without this,
 `span(**{'x" onmouseover="alert(1)': "1"})` would inject an event handler.
@@ -72,7 +72,9 @@ Out of scope: Alpine bindings such as `:href` / `x-bind:href` hold JavaScript
 expressions, not URLs; never put untrusted text in them.
 
 `safe_attr_value(attribute, value)` is the single implementation. Every
-renderer calls it (`dom_tag`, `ext.Tags`, `ext.StyleTags`).
+renderer calls it through `iter_attributes` (`dom_util.py`), the one
+attribute serializer shared by `dom_tag` and `ext.Tags`. The `defHTML`
+sanitizer uses it too.
 
 Tests: `tests/07_resilience/test_unsafe_url_attrs.py`,
 `tests/07_resilience/test_adversarial_render.py`.
