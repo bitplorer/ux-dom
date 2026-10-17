@@ -18,6 +18,7 @@ markup. It must not import ux_behavior / ux_app or construct Ops.
         footer=live_button("Close", action="ui.close"),
     )
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -48,17 +49,13 @@ class Dialog(Component):
         title_id = "dialog-title"
         panel_kids: list[Any] = []
         if title:
-            panel_kids.append(
-                h2(title, id=title_id, className=cn(type_scale["title"]))
-            )
+            panel_kids.append(h2(title, id=title_id, className=cn(type_scale["title"])))
         if body is not None:
             panel_kids.append(
                 div(body, className=cn("mt-2", type_scale["body"], "text-stone-300"))
             )
         if footer is not None:
-            panel_kids.append(
-                div(footer, className="mt-4 flex justify-end gap-2")
-            )
+            panel_kids.append(div(footer, className="mt-4 flex justify-end gap-2"))
 
         labelled = {"aria-labelledby": title_id} if title else {}
         panel = div(
@@ -77,7 +74,10 @@ class Dialog(Component):
         if not open:
             return div(
                 id=attrs.pop("id", None) or "overlay",
-                **{"data-open": "0", "data-channel-id": attrs.pop("data-channel-id", "overlay")},
+                **{
+                    "data-open": "0",
+                    "data-channel-id": attrs.pop("data-channel-id", "overlay"),
+                },
                 className="contents",
                 **attrs,
             )

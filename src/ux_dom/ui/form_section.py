@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """FormSection — pattern for labeled field groups."""
+
 from __future__ import annotations
 
 from typing import Any

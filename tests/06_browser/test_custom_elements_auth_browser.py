@@ -3,6 +3,7 @@
 Builds a Document with complex auth XElements, serves x_element.js + Alpine,
 runs Chromium harness (validation, success, multi-instance, shadow shell).
 """
+
 from __future__ import annotations
 
 import os
@@ -118,7 +119,9 @@ class TestAuthCustomElementsLiveBrowser(unittest.TestCase):
         report = SHOT / "auth-browser-report.json"
         self.assertTrue(report.is_file(), "missing auth-browser-report.json")
         text = report.read_text()
-        self.assertIn('"ok": true', text.replace(" ", "").replace("true", " true") or text)
+        self.assertIn(
+            '"ok": true', text.replace(" ", "").replace("true", " true") or text
+        )
         # more reliable
         import json
 

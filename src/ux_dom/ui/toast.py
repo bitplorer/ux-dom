@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """ToastHost — morph target for notices. Server list is authority."""
+
 from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
@@ -56,7 +57,9 @@ class ToastHost(Component):
         kids: list[Any] = []
         rows = list(items)
         if not rows:
-            kids.append(empty if empty is not None else span("No notices", className="sr-only"))
+            kids.append(
+                empty if empty is not None else span("No notices", className="sr-only")
+            )
         for raw in rows:
             if isinstance(raw, str):
                 kids.append(ToastItem(raw, level="info"))

@@ -146,7 +146,6 @@ class PackageStaticContribution:
             )
         return tuple(out)
 
-
     def artifacts(self) -> Sequence[StaticArtifact]:
         if self.serve == "package_mount":
             return ()

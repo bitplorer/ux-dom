@@ -28,9 +28,7 @@ class TestP95Profiling(unittest.TestCase):
         self.assertGreaterEqual(r.max_ms, r.p95_ms)
 
     def test_suite_writes_flamegraph_artifacts(self):
-        trees = [
-            div(*[span(str(j)) for j in range(10)], id=f"r{i}") for i in range(12)
-        ]
+        trees = [div(*[span(str(j)) for j in range(10)], id=f"r{i}") for i in range(12)]
         frozen = div(*[span(str(i)) for i in range(50)], id="f")
 
         report = run_suite(

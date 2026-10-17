@@ -4,6 +4,7 @@ Locally they skip when ux-channel is absent. CI installs a pinned ux-channel
 and sets ``UX_DOM_REQUIRE_CHANNEL=1`` so a missing package fails instead of
 skipping: an integration gate that can silently skip is not a gate.
 """
+
 from __future__ import annotations
 
 import importlib.util
@@ -20,5 +21,7 @@ def require_channel() -> None:
     if importlib.util.find_spec("ux_channel") is not None:
         return
     if os.environ.get("UX_DOM_REQUIRE_CHANNEL") == "1":
-        raise AssertionError(f"UX_DOM_REQUIRE_CHANNEL=1 but ux-channel is missing; run: {HINT}")
+        raise AssertionError(
+            f"UX_DOM_REQUIRE_CHANNEL=1 but ux-channel is missing; run: {HINT}"
+        )
     raise unittest.SkipTest(f"ux-channel not installed; run: {HINT}")

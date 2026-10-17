@@ -1,4 +1,5 @@
 """Production-trust battery: concurrent render, CSP, static safety under load."""
+
 from __future__ import annotations
 
 import asyncio
@@ -107,9 +108,9 @@ class TestTagsSerializeTrust(unittest.TestCase):
         self.assertIn("x-data", h)
 
     def test_htmx_alpine_attrs(self):
-        h = button(
-            "Add", hx_post="/cart", hx_target="#c", x_on_click="n++"
-        ).__render__(pretty=False)
+        h = button("Add", hx_post="/cart", hx_target="#c", x_on_click="n++").__render__(
+            pretty=False
+        )
         self.assertIn('hx-post="/cart"', h)
         self.assertIn("hx-target", h)
 
@@ -248,7 +249,9 @@ class TestDocumentResponseTrust(unittest.TestCase):
 
     def test_html_and_stream(self):
         r = HTMLResponse(div(p("hi")))
-        body = r.body.decode() if isinstance(r.body, (bytes, bytearray)) else str(r.body)
+        body = (
+            r.body.decode() if isinstance(r.body, (bytes, bytearray)) else str(r.body)
+        )
         self.assertIn("hi", body)
 
         async def consume():
@@ -269,7 +272,9 @@ class TestFragmentControlUidTrust(unittest.TestCase):
         self.assertEqual(f.__render__(pretty=False).count('id="once"'), 1)
 
     def test_htmx_control_sse(self):
-        body = "".join(str(x) for x in HtmxControl(version="2.0.4", sse=True).document_body())
+        body = "".join(
+            str(x) for x in HtmxControl(version="2.0.4", sse=True).document_body()
+        )
         self.assertIn("htmx.org", body)
         self.assertIn("htmx-ext-sse", body)
         self.assertEqual(NullControl().wire(), {})

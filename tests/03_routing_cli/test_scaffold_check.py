@@ -22,13 +22,13 @@ class TestProductScaffoldMoved(unittest.TestCase):
 
     def test_doctor_teaches_uxcompose(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions("doc", dest=Path(td) / "doc", force=True)
-            )
+            root = create_app(ScaffoldOptions("doc", dest=Path(td) / "doc", force=True))
             report = run_doctor(cwd=root)
             names = [c.name for c in report.checks]
             self.assertIn("product-scaffold", names)
-            detail = next(c.detail for c in report.checks if c.name == "product-scaffold")
+            detail = next(
+                c.detail for c in report.checks if c.name == "product-scaffold"
+            )
             self.assertIn("uxcompose create-app", detail)
 
 

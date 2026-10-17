@@ -39,7 +39,9 @@ class TestAttrDialects(unittest.TestCase):
             Tags.clean_attribute("x_transition_enter"), "x-transition:enter"
         )
         self.assertEqual(Tags.clean_attribute("v_on_click"), "@click")
-        self.assertEqual(Tags.clean_attribute("data_channel_action"), "data-channel-action")
+        self.assertEqual(
+            Tags.clean_attribute("data_channel_action"), "data-channel-action"
+        )
         # CSS property names must NOT be rewritten on Tags
         self.assertEqual(Tags.clean_attribute("font_size"), "font_size")
 

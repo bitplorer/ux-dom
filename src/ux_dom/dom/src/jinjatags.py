@@ -8,6 +8,7 @@
 
 Delimiter spacing is intentional; see tests for exact contracts.
 """
+
 from jinja2.environment import Template
 
 from ux_dom.dom.src.dom_tag import dom_tag

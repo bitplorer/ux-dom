@@ -5,6 +5,7 @@
 
 
 """Typed form elements: integers. Optional higher-level inputs over HTML tags."""
+
 import typing as T
 from dataclasses import dataclass, field
 
@@ -31,9 +32,7 @@ class IntegerLabel(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super().__init__(
-            *args, label=self.label, className=self.className, **kwargs
-        )
+        super().__init__(*args, label=self.label, className=self.className, **kwargs)
 
     def render(self, label, *args, className, **kwargs):
         return self.html_tags.label(
@@ -51,9 +50,7 @@ class IntegerLegend(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super().__init__(
-            label=self.label, className=self.className, *args, *kwargs
-        )
+        super().__init__(label=self.label, className=self.className, *args, *kwargs)
 
     def render(self, label, *args, className, **kwargs):
         return self.html_tags.legend(

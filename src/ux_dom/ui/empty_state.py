@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """EmptyState — pattern for zero-data regions."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -25,9 +26,7 @@ class EmptyState(Component):
             p(title, className=cn(type_scale["title"], "text-stone-200")),
         ]
         if description:
-            kids.append(
-                p(description, className=cn(type_scale["caption"], "mt-1"))
-            )
+            kids.append(p(description, className=cn(type_scale["caption"], "mt-1")))
         if action is not None:
             kids.append(div(action, className="mt-4"))
         return div(

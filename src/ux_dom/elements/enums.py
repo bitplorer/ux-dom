@@ -5,6 +5,7 @@
 
 
 """Typed form elements: enums. Optional higher-level inputs over HTML tags."""
+
 from enum import Enum, IntEnum
 
 from valio import (

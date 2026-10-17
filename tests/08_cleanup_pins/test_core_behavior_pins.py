@@ -3,6 +3,7 @@
 Written before the cleanup started (against 19af869). Each test names a
 feature callers rely on; a failure here means a refactor changed behaviour.
 """
+
 from __future__ import annotations
 
 import re
@@ -27,7 +28,7 @@ def test_tag_text_is_escaped():
 
 
 def test_attribute_values_are_escaped():
-    out = html(span(title='a"b\'c<d>'))
+    out = html(span(title="a\"b'c<d>"))
     assert out == '<span title="a&quot;b&#39;c&lt;d&gt;"></span>'
 
 
@@ -41,7 +42,9 @@ def test_bare_and_false_attributes():
 
 
 def test_alpine_and_htmx_attributes_render_from_code():
-    out = html(div(x_data="{open: false}", hx_post="/save", **{"@click": "open = !open"}))
+    out = html(
+        div(x_data="{open: false}", hx_post="/save", **{"@click": "open = !open"})
+    )
     assert 'x-data="{open: false}"' in out
     assert 'hx-post="/save"' in out
     assert '@click="open = !open"' in out
@@ -112,7 +115,9 @@ def test_html_element_parses_trusted_markup():
         def render(self):
             return '<section class="s"><b>bold</b><x-foo a="1"></x-foo></section>'
 
-    assert html(Box()) == '<section class="s"><b>bold</b><x-foo a="1"></x-foo></section>'
+    assert (
+        html(Box()) == '<section class="s"><b>bold</b><x-foo a="1"></x-foo></section>'
+    )
 
 
 def test_jinja_element_keeps_template_syntax():

@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """PageHeader — pattern for desk section headers."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -25,9 +26,7 @@ class PageHeader(Component):
             h1(title, className=cn(type_scale["display"])),
         ]
         if description:
-            left.append(
-                p(description, className=cn(type_scale["caption"], "mt-1"))
-            )
+            left.append(p(description, className=cn(type_scale["caption"], "mt-1")))
         kids: list[Any] = [div(*left, className="space-y-1")]
         if actions is not None:
             kids.append(div(actions, className="flex items-center gap-2"))

@@ -17,6 +17,7 @@ Component / tag (or an async generator of them)::
 ``StreamingRoute`` wraps them with ``streaming_response`` (chunked).
 Requires the optional ``fastapi`` extra.
 """
+
 from __future__ import annotations
 
 from collections.abc import Callable

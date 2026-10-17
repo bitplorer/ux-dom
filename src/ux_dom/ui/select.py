@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Select — matches Input height (min-h-11)."""
+
 from __future__ import annotations
 
 from collections.abc import Sequence

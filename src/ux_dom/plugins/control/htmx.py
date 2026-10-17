@@ -1,4 +1,5 @@
 """HtmxControl — HTMX script tags and optional middleware (optional SSE ext)."""
+
 from __future__ import annotations
 
 from collections.abc import Sequence

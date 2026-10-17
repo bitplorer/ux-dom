@@ -8,6 +8,7 @@
 
 Imported via ux_dom.dom. Attribute cleaning: Tags.clean_attribute.
 """
+
 from ux_dom.dom.src.main import extension
 
 underscored_classes = set(["del", "input", "map", "object"])

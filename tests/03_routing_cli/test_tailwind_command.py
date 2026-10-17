@@ -1,4 +1,5 @@
 """Product CSS is not on ux-dom. Compiler is uxcompose build."""
+
 from __future__ import annotations
 
 import unittest

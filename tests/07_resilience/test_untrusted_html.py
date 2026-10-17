@@ -4,6 +4,7 @@
 * ``defHTML(s)`` is an allow-list sanitizer.
 * ``MarkdownElement`` shows raw HTML as text.
 """
+
 from __future__ import annotations
 
 import re
@@ -69,11 +70,16 @@ def test_component_string_is_text():
         def render(self, text):
             return text
 
-    assert Comment(PAYLOADS["alpine_init"]).__render__(pretty=False).startswith("&lt;div")
+    assert (
+        Comment(PAYLOADS["alpine_init"]).__render__(pretty=False).startswith("&lt;div")
+    )
 
 
 def test_markup_is_the_explicit_opt_in():
-    assert Fragment(Markup("<b x-data>ok</b>")).__render__(pretty=False) == '<b x-data="">ok</b>'
+    assert (
+        Fragment(Markup("<b x-data>ok</b>")).__render__(pretty=False)
+        == '<b x-data="">ok</b>'
+    )
 
 
 def test_markdown_raw_html_is_text():
@@ -81,7 +87,9 @@ def test_markdown_raw_html_is_text():
         def render(self, text):
             return text
 
-    out = Post("hi <img src=x onerror=alert(1)> *e* [l](javascript:alert(2))").__render__(pretty=False)
+    out = Post(
+        "hi <img src=x onerror=alert(1)> *e* [l](javascript:alert(2))"
+    ).__render__(pretty=False)
     assert "<img" not in out
     assert "&lt;img" in out
     assert "<em>e</em>" in out

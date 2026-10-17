@@ -48,7 +48,7 @@ focus_ring = (
 # ── Surface levels (L0 page → L3 popover) ────────────────────────────────────
 # Designed so Host can drop local brown hacks and inherit hierarchy.
 surface = {
-    "l0": "bg-stone-950 text-stone-100",          # page / site-frame
+    "l0": "bg-stone-950 text-stone-100",  # page / site-frame
     "l1": "bg-stone-900/90 text-stone-100 border border-stone-800/80",  # card / panel
     "l2": "bg-stone-900 text-stone-50 border border-stone-700/60 shadow-md",  # elevated / modal body
     "l3": "bg-stone-800 text-stone-50 border border-stone-600/50 shadow-md",  # popover / command
@@ -83,7 +83,7 @@ type_scale = {
 # Touch / click targets (44px floor for primary actions)
 target = {
     "sm": "min-h-9 h-9 px-3 text-xs",
-    "md": "min-h-11 h-11 px-4 text-sm",   # default — 44px
+    "md": "min-h-11 h-11 px-4 text-sm",  # default — 44px
     "lg": "min-h-12 h-12 px-6 text-base",
     "icon": "min-h-11 h-11 w-11",
 }
@@ -165,6 +165,7 @@ def variants(table: dict[str, dict[str, str]], **chosen: str) -> str:
             chunks.append(axis_map["default"])
     return cn(*chunks)
 
+
 def field_classes(*, className: str = "", invalid: bool = False) -> str:
     """Shared control chrome for Input / Select / DatePicker alignment."""
     return cn(
@@ -174,4 +175,3 @@ def field_classes(*, className: str = "", invalid: bool = False) -> str:
         "border-red-500/80" if invalid else "border-stone-700",
         className,
     )
-

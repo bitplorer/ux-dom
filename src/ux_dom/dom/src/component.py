@@ -12,6 +12,7 @@
 Concurrent mutate/serialize uses per-root locks via dom_tag paths.
 See docs/guides/COMPONENTS.md and docs/guides/REACTIVE.md.
 """
+
 from __future__ import annotations
 
 import json
@@ -32,7 +33,6 @@ from ux_dom.dom.src.utils.dom_util import dom_text
 from ux_dom.utils.parameters import Parameters
 
 __all__ = ["Component", "ReactiveComponent", "Fragment", "MergeClassAttribute"]
-
 
 
 @dataclass
@@ -174,7 +174,9 @@ class Component(extension.Tags):
         elif not is_markdown and self.escape_string:
             return dom_text(child)
         if is_markdown:
-            child = render_markdown(child, trusted=not self.escape_string, convert=md_convert)
+            child = render_markdown(
+                child, trusted=not self.escape_string, convert=md_convert
+            )
         return defHTML(child, escape=self.escape_string)
 
     def __checks__(
@@ -511,7 +513,9 @@ class Fragment(Component):
                     if isinstance(item, (extension.Tags, dom_tag)):
                         self._add_attrs_to_child(item, apply_unique=apply_unique)
                         if apply_unique:
-                            object.__setattr__(self, "_ux_dom_frag_unique_applied", True)
+                            object.__setattr__(
+                                self, "_ux_dom_frag_unique_applied", True
+                            )
                             apply_unique = False
         super().add(*args)
 
@@ -822,7 +826,9 @@ class ReactiveComponent(Component):
                     except Exception:
                         Component.add(self, old_entry)
                     self._entry = old_entry
-                    if old_entry_children and not list(getattr(old_entry, "children", []) or []):
+                    if old_entry_children and not list(
+                        getattr(old_entry, "children", []) or []
+                    ):
                         for node in old_entry_children:
                             try:
                                 old_entry.add(node)

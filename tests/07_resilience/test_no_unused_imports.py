@@ -4,6 +4,7 @@ Package ``__init__.py`` files are skipped: they re-export. A name listed in a
 module's ``__all__`` counts as used. ``from __future__`` imports and imports
 marked ``# noqa`` (deliberate re-exports) are ignored.
 """
+
 from __future__ import annotations
 
 import ast
@@ -20,7 +21,10 @@ def _unused(path: Path) -> list[str]:
     tree = ast.parse(text)
     imported: dict[str, int] = {}
     for node in ast.walk(tree):
-        if isinstance(node, (ast.Import, ast.ImportFrom)) and "noqa" in lines[node.lineno - 1]:
+        if (
+            isinstance(node, (ast.Import, ast.ImportFrom))
+            and "noqa" in lines[node.lineno - 1]
+        ):
             continue
         if isinstance(node, ast.Import):
             for a in node.names:
@@ -35,12 +39,25 @@ def _unused(path: Path) -> list[str]:
             isinstance(t, ast.Name) and t.id == "__all__" for t in node.targets
         ):
             used |= {
-                e.value for e in getattr(node.value, "elts", ()) if isinstance(e, ast.Constant)
+                e.value
+                for e in getattr(node.value, "elts", ())
+                if isinstance(e, ast.Constant)
             }
         if isinstance(node, ast.Constant) and isinstance(node.value, str):
             # string annotations ("Foo | None") reference names too
-            used |= set(node.value.replace("[", " ").replace("]", " ").replace("|", " ").replace(",", " ").replace(".", " ").split())
-    return [f"{path.relative_to(ROOT)}:{line} {name}" for name, line in imported.items() if name not in used]
+            used |= set(
+                node.value.replace("[", " ")
+                .replace("]", " ")
+                .replace("|", " ")
+                .replace(",", " ")
+                .replace(".", " ")
+                .split()
+            )
+    return [
+        f"{path.relative_to(ROOT)}:{line} {name}"
+        for name, line in imported.items()
+        if name not in used
+    ]
 
 
 class NoUnusedImports(unittest.TestCase):

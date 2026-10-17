@@ -231,6 +231,7 @@ def run_suite(
     out_dir.mkdir(parents=True, exist_ok=True)
     latencies: list[LatencyReport] = []
     combined_text: list[str] = []
+
     # profile the whole suite once chained
     def all_ops() -> None:
         for _n, fn in benches:
@@ -239,16 +240,16 @@ def run_suite(
     stats, text = profile_cprofile(all_ops, name=title, rounds=profile_rounds)
     combined_text.append(text)
     for name, fn in benches:
-        latencies.append(
-            measure_latency(fn, name=name, rounds=rounds, warmup=warmup)
-        )
+        latencies.append(measure_latency(fn, name=name, rounds=rounds, warmup=warmup))
 
     report = {
         "title": title,
         "latencies": [r.to_dict() for r in latencies],
         "note": "Concurrency is internal; users do not opt in/out for safety.",
     }
-    (out_dir / "latency.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+    (out_dir / "latency.json").write_text(
+        json.dumps(report, indent=2), encoding="utf-8"
+    )
     (out_dir / "cprofile.txt").write_text("\n".join(combined_text), encoding="utf-8")
     speedscope = cprofile_to_speedscope(stats, name=title)
     (out_dir / "profile.speedscope.json").write_text(

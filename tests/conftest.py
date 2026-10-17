@@ -16,6 +16,7 @@ Test tree ontology
 Discovery order follows directory name prefixes (``01``…``06``).
 Within each module, test method order is preserved (do not reorder casually).
 """
+
 from __future__ import annotations
 
 from pathlib import Path

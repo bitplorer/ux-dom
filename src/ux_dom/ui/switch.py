@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Switch — checkbox with switch presentation classes."""
+
 from __future__ import annotations
 
 from typing import Any

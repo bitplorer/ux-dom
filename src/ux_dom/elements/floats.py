@@ -5,6 +5,7 @@
 
 
 """Typed form elements: floats. Optional higher-level inputs over HTML tags."""
+
 from dataclasses import dataclass, field
 
 from valio import StringValidator
@@ -27,9 +28,7 @@ class FloatLabel(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super().__init__(
-            self.label, *args, className=self.className, **kwargs
-        )
+        super().__init__(self.label, *args, className=self.className, **kwargs)
 
     def render(self, label, *args, className, **kwargs):
         return self.html_tags.label(
@@ -43,9 +42,7 @@ class FloatLegend(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super()._init__(
-            self.label, *args, className=self.className, **kwargs
-        )
+        super()._init__(self.label, *args, className=self.className, **kwargs)
 
     def render(self, label, *args, className, **kwargs):
         return self.html_tags.legend(

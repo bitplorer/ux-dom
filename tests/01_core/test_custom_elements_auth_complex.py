@@ -3,6 +3,7 @@
 Covers definition rules, registry SSoT, Document auto-collection, multi-instance
 hosts, shadow vs light constraints, and login/signup component structure.
 """
+
 from __future__ import annotations
 
 import unittest

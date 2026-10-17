@@ -3,6 +3,7 @@
 Covers Component route methods, HtmxEvents, App composition edge paths that
 broke once and must stay fixed.
 """
+
 from __future__ import annotations
 
 import concurrent.futures

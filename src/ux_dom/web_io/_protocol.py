@@ -4,6 +4,7 @@
 # https://opensource.org/licenses/MIT
 
 """web_io protocol internals. Private transport layer."""
+
 from collections.abc import AsyncIterator
 from typing import Any, Protocol
 

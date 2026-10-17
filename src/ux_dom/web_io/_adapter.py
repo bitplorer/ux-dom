@@ -4,6 +4,7 @@
 # https://opensource.org/licenses/MIT
 
 """web_io adapter internals. Private transport helpers; not a public app API."""
+
 import asyncio
 import json
 from abc import ABC, abstractmethod

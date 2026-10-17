@@ -9,6 +9,7 @@ HTTP container classes live in ``response.starlette`` (adapter) and call these.
 ``_guess_target_from_html`` is selector leftover, not extract — do not
 absorb. No ``fragment.py``. Soft 1/4 prefer-owner: no channel package import.
 """
+
 from __future__ import annotations
 
 import re
@@ -137,7 +138,9 @@ def _open_tag_id(open_tag: str) -> str | None:
         if j < len(open_tag) and open_tag[j] in "\"'":
             q = open_tag[j]
             k = open_tag.find(q, j + 1)
-            return open_tag[j + 1 : k] if k >= 0 else open_tag[j + 1 :].rstrip(">/ \t\n\r")
+            return (
+                open_tag[j + 1 : k] if k >= 0 else open_tag[j + 1 :].rstrip(">/ \t\n\r")
+            )
         k = j
         while k < len(open_tag) and open_tag[k] not in " \t\n\r>/":
             k += 1

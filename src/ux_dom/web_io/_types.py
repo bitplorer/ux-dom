@@ -8,6 +8,7 @@
 Private module — not part of the supported app API. Types here support the
 internal adapter/protocol layer and may change without notice.
 """
+
 from collections.abc import Awaitable, Callable, MutableMapping
 from typing import Any
 

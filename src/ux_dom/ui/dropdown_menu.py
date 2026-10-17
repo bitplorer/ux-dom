@@ -3,6 +3,7 @@
 
 Use ux-behavior ``select`` / ``open`` for open state. No Alpine.
 """
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -27,7 +28,12 @@ class DropdownMenu(Component):
         if not open:
             return div(**{"data-open": "0"}, className="contents", **attrs)
         kids = [
-            li(item, className=cn("rounded-md px-3 py-2 hover:bg-stone-800", type_scale["body"]))
+            li(
+                item,
+                className=cn(
+                    "rounded-md px-3 py-2 hover:bg-stone-800", type_scale["body"]
+                ),
+            )
             for item in items
         ]
         return div(

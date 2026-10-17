@@ -3,6 +3,7 @@
 
 Open via ux-behavior ``open("sheet", ...)``. Render with ``open=`` from session.
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -41,7 +42,9 @@ class Sheet(Component):
         if title:
             kids.append(h2(title, className=cn(type_scale["title"])))
         if body is not None:
-            kids.append(div(body, className=cn("mt-3", type_scale["body"], "text-stone-300")))
+            kids.append(
+                div(body, className=cn("mt-3", type_scale["body"], "text-stone-300"))
+            )
         if footer is not None:
             kids.append(div(footer, className="mt-4 flex justify-end gap-2"))
 

@@ -1,4 +1,5 @@
 """CLI maturity: uxdom add, build edges."""
+
 from __future__ import annotations
 
 import os
@@ -18,11 +19,7 @@ from ux_dom.dom.htmlelement import CustomElement
 class TestAddRejectsBadNames(unittest.TestCase):
     def test_empty_name_rejected(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "e", dest=Path(td) / "e", force=True
-                )
-            )
+            root = create_app(ScaffoldOptions("e", dest=Path(td) / "e", force=True))
             old = Path.cwd()
             try:
                 os.chdir(root)
@@ -35,11 +32,7 @@ class TestAddRejectsBadNames(unittest.TestCase):
 class TestXElementAlpineGenerated(unittest.TestCase):
     def test_alpine_stub_imports(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "x", dest=Path(td) / "x", force=True
-                )
-            )
+            root = create_app(ScaffoldOptions("x", dest=Path(td) / "x", force=True))
             old = Path.cwd()
             try:
                 os.chdir(root)

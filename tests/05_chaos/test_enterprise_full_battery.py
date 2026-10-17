@@ -3,6 +3,7 @@
 Critical / medium / minor checks across core, security, concurrency, and
 response surfaces. Complements the modular suites under tests/01–06.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -186,7 +187,9 @@ class TestMediumMultiRoot(unittest.TestCase):
 class TestPentestSurfaces(unittest.TestCase):
     def test_html_response_escapes(self):
         r = HTMLResponse(div("<script>z</script>"))
-        body = r.body.decode() if isinstance(r.body, (bytes, bytearray)) else str(r.body)
+        body = (
+            r.body.decode() if isinstance(r.body, (bytes, bytearray)) else str(r.body)
+        )
         self.assertNotIn("<script>z</script>", body)
 
     def test_streaming_response_async_consumable(self):

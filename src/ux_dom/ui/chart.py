@@ -64,9 +64,13 @@ class Chart(Component):
     ):
         vals = _nums(series)
         if not vals:
-            empty_body = empty if empty is not None else span(
-                "No data",
-                className=cn("text-sm", ink["muted"]),
+            empty_body = (
+                empty
+                if empty is not None
+                else span(
+                    "No data",
+                    className=cn("text-sm", ink["muted"]),
+                )
             )
             return div(
                 empty_body,

@@ -6,6 +6,7 @@ tag attrs so product code stays host-agnostic: ``control("shop.add")``.
 
 HTMX remains a separate opt-in ControlPlugin (``HtmxControl``).
 """
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -36,7 +37,9 @@ class ChannelControl:
         if action is None:
             return {}
         if not isinstance(action, str):
-            action = getattr(action, "action", None) or getattr(action, "__name__", str(action))
+            action = getattr(action, "action", None) or getattr(
+                action, "__name__", str(action)
+            )
         attrs: dict[str, Any] = {"data-ux-action": str(action)}
         for k, v in kwargs.items():
             if v is None:

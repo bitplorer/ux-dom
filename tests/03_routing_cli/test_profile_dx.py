@@ -33,8 +33,17 @@ class TestProfileDx(unittest.TestCase):
             out = Path(td) / "out"
             result = runner.invoke(
                 app,
-                ["profile", "--out", str(out), "--rounds", "6", "--warmup", "1",
-                 "--profile-rounds", "3"],
+                [
+                    "profile",
+                    "--out",
+                    str(out),
+                    "--rounds",
+                    "6",
+                    "--warmup",
+                    "1",
+                    "--profile-rounds",
+                    "3",
+                ],
             )
             self.assertEqual(result.exit_code, 0, result.output)
             self.assertIn("uxdom profile", result.output)

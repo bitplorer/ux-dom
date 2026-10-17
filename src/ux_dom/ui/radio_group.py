@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """RadioGroup — native radios with operational styling."""
+
 from __future__ import annotations
 
 from collections.abc import Sequence

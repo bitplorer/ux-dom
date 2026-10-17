@@ -455,9 +455,7 @@ class Tags(dom_tag, dom1core):
                 except Exception:
                     pass
 
-        th = threading.Thread(
-            target=worker, name="ux_dom-pretty-stream", daemon=True
-        )
+        th = threading.Thread(target=worker, name="ux_dom-pretty-stream", daemon=True)
         th.start()
         try:
             while True:

@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Breadcrumb — server-rendered trail."""
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -36,12 +37,20 @@ class Breadcrumb(Component):
                 )
             if href and i < n - 1:
                 kids.append(
-                    li(a(label, href=href, className=cn(type_scale["caption"], "hover:text-stone-100")))
+                    li(
+                        a(
+                            label,
+                            href=href,
+                            className=cn(type_scale["caption"], "hover:text-stone-100"),
+                        )
+                    )
                 )
             else:
                 kids.append(
                     li(
-                        span(label, className=cn(type_scale["caption"], "text-stone-200")),
+                        span(
+                            label, className=cn(type_scale["caption"], "text-stone-200")
+                        ),
                         **({"aria-current": "page"} if i == n - 1 else {}),
                     )
                 )

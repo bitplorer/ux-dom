@@ -63,12 +63,10 @@ class TestMiddlewareIsEnough(unittest.TestCase):
 
     def test_use_csp_once(self):
         set_hub(PluginHub())
-        builder = (
-            App()
-            .use(XElementRuntime())
-            .use(Csp(debug_header=True))
+        builder = App().use(XElementRuntime()).use(Csp(debug_header=True))
+        app = builder.build(
+            asgi=FastAPI(title="csp", debug=True, default_response_class=HTMLResponse)
         )
-        app = builder.build(asgi=FastAPI(title="csp", debug=True, default_response_class=HTMLResponse))
 
         @app.get("/page")
         def page():
@@ -89,7 +87,11 @@ class TestMiddlewareIsEnough(unittest.TestCase):
     def test_html_response_stamps_tree(self):
         """ux_dom HTMLResponse stamps even without shell_fragments."""
         set_hub(PluginHub())
-        app = App().use(Csp(debug_header=True)).build(asgi=FastAPI(title="t", default_response_class=HTMLResponse))
+        app = (
+            App()
+            .use(Csp(debug_header=True))
+            .build(asgi=FastAPI(title="t", default_response_class=HTMLResponse))
+        )
 
         @app.get("/dom")
         def dom():

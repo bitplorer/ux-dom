@@ -1,4 +1,5 @@
 """Markdown to HTML for Components (``string_is_markdown`` / ``.md`` files)."""
+
 from __future__ import annotations
 
 import html

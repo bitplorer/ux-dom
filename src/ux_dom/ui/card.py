@@ -4,6 +4,7 @@
 Uses surface["l1"] + type_scale so Host cards inherit hierarchy
 instead of flat local brown styles.
 """
+
 from __future__ import annotations
 
 from typing import Any

@@ -58,7 +58,9 @@ class TestPresets(unittest.TestCase):
         # Exact pinned files, never a whole CDN host (review M3).
         self.assertNotIn("https://unpkg.com", p.script_hosts)
         self.assertNotIn("https://cdn.jsdelivr.net", p.script_hosts)
-        self.assertIn("https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js", p.script_hosts)
+        self.assertIn(
+            "https://unpkg.com/htmx.org@1.9.12/dist/htmx.min.js", p.script_hosts
+        )
         h = p.build("X")
         self.assertIn("https://cdn.tailwindcss.com", h)
         self.assertIn("'unsafe-inline'", re.search(r"style-src ([^;]+)", h).group(1))
@@ -92,7 +94,11 @@ class TestPresets(unittest.TestCase):
 class TestMiddlewarePresets(unittest.TestCase):
     def test_prod_header(self):
         set_hub(PluginHub())
-        app = App().use(Csp.prod(debug_header=True)).build(asgi=FastAPI(title="t", default_response_class=HTMLResponse))
+        app = (
+            App()
+            .use(Csp.prod(debug_header=True))
+            .build(asgi=FastAPI(title="t", default_response_class=HTMLResponse))
+        )
 
         @app.get("/")
         def home():
@@ -126,7 +132,11 @@ class TestMiddlewarePresets(unittest.TestCase):
 
     def test_dev_has_cdn_and_style_inline(self):
         set_hub(PluginHub())
-        app = App().use(Csp.dev()).build(asgi=FastAPI(title="t", default_response_class=HTMLResponse))
+        app = (
+            App()
+            .use(Csp.dev())
+            .build(asgi=FastAPI(title="t", default_response_class=HTMLResponse))
+        )
 
         @app.get("/")
         def home():

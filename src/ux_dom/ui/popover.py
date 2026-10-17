@@ -4,6 +4,7 @@
 Prefer Dialog/Sheet for modal work. Popover is for small anchored panels
 when the Host passes open= from session.
 """
+
 from __future__ import annotations
 
 from typing import Any

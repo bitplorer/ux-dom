@@ -1,4 +1,5 @@
 """One attribute serializer for every renderer (review L1)."""
+
 from __future__ import annotations
 
 from ux_dom.dom import span

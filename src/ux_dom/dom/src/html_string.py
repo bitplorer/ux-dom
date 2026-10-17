@@ -17,6 +17,7 @@ htmx (``hx-*``), ``data-*`` and ``style``. URL attributes go through
 every tag and attribute, including custom elements, Jinja syntax and
 comments. Never pass user input to it.
 """
+
 from __future__ import annotations
 
 import builtins
@@ -30,13 +31,68 @@ __all__ = ["defHTML", "SAFE_TAGS", "SAFE_ATTRIBUTES"]
 
 SAFE_TAGS = frozenset(
     {
-        "a", "abbr", "b", "bdi", "bdo", "blockquote", "br", "caption", "cite",
-        "code", "col", "colgroup", "dd", "del", "details", "dfn", "div", "dl",
-        "dt", "em", "figcaption", "figure", "h1", "h2", "h3", "h4", "h5", "h6",
-        "hr", "i", "img", "ins", "kbd", "li", "mark", "ol", "p", "pre", "q",
-        "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub",
-        "summary", "sup", "table", "tbody", "td", "tfoot", "th", "thead",
-        "time", "tr", "u", "ul", "var", "wbr",
+        "a",
+        "abbr",
+        "b",
+        "bdi",
+        "bdo",
+        "blockquote",
+        "br",
+        "caption",
+        "cite",
+        "code",
+        "col",
+        "colgroup",
+        "dd",
+        "del",
+        "details",
+        "dfn",
+        "div",
+        "dl",
+        "dt",
+        "em",
+        "figcaption",
+        "figure",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "hr",
+        "i",
+        "img",
+        "ins",
+        "kbd",
+        "li",
+        "mark",
+        "ol",
+        "p",
+        "pre",
+        "q",
+        "rp",
+        "rt",
+        "ruby",
+        "s",
+        "samp",
+        "small",
+        "span",
+        "strong",
+        "sub",
+        "summary",
+        "sup",
+        "table",
+        "tbody",
+        "td",
+        "tfoot",
+        "th",
+        "thead",
+        "time",
+        "tr",
+        "u",
+        "ul",
+        "var",
+        "wbr",
     }
 )
 _GLOBAL_ATTRIBUTES = frozenset({"class", "title", "lang", "dir", "role"})
@@ -69,10 +125,14 @@ _dynamic_element_registry: dict[str, type[ext.Tags]] = {}
 def create_dynamic_element(tag_name: str) -> type[ext.Tags]:
     """Return a cached ``Tags`` subclass for a tag ux-dom does not define."""
     if tag_name not in _dynamic_element_registry:
-        cls_name = "".join(part.capitalize() for part in tag_name.split("-")) or "Dynamic"
+        cls_name = (
+            "".join(part.capitalize() for part in tag_name.split("-")) or "Dynamic"
+        )
         if cls_name[0].isdigit():
             cls_name = "Tag" + cls_name
-        element = type(cls_name, (ext.Tags,), {"tagname": tag_name, "__module__": __name__})
+        element = type(
+            cls_name, (ext.Tags,), {"tagname": tag_name, "__module__": __name__}
+        )
         _dynamic_element_registry[tag_name] = element
     return _dynamic_element_registry[tag_name]
 
@@ -127,7 +187,11 @@ def _build(token: Element, trusted: bool, parent: str = "", pre: bool = False) -
         return
     if not token.name:  # comment, declaration, processing instruction
         if trusted:
-            htmltags.comment(token.data) if isinstance(token, Comment) else raw(token.render())
+            (
+                htmltags.comment(token.data)
+                if isinstance(token, Comment)
+                else raw(token.render())
+            )
         return
     name = str(token.name).lower()
     if not trusted and name not in SAFE_TAGS:

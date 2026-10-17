@@ -1,4 +1,5 @@
 """FastAPI route classes serialize ux-dom trees (moved from the removed router)."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, FastAPI

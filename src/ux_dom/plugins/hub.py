@@ -170,7 +170,6 @@ class PluginHub:
 
         return collect_served_files(self)
 
-
     def materialize(self, root: Path | str) -> MaterializeReport:
         """Write all contribution artifacts under app root (build / deploy)."""
         root = Path(root).resolve()

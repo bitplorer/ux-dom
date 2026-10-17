@@ -41,7 +41,7 @@ class TestBatteryRenders(unittest.TestCase):
 
     def test_slider_no_false_disabled(self):
         html = str(Slider(value=10))
-        self.assertNotRegex(html, r'(?<![:\w])disabled(?:=|\s|>)')
+        self.assertNotRegex(html, r"(?<![:\w])disabled(?:=|\s|>)")
 
     def test_carousel_empty_and_slides(self):
         empty = str(Carousel(slides=[]))
@@ -55,7 +55,9 @@ class TestBatteryRenders(unittest.TestCase):
         self.assertIn("aria-roledescription", html)
         self.assertIn('data-carousel="channel"', html)
         # Channel-first renders the active slide only; page 2 arrives via select_region.
-        page2 = str(Carousel(slides=[div("One"), div("Two")], index=1, label="Highlights"))
+        page2 = str(
+            Carousel(slides=[div("One"), div("Two")], index=1, label="Highlights")
+        )
         self.assertIn("Two", page2)
         self.assertIn("2 / 2", page2)
 
@@ -132,7 +134,9 @@ class TestChannelOptional(unittest.TestCase):
             self.assertTrue(html)
 
     def test_stamp_and_live_and_public_form(self):
-        stamped = str(stamp_region(Dialog(open=True, body="inner"), uid="Checkout:dialog"))
+        stamped = str(
+            stamp_region(Dialog(open=True, body="inner"), uid="Checkout:dialog")
+        )
         self.assertIn("data-channel-id", stamped)
         self.assertIn("Checkout:dialog", stamped)
         self.assertIn("inner", stamped)

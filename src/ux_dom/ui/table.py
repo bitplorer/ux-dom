@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Table — operational dark surface hierarchy."""
+
 from __future__ import annotations
 
 from typing import Any

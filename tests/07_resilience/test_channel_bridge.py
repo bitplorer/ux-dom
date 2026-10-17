@@ -1,4 +1,5 @@
 """ux-channel bridge emits exactly what the channel client parses (review M2)."""
+
 from __future__ import annotations
 
 import html

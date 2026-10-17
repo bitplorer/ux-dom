@@ -1,4 +1,5 @@
 """escape(quote=True) must neutralise both quote characters, like html.escape."""
+
 from ux_dom.dom import div
 from ux_dom.dom.src.utils.dom_util import escape
 

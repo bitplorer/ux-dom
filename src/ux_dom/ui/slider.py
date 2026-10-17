@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Slider — native range, operational tokens. No client runtime."""
+
 from __future__ import annotations
 
 from typing import Any

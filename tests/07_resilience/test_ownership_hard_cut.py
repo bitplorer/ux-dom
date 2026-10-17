@@ -1,4 +1,5 @@
 """OWN/REG — product lifecycle remains outside ux-dom (FLOW hard-cut)."""
+
 from __future__ import annotations
 
 import importlib
@@ -51,7 +52,9 @@ class TestProductBuildRedirect(unittest.TestCase):
     def test_product_app_py_teaches_uxcompose_build(self):
         runner = CliRunner()
         with TemporaryDirectory() as td:
-            (Path(td) / "app.py").write_text("# product composition root\n", encoding="utf-8")
+            (Path(td) / "app.py").write_text(
+                "# product composition root\n", encoding="utf-8"
+            )
             prev = os.getcwd()
             try:
                 os.chdir(td)

@@ -3,6 +3,7 @@
 
 Active index comes from the server (ux-behavior ``select``). Renders one slide.
 """
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -38,9 +39,13 @@ class Carousel(Component):
     ):
         items = list(slides)
         if not items:
-            empty_body = empty if empty is not None else span(
-                "No slides",
-                className=cn(type_scale["caption"]),
+            empty_body = (
+                empty
+                if empty is not None
+                else span(
+                    "No slides",
+                    className=cn(type_scale["caption"]),
+                )
             )
             return div(
                 empty_body,

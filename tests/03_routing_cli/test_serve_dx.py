@@ -3,6 +3,7 @@
 Product lifecycle (create-app / build / serve / deploy) lives on uxcompose
 only. This module locks that absence and keeps pure-dom tooling tests.
 """
+
 from __future__ import annotations
 
 import unittest

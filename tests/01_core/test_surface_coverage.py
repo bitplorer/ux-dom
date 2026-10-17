@@ -1,4 +1,5 @@
 """Breadth coverage of public DOM/Component surfaces (no chaos, no browser)."""
+
 from __future__ import annotations
 
 import unittest

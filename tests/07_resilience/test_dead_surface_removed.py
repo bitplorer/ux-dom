@@ -1,4 +1,5 @@
 """Dead surface stays gone (ux-dom is unpublished, so removed with no shims)."""
+
 from __future__ import annotations
 
 import inspect
@@ -48,7 +49,12 @@ def test_unsafe_dom_util_helpers_removed():
     from ux_dom.dom.src.utils import dom_util
 
     removed = (
-        "system", "include", "lazy", "unescape", "url_escape", "url_unescape",
+        "system",
+        "include",
+        "lazy",
+        "unescape",
+        "url_escape",
+        "url_unescape",
     )
     for name in removed:
         assert not hasattr(dom_util, name), name

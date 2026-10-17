@@ -33,7 +33,11 @@ class TestSingleCopyXElement(unittest.TestCase):
     def test_app_build_serves_from_package(self):
         set_hub(PluginHub())
         app = (
-            App().use(XElementRuntime()).build(asgi=FastAPI(title="t", debug=True, default_response_class=HTMLResponse))
+            App()
+            .use(XElementRuntime())
+            .build(
+                asgi=FastAPI(title="t", debug=True, default_response_class=HTMLResponse)
+            )
         )
         c = TestClient(app)
         r = c.get(XELEMENT_JS_URL)
@@ -99,14 +103,8 @@ class TestScaffoldSingleCopy(unittest.TestCase):
 
     def test_build_package_ok_without_assets_js(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "bp", dest=Path(td) / "bp", force=True
-                )
-            )
-            rep = run_build(
-                cwd=root, package=True, package_name="bp"
-            )
+            root = create_app(ScaffoldOptions("bp", dest=Path(td) / "bp", force=True))
+            rep = run_build(cwd=root, package=True, package_name="bp")
             self.assertTrue(rep.ok, rep.steps)
             # package should not claim dual-copy requirement
             man = (rep.package_path / "MANIFEST.json").read_text()

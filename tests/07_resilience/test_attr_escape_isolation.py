@@ -1,4 +1,5 @@
 """Round-2 re-review blockers: check-then-use and shared unescape state."""
+
 from __future__ import annotations
 
 from html.parser import HTMLParser

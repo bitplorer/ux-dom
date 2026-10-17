@@ -2,6 +2,7 @@
 
 ux-dom was never published to PyPI, so these paths protect nobody.
 """
+
 import importlib
 import inspect
 import unittest
@@ -33,7 +34,9 @@ class TestDeprecatedAliasesRemoved(unittest.TestCase):
         with self.assertRaises(ValueError):
             runtime.XElementRuntime(serve="webassets")
         with self.assertRaises(ValueError):
-            package_static.PackageStaticContribution(name="x", files=(), serve="webassets")
+            package_static.PackageStaticContribution(
+                name="x", files=(), serve="webassets"
+            )
 
     def test_carousel_default_alias_removed(self):
         from ux_dom.ui.carousel import Carousel

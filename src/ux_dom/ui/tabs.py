@@ -16,6 +16,7 @@ Render only the active panel + tab list with live_button / action attrs.
         select_action="nav.tab",  # optional: stamp action attrs on tab buttons
     )
 """
+
 from __future__ import annotations
 
 import re
@@ -80,9 +81,11 @@ class Tabs(Component):
                         "inline-flex min-h-9 items-center justify-center whitespace-nowrap rounded-md",
                         "px-3 py-1.5 text-sm font-medium transition-all",
                         focus_ring,
-                        "bg-stone-800 text-stone-100 shadow-sm"
-                        if is_active
-                        else "text-stone-400 hover:text-stone-200",
+                        (
+                            "bg-stone-800 text-stone-100 shadow-sm"
+                            if is_active
+                            else "text-stone-400 hover:text-stone-200"
+                        ),
                     ),
                     **{"aria-selected": "true" if is_active else "false"},
                     **{"data-tab": key},

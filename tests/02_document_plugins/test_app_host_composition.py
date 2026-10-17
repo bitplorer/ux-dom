@@ -1,4 +1,5 @@
 """Leftover App composition (not product host)."""
+
 from __future__ import annotations
 
 import asyncio
@@ -92,11 +93,7 @@ class TestAppHostComposition(unittest.TestCase):
 
 class TestPluginSummary(unittest.TestCase):
     def test_summary_order(self):
-        app = (
-            App()
-            .use(NullStyle())
-            .use(NullControl())
-        )
+        app = App().use(NullStyle()).use(NullControl())
         summary = app.plugin_summary()
         self.assertIn("style:null", summary)
         self.assertIn("control:null", summary)

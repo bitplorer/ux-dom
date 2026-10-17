@@ -1,4 +1,5 @@
 """Fail-closed behaviour: sanitize, Fragment JSON, multi-root, XSS guards."""
+
 from __future__ import annotations
 
 import unittest
@@ -36,7 +37,7 @@ class TestFragmentXDataFailClosed(unittest.TestCase):
 
 class TestDefHTMLEscapeSanitizes(unittest.TestCase):
     def test_script_stripped_when_escape_true(self):
-        nodes = defHTML('<script>alert(1)</script><p>ok</p>', escape=True)
+        nodes = defHTML("<script>alert(1)</script><p>ok</p>", escape=True)
         html = "".join(n.__render__(pretty=False) for n in nodes)
         self.assertNotIn("<script>", html)
         self.assertIn("<p>", html)

@@ -8,6 +8,7 @@ Guarantees:
 * build (default) — no dual-copy of x_element.js into assets/ (single-copy model)
 * package/archive — only when ``--package`` / ``--archive`` requested
 """
+
 from __future__ import annotations
 
 import unittest
@@ -34,11 +35,7 @@ def _snapshot(root: Path) -> dict[str, int]:
 class TestReadOnlyDxCommands(unittest.TestCase):
     def test_doctor_lint_sync_no_writes(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "ro", dest=Path(td) / "ro", force=True
-                )
-            )
+            root = create_app(ScaffoldOptions("ro", dest=Path(td) / "ro", force=True))
             before = _snapshot(root)
             run_doctor(cwd=root, port=59991)
             lint_project(root)
@@ -56,11 +53,7 @@ class TestReadOnlyDxCommands(unittest.TestCase):
 class TestAddDeployForceGates(unittest.TestCase):
     def test_add_refuses_overwrite_without_force(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "ad", dest=Path(td) / "ad", force=True
-                )
-            )
+            root = create_app(ScaffoldOptions("ad", dest=Path(td) / "ad", force=True))
             p = add_component("Notice", root=root, force=False)
             self.assertTrue(p.is_file())
             with self.assertRaises(AddError):
@@ -71,11 +64,7 @@ class TestAddDeployForceGates(unittest.TestCase):
 class TestBuildNoUnintendedWrites(unittest.TestCase):
     def test_default_build_no_asset_dual_copy_or_dist(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "bd", dest=Path(td) / "bd", force=True
-                )
-            )
+            root = create_app(ScaffoldOptions("bd", dest=Path(td) / "bd", force=True))
             before = _snapshot(root)
             rep = run_build(
                 cwd=root,
@@ -88,16 +77,16 @@ class TestBuildNoUnintendedWrites(unittest.TestCase):
             self.assertEqual(before, after)
             self.assertFalse((root / "dist").exists())
             # no dual-copy of x_element under assets/js from build
-            xe = list((root / "assets").rglob("x_element.js")) if (root / "assets").exists() else []
+            xe = (
+                list((root / "assets").rglob("x_element.js"))
+                if (root / "assets").exists()
+                else []
+            )
             self.assertEqual(xe, [])
 
     def test_package_flag_writes_dist_only_when_requested(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "pk", dest=Path(td) / "pk", force=True
-                )
-            )
+            root = create_app(ScaffoldOptions("pk", dest=Path(td) / "pk", force=True))
             rep = run_build(
                 cwd=root,
                 skip_import=True,

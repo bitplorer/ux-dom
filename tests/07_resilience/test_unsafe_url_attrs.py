@@ -1,4 +1,5 @@
 """URL attributes fail closed: script-capable schemes never reach the browser."""
+
 from __future__ import annotations
 
 from html.parser import HTMLParser
@@ -126,7 +127,9 @@ def test_entity_encoded_scheme_blocked_on_unescaped_render_path():
     assert "avascript" not in tag.__render__(pretty=False)
 
 
-@pytest.mark.parametrize("value", ["\u00a0javascript:alert(1)", "\ufeffjavascript:alert(1)"])
+@pytest.mark.parametrize(
+    "value", ["\u00a0javascript:alert(1)", "\ufeffjavascript:alert(1)"]
+)
 def test_unicode_space_prefix_is_not_executable(value):
     # Not a scheme to the URL parser (relative URL), so it is safe either way;
     # pin that it never renders as a live javascript: URL.
@@ -191,6 +194,8 @@ def test_allow_listed_and_relative_urls_pass(value):
     assert safe_attr_value("src", value) == value
 
 
-@pytest.mark.parametrize("attr", ["icon", "archive", "usemap", "profile", "lowsrc", "dynsrc"])
+@pytest.mark.parametrize(
+    "attr", ["icon", "archive", "usemap", "profile", "lowsrc", "dynsrc"]
+)
 def test_legacy_url_attributes_are_covered(attr):
     assert safe_attr_value(attr, "javascript:alert(1)") == UNSAFE_URL

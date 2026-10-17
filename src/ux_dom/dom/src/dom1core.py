@@ -6,6 +6,7 @@
 
 Not a standalone public module — part of the Tags / dom_tag MRO.
 """
+
 from __future__ import annotations
 
 __license__ = """
@@ -25,7 +26,6 @@ You should have received a copy of the GNU Lesser General
 Public License along with Dominate.  If not, see
 <http://www.gnu.org/licenses/>.
 """
-
 
 
 class dom1core:
@@ -110,4 +110,3 @@ class dom1core:
     @property
     def ownerDocument(self):
         return self.document
-

@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Checkbox — operational focus, 44px hit area via label pairing."""
+
 from __future__ import annotations
 
 from typing import Any

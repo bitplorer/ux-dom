@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Alert — surface-aware callout."""
+
 from __future__ import annotations
 
 from typing import Any

@@ -37,11 +37,7 @@ class TestStaticSync(unittest.TestCase):
 class TestRunnablePackage(unittest.TestCase):
     def test_package_without_vendored_js(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "pkg", dest=Path(td) / "pkg", force=True
-                )
-            )
+            root = create_app(ScaffoldOptions("pkg", dest=Path(td) / "pkg", force=True))
             dest = write_runnable_package(root, name="pkg")
             self.assertTrue((dest / "run.sh").is_file())
             man = json.loads((dest / "MANIFEST.json").read_text())
@@ -52,14 +48,8 @@ class TestRunnablePackage(unittest.TestCase):
 
     def test_build_and_serve_from_package_mount(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "run", dest=Path(td) / "run", force=True
-                )
-            )
-            rep = run_build(
-                cwd=root, package=True, package_name="run"
-            )
+            root = create_app(ScaffoldOptions("run", dest=Path(td) / "run", force=True))
+            rep = run_build(cwd=root, package=True, package_name="run")
             self.assertTrue(rep.ok, rep.steps)
             sys.path.insert(0, str(root))
             for k in list(sys.modules):

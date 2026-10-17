@@ -36,7 +36,9 @@ class TestSemantic(unittest.TestCase):
         with self.assertRaises(ProductHostMoved):
             App(debug=True).xelement().htmx().csp().fastapi(title="t")
         b = App(debug=True).xelement().htmx().csp()
-        app = b.build(asgi=FastAPI(title="t", debug=True, default_response_class=HTMLResponse))
+        app = b.build(
+            asgi=FastAPI(title="t", debug=True, default_response_class=HTMLResponse)
+        )
         c = TestClient(app)
         self.assertEqual(c.get(XELEMENT_JS_URL).status_code, 200)
 
@@ -51,11 +53,7 @@ class TestSemantic(unittest.TestCase):
 class TestAppWeb(unittest.TestCase):
     def test_web_builds_scaffold_like(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "w", dest=Path(td) / "w", force=True
-                )
-            )
+            root = create_app(ScaffoldOptions("w", dest=Path(td) / "w", force=True))
             main = (root / "app/main.py").read_text()
             self.assertTrue("document.mount" in main or "FastAPI" in main)
             pass  # CreateAsgi may mention routes API

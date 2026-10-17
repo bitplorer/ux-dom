@@ -1,4 +1,5 @@
 """CreateAsgi, host, and document mount paths used in production scaffolds."""
+
 from __future__ import annotations
 
 import unittest
@@ -120,6 +121,7 @@ class TestStyleTokensFunctional(unittest.TestCase):
             self.assertIn("a", s)
             self.assertIn("b", s)
 
+
 class TestDocumentAndPaths(unittest.TestCase):
     def test_using_and_mount(self):
         from ux_dom import Document
@@ -128,6 +130,7 @@ class TestDocumentAndPaths(unittest.TestCase):
         d = Document(ensure_csrf_token=False).using(Htmx(cdn=True))
         self.assertTrue(d.runtimes())
         d.mount(FastAPI())
+
 
 class TestParseEscape(unittest.TestCase):
     def test_escape(self):
@@ -150,6 +153,7 @@ class TestCLIModulesImport(unittest.TestCase):
     def test_imports(self):
         import ux_dom.cli.build  # noqa: F401
         import ux_dom.cli.lint  # noqa: F401
+
         with self.assertRaises(ImportError):
             import ux_dom.cli.scaffold  # noqa: F401
 

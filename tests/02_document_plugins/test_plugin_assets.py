@@ -82,11 +82,7 @@ class TestContributionHub(unittest.TestCase):
 class TestScaffoldServesPackageJs(unittest.TestCase):
     def test_page_and_runtime_url(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "ps", dest=Path(td) / "ps", force=True
-                )
-            )
+            root = create_app(ScaffoldOptions("ps", dest=Path(td) / "ps", force=True))
             sys.path.insert(0, str(root))
             for k in list(sys.modules):
                 if k == "app" or k.startswith("app."):

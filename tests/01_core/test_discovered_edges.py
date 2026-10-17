@@ -1,4 +1,5 @@
 """Edge cases found by exploratory discovery (kept as permanent guards)."""
+
 from __future__ import annotations
 
 import unittest

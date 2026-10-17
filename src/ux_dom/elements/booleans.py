@@ -5,6 +5,7 @@
 
 
 """Typed form elements: booleans. Optional higher-level inputs over HTML tags."""
+
 import typing as T
 from dataclasses import dataclass
 
@@ -29,9 +30,7 @@ class BooleanLabel(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super().__init__(
-            self.label, *args, className=self.className, **kwargs
-        )
+        super().__init__(self.label, *args, className=self.className, **kwargs)
 
     def render(self, label: str, *args, className, **kwargs):  # noqa
         return self.html_tags.label(
@@ -49,9 +48,7 @@ class BooleanLegend(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super().__init__(
-            self.label, *args, className=self.className, **kwargs
-        )
+        super().__init__(self.label, *args, className=self.className, **kwargs)
 
     def render(self, label: str, *args, className, **kwargs):
         return self.html_tags.legend(

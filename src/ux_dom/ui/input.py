@@ -3,6 +3,7 @@
 
 Matches Button target["md"] so form rows align cleanly on Host desks.
 """
+
 from __future__ import annotations
 
 from typing import Any

@@ -9,6 +9,7 @@ Guarantees under race / load / stress:
 * Independent trees still run in parallel (different root locks).
 * ReactiveComponent field updates stay consistent with displayed HTML.
 """
+
 from __future__ import annotations
 
 import asyncio

@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Badge — operational variants on elevated tokens."""
+
 from __future__ import annotations
 
 from typing import Any

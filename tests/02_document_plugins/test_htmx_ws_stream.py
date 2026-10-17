@@ -1,4 +1,5 @@
 """HTMX pure-ASGI middleware, WebSocket adapter, async HTML streaming."""
+
 from __future__ import annotations
 
 import asyncio

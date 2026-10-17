@@ -3,6 +3,7 @@
 
 Markup only. Filtering/commit are Host Actions + preview, not client state.
 """
+
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -58,10 +59,14 @@ class Command(Component):
                 className=field_classes(className="border-0 bg-transparent"),
                 **{"aria-label": "Command search"},
             ),
-            ol(*rows, className="mt-2 max-h-64 overflow-auto") if rows else p(
-                "No results", className=cn(type_scale["caption"], "p-3")
+            (
+                ol(*rows, className="mt-2 max-h-64 overflow-auto")
+                if rows
+                else p("No results", className=cn(type_scale["caption"], "p-3"))
             ),
-            className=cn(surface["l2"], overlay["command"], "rounded-xl p-2", className),
+            className=cn(
+                surface["l2"], overlay["command"], "rounded-xl p-2", className
+            ),
         )
         return div(
             div(className=overlay["backdrop"]),

@@ -38,6 +38,7 @@ class TestPolicyDefaultsAndOptOut(unittest.TestCase):
         self.assertFalse(should_parallelize(12))
         got = render_parallel(roots)
         self.assertEqual(got, expected)
+
         # build too
         def card(i):
             with div(id=f"c{i}") as r:

@@ -88,7 +88,9 @@ class ConcurrencySettings:
         return cls(
             parallel_enabled=_env_bool("UX_DOM_PARALLEL", True),
             max_workers=_env_int("UX_DOM_MAX_WORKERS", None),
-            min_items_for_parallel=max(1, _env_int("UX_DOM_PARALLEL_MIN_ITEMS", 2) or 2),
+            min_items_for_parallel=max(
+                1, _env_int("UX_DOM_PARALLEL_MIN_ITEMS", 2) or 2
+            ),
             tree_locks_enabled=_env_bool("UX_DOM_TREE_LOCKS", True),
         )
 
@@ -125,16 +127,22 @@ def configure_concurrency(
         cur = _SETTINGS
         _SETTINGS = replace(
             cur,
-            parallel_enabled=cur.parallel_enabled
-            if parallel_enabled is None
-            else bool(parallel_enabled),
+            parallel_enabled=(
+                cur.parallel_enabled
+                if parallel_enabled is None
+                else bool(parallel_enabled)
+            ),
             max_workers=cur.max_workers if max_workers is None else max_workers,
-            min_items_for_parallel=cur.min_items_for_parallel
-            if min_items_for_parallel is None
-            else max(1, int(min_items_for_parallel)),
-            tree_locks_enabled=cur.tree_locks_enabled
-            if tree_locks_enabled is None
-            else bool(tree_locks_enabled),
+            min_items_for_parallel=(
+                cur.min_items_for_parallel
+                if min_items_for_parallel is None
+                else max(1, int(min_items_for_parallel))
+            ),
+            tree_locks_enabled=(
+                cur.tree_locks_enabled
+                if tree_locks_enabled is None
+                else bool(tree_locks_enabled)
+            ),
         )
         effective = _SETTINGS
     if reset_pool:
@@ -312,10 +320,14 @@ def render_parallel(
     if not should_parallelize(len(nodes), max_workers=max_workers, parallel=parallel):
         return [_render_one(n, pretty) for n in nodes]
 
-    workers = max_workers if max_workers is not None else min(default_workers(), len(nodes))
+    workers = (
+        max_workers if max_workers is not None else min(default_workers(), len(nodes))
+    )
     workers = max(1, int(workers))
     if max_workers is not None:
-        with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="uxdom-rp") as ex:
+        with ThreadPoolExecutor(
+            max_workers=workers, thread_name_prefix="uxdom-rp"
+        ) as ex:
             futs = [ex.submit(_render_one, n, pretty) for n in nodes]
             return [f.result() for f in futs]
 
@@ -336,9 +348,13 @@ def build_parallel(
         return []
     if not should_parallelize(len(items), max_workers=max_workers, parallel=parallel):
         return [fn(item) for item in items]
-    workers = max_workers if max_workers is not None else min(default_workers(), len(items))
+    workers = (
+        max_workers if max_workers is not None else min(default_workers(), len(items))
+    )
     workers = max(1, int(workers))
-    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="uxdom-build") as ex:
+    with ThreadPoolExecutor(
+        max_workers=workers, thread_name_prefix="uxdom-build"
+    ) as ex:
         futs = [ex.submit(fn, item) for item in items]
         return [f.result() for f in futs]
 

@@ -27,7 +27,7 @@ _VARIANTS = {
 
 _SIZES = {
     "sm": target["sm"],
-    "md": target["md"],      # 44px default
+    "md": target["md"],  # 44px default
     "lg": target["lg"],
     "icon": target["icon"],
 }

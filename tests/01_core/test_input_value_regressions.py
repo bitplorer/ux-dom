@@ -1,4 +1,5 @@
 """Form input value plumbing (CharInput/TextInput and related regressions)."""
+
 from __future__ import annotations
 
 import unittest
@@ -32,7 +33,9 @@ class TestCharInputValue(unittest.TestCase):
         self.assertIn('value="v1"', html)
 
     def test_text_input_value(self):
-        html = TextInput(name="q", placeholder="ph", value="v2").__render__(pretty=False)
+        html = TextInput(name="q", placeholder="ph", value="v2").__render__(
+            pretty=False
+        )
         self.assertIn('value="v2"', html)
         self.assertIn('name="q"', html)
 
@@ -45,7 +48,7 @@ class TestCharInputValue(unittest.TestCase):
 
 class TestDefHTMLStillSafe(unittest.TestCase):
     def test_img_onerror(self):
-        nodes = defHTML('<img src=x onerror=alert(1)>', escape=True)
+        nodes = defHTML("<img src=x onerror=alert(1)>", escape=True)
         html = "".join(n.__render__(pretty=False) for n in nodes)
         self.assertNotIn("onerror", html.lower())
 

@@ -1,4 +1,5 @@
 """Reloader internal: _watch. Dev hot-reload support; not a production public API."""
+
 import asyncio
 import itertools
 import logging
@@ -45,7 +46,9 @@ class FileWatcher:
 
     async def _watch(self) -> None:
         if _watchfiles is None:
-            raise RuntimeError("ux_dom.reloader requires watchfiles; pip install watchfiles")
+            raise RuntimeError(
+                "ux_dom.reloader requires watchfiles; pip install watchfiles"
+            )
         async for changes in _watchfiles.awatch(self._path):
             changeset: ChangeSet = {}
             for event, group in itertools.groupby(changes, key=lambda item: item[0]):

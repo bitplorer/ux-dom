@@ -5,6 +5,7 @@
 
 
 """Jinja integration helpers (render_jinja bridges)."""
+
 from ux_dom.dom.src import component
 
 __all__ = ["JinjaComponent"]

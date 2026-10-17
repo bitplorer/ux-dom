@@ -3,6 +3,7 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 """Response-related plugin contributions. Prefer ux_dom.response for apps."""
+
 from __future__ import annotations
 
 from collections.abc import Callable

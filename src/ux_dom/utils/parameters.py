@@ -3,10 +3,9 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 """Parameter/introspection helpers for CLI and diagnostics."""
+
 import inspect
 from collections.abc import Callable
-
-
 
 __all__ = ["Parameters"]
 

@@ -1,4 +1,5 @@
 """run_build has no parameters it cannot honour (no silent no-ops)."""
+
 import inspect
 
 import pytest
@@ -14,7 +15,9 @@ def test_dead_parameters_are_gone(name):
     assert name not in inspect.signature(run_build).parameters
 
 
-@pytest.mark.parametrize("kw", [{"minify": True}, {"minify": False}, {"skip_tailwind": True}])
+@pytest.mark.parametrize(
+    "kw", [{"minify": True}, {"minify": False}, {"skip_tailwind": True}]
+)
 def test_passing_a_removed_parameter_is_a_type_error(kw, tmp_path):
     with pytest.raises(TypeError):
         run_build(cwd=tmp_path, **kw)

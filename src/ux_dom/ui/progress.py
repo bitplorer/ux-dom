@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Progress — server-rendered bar (value 0–100)."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -20,8 +21,12 @@ class Progress(Component):
         className: str = "",
         **attrs: Any,
     ):
-        pct = 0.0 if max <= 0 else __import__("builtins").max(
-            0.0, min(100.0, (float(value) / float(max)) * 100.0)
+        pct = (
+            0.0
+            if max <= 0
+            else __import__("builtins").max(
+                0.0, min(100.0, (float(value) / float(max)) * 100.0)
+            )
         )
         return div(
             div(
@@ -34,6 +39,9 @@ class Progress(Component):
                 "aria-valuemax": str(max),
                 "aria-valuenow": str(value),
             },
-            className=cn("relative h-2 w-full overflow-hidden rounded-full bg-stone-800", className),
+            className=cn(
+                "relative h-2 w-full overflow-hidden rounded-full bg-stone-800",
+                className,
+            ),
             **attrs,
         )

@@ -12,6 +12,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "src" / "ux_dom"
 
+
 class TestComposeDependencyDirection(unittest.TestCase):
     """Characterization: ux-dom does not depend on ux-compose."""
 
@@ -40,8 +41,6 @@ class TestComposeDependencyDirection(unittest.TestCase):
                 ):
                     offenders.append(f"{path}:{node.lineno}")
         self.assertEqual(offenders, [])
-
-
 
 
 class TestPytestWorkflow(unittest.TestCase):

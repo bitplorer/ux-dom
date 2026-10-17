@@ -1,4 +1,5 @@
 """NullControl — no-op control plugin for tests and minimal shells."""
+
 from __future__ import annotations
 
 from collections.abc import Sequence

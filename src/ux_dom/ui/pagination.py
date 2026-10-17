@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Pagination — Channel-friendly page controls (data-channel-action optional)."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -44,7 +45,10 @@ class Pagination(Component):
 
         return div(
             page_btn("Prev", page - 1, disabled=page <= 1),
-            span(f"{page} / {total_pages}", className="px-3 text-sm text-stone-400 tabular-nums"),
+            span(
+                f"{page} / {total_pages}",
+                className="px-3 text-sm text-stone-400 tabular-nums",
+            ),
             page_btn("Next", page + 1, disabled=page >= total_pages),
             className=cn("flex items-center gap-2", className),
             **attrs,

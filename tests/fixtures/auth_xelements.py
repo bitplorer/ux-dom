@@ -8,6 +8,7 @@ Used by unit + live browser suites. Mirrors real multi-step login/signup UX:
 * ``ProfileBadge`` — CustomElement light badge (multi-instance stress)
 * ``SessionBanner`` — CustomElement showing session state from light attrs
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass

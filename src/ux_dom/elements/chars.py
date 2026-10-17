@@ -5,6 +5,7 @@
 
 
 """Typed form elements: chars. Optional higher-level inputs over HTML tags."""
+
 import typing as T
 from dataclasses import dataclass, field
 
@@ -32,9 +33,7 @@ class CharLabel(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super().__init__(
-            label=self.label, *args, className=self.className, **kwargs
-        )
+        super().__init__(label=self.label, *args, className=self.className, **kwargs)
 
     def render(self, label: str, *args, className, **kwargs):  # noqa
         return self.html_tags.label(
@@ -52,9 +51,7 @@ class CharLegend(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super().__init__(
-            label=self.label, *args, className=self.className, **kwargs
-        )
+        super().__init__(label=self.label, *args, className=self.className, **kwargs)
 
     def render(self, label, *args, className, **kwargs):
         return self.html_tags.legend(
@@ -102,9 +99,7 @@ class CharInput(component.Component):
     spell_check: str | None = spell_check_field
     min_length: str | None = min_length_field
     max_length: str | None = max_length_field
-    pattern: str | None = StringValidator(
-        logger=False, debug=True, default=None
-    )
+    pattern: str | None = StringValidator(logger=False, debug=True, default=None)
     className: str = StringValidator(logger=False, debug=True, default="")
     value: str | None = StringValidator(logger=False, debug=True, default=None)
 

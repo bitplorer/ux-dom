@@ -1,4 +1,5 @@
 """HTMX scripts are exact files with SRI (review M3)."""
+
 from __future__ import annotations
 
 import re

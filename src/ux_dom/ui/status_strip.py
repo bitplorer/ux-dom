@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """StatusStrip — pattern for desk status chips + message."""
+
 from __future__ import annotations
 
 from collections.abc import Sequence

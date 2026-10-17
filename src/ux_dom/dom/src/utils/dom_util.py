@@ -75,10 +75,25 @@ def escape(data, quote=True):
 # attributes marked unescaped, because no caller needs an executable URL.
 URL_ATTRIBUTES = frozenset(
     {
-        "href", "src", "action", "formaction", "xlink:href", "poster",
-        "cite", "background", "data", "codebase", "longdesc",
-        "manifest", "ping", "icon", "archive", "usemap", "profile",
-        "lowsrc", "dynsrc",
+        "href",
+        "src",
+        "action",
+        "formaction",
+        "xlink:href",
+        "poster",
+        "cite",
+        "background",
+        "data",
+        "codebase",
+        "longdesc",
+        "manifest",
+        "ping",
+        "icon",
+        "archive",
+        "usemap",
+        "profile",
+        "lowsrc",
+        "dynsrc",
     }
 )
 # Attributes whose URL htmx (or its SSE/WebSocket extensions) fetches and
@@ -86,7 +101,15 @@ URL_ATTRIBUTES = frozenset(
 # accept relative same-origin URLs only, unless the value is wrapped in
 # ``cross_origin(...)``.
 SAME_ORIGIN_URL_ATTRIBUTES = frozenset(
-    {"hx-get", "hx-post", "hx-put", "hx-patch", "hx-delete", "sse-connect", "ws-connect"}
+    {
+        "hx-get",
+        "hx-post",
+        "hx-put",
+        "hx-patch",
+        "hx-delete",
+        "sse-connect",
+        "ws-connect",
+    }
 )
 # Attributes whose value is a whole HTML document, not a URL. A scheme check
 # is meaningless there, so they are refused unless the value explicitly opts

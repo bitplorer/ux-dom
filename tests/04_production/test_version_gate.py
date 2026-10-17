@@ -5,6 +5,7 @@ every X.Y.Z in it must equal ``__version__`` unless listed as a known
 non-library string), plus a repo-wide check that no "ux-dom X.Y" brand line
 names another version. Add a file here when it starts stating the version.
 """
+
 from __future__ import annotations
 
 import re
@@ -73,7 +74,9 @@ def test_no_stale_brand_version_anywhere():
             continue
         if set(path.relative_to(ROOT).parts) & SKIP_DIRS or path.name in HISTORY:
             continue
-        for n, line in enumerate(path.read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
+        for n, line in enumerate(
+            path.read_text(encoding="utf-8", errors="ignore").splitlines(), 1
+        ):
             for m in BRAND.finditer(line):
                 if m.group(1) not in (V, MAJOR_MINOR):
                     stale.append(f"{path.relative_to(ROOT)}:{n}: {m.group(0)}")

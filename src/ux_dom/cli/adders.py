@@ -42,9 +42,7 @@ def _module_stem(name: str) -> str:
     return s
 
 
-def add_component(
-    name: str, *, root: Path | None = None, force: bool = False
-) -> Path:
+def add_component(name: str, *, root: Path | None = None, force: bool = False) -> Path:
     """Create ``app/components/{stem}.py`` with a Component stub."""
     app_root = _find_app_root(root)
     stem = _module_stem(name)
@@ -64,8 +62,7 @@ from ux_dom.dom import div
 class {cls}(Component):
     def render(self, *args, **kwargs):
         return div("{cls}", className="p-4")
-'''
-        ,
+''',
         encoding="utf-8",
     )
     return path

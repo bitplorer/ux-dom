@@ -4,6 +4,7 @@ Fragment is a tree builder. Extract slices serialized HTML.
 No fragment.py. No Document / CLI / root fashion add.
 No ux-channel hard dep (Soft 1/4 prefer-owner).
 """
+
 from __future__ import annotations
 
 import unittest
@@ -55,8 +56,12 @@ class TestExtractByIdContract(unittest.TestCase):
     def test_empty_html_or_empty_id_passthrough(self):
         extract_by_id = self._fn()
         self.assertEqual(extract_by_id("", "hello"), "")
-        self.assertEqual(extract_by_id("<div id='hello'></div>", ""), "<div id='hello'></div>")
-        self.assertEqual(extract_by_id("<div id='hello'></div>", "#"), "<div id='hello'></div>")
+        self.assertEqual(
+            extract_by_id("<div id='hello'></div>", ""), "<div id='hello'></div>"
+        )
+        self.assertEqual(
+            extract_by_id("<div id='hello'></div>", "#"), "<div id='hello'></div>"
+        )
         self.assertEqual(extract_by_id(None, "hello"), None)  # type: ignore[arg-type]
 
     def test_hash_prefix_and_bare_id_match(self):
@@ -97,7 +102,9 @@ class TestExtractByIdContract(unittest.TestCase):
 
     def test_void_and_self_close(self):
         extract_by_id = self._fn()
-        self.assertEqual(extract_by_id('<img id="pic" src="x">tail', "pic"), '<img id="pic" src="x">')
+        self.assertEqual(
+            extract_by_id('<img id="pic" src="x">tail', "pic"), '<img id="pic" src="x">'
+        )
         self.assertEqual(extract_by_id('<br id="b"/>tail', "b"), '<br id="b"/>')
 
     def test_quoted_id_and_id_inside_quoted_value_ignored(self):
@@ -110,7 +117,9 @@ class TestExtractByIdContract(unittest.TestCase):
     def test_nested_same_name_depth(self):
         extract_by_id = self._fn()
         html = '<div id="outer"><div><div id="hello"><div>in</div></div></div></div>'
-        self.assertEqual(extract_by_id(html, "hello"), '<div id="hello"><div>in</div></div>')
+        self.assertEqual(
+            extract_by_id(html, "hello"), '<div id="hello"><div>in</div></div>'
+        )
 
 
 class TestExtractByIdKillList(unittest.TestCase):

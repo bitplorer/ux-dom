@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Separator — surface border."""
+
 from __future__ import annotations
 
 from typing import Any

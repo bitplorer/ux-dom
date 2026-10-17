@@ -3,6 +3,7 @@
 Domain prepare lives in ``ux_dom.response.serialize`` (no framework imports).
 This module only wraps Starlette response classes.
 """
+
 import inspect
 
 # Copyright (c) 2022 ux_dom

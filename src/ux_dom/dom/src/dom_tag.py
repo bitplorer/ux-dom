@@ -12,6 +12,7 @@ Design: ContextVar parent stack for concurrent with-builders; per-root locks
 from concurrency wrap mutate + serialize; membership is ownership-aware
 (docs/internals/MEMBERSHIP.md). Private helpers are _prefixed.
 """
+
 import copy
 
 # pylint: disable=bad-indentation, bad-whitespace, missing-docstring
@@ -23,7 +24,15 @@ from functools import wraps
 
 from ux_dom.dom.src.concurrency import multi_tree_lock, tree_lock_for
 
-__all__ = ["dom_string", "dom_tag", "get_current", "attr", "context_stack", "tree_lock_for", "multi_tree_lock"]
+__all__ = [
+    "dom_string",
+    "dom_tag",
+    "get_current",
+    "attr",
+    "context_stack",
+    "tree_lock_for",
+    "multi_tree_lock",
+]
 
 
 # Context stacks: ONE mechanism (ContextVar) for sync and async.

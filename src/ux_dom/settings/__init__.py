@@ -8,4 +8,5 @@
 App layout is ``from ux_compose import WebAssets``.
 Product CSS is ``uxcompose build``.
 """
+
 from .document import *

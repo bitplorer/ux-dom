@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Skeleton — loading placeholder on L1 surface language."""
+
 from __future__ import annotations
 
 from typing import Any

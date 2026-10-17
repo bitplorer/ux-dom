@@ -5,4 +5,5 @@
 
 
 """DOM utilities (escape, text nodes) used by Tags serialize."""
+
 from .dom_util import *

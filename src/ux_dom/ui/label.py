@@ -1,5 +1,6 @@
 # Copyright (c) 2026 ux-dom
 """Label — type_scale label role."""
+
 from __future__ import annotations
 
 from typing import Any

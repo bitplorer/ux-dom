@@ -7,6 +7,7 @@ Without the toolchain these tests skip locally with that hint. CI sets
 ``UX_DOM_REQUIRE_BROWSER=1`` so a missing toolchain fails instead of skipping:
 a browser gate that can silently skip is not a gate.
 """
+
 from __future__ import annotations
 
 import os

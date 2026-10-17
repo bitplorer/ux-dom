@@ -1,4 +1,5 @@
 """Attribute names are validated on every render path (fail closed)."""
+
 from __future__ import annotations
 
 import pytest
@@ -21,8 +22,19 @@ BAD = [
     "a\x7fb",
     "",
 ]
-GOOD = ["class", "id", "data-x", "aria-label", "@click", ":class",
-        "x-on:keyup.enter", "hx-post", "xlink:href", "x-bind:href", "_hyperscript"]
+GOOD = [
+    "class",
+    "id",
+    "data-x",
+    "aria-label",
+    "@click",
+    ":class",
+    "x-on:keyup.enter",
+    "hx-post",
+    "xlink:href",
+    "x-bind:href",
+    "_hyperscript",
+]
 
 
 @pytest.mark.parametrize("name", BAD)
@@ -69,5 +81,7 @@ def test_invalid_name_is_a_value_error():
 
 
 def test_real_names_still_render():
-    html = a("x", href="/a", **{"@click": "go()", "x-on:keyup.enter": "go()"}).__render__(pretty=False)
+    html = a(
+        "x", href="/a", **{"@click": "go()", "x-on:keyup.enter": "go()"}
+    ).__render__(pretty=False)
     assert 'href="/a"' in html and '@click="go()"' in html

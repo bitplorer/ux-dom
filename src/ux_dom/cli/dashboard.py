@@ -143,7 +143,8 @@ def _render_panel(p: Panel) -> str:
         h += p.svg
     elif p.kind == "table":
         rows = "".join(
-            f"<tr><th>{_esc(a)}</th><td><code>{_esc(b)}</code></td></tr>" for a, b in p.rows
+            f"<tr><th>{_esc(a)}</th><td><code>{_esc(b)}</code></td></tr>"
+            for a, b in p.rows
         )
         h += f"<table>{rows}</table>"
     elif p.kind == "custom_element":
@@ -198,10 +199,12 @@ def write_dom_dashboard(out_dir: Path, report: dict[str, Any]) -> Path:
     for a in assets:
         kind = a.kind.lower()
         if kind in ("css", "inline_css"):
-            style_bits.append(f"<style data-dom-dx-asset=\"{_esc(a.name)}\">{a.content}</style>")
+            style_bits.append(
+                f'<style data-dom-dx-asset="{_esc(a.name)}">{a.content}</style>'
+            )
         else:
             script_bits.append(
-                f"<script data-dom-dx-asset=\"{_esc(a.name)}\">\n{a.content}\n</script>"
+                f'<script data-dom-dx-asset="{_esc(a.name)}">\n{a.content}\n</script>'
             )
     html_doc = f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"/>

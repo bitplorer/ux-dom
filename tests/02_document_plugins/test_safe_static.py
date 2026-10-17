@@ -107,7 +107,11 @@ class TestNoDirectoryLeak(unittest.TestCase):
         app = (
             App()
             .use(XElementRuntime())
-            .build(asgi=FastAPI(title="sec", debug=True, default_response_class=HTMLResponse))
+            .build(
+                asgi=FastAPI(
+                    title="sec", debug=True, default_response_class=HTMLResponse
+                )
+            )
         )
         c = TestClient(app)
         r = c.get(XELEMENT_JS_URL)

@@ -1,4 +1,5 @@
 """web_io event types/internals. Private; subject to change."""
+
 import inspect
 
 # Copyright (c) 2023 ux-dom

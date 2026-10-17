@@ -1,4 +1,5 @@
 """Every third-party package ux_dom imports must be declared, not borrowed."""
+
 import tomllib
 from pathlib import Path
 

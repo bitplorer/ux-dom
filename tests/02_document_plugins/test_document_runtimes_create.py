@@ -51,5 +51,3 @@ class TestCreateProject(unittest.TestCase):
     def test_create_package_is_absent(self):
         with self.assertRaises(ImportError):
             import ux_dom.create  # noqa: F401
-
-

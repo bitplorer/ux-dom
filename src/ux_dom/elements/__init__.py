@@ -9,6 +9,7 @@
 The only valio consumer in ux-dom, so the valio PEP 649 patch is applied here,
 on first import of ``ux_dom.elements``, instead of on every ``import ux_dom``.
 """
+
 from ._valio_pep649 import ensure_valio_pep649_compat
 
 ensure_valio_pep649_compat()

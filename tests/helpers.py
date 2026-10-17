@@ -3,6 +3,7 @@
 ``create_app`` here writes a **pure-dom experiment tree** for tests.
 It is not a product scaffold. Product apps: ``uxcompose create-app``.
 """
+
 from __future__ import annotations
 
 from collections.abc import Iterator
@@ -41,7 +42,7 @@ class ScaffoldOptions:
         self.template = template or "minimal"
 
 
-_DOCUMENT_PY = '''\
+_DOCUMENT_PY = """\
 from __future__ import annotations
 
 from ux_dom import Document
@@ -54,9 +55,9 @@ document = Document(head=[], body=[], ensure_csrf_token=False).use(
 
 def page(*children, page_title: str = "experiment"):
     return document(*children)
-'''
+"""
 
-_MAIN_PY = '''\
+_MAIN_PY = """\
 from __future__ import annotations
 
 from fastapi import APIRouter, FastAPI
@@ -88,18 +89,18 @@ app.include_router(pages)
 @app.get("/health")
 def health():
     return JSONResponse({{"ok": True, "app": "{title}"}})
-'''
+"""
 
-_SETTINGS_PY = '''\
+_SETTINGS_PY = """\
 from pathlib import Path
 
 DEBUG = True
 APP_TITLE = "{title}"
 WITH_CSP = {csp}
 BASE = Path(__file__).resolve().parent.parent
-'''
+"""
 
-_INDEX_PY = '''\
+_INDEX_PY = """\
 from __future__ import annotations
 
 from ux_dom import Component
@@ -109,9 +110,9 @@ from ux_dom.dom import div
 class Index(Component):
     def render(self, *args, **kwargs):
         return div("index", id="index-root")
-'''
+"""
 
-_ABOUT_PY = '''\
+_ABOUT_PY = """\
 from __future__ import annotations
 
 from ux_dom import Component
@@ -121,7 +122,7 @@ from ux_dom.dom import div
 class About(Component):
     def render(self, *args, **kwargs):
         return div("about", id="about-root")
-'''
+"""
 
 
 def create_app(opts: ScaffoldOptions) -> Path:
@@ -139,9 +140,7 @@ def create_app(opts: ScaffoldOptions) -> Path:
     (pages / "__init__.py").write_text("", encoding="utf-8")
     title = opts.app_name
     csp = "Csp.auto()" if opts.with_csp else "Csp.dev()"
-    (app / "document.py").write_text(
-        _DOCUMENT_PY.format(csp=csp), encoding="utf-8"
-    )
+    (app / "document.py").write_text(_DOCUMENT_PY.format(csp=csp), encoding="utf-8")
     (app / "main.py").write_text(_MAIN_PY.format(title=title), encoding="utf-8")
     (app / "settings.py").write_text(
         _SETTINGS_PY.format(title=title, csp=str(bool(opts.with_csp))),

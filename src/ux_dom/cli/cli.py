@@ -11,6 +11,7 @@ https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md
 XElement is served from the installed package at ``/ux-dom/static/x_element.js``
 (no app copy).
 """
+
 from pathlib import Path
 
 from typer import Option, Typer

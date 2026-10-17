@@ -236,9 +236,7 @@ Package static mounts recorded at build:
         "name": pkg_name,
         "generated_at": datetime.now(UTC).isoformat(),
         "source_root": str(root),
-        "served_files": [
-            {"prefix": p, "directory": d} for p, d in sync.mounts
-        ],
+        "served_files": [{"prefix": p, "directory": d} for p, d in sync.mounts],
         "dual_copy_files": [
             {"rel": f.rel, "sha256": f.sha256, "action": f.action} for f in sync.files
         ],

@@ -73,7 +73,9 @@ class TestMarkdownLinksResolve(unittest.TestCase):
                     continue
                 if not target.exists():
                     broken.append(f"{path.relative_to(ROOT)} -> {url}")
-        self.assertEqual(broken, [], "broken markdown links:\n" + "\n".join(broken[:40]))
+        self.assertEqual(
+            broken, [], "broken markdown links:\n" + "\n".join(broken[:40])
+        )
 
 
 class TestNoStaleFlatDocPaths(unittest.TestCase):
@@ -82,7 +84,13 @@ class TestNoStaleFlatDocPaths(unittest.TestCase):
         bad: list[str] = []
         # paths like docs/FOO.md where FOO is a nested guide basename
         pat = re.compile(r"(?<![\w./-])docs/([A-Z][A-Z0-9_]+\.md)\b")
-        scan_roots = [SRC, DOCS, ROOT / "examples", ROOT / "standalone", ROOT / "scripts"]
+        scan_roots = [
+            SRC,
+            DOCS,
+            ROOT / "examples",
+            ROOT / "standalone",
+            ROOT / "scripts",
+        ]
         for root in scan_roots:
             if not root.exists():
                 continue

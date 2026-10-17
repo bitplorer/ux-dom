@@ -46,7 +46,6 @@ class XElementRuntime:
             ),
         )
 
-
     def artifacts(self) -> Sequence[StaticArtifact]:
         if self.serve == "package_mount":
             return ()
@@ -143,7 +142,6 @@ class UxChannelRuntime:
         if not self.mount_via_ux_dom:
             return ()
         return self._inner.served_files()
-
 
     def artifacts(self) -> Sequence[StaticArtifact]:
         return self._inner.artifacts()
