@@ -231,13 +231,8 @@ def install_safe_static(app: Any, files: Sequence[SafeStaticFile]) -> int:
     if not files:
         return 0
 
-    try:
-        from starlette.responses import Response
-    except ImportError:
-        try:
-            from fastapi.responses import Response  # type: ignore
-        except ImportError:
-            return 0
+    # A host that serves files must have starlette; never skip routes silently.
+    from starlette.responses import Response
 
     def _make_handler(entry: SafeStaticFile):
         async def _serve() -> Response:

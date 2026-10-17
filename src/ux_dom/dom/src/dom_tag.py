@@ -16,37 +16,14 @@ import copy
 
 # pylint: disable=bad-indentation, bad-whitespace, missing-docstring
 import numbers
-import threading
 import typing
 
 from ux_dom.dom.src.concurrency import multi_tree_lock, tree_lock_for
-from collections import defaultdict, namedtuple
+from collections import namedtuple
 from functools import wraps
 
-try:
-    # Python 3
-    from collections.abc import Callable
-except ImportError:
-    # Python 2.7
-    from collections import Callable  # type: ignore
-
-try:
-    basestring = basestring  # type: ignore
-except NameError:  # py3
-    basestring = str
-    unicode = str
-
-try:
-    import greenlet  # type: ignore
-except ImportError:
-    greenlet = None
-
-try:
-    import contextvars
-    from contextvars import ContextVar
-except ImportError:  # pragma: no cover
-    contextvars = None  # type: ignore
-    ContextVar = None  # type: ignore
+from collections.abc import Callable
+from contextvars import ContextVar
 
 __all__ = ["dom_string", "dom_tag", "get_current", "attr", "context_stack", "tree_lock_for", "multi_tree_lock"]
 
@@ -55,10 +32,7 @@ __all__ = ["dom_string", "dom_tag", "get_current", "attr", "context_stack", "tre
 # Pipeline: sync with → __render__; async with → __async_render__.
 # Build stack + request vars (CSP) both use ContextVar on the active Context/Task.
 
-if ContextVar is not None:
-    _WITH_STACK = ContextVar("ux_dom_dom_with_stack", default=None)
-else:  # pragma: no cover
-    _WITH_STACK = None  # type: ignore
+_WITH_STACK: ContextVar[list | None] = ContextVar("ux_dom_dom_with_stack", default=None)
 
 
 def _peek_with_stack():
@@ -67,8 +41,6 @@ def _peek_with_stack():
     Does **not** create a stack (creating an empty list would be copied by
     reference into child asyncio Tasks and shared — classic ContextVar pitfall).
     """
-    if _WITH_STACK is None:  # pragma: no cover
-        return getattr(dom_tag, "_render_stack", None)
     return _WITH_STACK.get()
 
 
@@ -78,10 +50,6 @@ def _get_with_stack():
     If the current value is None **or** an empty list left over from a parent
     Context copy, allocate a fresh list so concurrent Tasks never share frames.
     """
-    if _WITH_STACK is None:  # pragma: no cover
-        if not hasattr(dom_tag, "_render_stack"):
-            dom_tag._render_stack = []  # type: ignore
-        return dom_tag._render_stack  # type: ignore
     stack = _WITH_STACK.get()
     if not stack:  # None or []
         stack = []
@@ -90,37 +58,18 @@ def _get_with_stack():
 
 
 def _clear_with_stack_if_empty():
-    if _WITH_STACK is None:
-        return
     stack = _WITH_STACK.get()
     if stack is not None and len(stack) == 0:
         _WITH_STACK.set(None)
 
 
-def _get_thread_context():
-    """Debug fingerprint (thread, task, greenlet). Prefer ContextVar for storage."""
-    parts = [threading.get_ident()]
-    try:
-        import asyncio
-
-        task = asyncio.current_task()
-        parts.append(id(task) if task is not None else 0)
-    except RuntimeError:
-        parts.append(0)
-    if greenlet is not None:
-        parts.append(id(greenlet.getcurrent()))
-    return tuple(parts)
-
-
 def context_stack():
     """Copy of active build frames (empty if no with/async with)."""
-    if _WITH_STACK is None:
-        return []
     stack = _WITH_STACK.get()
     return list(stack) if stack else []
 
 
-class dom_string(basestring):
+class dom_string(str):
     pass
 
 
@@ -191,8 +140,6 @@ class dom_tag(object):
 
     # context manager frames live in ContextVar ``_WITH_STACK`` (sync + async).
     frame = namedtuple("frame", ["tag", "items", "used"])
-    # ContextVar owns the open-tag stack; this map is unused.
-    _with_contexts: typing.DefaultDict = defaultdict(list)
 
     def _add_to_ctx(self):
         """Attach this node to the innermost active with / async with frame."""
@@ -293,7 +240,7 @@ class dom_tag(object):
             elif isinstance(value, dom_string):
                 value.parent = self
             self.children[key] = value
-        elif isinstance(key, basestring):
+        elif isinstance(key, str):
             self.attributes[key] = value
         else:
             raise TypeError(
@@ -377,7 +324,7 @@ class dom_tag(object):
                 # Convert to string so we fall into next if block
                 obj = str(obj)
 
-            if isinstance(obj, basestring):
+            if isinstance(obj, str):
                 # we are going to add the support for escaping only those strings whoes parents
                 # have explicit variable "escape_string" set to True
                 if hasattr(self, "escape_string"):
@@ -502,7 +449,7 @@ class dom_tag(object):
     @staticmethod
     def _type_matches(node, tag):
         """Type / name match for one node (no recursion)."""
-        if isinstance(tag, basestring):
+        if isinstance(tag, str):
             return type(node).__name__ == tag
         if isinstance(tag, type):
             return isinstance(node, tag)
@@ -523,7 +470,7 @@ class dom_tag(object):
         if entry is not None and entry is not node and isinstance(entry, dom_tag):
             candidates.append(entry)
 
-        if isinstance(tag, (basestring, type)) or tag is None:
+        if isinstance(tag, (str, type)) or tag is None:
             type_tag = dom_tag if tag is None else tag
             for cand in candidates:
                 if self._type_matches(cand, type_tag) and self._attr_matches(
@@ -602,7 +549,7 @@ class dom_tag(object):
                 return object.__getattribute__(self, "children")[key]
             except KeyError:
                 raise IndexError('Child with index "%s" does not exist.' % key)
-        elif isinstance(key, basestring):
+        elif isinstance(key, str):
             # Attributes are accessed using strings
             try:
                 return object.__getattribute__(self, "attributes")[key]
@@ -723,7 +670,7 @@ class dom_tag(object):
             entry = getattr(self, "_entry", None)
             if entry is not None and item is entry:
                 return True
-        if isinstance(item, (basestring, type, dom_tag)):
+        if isinstance(item, (str, type, dom_tag)):
             if any(self._match_nodes(self, item, [])):
                 return True
         elif item is None:
@@ -743,11 +690,8 @@ class dom_tag(object):
         self.add(obj)
         return self
 
-    # String and unicode representations are the same as __render__()
-    def __unicode__(self):
+    def __str__(self):
         return self.__render__()
-
-    __str__ = __unicode__
 
     def __render__(self, indent="  ", pretty=True, xhtml=False):
         """Phase **serialize** (sync): walk the finished tree → HTML string.
@@ -872,7 +816,7 @@ class dom_tag(object):
                     sb.append(indent_str * indent_level)
                 child._render(sb, indent_level, indent_str, pretty, xhtml, _seen=_seen)
             else:
-                sb.append(unicode(child))
+                sb.append(str(child))
 
         return inline
 

@@ -33,12 +33,6 @@ from jinja2.utils import htmlsafe_json_dumps
 
 from ux_dom.dom.src.dom_tag import dom_tag
 
-try:
-    basestring = basestring
-except NameError:
-    basestring = str
-    unichr = chr
-
 __all__ = [
     "include",
     "system",
@@ -287,10 +281,10 @@ def unescape(data):
         d = m.group(1)
         if d:
             d = int(d)
-            result.append(unichr(d))
+            result.append(chr(d))
         else:
             d = _unescape.get(m.group(2), ord("?"))
-            result.append(unichr(d))
+            result.append(chr(d))
 
         data = data[m.end() :]
         m = cc.search(data)
@@ -308,7 +302,7 @@ def url_escape(data):
 
 
 def url_unescape(data):
-    return re.sub("%([0-9a-fA-F]{2})", lambda m: unichr(int(m.group(1), 16)), data)
+    return re.sub("%([0-9a-fA-F]{2})", lambda m: chr(int(m.group(1), 16)), data)
 
 
 class lazy(dom_tag):

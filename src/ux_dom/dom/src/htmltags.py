@@ -10,12 +10,6 @@ Imported via ux_dom.dom. Attribute cleaning: Tags.clean_attribute.
 """
 from ux_dom.dom.src.main import extension
 
-try:
-    basestring = basestring
-except NameError:  # py3
-    basestring = str
-    unicode = str
-
 underscored_classes = set(["del", "input", "map", "object"])
 
 # Tag attributes
@@ -339,7 +333,7 @@ class title(html_tag):
     """
 
     def _get_text(self):
-        return "".join(self.get(basestring))
+        return "".join(self.get(str))
 
     def _set_text(self, text):
         self.clear()

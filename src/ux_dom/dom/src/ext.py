@@ -22,7 +22,7 @@ import typing
 from pathlib import Path
 
 from ux_dom.dom.src.dom1core import dom1core
-from ux_dom.dom.src.dom_tag import dom_tag, unicode
+from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.utils.dom_util import dom_text, iter_attributes
 
 __all__ = [
@@ -278,7 +278,7 @@ class Tags(dom_tag, dom1core):
                             )
                         lines = child.splitlines()
                         for line in lines:
-                            sb.append(unicode(line))
+                            sb.append(str(line))
                             if line and line != lines[-1]:
                                 sb, inline = self._new_line_and_inline_handler(
                                     sb,
@@ -288,7 +288,7 @@ class Tags(dom_tag, dom1core):
                                     inline and self.is_inline,
                                 )
                     else:
-                        sb.append(unicode(child))
+                        sb.append(str(child))
 
             if child or any(child):
                 if not isinstance(child, PlaceholderTag) or (
