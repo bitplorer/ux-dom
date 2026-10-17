@@ -5,25 +5,21 @@ from __future__ import annotations
 import asyncio
 import concurrent.futures
 import random
-import sys
-import tempfile
-import textwrap
 import threading
 import unittest
-from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
-from ux_dom import Component, Document, ReactiveComponent
+from ux_dom import Component, Document
 from ux_dom.dom import div, span, button
 from ux_dom.dom.src.dom_tag import get_current
 from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.plugins.routing import DirectoryRouting
+from ux_dom.response.starlette import html_response
 from ux_dom.response.starlette import StreamingResponse
 from ux_dom.web_io import WebSocketAdapter, WebSocketEvents
 
@@ -171,72 +167,26 @@ class TestMembershipChaos(unittest.TestCase):
 
 
 class TestHttpIntegration(unittest.TestCase):
-    def test_app_directory_router_parallel(self):
-        with tempfile.TemporaryDirectory() as td:
-            rootp = Path(td)
-            pkg = rootp / "chaosapp"
-            (pkg / "app" / "users" / "[id]").mkdir(parents=True)
-            for p in [
-                pkg,
-                pkg / "app",
-                pkg / "app" / "users",
-                pkg / "app" / "users" / "[id]",
-            ]:
-                (p / "__init__.py").write_text("")
-            (pkg / "app" / "home.py").write_text(textwrap.dedent("""
-                    from ux_dom.dom import Component, div, button, span
-                    __all__ = ["Home", "Counter"]
-                    class Home(Component):
-                        routes = ["get"]
-                        def render(self):
-                            return div(span("home"), button("go", hx_get="/x"), id="home")
-                        @classmethod
-                        def get(cls):
-                            return cls()
-                    class Counter(Component):
-                        routes = ["get", "inc"]
-                        def render(self, n=0):
-                            return div(f"n={n}", id="ctr")
-                        @classmethod
-                        def get(cls):
-                            return cls(n=0)
-                        @classmethod
-                        def inc(cls):
-                            return cls(n=1)
-                    """))
-            (pkg / "app" / "users" / "[id]" / "route.py").write_text(
-                "def get(id: str):\n"
-                "    from ux_dom.dom import div\n"
-                "    return div(f'user-{id}')\n"
-            )
-            sys.path.insert(0, str(rootp))
-            try:
-                api = (
-                    App(debug=False)
-                    .use(
-                        DirectoryRouting(
-                            package_dir=pkg, base_directory="app", prefix="/r"
-                        )
-                    )
-                    .use(HtmxControl(middleware=True))
-                    .build(asgi=FastAPI(title="Chaos", debug=False, default_response_class=HTMLResponse))
-                )
-                client = TestClient(api)
-                paths = [
-                    "/r/home",
-                    "/r/users/u42",
-                ]
+    def test_app_routes_parallel(self):
+        class Home(Component):
+            def render(self):
+                return div(span("home"), button("go", hx_get="/x"), id="home")
 
-                def hit(_):
-                    return client.get(random.choice(paths)).status_code
+        asgi = FastAPI(title="Chaos", debug=False, default_response_class=HTMLResponse)
+        asgi.get("/r/home")(html_response(lambda: Home()))
+        asgi.get("/r/users/{id}")(html_response(lambda id: div(f"user-{id}")))
+        api = App(debug=False).use(HtmxControl(middleware=True)).build(asgi=asgi)
+        client = TestClient(api)
+        paths = ["/r/home", "/r/users/u42"]
 
-                with concurrent.futures.ThreadPoolExecutor(16) as ex:
-                    codes = list(ex.map(hit, range(120)))
-                self.assertTrue(all(c == 200 for c in codes))
-                self.assertIn("home", client.get("/r/home").text)
-                self.assertIn("user-u42", client.get("/r/users/u42").text)
-            finally:
-                sys.path.remove(str(rootp))
+        def hit(_):
+            return client.get(random.choice(paths)).status_code
+
+        with concurrent.futures.ThreadPoolExecutor(16) as ex:
+            codes = list(ex.map(hit, range(120)))
+        self.assertTrue(all(c == 200 for c in codes))
+        self.assertIn("home", client.get("/r/home").text)
+        self.assertIn("user-u42", client.get("/r/users/u42").text)
 
     def test_streaming_and_htmx_parallel(self):
         app = FastAPI()

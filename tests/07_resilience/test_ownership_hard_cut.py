@@ -91,11 +91,22 @@ class TestDirectoryRoutesTeaching(unittest.TestCase):
         with self.assertRaises(ImportError):
             import ux_dom.plugins.hmr  # noqa: F401
 
-    def test_leftover_directory_router_still_importable(self):
-        from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
+    def test_directory_router_is_gone(self):
+        # Page routing lives in ux_compose.routing.DirectoryRoutes.
+        for mod in ("ux_dom.routing", "ux_dom.plugins.routing"):
+            with self.assertRaises(ImportError):
+                __import__(mod)
 
-        self.assertTrue(callable(DirectoryRouter))
+    def test_route_classes_are_response_adapters(self):
+        from ux_dom.response.fastapi import HTMLRoute, StreamingRoute
+
+        self.assertTrue(callable(HTMLRoute))
         self.assertTrue(callable(StreamingRoute))
+
+    def test_component_has_no_route_verb_attribute_hook(self):
+        from ux_dom import Component
+
+        self.assertNotIn("__getattribute__", vars(Component))
 
     def test_app_fastapi_still_refuses(self):
         from ux_dom.plugins.hub import App, ProductHostMoved

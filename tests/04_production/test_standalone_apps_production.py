@@ -141,8 +141,8 @@ class TestHTMXStreamApp(unittest.TestCase):
     def setUpClass(cls):
         cls.client = TestClient(htmx_app())
 
-    def test_route_shadow_and_partials(self):
-        sb = SearchBox.get()
+    def test_partials(self):
+        sb = SearchBox(q="")
         self.assertTrue(sb.get(id="q"))
         r = self.client.get("/search?q=abc", headers={"HX-Request": "true"})
         self.assertIn("abc-0", r.text)

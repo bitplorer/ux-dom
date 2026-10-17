@@ -10,8 +10,7 @@ ux_dom/
   dom/          Tags, Component, serialize, XElement types
   runtime/      Document-facing XElement / Htmx / Csp / Channel facades
   plugins/      Document contributions (CSP, SafeStatic, hub)
-  routing/      leftover DirectoryRouter (product routes are ux-compose)
-  response/     HTML / streaming adapters
+  response/     HTML / streaming adapters (+ FastAPI route classes)
   scripts/      x_element.js (package-mounted)
   cli/          doctor, lint, profile, add, dashboard (pure-dom)
   ui/           Optional copy-in kit
@@ -19,7 +18,7 @@ ux_dom/
 
 Product scaffold + DirectoryRoutes is **uxcompose** ([DX.md](../guides/DX.md)).
 This package does not ship `CreateProject`, `DirectoryRoutes`, `WebAssets`, or `TailwindCommand`.
-`DirectoryRouter` remains as a leftover discovery helper.
+Page routing is ux-compose's; ux-dom ships no router.
 
 | Path | Role | Public? |
 |------|------|---------|
@@ -35,7 +34,7 @@ This package does not ship `CreateProject`, `DirectoryRoutes`, `WebAssets`, or `
 | `ux_dom/dom/src/dom1core.py` | DOM-like helpers (getElementById, …) | Semi |
 | `ux_dom/dom/src/ext.py` | Tags serialize (pretty / walk / attr dialects) | Semi |
 | `ux_dom/dom/src/concurrency.py` | Per-root tree locks | Private-ish |
-| `ux_dom/dom/src/htmltags.py` / `csstags.py` / `jinjatags.py` / `svgtags.py` | Tag classes | via `ux_dom.dom` |
+| `ux_dom/dom/src/htmltags.py` / `jinjatags.py` / `svgtags.py` | Tag classes | via `ux_dom.dom` |
 | `ux_dom/dom/src/html_string.py` | defHTML parse + sanitize | **Public** via dom |
 | `ux_dom/dom/uniqueid.py` | Unique id generator for trees | Semi |
 | `ux_dom/dom/src/ws_rpc.py` | Optional WS helpers (uses document.ux_domMessageHandler) | Advanced |
@@ -43,8 +42,7 @@ This package does not ship `CreateProject`, `DirectoryRoutes`, `WebAssets`, or `
 | **`ux_dom/plugins/`** | Hub, contributions, CSP, control, package static | Semi / **Public** facades |
 | `ux_dom/plugins/runtime.py` | XElementRuntime, UxChannelRuntime — package static | Semi |
 | `ux_dom/plugins/safe_static.py` | Allowlisted file mounts | Semi |
-| **`ux_dom/routing/`** | Leftover `DirectoryRouter`; product routes are `ux_compose.routing` | Leftover |
-| **`ux_dom/response/`** | HTMLResponse, StreamingResponse | **Public** |
+| **`ux_dom/response/`** | HTMLResponse, StreamingResponse, FastAPI `HTMLRoute` / `StreamingRoute` | **Public** |
 | **`ux_dom/scripts/`** | `x_element.js` + `x_element_js` embed helper | **Public** helper |
 | **`ux_dom/cli/`** | Typer DX: doctor, lint, profile, add (not product scaffold) | CLI |
 | **`ux_dom/ui/`** | Optional Tailwind UI kit (copy-in) | Optional public |
@@ -54,7 +52,6 @@ This package does not ship `CreateProject`, `DirectoryRoutes`, `WebAssets`, or `
 | **`ux_dom/alpinejs/`** | Alpine sample widgets | Semi / demos |
 | **`ux_dom/reloader/`** | Dev hot-reload WebSocket server bits | Dev |
 | `ux_dom/web_io/` | Low-level web I/O helpers if present | Private |
-| `ux_dom/assets/` | Thin facade over plugin hub static | Semi |
 
 ## Docs layout
 

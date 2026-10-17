@@ -40,7 +40,7 @@ REQUIRED_FORMS = {
 
 # "ux-dom X.Y" / "uxdom X.Y.Z" brand lines anywhere outside history
 BRAND = re.compile(r"\bux-?dom (\d+\.\d+(?:\.\d+)?)\b")
-SKIP_DIRS = {".venv", ".git", "node_modules", "demosite", "examples", "reports", "__pycache__"}
+SKIP_DIRS = {".venv", ".git", "node_modules", "examples", "reports", "__pycache__"}
 HISTORY = {"CHANGELOG.md", "poetry.lock"}
 
 

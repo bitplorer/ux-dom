@@ -14,7 +14,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import AsyncIterator, Callable
 
-from fastapi import FastAPI, Request
+from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import JSONResponse, StreamingResponse as ASGIStreamingResponse
 from starlette.middleware.base import BaseHTTPMiddleware
 from starlette.routing import WebSocketRoute
@@ -23,10 +23,11 @@ from starlette.types import ASGIApp
 from ux_dom.dom import div, h2, p
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.plugins.routing import DirectoryRouting
+from ux_dom.response.fastapi import StreamingRoute
 from ux_dom.response.starlette import StreamingResponse
 
 from app import settings
+from app.pages import cart, index, shop, sse, stream
 
 PACKAGE = Path(__file__).resolve().parent
 
@@ -57,15 +58,16 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         return response
 
 
+pages = APIRouter(route_class=StreamingRoute)
+pages.get("/")(index.get)
+pages.get("/shop")(shop.get)
+pages.get("/cart")(cart.get)
+pages.post("/cart")(cart.post)
+pages.get("/sse")(sse.get)
+pages.get("/stream")(stream.get)
+
 _builder = (
     App(debug=settings.DEBUG)
-    .use(
-        DirectoryRouting(
-            package_dir=PACKAGE,
-            base_directory="routes",
-            prefix="",
-        )
-    )
     # sse=True loads htmx-ext-sse so Live SSE page (sse-connect) actually works
     .use(HtmxControl(middleware=True, version="2.0.4", sse=True))
 )
@@ -103,9 +105,9 @@ async def _lifespan(_app: FastAPI) -> AsyncIterator[None]:
             await _hot.shutdown()
 
 
-app = _builder.build(
-    asgi=FastAPI(title=settings.APP_TITLE, debug=settings.DEBUG, lifespan=_lifespan)
-)
+_asgi = FastAPI(title=settings.APP_TITLE, debug=settings.DEBUG, lifespan=_lifespan)
+_asgi.include_router(pages)
+app = _builder.build(asgi=_asgi)
 
 if _hot is not None:
     # HotReloadWebSocketRoute is a raw ASGI app; Starlette mounts it as-is.

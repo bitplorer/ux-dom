@@ -67,30 +67,20 @@ app, asgi, bundle = build(
 
 Scaffold: `uxcompose create-app`.
 
-## Pure-dom `DirectoryRouter` (examples, `uxdom add route`)
+## Plain FastAPI routes (pure-dom)
 
-`ux_dom.routing.fastapi.DirectoryRouter` (or the `DirectoryRouting` plugin)
-serves the examples and `uxdom add route` stubs. It uses the same path law,
-and it fails closed wherever a mistake would otherwise be a silent 404:
+ux-dom ships no router. Without ux-compose, register routes explicitly and let
+a ux-dom route class serialize the trees your endpoints return:
 
-| Rule | Detail |
-|------|--------|
-| **Stem match** | Case- and underscore-insensitive: `my_page.py` → `MyPage`, `wc.py` → `WC` |
-| **No page unit** | A module that exports renderable classes but none matches the stem raises `DirectoryRouterError` (logged instead when `fail_closed=False`) |
-| **Explicit `get`** | A `get` classmethod is served as-is (for example to wrap the page in a Document); the synthetic page GET is used only when there is none |
-| **Sub-actions** | Non-verb names in `routes=` become `GET /<stem>/<name>`: `routes = ["get", "partial"]` → `/htmx/partial`. A listed name with no method on the class raises |
-| **URLs in `routes=`** | Rejected: the URL comes from the file path, so `routes = ["/x/[id]"]` raises |
-| **`route.py` / `index.py`** | Map to the folder prefix; `route.py` uses module-level verb functions (`def get(id: str)`) |
+```python
+from fastapi import APIRouter
+from ux_dom.response.fastapi import StreamingRoute  # or HTMLRoute
 
-```text
-routes/
-  index.py                 →  GET /           (class Index)
-  htmx.py                  →  GET /htmx, GET /htmx/partial  (class Htmx, routes=["get", "partial"])
-  my_page.py               →  GET /my_page    (class MyPage)
-  orgs/[org]/teams/[team]/route.py  →  GET /orgs/{org}/teams/{team}/  (def get(org, team))
+pages = APIRouter(route_class=StreamingRoute)
+pages.get("/")(lambda: page(Index()))
 ```
 
-`uxdom add route NAME [--methods get,post]` writes files that follow these rules.
+See `examples/xelement_kit/app/main.py` for a full route table.
 
 ## What ux-dom does **not** own
 

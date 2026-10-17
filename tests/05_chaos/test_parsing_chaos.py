@@ -12,7 +12,6 @@ from ux_dom.dom import div
 from ux_dom.dom.src.html_string import defHTML
 from ux_dom.dom.src.parse_html import Attribute, tokenize_html, _normalize_attrs
 from ux_dom.htmx.middleware import HtmxDetails
-from ux_dom.routing.fastapi import _clean_url_prefix, _to_fastapi_path_params
 from ux_dom.web_io import WebSocketEvents
 from ux_dom.web_io._adapter import WebSocketAdapter
 
@@ -119,16 +118,7 @@ class TestAttributeParse(unittest.TestCase):
             self.assertIn(tok, h)
 
 
-class TestPathAndHeadersParse(unittest.TestCase):
-    def test_path_params(self):
-        converted = _to_fastapi_path_params("users/[id]/x")
-        self.assertIn("{id}", converted)
-        self.assertNotIn("[id]", converted)
-        self.assertIn("application", _clean_url_prefix("application/x", "app"))
-        cleaned = _clean_url_prefix("app/users/[id]", "app")
-        self.assertIn("users", cleaned)
-        self.assertIn("[id]", cleaned)  # brackets kept until _to_fastapi_path_params
-
+class TestHeadersParse(unittest.TestCase):
     def test_htmx_details(self):
         d = HtmxDetails(
             {

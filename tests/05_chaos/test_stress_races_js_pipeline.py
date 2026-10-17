@@ -5,9 +5,6 @@ from __future__ import annotations
 import asyncio
 import concurrent.futures
 import random
-import sys
-import tempfile
-import textwrap
 import threading
 import unittest
 from pathlib import Path
@@ -24,7 +21,7 @@ from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.plugins.routing import DirectoryRouting
+from ux_dom.response.starlette import html_response
 from ux_dom.reloader._notify import Notify
 from ux_dom.response.starlette import StreamingResponse
 from ux_dom.web_io import WebSocketAdapter, WebSocketEvents
@@ -283,51 +280,23 @@ class TestHttpChaos(unittest.TestCase):
             res = list(ex.map(hit, range(150)))
         self.assertTrue(all(res))
 
-    def test_directory_router_get_add_load(self):
-        with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
-            pkg = root / "pkg"
-            (pkg / "app").mkdir(parents=True)
-            for p in [pkg, pkg / "app"]:
-                (p / "__init__.py").write_text("")
-            (pkg / "app" / "ctr.py").write_text(textwrap.dedent("""
-                    from ux_dom.dom import Component, div, span
-                    __all__ = ["Ctr"]
-                    class Ctr(Component):
-                        routes = ["get", "add"]
-                        def render(self, n=0):
-                            return div(span(f"n={n}"), id="ctr")
-                        @classmethod
-                        def get(cls):
-                            return cls(n=0)
-                        @classmethod
-                        def add(cls):
-                            return cls(n=1)
-                    """))
-            sys.path.insert(0, str(root))
-            try:
-                api = (
-                    App(debug=False)
-                    .use(
-                        DirectoryRouting(
-                            package_dir=pkg, base_directory="app", prefix="/x"
-                        )
-                    )
-                    .use(HtmxControl(middleware=True))
-                    .build(asgi=FastAPI(title="t", debug=False, default_response_class=HTMLResponse))
-                )
-                client = TestClient(api)
+    def test_app_routes_under_load(self):
+        class Ctr(Component):
+            def render(self, n=0):
+                return div(span(f"n={n}"), id="ctr")
 
-                def hit(_):
-                    p = random.choice(["/x/ctr"])
-                    r = client.get(p)
-                    return r.status_code == 200 and "n=" in r.text
+        asgi = FastAPI(title="t", debug=False, default_response_class=HTMLResponse)
+        asgi.get("/x/ctr")(html_response(lambda: Ctr(n=0)))
+        api = App(debug=False).use(HtmxControl(middleware=True)).build(asgi=asgi)
+        client = TestClient(api)
 
-                with concurrent.futures.ThreadPoolExecutor(16) as ex:
-                    res = list(ex.map(hit, range(120)))
-                self.assertTrue(all(res))
-            finally:
-                sys.path.remove(str(root))
+        def hit(_):
+            r = client.get("/x/ctr")
+            return r.status_code == 200 and "n=" in r.text
+
+        with concurrent.futures.ThreadPoolExecutor(16) as ex:
+            res = list(ex.map(hit, range(120)))
+        self.assertTrue(all(res))
 
 
 if __name__ == "__main__":

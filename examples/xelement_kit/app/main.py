@@ -7,27 +7,39 @@ XElement JS: single copy from installed ux_dom → GET /ux-dom/static/x_element.
 """
 from __future__ import annotations
 
-from pathlib import Path
-
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from ux_dom.plugins import App, XElementRuntime
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
+from ux_dom.response.fastapi import StreamingRoute
 
 from app import settings
+from app.pages import alpine, htmx, index, jinja, lightdom, shadowdom, slots, wc
 
-PACKAGE = Path(__file__).resolve().parent
+pages = APIRouter(route_class=StreamingRoute)
+for path, endpoint in (
+    ("/", index.get),
+    ("/alpine", alpine.get),
+    ("/htmx", htmx.get),
+    ("/htmx/partial", htmx.partial),
+    ("/jinja", jinja.get),
+    ("/lightdom", lightdom.get),
+    ("/shadowdom", shadowdom.get),
+    ("/slots", slots.get),
+    ("/wc", wc.get),
+):
+    pages.get(path)(endpoint)
 
+asgi = FastAPI(title=settings.APP_TITLE, debug=settings.DEBUG)
+asgi.include_router(pages)
 app = (
     App(debug=settings.DEBUG)
     .use(XElementRuntime())  # package mount — no dual assets/js copy
-    .use(DirectoryRouting(package_dir=PACKAGE, base_directory="routes", prefix=""))
     .use(HtmxControl(middleware=True, version="2.0.4"))
-    .build(asgi=FastAPI(title=settings.APP_TITLE, debug=settings.DEBUG))
+    .build(asgi=asgi)
 )
 
 if settings.ASSETS_DIR.exists():

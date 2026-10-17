@@ -20,7 +20,6 @@ from ux_dom.plugins.protocols import (
     HmrPlugin,
     HostPlugin,
     ResponsePlugin,
-    RoutingPlugin,
     StylePlugin,
 )
 
@@ -59,7 +58,6 @@ class PluginHub:
     """
 
     hosts: dict[str, HostPlugin] = field(default_factory=dict)
-    routing: dict[str, RoutingPlugin] = field(default_factory=dict)
     responses: dict[str, ResponsePlugin] = field(default_factory=dict)
     assets: dict[str, AssetsPlugin] = field(default_factory=dict)
     styles: dict[str, StylePlugin] = field(default_factory=dict)
@@ -73,10 +71,6 @@ class PluginHub:
     def add_host(self, plugin: HostPlugin) -> None:
         self.hosts[plugin.name] = plugin
         self._order.append(("host", plugin.name))
-
-    def add_routing(self, plugin: RoutingPlugin) -> None:
-        self.routing[plugin.name] = plugin
-        self._order.append(("routing", plugin.name))
 
     def add_response(self, plugin: ResponsePlugin) -> None:
         self.responses[plugin.name] = plugin
@@ -313,12 +307,6 @@ class App:
             and hasattr(plugin, "wire")
         ):
             self.hub.add_control(plugin)
-        elif kind == "routing" or (
-            kind is None
-            and isinstance(plugin, RoutingPlugin)
-            and hasattr(plugin, "include")
-        ):
-            self.hub.add_routing(plugin)
         elif kind == "response" or (
             kind is None
             and isinstance(plugin, ResponsePlugin)
@@ -381,39 +369,12 @@ class App:
     def fastapi(self, **kwargs: Any) -> "App":
         raise ProductHostMoved()
 
-    def routes(
-        self,
-        package_dir: Any = None,
-        *,
-        base_directory: str = "routes",
-        prefix: str = "",
-        **kwargs: Any,
-    ) -> "App":
-        from pathlib import Path
-
-        from ux_dom.plugins.routing import DirectoryRouting
-
-        if package_dir is None:
-            raise TypeError("routes(package_dir=...) is required")
-        return self.use(
-            DirectoryRouting(
-                package_dir=Path(package_dir),
-                base_directory=base_directory,
-                prefix=prefix,
-                **kwargs,
-            )
-        )
-
     def plugins(self, *plugins: Any) -> "App":
         """Alias of ``use(*plugins)`` — read as “install these features”."""
         return self.use(*plugins)
 
     def use_host(self, plugin: HostPlugin) -> "App":
         self.hub.add_host(plugin)
-        return self
-
-    def use_routing(self, plugin: RoutingPlugin) -> "App":
-        self.hub.add_routing(plugin)
         return self
 
     def use_control(self, plugin: ControlPlugin) -> "App":
@@ -440,7 +401,7 @@ class App:
         return self.hub.materialize(root)
 
     def build(self, asgi: Any = None) -> Any:
-        """Publish hub → leftover asgi → Document.mount (if any) → routing → controls.
+        """Publish hub → leftover asgi → Document.mount (if any) → controls.
 
         Leftover App does **not** invent FastAPI. Pass ``asgi=FastAPI()``.
         Product apps: ``ux_compose.build(host=)``.
@@ -470,9 +431,6 @@ class App:
                 doc.mount(app)
             except Exception:
                 pass
-        for name, routing in self.hub.routing.items():
-            if app is not None:
-                routing.include(app)
         for name, control in self.hub.controls.items():
             if app is not None:
                 control.mount(app)

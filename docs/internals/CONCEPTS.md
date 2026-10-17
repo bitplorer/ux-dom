@@ -28,7 +28,7 @@ See [SYSTEM.md](SYSTEM.md).
 | Want | Do |
 |------|-----|
 | New app | `uxcompose create-app myapp && cd myapp && uxcompose build && uxcompose serve app:asgi` |
-| New page | `routes/<stem>.py` (product) or `uxdom add route` (pure-dom stub) |
+| New page | `routes/<stem>.py` (ux-compose); pure-dom apps add a FastAPI route |
 | Custom element | `uxdom add xelement Counter` |
 | UI primitive | `uxdom add ui Button` (ownable copy) |
 | Ship | `uxcompose build` · `uxcompose deploy` |

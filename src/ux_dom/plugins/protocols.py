@@ -29,17 +29,6 @@ class HostPlugin(Protocol):
 
 
 @runtime_checkable
-class RoutingPlugin(Protocol):
-    """File-based / programmatic route discovery (DirectoryRouter family)."""
-
-    name: str
-
-    def include(self, app: Any, **kwargs: Any) -> Any:
-        """Attach routes (e.g. DirectoryRouter) to ``app``."""
-        ...
-
-
-@runtime_checkable
 class ResponsePlugin(Protocol):
     """Turn Component / dom_tag into framework HTTP responses."""
 

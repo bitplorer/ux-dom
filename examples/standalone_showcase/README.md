@@ -6,8 +6,8 @@ A **production-shaped** example app using only **UxDom + FastAPI** (no ux-channe
 
 | Feature | Where |
 |---------|--------|
-| Components + Document | `app/routes/*`, `app/document.py` |
-| File routes (leftover standalone demo) | `app/routes/` — product apps use ux-compose |
+| Components + Document | `app/pages/*`, `app/document.py` |
+| Explicit FastAPI routes (`StreamingRoute`) | `app/main.py` — product apps use ux-compose `routes/` |
 | HTMX partials | `POST /cart` swaps `#cart-root` |
 | SSE | `GET /api/sse` + page `/sse` |
 | Streaming HTML | `GET /api/stream` |

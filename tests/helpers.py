@@ -69,24 +69,30 @@ def page(*children, page_title: str = "experiment"):
 _MAIN_PY = '''\
 from __future__ import annotations
 
-from pathlib import Path
-
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from fastapi.responses import JSONResponse
 
-from app.document import document
-from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
+from app.document import document, page
+from app.pages.about import About
+from app.pages.index import Index
+from ux_dom.response.fastapi import StreamingRoute
 
-PACKAGE = Path(__file__).resolve().parent
 app = FastAPI(title="{title}")
 document.mount(app)
-app.include_router(
-    DirectoryRouter(
-        base_directory="routes",
-        package_dir=PACKAGE,
-        route_class=StreamingRoute,
-    )
-)
+pages = APIRouter(route_class=StreamingRoute)
+
+
+@pages.get("/")
+def index():
+    return page(Index(), page_title="Index")
+
+
+@pages.get("/about")
+def about():
+    return page(About(), page_title="About")
+
+
+app.include_router(pages)
 
 
 @app.get("/health")
@@ -109,18 +115,10 @@ from __future__ import annotations
 from ux_dom import Component
 from ux_dom.dom import div
 
-from app.document import page
-
 
 class Index(Component):
-    routes = ["get"]
-
     def render(self, *args, **kwargs):
         return div("index", id="index-root")
-
-    @classmethod
-    def get(cls):
-        return page(cls().render(), page_title="Index")
 '''
 
 _ABOUT_PY = '''\
@@ -129,18 +127,10 @@ from __future__ import annotations
 from ux_dom import Component
 from ux_dom.dom import div
 
-from app.document import page
-
 
 class About(Component):
-    routes = ["get"]
-
     def render(self, *args, **kwargs):
         return div("about", id="about-root")
-
-    @classmethod
-    def get(cls):
-        return page(cls().render(), page_title="About")
 '''
 
 
@@ -153,10 +143,10 @@ def create_app(opts: ScaffoldOptions) -> Path:
         raise FileExistsError(f"{root} exists (pass force=True)")
     root.mkdir(parents=True, exist_ok=True)
     app = root / "app"
-    routes = app / "routes"
-    routes.mkdir(parents=True, exist_ok=True)
+    pages = app / "pages"
+    pages.mkdir(parents=True, exist_ok=True)
     (app / "__init__.py").write_text("", encoding="utf-8")
-    (routes / "__init__.py").write_text("", encoding="utf-8")
+    (pages / "__init__.py").write_text("", encoding="utf-8")
     title = opts.app_name
     csp = "Csp.auto()" if opts.with_csp else "Csp.dev()"
     (app / "document.py").write_text(
@@ -167,8 +157,8 @@ def create_app(opts: ScaffoldOptions) -> Path:
         _SETTINGS_PY.format(title=title, csp=str(bool(opts.with_csp))),
         encoding="utf-8",
     )
-    (routes / "index.py").write_text(_INDEX_PY, encoding="utf-8")
-    (routes / "about.py").write_text(_ABOUT_PY, encoding="utf-8")
+    (pages / "index.py").write_text(_INDEX_PY, encoding="utf-8")
+    (pages / "about.py").write_text(_ABOUT_PY, encoding="utf-8")
     (root / "README.md").write_text(
         f"# {title}\n\nPure-dom experiment tree (tests only).\n"
         "Product apps: `uxcompose create-app`.\n",

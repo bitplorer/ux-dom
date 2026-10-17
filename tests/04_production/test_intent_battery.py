@@ -4,19 +4,14 @@ from __future__ import annotations
 import asyncio
 import concurrent.futures
 import copy
-import random
-import sys
-import tempfile
-import textwrap
 import threading
 import unittest
-from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
-from ux_dom import Component, Document, Fragment, ReactiveComponent, MergeClassAttribute
+from ux_dom import Component, Document, MergeClassAttribute
 from ux_dom.dom import div, span, button, attr, raw
 from ux_dom.dom.src.dom_tag import get_current
 from ux_dom.dom.src.ext import Tags
@@ -24,9 +19,7 @@ from ux_dom.dom.src.parse_html import tokenize_html
 from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.htmx import Htmx
 from ux_dom.htmx.middleware import HtmxMiddleware
-from ux_dom.plugins import App
-from ux_dom.plugins.control import HtmxControl, NullControl
-from ux_dom.plugins.routing import DirectoryRouting
+from ux_dom.plugins.control import NullControl
 from ux_dom.response.starlette import StreamingResponse
 from ux_dom.web_io import HtmxEvents, WebSocketAdapter, WebSocketEvents
 
@@ -46,42 +39,6 @@ class Multi(Component):
         return [div(f"A{n}", id=f"A{n}"), span(f"B{n}", id=f"B{n}")]
 
 
-class RoutedHome(Component):
-    """Mirrors real apps: routes include get/add that must not shadow DOM API."""
-
-    routes = ["get", "add"]
-
-    def render(self):
-        return div(span("home", id="h"), id="home")
-
-    @classmethod
-    def get(cls):
-        return cls()
-
-    @classmethod
-    def add(cls):
-        return cls()
-
-
-class CartCounter(Component):
-    routes = ["get", "add", "clear"]
-
-    def render(self, n=0):
-        return div(f"cart={n}", id="cart")
-
-    @classmethod
-    def get(cls):
-        return cls(n=0)
-
-    @classmethod
-    def add(cls):
-        return cls(n=1)
-
-    @classmethod
-    def clear(cls):
-        return cls(n=0)
-
-
 class TestIntentContracts(unittest.TestCase):
     def test_bool_matches_get_eq_hash(self):
         self.assertTrue(bool(div()) and bool(Card()))
@@ -94,17 +51,6 @@ class TestIntentContracts(unittest.TestCase):
         self.assertTrue(c == c._entry and c is not c._entry)
         self.assertNotEqual(hash(c), hash(c._entry))
         self.assertNotIn(c._entry, {c})
-
-    def test_route_classmethods_do_not_shadow_dom_api(self):
-        h = RoutedHome.get()
-        self.assertEqual(h.get(id="h")[0].attributes.get("id"), "h")
-        self.assertIn(span, h)
-        # classmethod routes still work
-        self.assertIsInstance(RoutedHome.add(), RoutedHome)
-        cart = CartCounter.get()
-        self.assertIn("cart=0", cart.__render__(pretty=False))
-        self.assertTrue(cart.get(id="cart"))
-        self.assertIn("cart=1", CartCounter.add().__render__(pretty=False))
 
     def test_build_vs_serialize_and_sync_async(self):
         enters = []
@@ -221,142 +167,6 @@ class TestChaos(unittest.TestCase):
 
         with concurrent.futures.ThreadPoolExecutor(12) as ex:
             self.assertTrue(all(ex.map(sh, range(40))))
-
-
-class TestStandaloneShopApp(unittest.TestCase):
-    def test_shop_app_routes_and_load(self):
-        with tempfile.TemporaryDirectory() as td:
-            rootp = Path(td)
-            pkg = rootp / "shop"
-            for sub in [
-                "app",
-                "app/products",
-                "app/products/[id]",
-                "app/api.v1",
-                "app/cart",
-                "app/_private",
-            ]:
-                (pkg / sub).mkdir(parents=True, exist_ok=True)
-                (pkg / sub / "__init__.py").write_text("")
-            (pkg / "__init__.py").write_text("")
-            (pkg / "app" / "home.py").write_text(textwrap.dedent("""
-                    from ux_dom.dom import Component, div, span, button
-                    __all__ = ["Home"]
-                    class Home(Component):
-                        routes = ["get"]
-                        def render(self):
-                            return div(span("Welcome", id="welcome"), id="home")
-                        @classmethod
-                        def get(cls):
-                            return cls()
-                    """))
-            (pkg / "app" / "products" / "list.py").write_text(textwrap.dedent("""
-                    from ux_dom.dom import Component, div, span
-                    __all__ = ["List"]
-                    class List(Component):
-                        routes = ["get"]
-                        def render(self):
-                            return div(span("Products", id="plist-title"), id="plist")
-                        @classmethod
-                        def get(cls):
-                            return cls()
-                    """))
-            (pkg / "app" / "products" / "[id]" / "route.py").write_text(
-                "def get(id: str):\n"
-                "    from ux_dom.dom import div, span\n"
-                "    return div(span(f'product-{id}'), id='pdetail')\n"
-            )
-            (pkg / "app" / "cart" / "counter.py").write_text(textwrap.dedent("""
-                    from ux_dom.dom import Component, div, button
-                    __all__ = ["Counter"]
-                    class Counter(Component):
-                        routes = ["get", "add", "clear"]
-                        def render(self, n=0):
-                            return div(f"cart={n}", id="cart")
-                        @classmethod
-                        def get(cls):
-                            return cls(n=0)
-                        @classmethod
-                        def add(cls):
-                            return cls(n=1)
-                        @classmethod
-                        def clear(cls):
-                            return cls(n=0)
-                    """))
-            (pkg / "app" / "api.v1" / "route.py").write_text(
-                "def get():\n"
-                "    from ux_dom.dom import div\n"
-                "    return div('api-v1', id='api')\n"
-            )
-            (pkg / "app" / "_private" / "secret.py").write_text(textwrap.dedent("""
-                    from ux_dom.dom import Component, div
-                    __all__ = ["Secret"]
-                    class Secret(Component):
-                        routes = ["get"]
-                        def render(self):
-                            return div("SECRET")
-                        @classmethod
-                        def get(cls):
-                            return cls()
-                    """))
-            sys.path.insert(0, str(rootp))
-            try:
-                api = (
-                    App(debug=False)
-                    .use(
-                        DirectoryRouting(
-                            package_dir=pkg, base_directory="app", prefix="/shop"
-                        )
-                    )
-                    .use(HtmxControl(middleware=True))
-                    .build(asgi=FastAPI(title="Shop", debug=False, default_response_class=HTMLResponse))
-                )
-                client = TestClient(api)
-                paths = list(api.openapi()["paths"])
-                self.assertFalse(any("Secret" in p for p in paths))
-
-                r = client.get("/shop/home")
-                self.assertEqual(r.status_code, 200)
-                self.assertIn("Welcome", r.text)
-
-                r = client.get("/shop/products/list")
-                self.assertEqual(r.status_code, 200)
-                self.assertIn("plist-title", r.text)
-
-                r = client.get("/shop/cart/counter")
-                self.assertEqual(r.status_code, 200)
-                self.assertIn("cart=0", r.text)
-                r = client.get("/shop/cart/counter/add")
-                self.assertEqual(r.status_code, 200)
-                self.assertIn("cart=1", r.text)
-
-                r = client.get("/shop/products/sku99/")
-                self.assertEqual(r.status_code, 200)
-                self.assertIn("product-sku99", r.text)
-
-                r = client.get("/shop/api.v1/")
-                self.assertEqual(r.status_code, 200)
-                self.assertIn("api-v1", r.text)
-
-                hit_paths = [
-                    "/shop/home",
-                    "/shop/products/sku99/",
-                    "/shop/api.v1/",
-                    "/shop/products/p1/",
-                    "/shop/products/list",
-                    "/shop/cart/counter",
-                ]
-
-                def hit(_):
-                    p = random.choice(hit_paths)
-                    hdr = {"HX-Request": "true"} if random.random() > 0.1 else {}
-                    return client.get(p, headers=hdr).status_code
-
-                with concurrent.futures.ThreadPoolExecutor(16) as ex:
-                    codes = list(ex.map(hit, range(150)))
-                self.assertTrue(all(c == 200 for c in codes), set(codes))
-            finally:
-                sys.path.remove(str(rootp))
 
 
 class TestEdges(unittest.TestCase):

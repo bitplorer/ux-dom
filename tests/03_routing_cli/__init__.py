@@ -1,1 +1,1 @@
-"""03_routing_cli — DirectoryRoutes/DirectoryRouter, pure-dom CLI, build edges."""
+"""03_routing_cli — pure-dom CLI and build edges (no router: that is ux-compose)."""

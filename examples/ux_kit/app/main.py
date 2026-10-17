@@ -1,21 +1,17 @@
 from __future__ import annotations
 
-from pathlib import Path
-
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.plugins.routing import DirectoryRouting
+from ux_dom.response.fastapi import StreamingRoute
 
 from app import settings
+from app.pages import index
 
-PACKAGE = Path(__file__).resolve().parent
+pages = APIRouter(route_class=StreamingRoute)
+pages.get("/")(index.get)
 
-_builder = (
-    App(debug=settings.DEBUG)
-    .use(DirectoryRouting(package_dir=PACKAGE, base_directory="routes", prefix=""))
-    .use(HtmxControl(middleware=True, version="2.0.4"))
-)
-app = _builder.build(asgi=FastAPI(title=settings.APP_TITLE, debug=settings.DEBUG))
-
+asgi = FastAPI(title=settings.APP_TITLE, debug=settings.DEBUG)
+asgi.include_router(pages)
+app = App(debug=settings.DEBUG).use(HtmxControl(middleware=True, version="2.0.4")).build(asgi=asgi)

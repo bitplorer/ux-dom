@@ -12,7 +12,6 @@ which owns that API.
 
 | App | Path | Stack | Port |
 |-----|------|-------|------|
-| Hypermedia shop | [`ux_dom_only/hypermedia_shop`](ux_dom_only/hypermedia_shop/) | leftover standalone FastAPI demo + HTMX | 8091 |
 | Realtime kit | [`ux_dom_only/realtime_kit`](ux_dom_only/realtime_kit/) | SSE, WebSocketAdapter, streaming HTML | 8092 |
 | **Standalone showcase** | [`standalone_showcase`](standalone_showcase/) | ux_dom-only full demo (shop, HTMX, SSE, stream) | 8080 |
 | XElement kit | [`xelement_kit`](xelement_kit/) | Light/Shadow DOM, HTMX, Alpine, slots | 8080 |
@@ -20,15 +19,17 @@ which owns that API.
 
 ## Capability matrix
 
-| Capability | hypermedia_shop | realtime_kit |
+| Capability | realtime_kit | standalone_showcase |
 |------------|:---:|:---:|
 | Components / Document | ✓ | ✓ |
-| File routes (demo only) | ✓ | |
-| Route classmethods + DOM API | ✓ | |
+| Explicit FastAPI routes (`StreamingRoute`) | | ✓ |
 | HTMX partials / middleware | ✓ | ✓ |
-| SSE | | ✓ |
-| WebSocket (ux_dom adapter) | | ✓ |
-| StreamingResponse | | ✓ |
+| SSE | ✓ | ✓ |
+| WebSocket (ux_dom adapter) | ✓ | |
+| StreamingResponse | ✓ | ✓ |
+
+Page routing (`routes/` folders) belongs to ux-compose; these demos register
+routes explicitly.
 
 ## Run
 
@@ -37,14 +38,13 @@ which owns that API.
 export PYTHONPATH=.
 
 # ux_dom only
-uvicorn examples.ux_dom_only.hypermedia_shop.app:app --host 0.0.0.0 --port 8091
 uvicorn examples.ux_dom_only.realtime_kit.app:app --host 0.0.0.0 --port 8092
 
 ```
 
 ### Production notes
 
-* Shop cart store is process-local demo state — replace with DB for real deploys.
+* Showcase cart store is process-local demo state — replace with DB for real deploys.
 * Single-worker memory stores are intentional for demos (`allow_memory_stores=True`).
 
 ## Tests

@@ -9,7 +9,7 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from ux_dom.cli.adders import AddError, add_component, add_route, add_xelement
+from ux_dom.cli.adders import AddError, add_component, add_xelement
 from ux_dom.cli.doctor import run_doctor
 from ux_dom.cli.lint import lint_project
 from helpers import ScaffoldOptions, create_app
@@ -47,7 +47,7 @@ class TestDoctor(unittest.TestCase):
 
 
 class TestAdders(unittest.TestCase):
-    def test_add_component_route_xelement(self):
+    def test_add_component_and_xelement(self):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
@@ -59,9 +59,6 @@ class TestAdders(unittest.TestCase):
                 os.chdir(root)
                 pc = add_component("Notice")
                 self.assertTrue(pc.is_file())
-                pr = add_route("settings")
-                self.assertTrue(pr.is_file())
-                self.assertIn("class Settings", pr.read_text())
                 px = add_xelement("Star", kind="shadow")
                 self.assertTrue(px.is_file())
                 self.assertIn("XElement", px.read_text())
