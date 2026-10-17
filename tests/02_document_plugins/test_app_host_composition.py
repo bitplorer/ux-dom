@@ -19,8 +19,8 @@ from ux_dom.response.starlette import StreamingResponse, html_response
 
 
 class TestVersion(unittest.TestCase):
-    def test_version_0_2(self):
-        self.assertTrue(__version__.startswith("0.2"))
+    def test_version_0_3(self):
+        self.assertTrue(__version__.startswith("0.3"))
 
 
 class TestWalkStream(unittest.TestCase):

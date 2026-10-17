@@ -1,6 +1,6 @@
 # ux-dom documentation index
 
-**Version 0.2.0**
+**Version 0.3.0**
 **Start:** [../START_HERE.md](../START_HERE.md) · mental model: [START_HERE.md](START_HERE.md)
 
 This file is the map. It does not replace the guides.

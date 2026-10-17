@@ -4,7 +4,7 @@
 
 Release gate: every row must stay true (release freeze).
 
-Version: **0.2.0** (ux-dom production line).
+Version: **0.3.0** (ux-dom production line).
 
 ## Markup (CORE)
 

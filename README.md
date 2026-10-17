@@ -15,7 +15,7 @@ This layer **renders**. It does not own Intent, Caps, Result ops, product state 
 | **Import** | `ux_dom` |
 | **CLI** | **`uxdom`** (pure-dom tooling) |
 | **Product CLI** | **`uxcompose`** ([ux-compose](https://github.com/bitplorer/ux-compose)) |
-| **Version** | `0.2.0` |
+| **Version** | `0.3.0` |
 | **Python** | ≥ 3.14 (full stack) |
 | **License** | [MIT](LICENSE) |
 

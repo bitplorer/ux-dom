@@ -1,6 +1,6 @@
 # ux-dom documentation
 
-**Version 0.2.0** · **Start:** [../START_HERE.md](../START_HERE.md) · **Map:** [INDEX.md](INDEX.md)
+**Version 0.3.0** · **Start:** [../START_HERE.md](../START_HERE.md) · **Map:** [INDEX.md](INDEX.md)
 
 This file is the GitHub `docs/` landing. It is not the map — [INDEX.md](INDEX.md) is.
 

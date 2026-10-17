@@ -1,5 +1,65 @@
 # Changelog
 
+## 0.3.0 — 2026-10-17 — secure defaults, leftover cleanup
+
+### Security (BREAKING)
+
+- **Strings are text.** `Fragment("...")` and a `str` returned from
+  `Component.render()` are escaped. Before, they were parsed as HTML through
+  a deny-list that let `x-init`, `@click`, `hx-on`, `hx-get`, `<style>` and
+  `<form>` through. Opt in to markup with `markupsafe.Markup` (any
+  `__html__`). See `docs/security/HTML_CONTENT.md`.
+- **`defHTML(s)` is an allow-list sanitizer**: formatting tags and a small
+  attribute list survive; scripts, styles, forms, custom elements, `on*`,
+  `x-*`, `@*`, `:*`, `hx-*`, `data-*` and `style` are dropped with their
+  content; URLs go through `safe_attr_value`. `defHTML(s, escape=False)`
+  still parses author markup verbatim. Parser no longer drops entities
+  (`a &amp; b`) or spaces between inline words.
+- **`MarkdownElement` escapes raw HTML** and sanitizes its output; subclass
+  with `escape_string = False` for trusted Markdown.
+- **htmx request URLs are same-origin.** `hx-get/post/put/patch/delete`,
+  `sse-connect` and `ws-connect` accept relative URLs only; wrap a URL in
+  `cross_origin(url)` to allow another origin.
+- **Pinned CDN scripts with SRI.** `HtmxControl` emits exact htmx 1.9.12 /
+  2.0.4, SSE extension and idiomorph 0.8.0 URLs with `integrity` and
+  `crossorigin="anonymous"`. Another `version=` with `cdn=True` raises
+  `ValueError`; `sse_version=` was removed. The dev CSP lists those exact
+  files instead of whole CDN hosts.
+
+### Removed (BREAKING, no shims: ux-dom is unpublished)
+
+- Leftover `DirectoryRouter` (`ux_dom.routing`, `ux_dom.plugins.routing`),
+  hub routing, `App.routes`, `Component.__getattribute__` verb proxy,
+  `uxdom add route`, the router lint rule. Page routing is
+  `ux_compose.routing.DirectoryRoutes`. Explicit FastAPI routes can use the
+  new `ux_dom.response.fastapi.HTMLRoute` / `StreamingRoute`.
+- `ux_dom.assets` compat facade (`sync_assets` and five helpers).
+- `csstags` / `StyleTags` (CSS rendered with HTML URL rules, no CSS escaping).
+- `dom_util.system` (shell=True), `include`, `lazy` (unescaped),
+  `unescape`, `url_escape`, `url_unescape`; `ux_dom.dom.icons` (68 icon trees
+  built at import time); `ux_dom.examples`, `dom/src/ws_rpc.py`,
+  `utils/functional.py`, `settings/paths.py`, `cli/envfile.py`, watchgod
+  reloader branch; Python 2 shims and dead import fallbacks; commented-out code.
+- `examples/with_ux_channel`, `demosite`, `examples/ux_dom_only/hypermedia_shop`.
+  The ux-channel + ux-dom example lives in ux-channel.
+
+### Changed
+
+- One attribute serializer (`dom_util.iter_attributes`) for `dom_tag` and
+  `ext.Tags` (fixes `hidden=None` rendering `hidden="None"`).
+- Channel bridge builds attrs with `ux_channel` `ControlAttrs`, escapes once,
+  no blanket `except`.
+- valio PEP 649 patch is applied lazily by `ux_dom.elements`, not on
+  `import ux_dom`.
+- `ux_dom` has an explicit `__all__`; `PackagedFile.public_path_webassets` →
+  `public_path_under_assets`; build manifest key `webassets_copies` →
+  `dual_copy_files`.
+- `dom_tag[int]` raises its friendly `IndexError` (it caught the wrong
+  exception before).
+- Dependencies: dropped unused `pytailwindcss`, `toml`, `types-toml`.
+- CI installs pinned ux-channel and fails if channel tests would skip.
+- Code formatted with black and ruff's safe fixes; docs snippets fixed.
+
 ## 0.2.0 — remove deprecations
 
 - Removed deprecated modules `ux_dom.dom.ui` (Tortoise form helper),

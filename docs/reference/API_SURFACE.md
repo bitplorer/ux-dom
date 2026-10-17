@@ -1,4 +1,4 @@
-# Public & private API surface (0.2.0)
+# Public & private API surface (0.3.0)
 
 > **Diátaxis:** reference · **Canonical:** `docs/reference/API_SURFACE.md` · **Layer:** ux-dom  
 > Map: [INDEX.md](../INDEX.md).
@@ -19,7 +19,7 @@ Product lifecycle CLI: **`uxcompose`** (`create-app` · `build` · `serve` · `d
 
 | Symbol | Kind | Notes |
 |--------|------|--------|
-| `__version__` | str | e.g. `"0.2.0"` |
+| `__version__` | str | e.g. `"0.3.0"` |
 | `Document` | class | HTML shell SSoT |
 | `Component` / `Fragment` / `ReactiveComponent` | class | Trees |
 | `XElement` / `Htmx` / `Csp` / `Channel` | facades | `ux_dom.runtime` |

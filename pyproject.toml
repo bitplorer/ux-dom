@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ux-dom"
-version = "0.2.0"
+version = "0.3.0"
 description = "ux-dom — Python hypermedia render library (tree → HTML / stream)"
 authors = ["bitplorer <bitplorer@outlook.com>"]
 license = "MIT"

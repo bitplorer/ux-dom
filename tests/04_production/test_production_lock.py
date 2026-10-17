@@ -21,10 +21,10 @@ from ux_dom.scripts import x_element_js_text
 
 
 class TestBrandAndVersion(unittest.TestCase):
-    def test_version_is_0_2_line(self):
-        # 0.2.x line; the exact value is pinned to pyproject by
+    def test_version_is_0_3_line(self):
+        # 0.3.x line; the exact value is pinned to pyproject by
         # test_production_readiness.test_version_matches_pyproject.
-        self.assertRegex(ux_dom.__version__, r"^0\.2\.\d+$")
+        self.assertRegex(ux_dom.__version__, r"^0\.3\.\d+$")
 
 
 class TestDocumentRuntimes(unittest.TestCase):

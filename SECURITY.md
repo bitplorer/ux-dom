@@ -4,7 +4,8 @@
 
 | Version | Supported |
 |---------|-----------|
-| 0.2.x   | Yes (best-effort while pre-1.0) |
+| 0.3.x   | Yes (best-effort while pre-1.0) |
+| < 0.3   | No: plain strings could be parsed as HTML. Upgrade. |
 
 ## Threat model
 

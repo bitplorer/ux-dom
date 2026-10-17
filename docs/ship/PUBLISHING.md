@@ -2,7 +2,7 @@
 
 ## Version
 
-- Source tree: **0.2.0** (`ux_dom.__version__`, `pyproject.toml`)
+- Source tree: **0.3.0** (`ux_dom.__version__`, `pyproject.toml`)
 - PyPI may lag; install from this source until the cut is published.
 
 ## Build & publish (maintainers)
