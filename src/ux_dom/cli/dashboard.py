@@ -12,7 +12,7 @@ import json
 import threading
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Sequence
+from typing import Any
 
 __all__ = [
     "Asset",

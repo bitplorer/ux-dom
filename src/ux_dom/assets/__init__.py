@@ -44,7 +44,6 @@ def compose_document_parts(
     extra_body: Sequence[Any] = (),
     include_core: bool = True,
     include_ux_channel: bool = False,
-    include_controls: bool = True,
 ) -> tuple[list[Any], list[Any]]:
     h = hub or get_hub()
     if include_core:

@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any, Literal, Optional, Sequence
 
 from ux_dom.plugins.contribution import StaticArtifact

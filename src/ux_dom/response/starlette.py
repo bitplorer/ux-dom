@@ -18,7 +18,6 @@ from starlette.background import BackgroundTask
 from starlette.responses import HTMLResponse as StarletteHTMLResponse
 from starlette.responses import StreamingResponse as StarletteStreamingResponse
 
-from ux_dom.dom.src import dom_tag
 from ux_dom.response.serialize import (
     is_html_renderable,
     is_stream_renderable,

@@ -27,7 +27,7 @@ import os
 import threading
 import weakref
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager, nullcontext
+from contextlib import contextmanager
 from dataclasses import dataclass, replace
 from typing import Any, Callable, Iterable, Iterator, Optional, Sequence, TypeVar
 

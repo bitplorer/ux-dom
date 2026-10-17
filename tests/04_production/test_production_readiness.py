@@ -177,7 +177,6 @@ class TestScaffoldProductionArtifacts(unittest.TestCase):
                 "XElement" in main
                 or "document.mount" in main
                 or "xelement=True" in main
-                or "App.web" in main
                 or "XElement"
                 in Path(str(root if "root" in dir() else "."))
                 .joinpath("app/document.py")

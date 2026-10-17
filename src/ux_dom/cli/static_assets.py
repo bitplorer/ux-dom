@@ -61,20 +61,14 @@ def _default_hub(*, with_channel: bool = False):
 def sync_runtime_assets(
     root: Path,
     *,
-    force: bool = True,
     hub: Any = None,
     with_channel: bool = False,
-    vendor: bool = False,
 ) -> SyncReport:
     """
     Prepare browser surface for an app root.
 
-    Default (vendor=False)
-        Ensure hub has XElementRuntime; record package mount URLs; materialize
-        **only** contributions that still use webassets escape hatch.
-
-    vendor=True
-        Force materialize of any webassets-mode artifacts (discouraged dual copy).
+    Ensure hub has XElementRuntime; record package mount URLs; materialize
+    **only** contributions that still use the webassets escape hatch.
     """
     root = Path(root).resolve()
     if hub is None:
@@ -181,7 +175,7 @@ def write_runnable_package(
         shutil.rmtree(dest)
     dest.mkdir(parents=True)
 
-    sync = sync_runtime_assets(root, force=True)
+    sync = sync_runtime_assets(root)
     files = collect_package_files(root)
     manifest_files = []
     for src in files:

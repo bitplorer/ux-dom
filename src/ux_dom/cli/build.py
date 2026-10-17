@@ -103,7 +103,7 @@ def run_build(
         try:
             from ux_dom.cli.static_assets import sync_runtime_assets
 
-            sync = sync_runtime_assets(root, force=True)
+            sync = sync_runtime_assets(root)
             # Single-copy model: package mounts are success even with zero app files
             mount_bits = [f"{p}→{d}" for p, d in getattr(sync, "mounts", [])]
             file_bits = [f"{f.rel} ({f.action}, {f.bytes}B)" for f in sync.files]

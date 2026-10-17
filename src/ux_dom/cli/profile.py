@@ -7,9 +7,8 @@ Concurrency stays library-internal; this command only *measures* render cost.
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 def run_profile(
