@@ -557,9 +557,13 @@ class JinjaElement(component.Component):
 
 
 class MarkdownElement(component.Component):
-    """Component whose string children are treated as Markdown (when enabled)."""
+    """Component whose string result is Markdown.
 
-    escape_string = False
+    Safe for user content: raw HTML in the Markdown is shown as text and the
+    rendered HTML is sanitized. For Markdown you wrote yourself that needs raw
+    HTML, subclass and set ``escape_string = False``.
+    """
+
     string_is_markdown = True
 
     def render(self, elem_or_str_or_path):

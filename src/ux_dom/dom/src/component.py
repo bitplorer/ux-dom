@@ -17,17 +17,16 @@ from __future__ import annotations
 import json
 import warnings
 from dataclasses import asdict, dataclass, field
-from html import unescape
 from pathlib import Path
 from textwrap import dedent
 from typing import Iterable, List, Union
-
-from marko import convert as markdown
 
 from ux_dom.dom.src import csstags, htmltags, jinjatags, svgtags
 from ux_dom.dom.src.concurrency import multi_tree_lock
 from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.html_string import defHTML
+from ux_dom.dom.src.markdown import render_markdown
+from ux_dom.dom.src.utils.dom_util import dom_text
 from ux_dom.dom.src.main import extension
 from ux_dom.utils.parameters import Parameters
 
@@ -169,35 +168,14 @@ class Component(extension.Tags):
         super(Component, self).__init__()
 
         # Local converter only — never mutate module-global markdown
-        md_convert = kwargs.pop("markdown", None) or markdown
-        md_convert = getattr(md_convert, "convert", md_convert)
-        # first we get the child from the render method and sanitize it.
+        md_convert = kwargs.pop("markdown", None)
         child = self.render(*args, **kwargs)
 
         if child is None:
             raise ValueError(
                 f"{self.__class__.__name__} `render` method must return a value."
             )
-
-        if isinstance(child, str):
-            if self.string_is_markdown:
-                child = (
-                    md_convert(child)
-                    if self.escape_string
-                    else unescape(md_convert(child))
-                )
-            child = defHTML(child, escape=self.escape_string)
-
-        elif isinstance(child, Path):
-            string_is_markdown = child.suffix == ".md"
-            child = self._from_file(child)
-            if string_is_markdown:
-                child = (
-                    md_convert(child)
-                    if self.escape_string
-                    else unescape(md_convert(child))
-                )
-            child = defHTML(child, escape=self.escape_string)
+        child = self._markup_to_nodes(child, md_convert)
 
         if isinstance(child, (list, tuple)) and len(child) == 1:
             child = child[0]
@@ -214,6 +192,34 @@ class Component(extension.Tags):
         # we perform checks on the _entry "after" the dom initialization because .get method
         # looks into children
         self.__checks__(self._entry)
+
+    def _markup_to_nodes(self, child, md_convert=None):
+        """Turn a string, ``Path`` or ``__html__`` value from ``render`` into nodes.
+
+        * ``__html__`` (``Markup``, ...): markup the caller vouched for; parsed as is.
+        * ``str``: plain text, escaped, when ``escape_string`` is True (the default).
+          Classes that set ``escape_string = False`` (``HTMLElement``,
+          ``JinjaElement``) declare their strings as trusted markup.
+        * ``Path``: file content; sanitized unless ``escape_string`` is False.
+        * Markdown (``string_is_markdown`` or a ``.md`` path) is converted first.
+          With ``escape_string`` True its raw HTML is escaped and the result is
+          sanitized, so Markdown from users is safe.
+        """
+        if isinstance(child, dom_tag):
+            return child
+        if callable(getattr(child, "__html__", None)):
+            return defHTML(str(child.__html__()), escape=False)
+        is_markdown = self.string_is_markdown
+        if isinstance(child, Path):
+            is_markdown = child.suffix == ".md"
+            child = self._from_file(child)
+        elif not isinstance(child, str):
+            return child
+        elif not is_markdown and self.escape_string:
+            return dom_text(child)
+        if is_markdown:
+            child = render_markdown(child, trusted=not self.escape_string, convert=md_convert)
+        return defHTML(child, escape=self.escape_string)
 
     def __checks__(
         self, element: Union[dom_tag, extension.Tags]
@@ -553,10 +559,8 @@ class Fragment(Component):
 
     def render(self, *args, **kwargs):
         self.add(kwargs)
-        [
-            self.add(defHTML(arg)) if isinstance(arg, str) else self.add(arg)
-            for arg in args
-        ]
+        for arg in args:
+            self.add(self._markup_to_nodes(arg))
 
         # for this component to behave as a fragment we must simply return self
         # Component class will take care of all the things itself.

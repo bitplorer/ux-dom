@@ -1,6 +1,8 @@
 import asyncio
 import typing as t
 import unittest
+
+from markupsafe import Markup
 from dataclasses import dataclass
 from textwrap import dedent
 
@@ -253,7 +255,7 @@ class TestComponentRenderReturns(unittest.TestCase):
             def render(self, *args, **kwargs):
                 # when only one html-element is returned then it becomes the entry
                 # point and we can set attributes and add element to it like normal
-                return "<div></div>"
+                return Markup("<div></div>")
 
         class SelfAsEntryWithoutRenderTag(Component):
             render_tag = False
@@ -262,7 +264,7 @@ class TestComponentRenderReturns(unittest.TestCase):
                 # when more than one html-element is returned then it **DOESN'T** become
                 # the entry point and we CAN'T set attributes and add element to it like normal
                 # we can only append element to it.
-                return "<p></p><a></a>"
+                return Markup("<p></p><a></a>")
 
         class SelfAsEntryWithRenderTagMoreElement(Component):
             render_tag = True
@@ -271,7 +273,7 @@ class TestComponentRenderReturns(unittest.TestCase):
             def __checks__(self, element): ...
 
             def render(self, *args, **kwargs):
-                return "<p></p><a></a>"
+                return Markup("<p></p><a></a>")
 
         class SelfAsEntryWithRenderTagReturnsOneElement(Component):
             render_tag = True
@@ -280,7 +282,7 @@ class TestComponentRenderReturns(unittest.TestCase):
             def __checks__(self, element): ...
 
             def render(self, *args, **kwargs):
-                return "<zzz></zzz>"
+                return Markup("<zzz></zzz>")
 
         self.RenderReturnsNone = RenderReturnsNone
         self.RenderReturnsEllipses = RenderReturnsEllipses
@@ -555,7 +557,7 @@ flood conditions in many of the nearby rivers.
 <h1>
   Last year’s snowfall
 </h1>
-<pre><code class="language-python">def main(): pass</code></pre>
+<pre><code class="language-python">    def main(): pass</code></pre>
 <pre><code class="language-shell">pip install ux-dom</code></pre>
 <h2>
   The snowfall was above average.

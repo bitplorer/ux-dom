@@ -3,239 +3,162 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
+"""Parse an HTML string into ux-dom nodes.
 
-"""Parse HTML strings into ux-dom nodes (defHTML) and related helpers.
+``defHTML(markup)`` (``escape=True``, the default) is the sanitizer for HTML
+you do not trust. It is an allow-list: only the formatting tags in
+``SAFE_TAGS`` and the attributes in ``SAFE_ATTRIBUTES`` survive. Everything
+else is dropped together with its content: scripts, styles, forms, frames,
+SVG/MathML, custom elements, event handlers, Alpine (``x-*``, ``@*``, ``:*``),
+htmx (``hx-*``), ``data-*`` and ``style``. URL attributes go through
+``safe_attr_value``. Comments and declarations are dropped.
 
-escape=True strips/blocks dangerous constructs (script, iframe, on*, javascript:)
-for fail-closed ingestion of untrusted fragments.
+``defHTML(markup, escape=False)`` parses markup you wrote yourself and keeps
+every tag and attribute, including custom elements, Jinja syntax and
+comments. Never pass user input to it.
 """
+from __future__ import annotations
+
 import builtins
-import types
 import typing as T
-from dataclasses import dataclass, field
 
 from ux_dom.dom.src import ext, htmltags, jinjatags, svgtags
-from ux_dom.dom.src.htmltags import html_tag
-from ux_dom.dom.src.parse_html import Element, tokenize_html
-from ux_dom.dom.src.utils import dom_text
+from ux_dom.dom.src.parse_html import Comment, Data, Element, tokenize_html
+from ux_dom.dom.src.utils import dom_text, raw
+from ux_dom.dom.src.utils.dom_util import UNSAFE_URL, safe_attr_value
 
-__all__ = ["StringToHTML", "defHTML"]
+__all__ = ["defHTML", "SAFE_TAGS", "SAFE_ATTRIBUTES"]
 
-
-# Cache dynamic tag classes so defHTML does not pollute ``__main__`` or
-# re-create a new type for the same custom tag name on every parse.
-_dynamic_element_registry: dict[str, T.Type[ext.Tags]] = {}
-
-
-def create_dynamic_element(tag_name: str) -> T.Type[ext.Tags]:
-    """Build (or reuse) a Tags subclass for unknown HTML/custom tag names.
-
-    Previously this set attributes on ``sys.modules['__main__']`` and required
-    ``__main__.__file__``, which polluted interactive sessions and crashed under
-    some embedders. Classes are cached on a private registry instead.
-    """
-    if tag_name in _dynamic_element_registry:
-        return _dynamic_element_registry[tag_name]
-
-    cls_name = "".join(map(lambda x: x.capitalize(), tag_name.split("-"))) or "Dynamic"
-    # Ensure a valid identifier
-    if cls_name[0].isdigit():
-        cls_name = "Tag" + cls_name
-
-    class _Element(ext.Tags):
-        tagname = tag_name
-
-    _Element.__qualname__ = cls_name
-    _Element.__name__ = cls_name
-    _Element.__module__ = "ux_dom.dom.src.html_string"
-    element: T.Type[ext.Tags] = _Element
-    _dynamic_element_registry[tag_name] = element
-    return element
-
-
-# Tags / attrs neutralized when ``escape=True`` (untrusted HTML / markdown).
-# ``escape=False`` keeps full parse for trusted markup (HTMLElement, etc.).
-_UNSAFE_TAGS_WHEN_ESCAPE = frozenset(
+SAFE_TAGS = frozenset(
     {
-        "script",
-        "iframe",
-        "object",
-        "embed",
-        "base",
-        "link",
-        "meta",
-        "frame",
-        "frameset",
-        "applet",
+        "a", "abbr", "b", "bdi", "bdo", "blockquote", "br", "caption", "cite",
+        "code", "col", "colgroup", "dd", "del", "details", "dfn", "div", "dl",
+        "dt", "em", "figcaption", "figure", "h1", "h2", "h3", "h4", "h5", "h6",
+        "hr", "i", "img", "ins", "kbd", "li", "mark", "ol", "p", "pre", "q",
+        "rp", "rt", "ruby", "s", "samp", "small", "span", "strong", "sub",
+        "summary", "sup", "table", "tbody", "td", "tfoot", "th", "thead",
+        "time", "tr", "u", "ul", "var", "wbr",
     }
 )
+_GLOBAL_ATTRIBUTES = frozenset({"class", "title", "lang", "dir", "role"})
+SAFE_ATTRIBUTES: dict[str, frozenset[str]] = {
+    "a": frozenset({"href", "rel", "hreflang"}),
+    "img": frozenset({"src", "alt", "width", "height", "loading"}),
+    "td": frozenset({"colspan", "rowspan", "headers"}),
+    "th": frozenset({"colspan", "rowspan", "headers", "scope"}),
+    "ol": frozenset({"start", "reversed", "type"}),
+    "li": frozenset({"value"}),
+    "blockquote": frozenset({"cite"}),
+    "q": frozenset({"cite"}),
+    "del": frozenset({"cite", "datetime"}),
+    "ins": frozenset({"cite", "datetime"}),
+    "time": frozenset({"datetime"}),
+    "col": frozenset({"span"}),
+    "colgroup": frozenset({"span"}),
+    "details": frozenset({"open"}),
+}
+# Text inside these elements is raw by HTML rules; it is never re-escaped.
+_RAW_TEXT_TAGS = frozenset({"script", "style"})
+# Whitespace inside these elements is content (code indentation).
+_PREFORMATTED_TAGS = frozenset({"pre", "textarea"})
+_TAG_MODULES = (htmltags, svgtags, jinjatags)
+
+# Dynamic tag classes are cached so parsing never creates a new type per call.
+_dynamic_element_registry: dict[str, type[ext.Tags]] = {}
 
 
-def _sanitize_attrs_when_escape(attrs: dict) -> dict:
-    """Drop event handlers and javascript: URLs from attribute dict."""
-    if not attrs:
-        return attrs
+def create_dynamic_element(tag_name: str) -> type[ext.Tags]:
+    """Return a cached ``Tags`` subclass for a tag ux-dom does not define."""
+    if tag_name not in _dynamic_element_registry:
+        cls_name = "".join(part.capitalize() for part in tag_name.split("-")) or "Dynamic"
+        if cls_name[0].isdigit():
+            cls_name = "Tag" + cls_name
+        element = type(cls_name, (ext.Tags,), {"tagname": tag_name, "__module__": __name__})
+        _dynamic_element_registry[tag_name] = element
+    return _dynamic_element_registry[tag_name]
+
+
+def _tag_class(name: str) -> type[ext.Tags]:
+    candidates = (name + "_", name) if name in builtins.__dict__ else (name, name + "_")
+    for module in _TAG_MODULES:
+        for candidate in candidates:
+            element = getattr(module, candidate, None)
+            if isinstance(element, type):
+                return element
+    return create_dynamic_element(name)
+
+
+def _safe_attrs(tag: str, attrs: dict) -> dict:
+    allowed = SAFE_ATTRIBUTES.get(tag, frozenset())
     out = {}
-    for k, v in dict(attrs).items():
-        key = str(k)
-        kl = key.lower()
-        if kl.startswith("on"):
-            continue
-        if isinstance(v, str):
-            vl = v.strip().lower()
-            if vl.startswith("javascript:") or vl.startswith("vbscript:"):
-                continue
-            if kl in ("href", "src", "xlink:href", "formaction", "action") and vl.startswith("data:text/html"):
-                continue
-        out[k] = v
+    for key, value in attrs.items():
+        name = str(key).lower()
+        if name in _GLOBAL_ATTRIBUTES or name in allowed or name.startswith("aria-"):
+            value = "" if value is None else value
+            if safe_attr_value(name, value) != UNSAFE_URL:
+                out[name] = value
     return out
 
 
-@dataclass
-class StringToHTML(object):
-    # AST round-trip (HTML ↔ Python code object) is not implemented.
-    # from https://stackoverflow.com/questions/68577587/how-to-find-the-ast-assignment-node-related-to-the-instance-creation
-    # this.ast_object can be easily used to create python code for any html object
-    # https://stackoverflow.com/a/68584740 for parsing a python object into an ast_object
-    # https://stackoverflow.com/a/63212256 for unparsing a python ast_object
-
-    html_string_or_token: T.Union[str, Element, list[Element], ext.Tags]
-    modules: list[types.ModuleType] = field(default_factory=list)
-    escape: bool = field(default=True)
-
-    def __post_init__(self):
-        self.tokens: T.Union[Element, list[Element], ext.Tags] = (
-            tokenize_html(
-                self.html_string_or_token
-                if not isinstance(self.html_string_or_token, html_tag)
-                else str(self.html_string_or_token)
-            ).children
-            if isinstance(self.html_string_or_token, (str, html_tag))
-            else self.html_string_or_token
-        )
-
-        # for html, svg and jinja tags lookup
-        if htmltags not in self.modules:
-            self.modules.append(htmltags)
-
-        if svgtags not in self.modules:
-            self.modules.append(svgtags)
-
-        if jinjatags not in self.modules:
-            self.modules.append(jinjatags)
-
-    def parse(self, tag: T.Optional[ext.Tags] = None) -> T.Union[str, ext.Tags, None]:
-        for token in self.tokens:  # type: ignore[union-attr]
-            if not token.name:
-                # myst_parser gives out Data['abc'] kind of Token with {"name":'', 'data': 'abc', ...} attributes
-                # we are parsing plain strings, <script> body or jinja token strings here
-
-                if hasattr(token, "data"):
-                    # handle leading and trailing newline with spaces in myst parser Data Token ex: "  \n Hello\n  "
-                    if data := token.data.strip("\n").strip(" ").strip("\n"):
-                        with tag or ext.PlaceholderTag() as tag:  # type: ignore[assignment]
-                            # handling
-                            if tag.__class__.__name__ == "script":
-                                dom_text(data, escape=False)
-                            else:
-                                if token.__class__.__name__ != "Comment":
-                                    if data.startswith("{") and data.endswith("}"):
-                                        # these are jinja tags
-                                        dom_text(data, escape=False)
-                                    else:
-                                        # normal text is here
-                                        dom_text(data, escape=self.escape)
-                                else:
-                                    # this is a comment section
-                                    htmltags.comment(data)
-
-            else:
-                element = None
-                tag_name = token.name
-                if tag_name in builtins.__dict__:
-                    # work around for builtins like 'input' tag
-                    tag_name = "".join([token.name, "_"])
-
-                for module in self.modules:
-                    try:
-                        element = getattr(module, tag_name)
-                        if element is not None:
-                            break
-                    except (AttributeError,):
-                        pass
-                if element is None:
-                    element = create_dynamic_element(tag_name=tag_name)
-
-                # Untrusted parse: drop dangerous tags entirely
-                if self.escape and str(token.name).lower() in _UNSAFE_TAGS_WHEN_ESCAPE:
-                    continue
-
-                attrs = token.attrs
-                if self.escape:
-                    attrs = _sanitize_attrs_when_escape(dict(attrs or {}))
-
-                # tag = tag if tag is not None else ConcatTag()
-
-                if tag is not None:
-                    with tag:
-                        with element(**attrs) as child_tag:
-                            StringToHTML(
-                                token.children, modules=self.modules, escape=self.escape
-                            ).parse(tag=child_tag)
-                else:
-                    with element(**attrs) as tag:
-                        StringToHTML(
-                            token.children, modules=self.modules, escape=self.escape
-                        ).parse(tag=tag)
-        return tag
-
-    def __repr__(self):
-        return str(self.parse())
+def _text(data: str) -> str | None:
+    """Drop formatting whitespace; keep spaces that separate inline words."""
+    if not data.strip():
+        return None if "\n" in data else " "
+    head = data[: len(data) - len(data.lstrip())]
+    tail = data[len(data.rstrip()) :]
+    core = data.strip()
+    lead = "" if not head or "\n" in head else " "
+    trail = "" if not tail or "\n" in tail else " "
+    return lead + core + trail
 
 
-# don't decorate defHTML with functools.lru_cache because if defHTML is used in isolation
-# like:
-# with div() as parent_div:
-#   child_element = defHTML("some html string")
-#
-# with lru_cache decorated on defHTML the evaluation of child_element at run time will not happen twice
-# and thus parent_div will never add child_element in subsequest runs thus better way to cache defHTML
-# evaluation is to cache the method where it is used.
-def defHTML(raw_string, escape=True) -> T.List[ext.Tags]:  # noqa
+def _build(token: Element, trusted: bool, parent: str = "", pre: bool = False) -> None:
+    """Create the node for ``token`` inside the currently open ``with`` frame."""
+    if isinstance(token, Data):
+        if parent in _RAW_TEXT_TAGS:
+            raw(token.data)
+            return
+        text = token.data.strip("\n") or None if pre else _text(token.data)
+        if text is None:
+            return
+        if trusted and text.strip().startswith("{") and text.strip().endswith("}"):
+            raw(text)  # Jinja syntax in author templates
+        else:
+            dom_text(text)
+        return
+    if not token.name:  # comment, declaration, processing instruction
+        if trusted:
+            htmltags.comment(token.data) if isinstance(token, Comment) else raw(token.render())
+        return
+    name = str(token.name).lower()
+    if not trusted and name not in SAFE_TAGS:
+        return  # fail closed: drop the element and everything inside it
+    attrs = dict(token.attrs or {})
+    if not trusted:
+        attrs = _safe_attrs(name, attrs)
+    pre = pre or name in _PREFORMATTED_TAGS
+    with _tag_class(name)(**attrs):
+        for child in token.children:
+            _build(child, trusted, name, pre)
+
+
+def defHTML(raw_string, escape: bool = True) -> T.List[ext.Tags]:  # noqa: N802
+    """Parse ``raw_string``; sanitize it unless ``escape=False`` (trusted)."""
     if raw_string is None:
         return []
-    if not isinstance(raw_string, str):
-        raw_string = str(raw_string)
-    tokens = tokenize_html(raw_string).children
-    elements = []
-    for token in tokens:
-        element = StringToHTML([token], escape=escape).parse()
-        if element:
-            assert isinstance(
-                element, ext.Tags
-            ), f"{element=} is not instance of {ext.Tags}"
-            elements.append(element)
-    return elements
+    nodes: list[ext.Tags] = []
+    for token in tokenize_html(str(raw_string), convert_charrefs=True).children:
+        with ext.PlaceholderTag() as holder:
+            _build(token, trusted=not escape)
+        children = list(holder.children)
+        holder.clear()
+        for child in children:
+            child.parent = None
+            nodes.append(child if isinstance(child, ext.Tags) else _wrap(child))
+    return nodes
 
 
-# if __name__ == '__main__':
-# from ux_dom.dom import ConcatTag, For, Var, div, li, raw, script, ul
-
-# print(defHTML("<li><ul><i><!--Hello World--></i></ul><a href='www.google.com'></a></li>"))
-#     class XName(ext.Tags):
-#         tagname = "x-name"
-
-
-# print(defHTML(div("hello", div("Jai SHree Ram"), script(raw("function () => {}")), className="sdaf")).parse())
-# print(div("hello", div("Jai SHree Ram"), script(raw("function () => {}")), className="sdaf"))
-# print(defHTML(str(div("hello", div("Jai SHree Ram"), script(raw("function () => {}")), className="sdaf", x_data=None))))
-# x = HTMLToPy(str(XName("hello", Var("haha"), ul(For("name in names", li(Var("name")))),
-#                        div("Jai SHree Ram aa", className="safn"), script(raw("function () => {}")),
-#                         script(src="https://unpkg.com/filepond/dist/filepond.js"),
-#                         className="sdaf", x_data={}, x_transition_enter="")))
-# print(x)
-# print(XName("hello >", Var("haha >"), ul(For("name in names", li(Var("name")))),
-#             div("Jai SHree Ram   a ", className="safn"), script(raw("function () => {}")),
-#                         script(src="https://unpkg.com/filepond/dist/filepond.js"),
-#                         className="sdaf", x_data={}, x_transition_enter=""))
-# print(defHTML(str(ul(For("name in names", li(Var("name")))))))
+def _wrap(node) -> ext.Tags:
+    holder = ext.PlaceholderTag()
+    holder.add(node)
+    return holder

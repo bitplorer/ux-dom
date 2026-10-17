@@ -45,15 +45,16 @@ class TestHtmlParseChaos(unittest.TestCase):
         els = defHTML("<div id='a'><span>z</span></div>")
         self.assertEqual(len(els), 1)
         self.assertIn("z", els[0].__render__(pretty=False))
-        custom = defHTML("<my-x foo='1'>q</my-x>")
+        custom = defHTML("<my-x foo='1'>q</my-x>", escape=False)
         self.assertIn("q", custom[0].__render__(pretty=False))
 
-    def test_component_string_parse(self):
+    def test_component_string_is_text(self):
         class C(Component):
             def render(self, html="<div>ok</div>"):
                 return html
 
-        self.assertIn("hello", C(html="<div>hello</div>").__render__(pretty=False))
+        out = C(html="<div>hello</div>").__render__(pretty=False)
+        self.assertEqual(out, "&lt;div&gt;hello&lt;/div&gt;")
 
     def test_concurrent_parse(self):
         def work(i):
