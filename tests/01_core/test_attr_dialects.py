@@ -1,11 +1,11 @@
-"""Golden attribute dialect matrix — L0 dom_tag / L1 Tags / L2 StyleTags."""
+"""Golden attribute dialect matrix — L0 dom_tag / L1 Tags."""
 
 from __future__ import annotations
 
 import unittest
 
 from ux_dom.dom.src.dom_tag import dom_tag
-from ux_dom.dom.src.ext import StyleTags, Tags
+from ux_dom.dom.src.ext import Tags
 from ux_dom.dom import div
 
 
@@ -42,15 +42,6 @@ class TestAttrDialects(unittest.TestCase):
         self.assertEqual(Tags.clean_attribute("data_channel_action"), "data-channel-action")
         # CSS property names must NOT be rewritten on Tags
         self.assertEqual(Tags.clean_attribute("font_size"), "font_size")
-
-    def test_l2_style_tags_css_properties(self):
-        self.assertEqual(StyleTags.clean_attribute("font_size"), "font-size")
-        self.assertEqual(
-            StyleTags.clean_attribute("background_color"), "background-color"
-        )
-        self.assertEqual(StyleTags.clean_attribute("className"), "class")
-        # Style dialect must NOT apply Alpine @ rewrite
-        self.assertEqual(StyleTags.clean_attribute("x_on_click"), "x-on-click")
 
     def test_div_uses_l1(self):
         self.assertIs(div.clean_attribute.__func__, Tags.clean_attribute.__func__)

@@ -20,7 +20,6 @@ from .icons import *  # isort: skip
 from .jinja import *  # isort: skip
 
 from .src.component import *
-from .src.csstags import *
 from .src.ext import *
 from .src.jinjatags import *
 from .src.svgtags import *

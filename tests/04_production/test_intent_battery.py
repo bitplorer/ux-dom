@@ -19,7 +19,7 @@ from fastapi.testclient import TestClient
 from ux_dom import Component, Document, Fragment, ReactiveComponent, MergeClassAttribute
 from ux_dom.dom import div, span, button, attr, raw
 from ux_dom.dom.src.dom_tag import get_current
-from ux_dom.dom.src.ext import Tags, StyleTags
+from ux_dom.dom.src.ext import Tags
 from ux_dom.dom.src.parse_html import tokenize_html
 from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.htmx import Htmx
@@ -136,7 +136,6 @@ class TestIntentContracts(unittest.TestCase):
     def test_dialect_escape_idempotent_cycle(self):
         self.assertEqual(Tags.clean_attribute("hx_get"), "hx-get")
         self.assertTrue(Tags.clean_attribute("x_on_click").startswith("@"))
-        self.assertFalse(StyleTags.clean_attribute("x_on_click").startswith("@"))
         h = div("<b>x</b>").__render__(pretty=False)
         self.assertIn("&" + "lt;b&" + "gt;", h)
         raw_html = div(raw("<b>x</b>")).__render__(pretty=False)

@@ -21,7 +21,7 @@ from fastapi.testclient import TestClient
 from ux_dom import Component, Document, Fragment, ReactiveComponent
 from ux_dom.dom import div, span, button, attr
 from ux_dom.dom.src.dom_tag import dom_tag
-from ux_dom.dom.src.ext import Tags, StyleTags
+from ux_dom.dom.src.ext import Tags
 from ux_dom.dom.src.parse_html import tokenize_html
 from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.plugins import App
@@ -264,7 +264,6 @@ class TestBehaviourIntegration(unittest.TestCase):
             Tags.clean_attribute("x_on_click") == "@click"
             or Tags.clean_attribute("x_on_click").startswith("@")
         )
-        self.assertFalse(StyleTags.clean_attribute("x_on_click").startswith("@"))
 
     def test_membership_triad(self):
         c = Card(n=5)

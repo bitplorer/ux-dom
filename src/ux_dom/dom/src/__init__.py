@@ -5,7 +5,6 @@
 
 
 # from .component import *
-# from .csstags import *
 # from .ext import *
 # from .htmltags import *
 # from .jinjatags import *

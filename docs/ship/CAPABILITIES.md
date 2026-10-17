@@ -10,14 +10,14 @@ Version: **0.2.0** (ux-dom production line).
 
 - [x] `with` tree construction + `attr()` / `get_current()`
 - [x] Task/context-local stack (asyncio-safe; no bare thread-only key)
-- [x] Layered `clean_attribute`: L0 `dom_tag` / L1 `Tags` / L2 `StyleTags`
+- [x] Layered `clean_attribute`: L0 `dom_tag` / L1 `Tags`
 - [x] Boolean True/False/None + dict JSON attrs + multiline class collapse
 - [x] `Component` transparent `_entry` + hash/eq rules
 - [x] `Fragment` / `MergeClassAttribute` / Alpine `DataSet`
 - [x] `ReactiveComponent` re-render
 - [x] `HtmlDocument` placeholders + XTemplate/WC hoist
 - [x] `__render__` / `__async_render__` / `async with` (`__aenter__` / `__aexit__`)
-- [x] `uniqueid`, SVG tags, CSS tags, `defHTML` parse path
+- [x] `uniqueid`, SVG tags, `defHTML` parse path
 - [x] Top-level `from ux_dom import Component, Fragment, Document`
 
 ## Response

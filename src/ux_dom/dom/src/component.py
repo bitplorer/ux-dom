@@ -21,7 +21,7 @@ from pathlib import Path
 from textwrap import dedent
 from typing import Iterable, List, Union
 
-from ux_dom.dom.src import csstags, htmltags, jinjatags, svgtags
+from ux_dom.dom.src import htmltags, jinjatags, svgtags
 from ux_dom.dom.src.concurrency import multi_tree_lock
 from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.html_string import defHTML
@@ -50,7 +50,6 @@ class Component(extension.Tags):
 
     left_delimiter = "<"
     right_delimiter = ">"
-    css_tags = csstags
     svg_tags = svgtags
     html_tags = htmltags
     jinja_tags = jinjatags

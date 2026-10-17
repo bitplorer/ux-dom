@@ -26,3 +26,16 @@ class DeadSurfaceRemoved(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_css_tags_removed():
+    """csstags/StyleTags rendered broken CSS and had no users (review M7)."""
+    import importlib
+
+    import pytest
+
+    import ux_dom.dom.src.ext as ext
+
+    assert not hasattr(ext, "StyleTags")
+    with pytest.raises(ModuleNotFoundError):
+        importlib.import_module("ux_dom.dom.src.csstags")

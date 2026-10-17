@@ -27,7 +27,7 @@ from ux_dom.dom import (
 )
 from ux_dom.dom.src.component import Component, Fragment, ReactiveComponent
 from ux_dom.dom.src.concurrency import tree_lock_for
-from ux_dom.dom.src.ext import PlaceholderTag, StyleTags, Tags
+from ux_dom.dom.src.ext import PlaceholderTag, Tags
 from ux_dom.dom.src.html_string import defHTML
 from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.plugins.control import HtmxControl, NullControl
@@ -67,8 +67,6 @@ class TestTagsSerializeTrust(unittest.TestCase):
         self.assertEqual(Tags.clean_attribute("x_on_click"), "@click")
         self.assertEqual(Tags.clean_attribute("__class"), ":class")
         self.assertEqual(Tags.clean_attribute("class_"), "class")
-        self.assertEqual(StyleTags.clean_attribute("background_color"), "background-color")
-        self.assertFalse(StyleTags.clean_attribute("x_on_click").startswith("@"))
 
     def test_walk_equals_render_random_trees(self):
         rng = random.Random(42)
