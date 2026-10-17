@@ -244,13 +244,13 @@ def _mount_package_static(app: Any, hub: PluginHub) -> None:
 
 
 class ProductHostMoved(RuntimeError):
-    """App.web and App.fastapi are not a host. Product host is ux-compose."""
+    """App.fastapi is not a host. Product host is ux-compose."""
 
     def __init__(self, message: str | None = None):
         super().__init__(
             message
             or (
-                "App.web() / App.fastapi() is not the product path. "
+                "App.fastapi() is not the product path. "
                 "Use: uxcompose create-app / ux_compose.build(host=)."
             )
         )
@@ -269,7 +269,7 @@ class App:
         app = FastAPI(...); document.mount(app)
         # or: document.mount(fastapi_app)
 
-        ``App.web(...).build()`` is fail-closed — product apps use
+        ``App.build()`` without ``asgi=`` is fail-closed — product apps use
         ``uxcompose create-app``. If you pass ``document=`` into leftover
         ``App``, that instance is mounted via ``document.mount`` when you
         ``build(asgi=FastAPI())``.
@@ -407,28 +407,6 @@ class App:
     def plugins(self, *plugins: Any) -> "App":
         """Alias of ``use(*plugins)`` — read as “install these features”."""
         return self.use(*plugins)
-
-    @classmethod
-    def web(
-        cls,
-        *,
-        title: str = "ux-dom",
-        debug: bool = False,
-        package_dir: Any = None,
-        base_directory: str = "routes",
-        xelement: bool = True,
-        channel: bool = False,
-        htmx: bool = True,
-        csp: bool = False,
-        document: Any = None,
-        assets: Any = None,
-        htmx_version: str = "2.0.4",
-        **host_kwargs: Any,
-    ) -> "App":
-        raise ProductHostMoved(
-            "App.web() is not the product path. "
-            "Use: uxcompose create-app / ux_compose.build(host=)."
-        )
 
     def use_host(self, plugin: HostPlugin) -> "App":
         self.hub.add_host(plugin)
