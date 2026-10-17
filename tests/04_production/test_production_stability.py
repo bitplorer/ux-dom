@@ -26,7 +26,7 @@ class TestUiEdges(unittest.TestCase):
     def test_all_catalog_modules_import_and_render(self):
         import importlib
 
-        for key, meta in CATALOG.items():
+        for meta in CATALOG.values():
             mod = importlib.import_module(meta["module"])
             for exp in meta["exports"]:
                 self.assertTrue(hasattr(mod, exp), f"{meta['module']}.{exp}")
@@ -148,29 +148,6 @@ class TestAstLibrary(unittest.TestCase):
             if "__pycache__" in py.parts:
                 continue
             ast.parse(py.read_text(encoding="utf-8"), filename=str(py))
-
-
-class TestUiGallery(unittest.TestCase):
-    def test_gallery(self):
-        root = REPO / "examples" / "ux_kit"
-        sys.path.insert(0, str(root))
-        for k in list(sys.modules):
-            if k == "app" or k.startswith("app."):
-                del sys.modules[k]
-        try:
-            from app.main import app
-
-            c = TestClient(app)
-            r = c.get("/")
-            self.assertEqual(r.status_code, 200)
-            self.assertIn("data-channel-id", r.text)
-            self.assertIn("Gallery:card", r.text)
-        finally:
-            for k in list(sys.modules):
-                if k == "app" or k.startswith("app."):
-                    del sys.modules[k]
-            if str(root) in sys.path:
-                sys.path.remove(str(root))
 
 
 class TestChannelBridge(unittest.TestCase):

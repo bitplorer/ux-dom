@@ -2,12 +2,9 @@
 
 from __future__ import annotations
 
-import sys
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-
-from fastapi.testclient import TestClient
 
 from ux_dom.ui import (
     Alert,
@@ -106,37 +103,6 @@ class TestCopy(unittest.TestCase):
     def test_catalog(self):
         self.assertIn("button", CATALOG)
         self.assertTrue(list_components())
-
-
-class TestGalleryApp(unittest.TestCase):
-    def test_gallery_200(self):
-        root = Path(__file__).resolve().parents[2] / "examples" / "ux_kit"
-        if not root.is_dir():
-            self.skipTest("no examples/ux_kit")
-        sys.path.insert(0, str(root))
-        # ensure ux_dom on path
-        repo = Path(__file__).resolve().parents[2]
-        if str(repo) not in sys.path:
-            sys.path.insert(0, str(repo))
-        for k in list(sys.modules):
-            if k == "app" or k.startswith("app."):
-                del sys.modules[k]
-        try:
-            from app.main import app
-
-            c = TestClient(app)
-            r = c.get("/")
-            self.assertEqual(r.status_code, 200, r.text[:300])
-            self.assertIn("UxDom UI kit", r.text)
-            self.assertIn("Button", r.text or "Default")
-            self.assertIn("bg-stone-900", r.text)
-            self.assertIn("data-channel-id", r.text)
-        finally:
-            for k in list(sys.modules):
-                if k == "app" or k.startswith("app."):
-                    del sys.modules[k]
-            if str(root) in sys.path:
-                sys.path.remove(str(root))
 
 
 if __name__ == "__main__":

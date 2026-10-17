@@ -104,5 +104,5 @@ Alpine is last-resort perception only. Doctor fails alpine-for-open when a Chann
 ## Example gallery
 
 ```bash
-PYTHONPATH=.:examples/ux_kit uvicorn app.main:app --app-dir examples/ux_kit --port 8080
+uvicorn examples.ux_kit.main:app --reload   # from the repo root
 ```

@@ -1,1 +1,0 @@
-"""UI kit gallery app."""
