@@ -13,12 +13,16 @@ from ux_dom.dom import link, meta, title
 from ux_dom.runtime import Csp, Htmx
 
 TITLE = "UxDom Showcase"
+# htmx would inject an inline <style> for .htmx-indicator; the nonce CSP
+# blocks it, so turn that off (style indicators in your CSS instead).
+HTMX_CONFIG = meta(name="htmx-config", content='{"includeIndicatorStyles":false}')
 
 document = Document(
     head=[
         meta(charset="utf-8"),
         meta(name="viewport", content="width=device-width, initial-scale=1"),
         link(rel="stylesheet", href="/static/app.css"),
+        HTMX_CONFIG,
     ],
 ).use(
     Htmx(version="2.0.4", sse=True, middleware=True),

@@ -17,9 +17,13 @@ from fastapi import APIRouter, FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 
 from ux_dom import Component, Document
-from ux_dom.dom import button, div, form, h1, h2, input_, li, span, title, ul
+from ux_dom.dom import button, div, form, h1, h2, input_, li, meta, span, title, ul
 from ux_dom.response.fastapi import HTMLRoute
 from ux_dom.runtime import Csp, Htmx
+
+# htmx would inject an inline <style> for .htmx-indicator; the nonce CSP
+# blocks it, so turn that off (style indicators in your CSS instead).
+HTMX_CONFIG = meta(name="htmx-config", content='{"includeIndicatorStyles":false}')
 
 TOOLS: dict[str, dict[str, Any]] = {
     "echo": {
@@ -129,7 +133,7 @@ class Home(Component):
 
 
 def create_app() -> FastAPI:
-    document = Document().use(Htmx(version="2.0.4"), Csp.auto())
+    document = Document(head=[HTMX_CONFIG]).use(Htmx(version="2.0.4"), Csp.auto())
     app = FastAPI(title="ux-dom MCP-style tools")
 
     def home():

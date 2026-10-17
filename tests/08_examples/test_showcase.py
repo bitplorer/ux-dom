@@ -7,6 +7,7 @@ import re
 import pytest
 from example_checks import (
     assert_external_scripts_pinned,
+    assert_htmx_csp_safe,
     assert_scripts_nonced,
     client,
     compact,
@@ -33,6 +34,7 @@ def test_home_is_a_full_document_with_runtimes(c):
 def test_csp_header_and_nonced_scripts(c):
     r = c.get("/")
     assert "strict-dynamic" in r.headers["content-security-policy"]
+    assert_htmx_csp_safe(r.text)
     assert_scripts_nonced(r)
 
 

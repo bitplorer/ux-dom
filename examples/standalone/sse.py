@@ -15,9 +15,13 @@ from fastapi import APIRouter, FastAPI, Request
 from fastapi.responses import StreamingResponse
 
 from ux_dom import Component, Document
-from ux_dom.dom import div, h1, p, span, title
+from ux_dom.dom import div, h1, meta, p, span, title
 from ux_dom.response.fastapi import HTMLRoute
 from ux_dom.runtime import Csp, Htmx
+
+# htmx would inject an inline <style> for .htmx-indicator; the nonce CSP
+# blocks it, so turn that off (style indicators in your CSS instead).
+HTMX_CONFIG = meta(name="htmx-config", content='{"includeIndicatorStyles":false}')
 
 
 class TickerPage(Component):
@@ -48,7 +52,9 @@ def sse_event(html: str, event: str = "message") -> str:
 
 
 def create_app() -> FastAPI:
-    document = Document().use(Htmx(version="2.0.4", sse=True), Csp.auto())
+    document = Document(head=[HTMX_CONFIG]).use(
+        Htmx(version="2.0.4", sse=True), Csp.auto()
+    )
     app = FastAPI(title="ux-dom SSE ticker")
 
     def home():

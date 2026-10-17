@@ -45,3 +45,12 @@ def assert_scripts_nonced(response) -> None:
 def compact(html: str) -> str:
     """Drop the pretty-printer's whitespace around tags."""
     return re.sub(r"\s*(<[^>]+>)\s*", r"\1", html)
+
+
+HTMX_CONFIG = '<meta content="{&quot;includeIndicatorStyles&quot;:false}" name="htmx-config">'
+
+
+def assert_htmx_csp_safe(html: str) -> None:
+    """htmx injects an inline <style> for indicators unless told not to; a
+    nonce CSP blocks it (style-src-elem). Pages with htmx under Csp opt out."""
+    assert HTMX_CONFIG in html, "missing htmx-config includeIndicatorStyles=false"

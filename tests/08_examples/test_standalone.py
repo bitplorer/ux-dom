@@ -14,6 +14,7 @@ import re
 import pytest
 from example_checks import (
     assert_external_scripts_pinned,
+    assert_htmx_csp_safe,
     assert_scripts_nonced,
     client,
     compact,
@@ -45,6 +46,7 @@ def sse():
 def test_sse_page_loads_htmx_and_the_sse_extension(sse):
     r = sse.get("/")
     _page_checks(r)
+    assert_htmx_csp_safe(r.text)
     assert HTMX in r.text and SSE_EXT in r.text
     html = compact(r.text)
     assert 'sse-connect="/sse/market"' in html and 'sse-swap="message"' in html
@@ -149,6 +151,7 @@ def mcp():
 def test_mcp_home_is_a_document(mcp):
     r = mcp.get("/")
     _page_checks(r)
+    assert_htmx_csp_safe(r.text)
     assert 'id="tool-echo"' in r.text
 
 
@@ -236,6 +239,7 @@ def search():
 def test_search_page_loads_htmx(search):
     r = search.get("/")
     _page_checks(r)
+    assert_htmx_csp_safe(r.text)
     assert HTMX in r.text
     assert 'hx-get="/search"' in r.text
 

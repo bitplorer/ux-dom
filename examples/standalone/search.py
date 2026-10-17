@@ -12,9 +12,13 @@ from __future__ import annotations
 from fastapi import APIRouter, FastAPI, Request
 
 from ux_dom import Component, Document
-from ux_dom.dom import button, div, form, input_, label, span, title
+from ux_dom.dom import button, div, form, input_, label, meta, span, title
 from ux_dom.response.fastapi import StreamingRoute
 from ux_dom.runtime import Csp, Htmx
+
+# htmx would inject an inline <style> for .htmx-indicator; the nonce CSP
+# blocks it, so turn that off (style indicators in your CSS instead).
+HTMX_CONFIG = meta(name="htmx-config", content='{"includeIndicatorStyles":false}')
 
 
 class ResultList(Component):
@@ -44,7 +48,9 @@ class SearchBox(Component):
 
 
 def create_app() -> FastAPI:
-    document = Document().use(Htmx(version="2.0.4", middleware=True), Csp.auto())
+    document = Document(head=[HTMX_CONFIG]).use(
+        Htmx(version="2.0.4", middleware=True), Csp.auto()
+    )
     app = FastAPI(title="ux-dom htmx search")
 
     def page(q: str = ""):
