@@ -5,11 +5,7 @@ import logging
 from typing import Awaitable, Callable, Dict, List, Optional
 
 try:
-    import watchgod
-except ImportError:  # pragma: no cover
-    watchgod = None  # type: ignore
-try:
-    import watchfiles as _watchfiles
+    import watchfiles as _watchfiles  # optional dev extra
 except ImportError:  # pragma: no cover
     _watchfiles = None  # type: ignore
 
@@ -19,12 +15,6 @@ ChangeSet = Dict[str, List[str]]
 
 
 def _change_labels():
-    if watchgod is not None:
-        return {
-            watchgod.Change.added: "added",
-            watchgod.Change.modified: "modified",
-            watchgod.Change.deleted: "deleted",
-        }
     if _watchfiles is not None:
         return {
             _watchfiles.Change.added: "added",
@@ -54,16 +44,9 @@ class FileWatcher:
         return self._should_exit_obj
 
     async def _watch(self) -> None:
-        if watchgod is not None:
-            _awatch = watchgod.awatch
-        elif _watchfiles is not None:
-            _awatch = _watchfiles.awatch
-        else:
-            raise RuntimeError(
-                "ux_dom.reloader requires watchgod or watchfiles; "
-                "pip install watchfiles"
-            )
-        async for changes in _awatch(self._path):
+        if _watchfiles is None:
+            raise RuntimeError("ux_dom.reloader requires watchfiles; pip install watchfiles")
+        async for changes in _watchfiles.awatch(self._path):
             changeset: ChangeSet = {}
             for event, group in itertools.groupby(changes, key=lambda item: item[0]):
                 label = CHANGE_EVENT_LABELS[event]

@@ -97,7 +97,6 @@ ignore_missing_imports = true
 mypy_path = "src"
 exclude = [
   "ux_dom/elements/",
-  "ux_dom/examples/",
 ]
 
 [tool.ruff]

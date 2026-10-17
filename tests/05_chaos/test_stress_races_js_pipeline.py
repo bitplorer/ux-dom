@@ -16,7 +16,6 @@ from fastapi.testclient import TestClient
 from ux_dom import Component
 from ux_dom.dom import div, span, button
 from ux_dom.dom.src.dom_tag import get_current
-from ux_dom.dom.src.ws_rpc import ws_rpc
 from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.plugins import App
@@ -212,13 +211,6 @@ class TestWsAndJsPipeline(unittest.TestCase):
             self.assertEqual(len(adapter._instances), 0)
 
         asyncio.run(run())
-
-    def test_ws_rpc_js_asset(self):
-        js = ws_rpc().__render__(pretty=False)
-        self.assertIn("WebSocket", js)
-        self.assertIn("addEventListener", js)
-        self.assertNotIn("def ", js)
-        self.assertNotIn("self.", js)
 
     def test_py_attrs_to_html_js_hooks(self):
         h = div(

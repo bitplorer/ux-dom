@@ -105,7 +105,7 @@ class TestFullMroSignatures(unittest.TestCase):
                 if rel.name == "__init__.py"
                 else ".".join(rel.with_suffix("").parts)
             )
-            if name.startswith("ux_dom.cli") or name.startswith("ux_dom.examples"):
+            if name.startswith("ux_dom.cli"):
                 continue
             try:
                 with warnings.catch_warnings():

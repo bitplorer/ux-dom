@@ -61,7 +61,7 @@ class TestMroSignatures(unittest.TestCase):
                 name = ".".join(rel.parts[:-1])
             else:
                 name = ".".join(rel.with_suffix("").parts)
-            if name.startswith("ux_dom.cli") or name.startswith("ux_dom.examples"):
+            if name.startswith("ux_dom.cli"):
                 continue
             modules.append(name)
 

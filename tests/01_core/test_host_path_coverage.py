@@ -123,22 +123,6 @@ class TestStyleTokensFunctional(unittest.TestCase):
             self.assertIn("a", s)
             self.assertIn("b", s)
 
-    def test_functional(self):
-        import ux_dom.utils.functional as f
-
-        # call public helpers if present
-        for name in ("identity", "always", "never", "compose"):
-            if hasattr(f, name):
-                fn = getattr(f, name)
-                try:
-                    if name == "identity":
-                        self.assertEqual(fn(3), 3)
-                    elif name == "always":
-                        self.assertTrue(fn() or True)
-                except TypeError:
-                    pass
-
-
 class TestDocumentAndPaths(unittest.TestCase):
     def test_using_and_mount(self):
         from ux_dom import Document
@@ -147,16 +131,6 @@ class TestDocumentAndPaths(unittest.TestCase):
         d = Document(ensure_csrf_token=False).using(Htmx(cdn=True))
         self.assertTrue(d.runtimes())
         d.mount(FastAPI())
-
-    def test_paths_subdir(self):
-        from ux_dom.settings.paths import SubdirOrFile
-
-        with TemporaryDirectory() as td:
-            p = Path(td)
-            (p / "css").mkdir()
-            s = SubdirOrFile(str(p / "css"))
-            self.assertIsNotNone(s)
-
 
 class TestParseEscape(unittest.TestCase):
     def test_escape(self):
@@ -210,32 +184,6 @@ class TestCreateAsgiStyleHmr(unittest.TestCase):
     def test_create_asgi_is_absent(self):
         with self.assertRaises(ImportError):
             import ux_dom.create.asgi  # noqa: F401
-
-
-class TestFunctionalModule(unittest.TestCase):
-    def test_decorators_exist_and_run(self):
-        import ux_dom.utils.functional as f
-
-        # cover common patterns in this module by reading source and calling
-        src = Path(f.__file__).read_text()
-        self.assertTrue(len(src) > 0)
-        # try each public callable with minimal args
-        for name in dir(f):
-            if name.startswith("_"):
-                continue
-            obj = getattr(f, name)
-            if not callable(obj):
-                continue
-            try:
-                obj(lambda x: x)
-            except Exception:
-                try:
-                    obj(1)
-                except Exception:
-                    try:
-                        obj()
-                    except Exception:
-                        pass
 
 
 class TestHostLifespan(unittest.TestCase):

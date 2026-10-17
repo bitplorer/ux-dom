@@ -37,7 +37,6 @@ Page routing is ux-compose's; ux-dom ships no router.
 | `ux_dom/dom/src/htmltags.py` / `jinjatags.py` / `svgtags.py` | Tag classes | via `ux_dom.dom` |
 | `ux_dom/dom/src/html_string.py` | defHTML parse + sanitize | **Public** via dom |
 | `ux_dom/dom/uniqueid.py` | Unique id generator for trees | Semi |
-| `ux_dom/dom/src/ws_rpc.py` | Optional WS helpers (uses document.ux_domMessageHandler) | Advanced |
 | **`ux_dom/settings/`** | Document | **Public** |
 | **`ux_dom/plugins/`** | Hub, contributions, CSP, control, package static | Semi / **Public** facades |
 | `ux_dom/plugins/runtime.py` | XElementRuntime, UxChannelRuntime — package static | Semi |

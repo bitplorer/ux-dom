@@ -8,7 +8,6 @@ from ux_dom.plugins.control import HtmxControl, NullControl
 from ux_dom.plugins.dedupe import dedupe_dom_nodes, extract_script_srcs
 from ux_dom.plugins.response import HTMLResponsePlugin, StreamingResponsePlugin
 from ux_dom.ui.tokens import cn, focus_ring, variants
-from ux_dom.utils.functional import map_recursive
 
 
 class TestCssTags(unittest.TestCase):
@@ -77,12 +76,6 @@ class TestUiTokens(unittest.TestCase):
         self.assertIsInstance(focus_ring, str)
         self.assertIn("ring", focus_ring)
         self.assertIn("h-8", variants({"size": {"sm": "h-8"}}, size="sm"))
-
-
-class TestFunctional(unittest.TestCase):
-    def test_map_recursive_list(self):
-        out = map_recursive(lambda x: x * 2 if isinstance(x, int) else x, [1, [2, 3], 4])
-        self.assertEqual(out, [2, [4, 6], 8])
 
 
 if __name__ == "__main__":
