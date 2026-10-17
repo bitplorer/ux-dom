@@ -243,46 +243,6 @@ class html_tag(extension.Tags):
         """
         super().__init__(*args, **kwargs)
 
-    # def validate(self):
-    #   '''
-    #   Validate the tag. This will check the attributes, context, and contents and
-    #   emit tuples in the form of: element, message.
-    #   '''
-    #   errors = []
-
-    #   errors.extend(self.validate_attributes())
-    #   errors.extend(self.validate_context())
-    #   errors.extend(self.validate_content())
-
-    #   return errors
-
-    # def validate_attributes(self):
-    #   '''
-    #   Validate the tag attributes.
-    #   '''
-    #   return []
-
-    # def validate_context(self):
-    #   '''
-    #   Validate the tag context.
-    #   '''
-    #   return []
-
-    # def validate_content(self):
-    #   '''
-    #   Validate the content of the tag.
-    #   '''
-    #   return []
-
-    # def _check_attributes(self, *attrs):
-    #   valid = set([])
-    #   for attr in attrs:
-    #     if hasattr(attr, '__iter__'):
-    #       valid |= set(attr)
-    #     else:
-    #       valid.add(attr)
-    #   return set(list(self.attributes.iterkeys())) - valid
-
 
 ################################################################################
 ############################### Html Tag Classes ###############################
@@ -297,21 +257,6 @@ class html(html_tag):
     """
 
     pass
-    # def validate_attributes(self):
-    #   errors = []
-    #   for invalid in self._check_attributes(_ATTR_GLOBAL, 'manifest'):
-    #     errors.append( (self, ERR_ATTRIBUTE, 'Invalid attribute: "%s"' % invalid) )
-    #   return errors
-
-    # def validate_context(self):
-    #   if self.parent is not None and not isinstance(self.parent, iframe):
-    #     return [(self, ERR_CONTEXT, 'Must be root element or child of an <iframe>')]
-    #   return []
-
-    # def validate_content(self):
-    #   if len(self) != 2 or not isinstance(self[0], head) or not isinstance(self[1], body):
-    #     return [(self, ERR_CONTENT, 'Children must be <head> and then <body>.')]
-    #   return []
 
 
 # Document metadata

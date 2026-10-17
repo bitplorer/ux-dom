@@ -6,7 +6,6 @@
 import inspect
 from collections.abc import Callable
 
-# from collections import OrderedDict as Odict
 
 
 __all__ = ["Parameters"]

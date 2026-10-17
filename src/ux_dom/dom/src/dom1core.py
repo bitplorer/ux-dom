@@ -111,24 +111,3 @@ class dom1core:
     def ownerDocument(self):
         return self.document
 
-    # def insertBefore(self, newChild, refChild):
-    #     child_nodes = self.childNodes
-    #     insert_idx = child_nodes.index(refChild) - 1
-    #     child_nodes.insert(insert_idx, newChild)
-    #     return self
-
-    # def replaceChild(self, newChild, oldChild):
-    #     replace_idx = self.childNodes.index(oldChild)
-    #     self[replace_idx] = newChild
-    #     if isinstance(newChild, dom1core):
-    #         newChild.parent = self
-    #         newChild.setdocument(self.document)
-    #     self.removeChild(oldChild)
-    #     return self
-
-    # def removeChild(self, oldChild):
-    #     if isinstance(oldChild, dom1core):
-    #         oldChild.clear()
-    #         oldChild.parent = None
-    #     del oldChild
-    #     return self
