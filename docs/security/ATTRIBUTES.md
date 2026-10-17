@@ -18,7 +18,17 @@ Every attribute value goes through two steps when the tree renders.
    after HTML entities are decoded (`&#106;avascript:`, `javascript&colon;`)
    and after the whitespace and C0 controls browsers ignore in a scheme are
    removed (`java\tscript:`). Letter case is ignored.
-3. **HTML attributes are refused.** `srcdoc` holds a whole HTML document, so a
+3. **htmx request URLs stay on this origin.** htmx fetches the URL in
+   `hx-get`, `hx-post`, `hx-put`, `hx-patch`, `hx-delete` (and the SSE /
+   WebSocket extensions fetch `sse-connect` / `ws-connect`) and swaps the
+   response into the page, so a foreign origin there can inject any HTML.
+   These attributes accept relative same-origin URLs only (`/a`, `a/b`, `?q`);
+   `https://…`, `//host`, `\\host` and `/\host` render as the inert URL. To call
+   another origin on purpose, wrap the value:
+   `div(hx_get=cross_origin("https://api.example.com/feed"))`
+   (`from ux_dom.dom import cross_origin`); the scheme must still be `http`,
+   `https`, `ws` or `wss`. List: `SAME_ORIGIN_URL_ATTRIBUTES`.
+4. **HTML attributes are refused.** `srcdoc` holds a whole HTML document, so a
    scheme check means nothing there. It renders as the inert URL unless the
    value explicitly opts in through the `__html__` protocol (for example
    MarkupSafe's `Markup`); the opted-in HTML is still attribute-escaped.
@@ -26,8 +36,7 @@ Every attribute value goes through two steps when the tree renders.
 URL-bearing attributes (`ux_dom.dom.src.utils.dom_util.URL_ATTRIBUTES`):
 `href`, `src`, `action`, `formaction`, `xlink:href`, `poster`, `cite`,
 `background`, `data`, `codebase`, `longdesc`, `manifest`, `ping`, `icon`,
-`archive`, `usemap`, `profile`, `lowsrc`, `dynsrc`, `hx-get`, `hx-post`,
-`hx-put`, `hx-patch`, `hx-delete`. HTML attributes (`HTML_ATTRIBUTES`):
+`archive`, `usemap`, `profile`, `lowsrc`, `dynsrc`. HTML attributes (`HTML_ATTRIBUTES`):
 `srcdoc`.
 
 Steps 2 and 3 also apply to attributes marked unescaped (`safe_attributes`),
