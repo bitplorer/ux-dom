@@ -39,6 +39,12 @@ def sse_page():
     )
 
 
+def sse_event(html: str, event: str = "message") -> str:
+    """One SSE frame; multi-line HTML becomes one ``data:`` line per line."""
+    data = "".join(f"data: {line}\n" for line in html.splitlines())
+    return f"event: {event}\n{data}\n"
+
+
 async def sse_feed(request: Request, n: int = 0):
     """``event: message`` frames whose data is a rendered fragment.
 
@@ -50,8 +56,7 @@ async def sse_feed(request: Request, n: int = 0):
         while n == 0 or i < n:
             if await request.is_disconnected():
                 break
-            fragment = span(f"tick #{i}", className="tick").__render__(pretty=False)
-            yield f"event: message\ndata: {fragment}\n\n"
+            yield sse_event(str(span(f"tick #{i}", className="tick")))
             i += 1
             await asyncio.sleep(0.01 if n else 1.0)
 

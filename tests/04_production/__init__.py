@@ -1,1 +1,1 @@
-"""04_production — readiness, hardening, examples, standalone apps."""
+"""04_production — readiness, hardening, load, docs integrity."""

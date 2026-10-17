@@ -39,7 +39,7 @@ def register(ch: Channel):
 
     @ch.region
     def counter(ctx):
-        return CounterCard(count=current()).__render__(pretty=False)
+        return str(CounterCard(count=current()))
 
     @ch.on(refresh=[counter], idempotent=False)
     def add(step: int = 1):

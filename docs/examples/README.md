@@ -10,6 +10,8 @@ Recipes live in the how-to cookbook.
 |-----|------|
 | [../guides/COOKBOOK.md](../guides/COOKBOOK.md) | How-to recipes |
 | [../../examples/README.md](../../examples/README.md) | Runnable example map |
-| [../../examples/ux_dom_only/](../../examples/ux_dom_only/) | Pure-dom examples |
+| [../../examples/showcase/](../../examples/showcase/) | Multi-page app: Document, Htmx, Csp, safe content |
+| [../../examples/standalone/](../../examples/standalone/) | One file per transport: SSE, WebSocket, MCP-style tools, htmx search |
 
-Do not put law here. Do not flatten ux-compose / ux-channel examples into this repo.
+Do not put law here. Do not flatten ux-compose / ux-channel examples into this repo;
+`examples/ux_channel_counter` is the one small ux-dom × ux-channel integration example.

@@ -88,7 +88,6 @@ class TestNoStaleFlatDocPaths(unittest.TestCase):
             SRC,
             DOCS,
             ROOT / "examples",
-            ROOT / "standalone",
             ROOT / "scripts",
         ]
         for root in scan_roots:
