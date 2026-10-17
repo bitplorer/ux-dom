@@ -33,4 +33,4 @@ The flow:
 by the CSP runtime); `Channel.boot` serves the files. The development memory
 store keeps one counter per process, shared by all visitors.
 
-Tests: `tests/08_examples/test_ux_channel_counter.py`.
+Tests: `tests/09_examples/test_ux_channel_counter.py`.

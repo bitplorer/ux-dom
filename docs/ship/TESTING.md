@@ -23,10 +23,13 @@ Layout: [`tests/README.md`](../../tests/README.md).
 |------|--------|-----------|
 | Core | `01_core/` | Component, Fragment, render, reactive |
 | Document | `02_document_plugins/` | Document, CSP, XElement, package static |
-| CLI | `03_routing_cli/` | doctor, lint, add, build (no product scaffold) |
+| CLI | `03_cli_build/` | doctor, lint, add, build (no product scaffold) |
 | Production | `04_production/` | Readiness + **production lock** |
 | Chaos | `05_chaos/` | Parse / race / pentest |
-| Browser | `06_browser/` | Live Chromium when available |
+| Browser | `06_browser/` | Live Chromium (required in CI: `UX_DOM_REQUIRE_BROWSER=1`) |
+| Resilience | `07_resilience/` | Ownership, adversarial input, residual locks |
+| Pins | `08_cleanup_pins/` | Behaviour pins written before refactors |
+| Examples | `09_examples/` | Every app under `examples/`, hygiene guards |
 
 ## Production lock
 

@@ -3,7 +3,7 @@
 Migrated from tests/02_document_plugins/test_ui_kit.py::TestGalleryApp and
 tests/04_production/test_production_stability.py::TestUiGallery. The channel
 section is gone from the gallery (its actions had no handler and no host);
-the channel pattern is covered by tests/08_examples/test_ux_channel_counter.py.
+the channel pattern is covered by tests/09_examples/test_ux_channel_counter.py.
 """
 
 from __future__ import annotations

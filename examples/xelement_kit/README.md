@@ -49,7 +49,7 @@ document.mount(app)   # serves /ux-dom/static/x_element.js from the package
 * Tailwind comes from its play CDN for brevity (no SRI available); build CSS
   for production.
 
-Tests: `tests/08_examples/test_xelement_kit.py` (HTTP) and
+Tests: `tests/09_examples/test_xelement_kit.py` (HTTP) and
 `tests/06_browser/test_kit_browser_deep.py` (Playwright).
 
 Library docs: [`docs/reference/XELEMENT.md`](../../docs/reference/XELEMENT.md) ·

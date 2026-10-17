@@ -15,4 +15,4 @@ uvicorn examples.standalone.sse:app --reload
 | `search.py` | One endpoint, two answers: fragment for htmx (`request.state.htmx`), full page otherwise; `StreamingRoute` |
 
 Every page is a `Document` with `Csp.auto()`; pages that use htmx add the
-pinned `Htmx` runtime. Tests: `tests/08_examples/test_standalone.py`.
+pinned `Htmx` runtime. Tests: `tests/09_examples/test_standalone.py`.

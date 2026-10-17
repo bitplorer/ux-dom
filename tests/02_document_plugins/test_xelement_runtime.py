@@ -1,6 +1,6 @@
 """XElement ↔ x_element.js contract, subclass matrix, host factory.
 
-The kit pages are tested in tests/08_examples/test_xelement_kit.py.
+The kit pages are tested in tests/09_examples/test_xelement_kit.py.
 """
 
 from __future__ import annotations

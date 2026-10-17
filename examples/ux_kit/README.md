@@ -25,5 +25,5 @@ runtime, which a nonce CSP blocks. For production, build the CSS and add
 `Csp.auto()` (see `examples/showcase`). For ux-channel actions on top of
 ux-dom, see `examples/ux_channel_counter`.
 
-Tests: `tests/08_examples/test_ux_kit.py`. Component docs:
+Tests: `tests/09_examples/test_ux_kit.py`. Component docs:
 [`docs/reference/UI.md`](../../docs/reference/UI.md).

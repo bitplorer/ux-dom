@@ -34,4 +34,4 @@ How it fits together:
 
 State (cart count, guestbook entries) is in process memory, for the demo only.
 
-Tests: `tests/08_examples/test_showcase.py`.
+Tests: `tests/09_examples/test_showcase.py`.

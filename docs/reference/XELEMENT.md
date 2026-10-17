@@ -132,7 +132,7 @@ Component
 
 * Unit / contract: `tests/02_document_plugins/test_xelement_runtime.py`
 * Headless Chromium: `tests/06_browser/test_xelement_browser.py` + `tests/browser/x_element_harness.mjs`
-* create-app ships runtime: `tests/03_routing_cli/test_create_app_scaffold.py` / `tests/04_production/test_production_readiness.py`
+* create-app ships runtime: `tests/03_cli_build/test_create_app_scaffold.py` / `tests/04_production/test_production_readiness.py`
 
 ## Related files
 

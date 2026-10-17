@@ -67,6 +67,6 @@ worker only. Use a database or Redis in production.
 ## Tests
 
 ```bash
-python -m pytest tests/08_examples -q                 # HTTP-level, every example
+python -m pytest tests/09_examples -q                 # HTTP-level, every example
 python -m pytest tests/06_browser -q                  # Playwright (needs tests/browser deps)
 ```

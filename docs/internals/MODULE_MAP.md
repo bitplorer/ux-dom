@@ -69,7 +69,10 @@ Page routing is ux-compose's; ux-dom ships no router.
 |-----|--------|
 | `tests/01_core` | DOM, Component, Tags, MRO, concurrency |
 | `tests/02_document_plugins` | Document, CSP, plugins, XElement defs |
-| `tests/03_routing_cli` | Router + DX CLI side-effect gates |
-| `tests/04_production` | Readiness, showcase, typecheck |
+| `tests/03_cli_build` | `uxdom` CLI, build, deploy side-effect gates |
+| `tests/04_production` | Readiness, production lock, docs integrity, typecheck |
 | `tests/05_chaos` | Load, pen, enterprise battery |
-| `tests/06_browser` | Playwright / live custom elements |
+| `tests/06_browser` | Playwright: custom elements, xelement_kit, live examples |
+| `tests/07_resilience` | Ownership, adversarial input, residual locks |
+| `tests/08_cleanup_pins` | Behaviour pins written before refactors |
+| `tests/09_examples` | Every app under `examples/` over HTTP, plus hygiene guards |
