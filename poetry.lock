@@ -1209,19 +1209,6 @@ files = [
 ]
 
 [[package]]
-name = "pytailwindcss"
-version = "0.3.1"
-description = "Standalone Tailwind CSS CLI, installable via pip. Use Tailwind CSS without Node.js."
-optional = false
-python-versions = ">=3.11"
-groups = ["main", "dev"]
-files = [
-    {file = "pytailwindcss-0.3.1-py3-none-any.whl", hash = "sha256:31583c5bb7fac66c6e6535992e51630e36788cf6e569f4d294e98962fa034535"},
-    {file = "pytailwindcss-0.3.1.tar.gz", hash = "sha256:e83c65985f078ff91500f74bca595f615e54059d5afc90b233382e118b509b4d"},
-]
-markers = {main = "extra == \"dev\" or extra == \"fastapidev\""}
-
-[[package]]
 name = "pytest"
 version = "9.1.1"
 description = "pytest: simple powerful testing with Python"
@@ -1524,18 +1511,6 @@ anyio = ">=3.6.2,<5"
 full = ["httpx (>=0.27.0,<0.29.0)", "httpx2 (>=2.0.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.18)", "pyyaml"]
 
 [[package]]
-name = "toml"
-version = "0.10.2"
-description = "Python Library for Tom's Obvious, Minimal Language"
-optional = false
-python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
-groups = ["test"]
-files = [
-    {file = "toml-0.10.2-py2.py3-none-any.whl", hash = "sha256:806143ae5bfb6a3c6e736a764057db0e6a0e05e338b5630894a5f779cabb4f9b"},
-    {file = "toml-0.10.2.tar.gz", hash = "sha256:b3bda1d108d5dd99f4a20d24d9c348e91c4db7ab1b749200bded2f839ccbe68f"},
-]
-
-[[package]]
 name = "tomli"
 version = "2.4.1"
 description = "A lil' TOML parser"
@@ -1633,18 +1608,6 @@ annotated-doc = ">=0.0.2"
 colorama = {version = "*", markers = "platform_system == \"Windows\""}
 rich = ">=13.8.0"
 shellingham = ">=1.3.0"
-
-[[package]]
-name = "types-toml"
-version = "0.10.8.20260518"
-description = "Typing stubs for toml"
-optional = false
-python-versions = ">=3.10"
-groups = ["test"]
-files = [
-    {file = "types_toml-0.10.8.20260518-py3-none-any.whl", hash = "sha256:0e564ab05f6fde62a315b3b5a9b6624fda569399795d30a37e64705a70459303"},
-    {file = "types_toml-0.10.8.20260518.tar.gz", hash = "sha256:80e10facd24fdeda9d5c672187d72be3ac284843788d67f5aae59e3e016db6fe"},
-]
 
 [[package]]
 name = "typing-extensions"
@@ -2054,11 +2017,11 @@ files = [
 markers = {main = "extra == \"dev\" or extra == \"fastapi\" or extra == \"fastapidev\""}
 
 [extras]
-dev = ["pytailwindcss", "uvicorn", "watchfiles"]
+dev = ["uvicorn", "watchfiles"]
 fastapi = ["fastapi", "python-multipart", "uvicorn"]
-fastapidev = ["fastapi", "pytailwindcss", "python-multipart", "uvicorn", "watchfiles"]
+fastapidev = ["fastapi", "python-multipart", "uvicorn", "watchfiles"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<3.15"
-content-hash = "8af7a80cc4c89d164bac50ccfa799c202994ee9d7f1fdcdc565f9ae2d63c64b0"
+content-hash = "e584e8f96848beee16bdd5ef8f9d43df48eca79f8379932f36d190ab8603bf3c"

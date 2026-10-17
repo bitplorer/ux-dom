@@ -8,7 +8,7 @@ Python **3.14**. Package layout: `src/ux_dom` (Poetry).
 
 ```bash
 pip install -e ".[fastapidev]"
-pip install pytest pytest-cov black ruff mypy toml
+pip install pytest pytest-cov black ruff mypy
 ```
 
 Poetry:

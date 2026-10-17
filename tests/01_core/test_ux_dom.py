@@ -6,7 +6,7 @@ from markupsafe import Markup
 from dataclasses import dataclass
 from textwrap import dedent
 
-import toml
+import tomllib
 
 from ux_dom import Document, __version__
 from ux_dom.alpinejs import DataSet
@@ -17,7 +17,8 @@ from ux_dom.web_io._events import BaseEventManager
 
 class TestVersion(unittest.TestCase):
     def setUp(self) -> None:
-        self.version = toml.load("pyproject.toml")["tool"]["poetry"]["version"]
+        with open("pyproject.toml", "rb") as f:
+            self.version = tomllib.load(f)["tool"]["poetry"]["version"]
 
     def test_version(self):
         self.assertEqual(__version__, self.version)

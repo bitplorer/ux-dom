@@ -40,7 +40,7 @@ This layer **renders**. It does not own Intent, Caps, Result ops, product state 
 pip install ux-dom
 # extras:
 pip install "ux-dom[fastapi]"      # FastAPI + uvicorn + multipart
-pip install "ux-dom[dev]"          # tailwind, watchfiles, uvicorn
+pip install "ux-dom[dev]"          # watchfiles, uvicorn (CSS: uxcompose build)
 pip install "ux-dom[fastapidev]"   # both
 ```
 
