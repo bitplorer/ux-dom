@@ -37,4 +37,4 @@ Layout: [`tests/README.md`](../../tests/README.md).
 PYTHONPATH=. python -m pytest tests/04_production/test_production_lock.py -q
 ```
 
-Peer channel: soft dependency — see [STACK.md](../STACK.md).
+Peer channel: soft dependency — see [STACK.md](../reference/STACK.md).

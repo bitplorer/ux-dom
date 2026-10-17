@@ -10,4 +10,4 @@ Canonical decision pages:
 | [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md) | Design decisions |
 | [OWNERSHIP_COUNCIL.md](OWNERSHIP_COUNCIL.md) | Ownership council |
 
-Historical folder `docs/design/` keeps stubs so existing links resolve.
+The former `docs/design/` stubs were removed; link to the pages here.

@@ -59,7 +59,7 @@ uxcompose build
 uxcompose serve app:asgi --port 8080
 ```
 
-See [INSTALL.md](INSTALL.md) and [docs/INSTALL.md](docs/INSTALL.md).
+See [INSTALL.md](INSTALL.md).
 
 ## Usage
 

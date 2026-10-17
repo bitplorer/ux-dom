@@ -8,7 +8,7 @@
 | **Import** | `ux_dom` |
 | **CLI** | **`uxdom`** |
 
-Companion: [STACK.md](../STACK.md) · channel production: install `ux-channel` separately.
+Companion: [STACK.md](../reference/STACK.md) · channel production: install `ux-channel` separately.
 
 # Production readiness checklist
 

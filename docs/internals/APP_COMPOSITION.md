@@ -71,4 +71,4 @@ Document.use stamps control, runtime, CSP — **not** HMR, host strategy, or pro
 | Host / HMR / tunnel | `uxcompose serve` |
 
 **Further reading:** [DOCUMENT.md](../reference/DOCUMENT.md) · [SYSTEM.md](SYSTEM.md) ·
-[ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md) · [START_HERE.md](../START_HERE.md).
+[ux-compose FLOW](https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md) · [START_HERE.md](../../START_HERE.md).

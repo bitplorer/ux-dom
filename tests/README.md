@@ -57,5 +57,5 @@ pip install "ux-channel @ git+https://github.com/bitplorer/ux-channel.git@f1a93f
 - Tests that need ux-channel or the browser call `require_channel()` /
   `require_browser()`: they skip locally, fail in CI.
 - `ux_dom.runtime.Channel` (script tags) is not `ux_channel.Channel` (actions);
-  see [docs/STACK.md](../docs/STACK.md).
+  see [docs/reference/STACK.md](../docs/reference/STACK.md).
 - No reintroduction of `html_elements.js` / `x-component` / `document.messageHandler`.

@@ -192,5 +192,62 @@ class TestXElementPackageUrlContract(unittest.TestCase):
         self.assertEqual(files[0].url, XELEMENT_JS_URL)
 
 
+class TestMovedStubs(unittest.TestCase):
+    """Moved stubs exist only while ``src/`` still cites them.
+
+    Everything outside ``src/`` links to the canonical page directly.
+    """
+
+    STUB_MARK = "# Moved (Phase 2"
+
+    def _stubs(self) -> list[Path]:
+        return sorted(
+            p
+            for p in DOCS.rglob("*.md")
+            if p.read_text(encoding="utf-8").startswith(self.STUB_MARK)
+        )
+
+    def test_every_stub_is_still_cited_by_src(self):
+        src_text = "\n".join(p.read_text(encoding="utf-8") for p in SRC.rglob("*.py"))
+        unused = [
+            str(p.relative_to(ROOT))
+            for p in self._stubs()
+            if str(p.relative_to(ROOT)) not in src_text
+        ]
+        self.assertEqual(unused, [], "delete stubs nothing in src cites")
+
+    def test_nothing_outside_src_links_to_a_stub(self):
+        stubs = {p.resolve() for p in self._stubs()}
+        bad = []
+        link = re.compile(r"\]\(([^)#\s]+\.md)(?:#[^)]*)?\)")
+        for md in ROOT.rglob("*.md"):
+            if any(part in {".venv", "node_modules", ".git"} for part in md.parts):
+                continue
+            if md.name == "CHANGELOG.md" or md.resolve() in stubs:
+                continue
+            for target in link.findall(md.read_text(encoding="utf-8")):
+                if (md.parent / target).resolve() in stubs:
+                    bad.append(f"{md.relative_to(ROOT)} -> {target}")
+        self.assertEqual(bad, [])
+
+
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestInstallExtras:
+    """INSTALL.md must describe the extras pyproject.toml actually ships."""
+
+    def test_install_md_matches_pyproject_extras(self) -> None:
+        import tomllib
+
+        root = Path(__file__).resolve().parents[2]
+        extras = tomllib.loads((root / "pyproject.toml").read_text())["tool"]["poetry"][
+            "extras"
+        ]
+        text = (root / "INSTALL.md").read_text()
+        assert "pytailwindcss" not in text
+        for name, deps in extras.items():
+            assert f"**`{name}`**" in text, name
+            for dep in deps:
+                assert dep in text, (name, dep)

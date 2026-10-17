@@ -48,13 +48,12 @@ Diátaxis grouping (tutorial / how-to / reference / explanation): **[INDEX.md](I
 
 | Doc | Description |
 |-----|-------------|
-| [../START_HERE.md](../START_HERE.md) | 5-minute path (root) |
-| [START_HERE.md](START_HERE.md) | Mental model + day-1 |
-| [INSTALL.md](INSTALL.md) | Install & verify |
+| [../START_HERE.md](../START_HERE.md) | 5-minute path and mental model |
+| [../INSTALL.md](../INSTALL.md) | Install & verify |
 
 ## How-to (`guides/`) and reference (`reference/`)
 
-How-to stays in `guides/`. API/facts moved to `reference/` (stubs remain in `guides/`).
+How-to stays in `guides/`. API/facts live in `reference/`. A few `guides/` stubs remain only while `src/` docstrings still cite them (tests/04_production/test_docs_integrity.py enforces this).
 
 | Doc | Description |
 |-----|-------------|

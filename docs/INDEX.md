@@ -1,7 +1,7 @@
 # ux-dom documentation index
 
 **Version 0.3.0**
-**Start:** [../START_HERE.md](../START_HERE.md) · mental model: [START_HERE.md](START_HERE.md)
+**Start:** [../START_HERE.md](../START_HERE.md)
 
 This file is the map. It does not replace the guides.
 
@@ -19,7 +19,7 @@ Specialized folders (`security/`, `ship/`, `design/`, `tutorial/`, `patterns/`, 
 `plans/` is projection, not law.
 `docs/INDEX.md` is the map. Do not add a second competing map.
 
-Old paths keep a 5-line stub. Do not cite stubs as canonical.
+Old paths keep a stub only while `src/` still cites them. Do not cite stubs.
 
 ### Brand lines
 
@@ -54,14 +54,13 @@ behavior, motion IR, or product lifecycle.
 | Doc | Description |
 |-----|-------------|
 | [../START_HERE.md](../START_HERE.md) | 5-minute path |
-| [START_HERE.md](START_HERE.md) | Mental model + day-1 (longer) |
 | [guides/TUTORIAL.md](guides/TUTORIAL.md) | Product path + pure Document |
 
 ### How-to
 
 | Doc | Description |
 |-----|-------------|
-| [../INSTALL.md](../INSTALL.md) · [INSTALL.md](INSTALL.md) | Install & verify |
+| [../INSTALL.md](../INSTALL.md) | Install & verify |
 | [guides/CLI.md](guides/CLI.md) | `uxdom` doctor · lint · profile · add |
 | [guides/COOKBOOK.md](guides/COOKBOOK.md) | Recipes |
 | [guides/DX.md](guides/DX.md) | DX principles |

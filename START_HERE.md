@@ -4,7 +4,6 @@
 **Promise:** one rendered document in five minutes, then the ownership map.
 **Time:** ~5 minutes.
 
-Longer mental model: [docs/START_HERE.md](docs/START_HERE.md).
 **Map:** [docs/INDEX.md](docs/INDEX.md).
 **Cookbook:** [docs/guides/SNIPPETS.md](docs/guides/SNIPPETS.md).
 
@@ -27,6 +26,23 @@ Python **3.14** required (`pyproject.toml`).
 
 Product apps: **[ux-compose](https://github.com/bitplorer/ux-compose)** —
 `uxcompose create-app | build | serve | deploy`.
+
+```text
+ux-dom       RENDER     trees → __render__ / __async_render__
+             Document   shell (.use: control, runtime, CSP stamp)
+             package    static (/ux-dom/static/…)
+             pure-dom   doctor | lint | profile | add
+
+ux-compose   PRODUCT    create-app · build · serve · deploy
+                        DirectoryRoutes · WebAssets · Tailwind · HMR
+```
+
+| Piece | Role |
+|-------|------|
+| **`Component`** | `render()` → DOM tree |
+| **`ReactiveComponent`** | Field mutation re-renders on serialize |
+| **`document(*content)`** | HTML shell SSoT |
+| **`XElement`** | Custom element + definitions |
 
 ---
 
@@ -77,7 +93,8 @@ Product CSS is `uxcompose build`.
 
 | Goal | Doc |
 |------|-----|
-| Install variants (Poetry / extras) | [INSTALL.md](INSTALL.md) · [docs/INSTALL.md](docs/INSTALL.md) |
+| Install variants (Poetry / extras) | [INSTALL.md](INSTALL.md) |
+| Runnable examples | [examples/README.md](examples/README.md) |
 | Document SSoT | [docs/reference/DOCUMENT.md](docs/reference/DOCUMENT.md) |
 | Component / Fragment | [docs/reference/COMPONENTS.md](docs/reference/COMPONENTS.md) |
 | Routing as pages | [docs/reference/ROUTING.md](docs/reference/ROUTING.md) |

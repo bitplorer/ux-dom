@@ -282,4 +282,4 @@ No shims for historical names (`uidom`, `ui_dom`, `ui-dom`).
 - Ontological tests (`tests/01_core` … `06_browser`)
 - Chaos / load / pentest batteries; browser harnesses
 
-See [docs/START_HERE.md](docs/START_HERE.md) · [docs/ship/STABILITY.md](docs/ship/STABILITY.md).
+See [START_HERE.md](START_HERE.md) · [docs/ship/STABILITY.md](docs/ship/STABILITY.md).

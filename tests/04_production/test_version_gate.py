@@ -27,7 +27,6 @@ VERSION_FILES: dict[str, frozenset[str]] = {
     "src/ux_dom/__init__.py": frozenset(),
     "README.md": frozenset(),
     "INSTALL.md": frozenset({"0.1.0", "0.0.0"}),  # ux-channel floor, bind host
-    "docs/INSTALL.md": frozenset(),
     "docs/INDEX.md": frozenset(),
     "docs/reference/API_SURFACE.md": frozenset(),
 }

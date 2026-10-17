@@ -56,7 +56,7 @@ Page routing is ux-compose's; ux-dom ships no router.
 
 | Dir | Audience |
 |-----|----------|
-| `docs/START_HERE.md` | Day-1 |
+| `START_HERE.md` (repo root) | Day-1 and mental model |
 | `docs/guides/` | How to build apps |
 | `docs/security/` | CSP, static, assets |
 | `docs/internals/` | Design, modules, concurrency |

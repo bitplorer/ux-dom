@@ -27,8 +27,20 @@ python -c "from ux_dom import __version__; print(__version__)"
 |------|---------|
 | Library only | `poetry install` / `pip install -e .` |
 | FastAPI apps | `poetry install --extras fastapi` / `pip install -e ".[fastapi]"` |
-| FastAPI + pytailwindcss + watchfiles (dev stack) | `poetry install --extras fastapidev` / `pip install -e ".[fastapidev]"` |
+| FastAPI + watchfiles (dev stack) | `poetry install --extras fastapidev` / `pip install -e ".[fastapidev]"` |
 | Live morph / regions | `pip install "ux-channel>=0.1.0"` (companion package) |
+
+Extras: **`fastapi`** = fastapi, uvicorn[standard], python-multipart ·
+**`fastapidev`** = `fastapi` + watchfiles · **`dev`** = watchfiles, uvicorn.
+There is no `tailwind` or `hmr` extra: product CSS is `uxcompose build`,
+product HMR is `uxcompose serve --hmr`.
+
+| Layer | Name |
+|-------|------|
+| PyPI / pip | `ux-dom` |
+| Import | `ux_dom` |
+| CLI | `uxdom` (pure-dom tooling: `doctor`, `lint`, `profile`, `add`) |
+| Product CLI | `uxcompose` |
 
 ## Create an app
 
@@ -43,12 +55,14 @@ uxcompose serve app:asgi --host 0.0.0.0 --port 8080
 Pure-dom health: `uxdom doctor`.
 
 
-## Showcase example
+## Examples
 
 ```bash
 # from the repository root
 poetry run uvicorn examples.showcase.main:app --reload
 ```
+
+All examples and how to run them: [examples/README.md](examples/README.md).
 
 ## Source layout
 

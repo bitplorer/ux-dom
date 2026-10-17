@@ -1,4 +1,4 @@
-> Product entry: [START_HERE.md](../START_HERE.md)
+> Product entry: [START_HERE.md](../../START_HERE.md)
 
 # ux-dom Capabilities Checklist
 

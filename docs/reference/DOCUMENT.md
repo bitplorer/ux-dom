@@ -1,4 +1,4 @@
-> **Start:** [START_HERE.md](../START_HERE.md) · **Architecture:** [ARCHITECTURE.md](../internals/ARCHITECTURE.md)
+> **Start:** [START_HERE.md](../../START_HERE.md) · **Architecture:** [ARCHITECTURE.md](../internals/ARCHITECTURE.md)
 
 # Document API — complete guide
 
