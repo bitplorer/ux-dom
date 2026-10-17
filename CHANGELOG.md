@@ -13,6 +13,15 @@
   `uxdom build` lost `--skip-tailwind`.** Both were accepted and silently
   ignored (this pipeline never compiles or minifies CSS). Passing them is now
   a `TypeError` / "No such option" error. Product CSS is `uxcompose build`.
+- **BREAKING: `plugins.App.web()` removed.** It was a tombstone that only
+  raised `ProductHostMoved`; it now raises `AttributeError`. The product host
+  is `uxcompose create-app` / `ux_compose.build(host=)`. `App.fastapi()` still
+  raises `ProductHostMoved`.
+- **BREAKING:** `compose_document_parts()` lost the ignored `include_controls=`
+  argument, and `cli.static_assets.sync_runtime_assets()` lost the ignored
+  `vendor=` and `force=` arguments. Passing them is now a `TypeError`.
+- Removed 8 unused imports in `src/`. `tests/07_resilience/test_no_unused_imports.py`
+  (stdlib only) and `test_dead_surface_removed.py` keep them gone.
 
 ## 0.1.1
 

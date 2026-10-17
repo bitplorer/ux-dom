@@ -6,7 +6,7 @@ from typing import Any, Sequence
 
 from ux_dom import Component
 from ux_dom.dom import option, select as html_select
-from ux_dom.ui.tokens import cn, field_classes
+from ux_dom.ui.tokens import field_classes
 
 __all__ = ["Select"]
 
