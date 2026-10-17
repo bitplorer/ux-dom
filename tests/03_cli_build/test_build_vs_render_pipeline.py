@@ -162,7 +162,7 @@ class TestBuildVsSerialize(unittest.TestCase):
     def test_nested_async_with_stack(self):
         async def build():
             async with div(id="outer") as outer:
-                async with span(id="inner") as inner:
+                async with span(id="inner"):
                     button("ok")
                 span("sibling")
             return outer

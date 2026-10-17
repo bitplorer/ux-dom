@@ -78,7 +78,8 @@ class TestCSRFInstanceIsolation(unittest.TestCase):
         except AttributeError:
             pass
         # class default should not stick as True from factory if we fixed it
-        # After instance construction with ensure_csrf_token=True, class may still be original
+        # After instance construction with ensure_csrf_token=True,
+        # the class may still be the original
         Document(ensure_csrf_token=False)(div("ok"))
         # concurrent mixed
         errors = []

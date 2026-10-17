@@ -80,7 +80,8 @@ class TestParallelRender(unittest.TestCase):
 
         def rend(_):
             h = root.__render__(pretty=False)
-            # either empty-ish mid-mutate is prevented by lock — should always be well-formed
+            # either empty-ish mid-mutate is prevented by lock;
+            # the output should always be well-formed
             if h.count("<span") not in (0, 10) and "shared" not in h:
                 errors.append(h[:100])
 

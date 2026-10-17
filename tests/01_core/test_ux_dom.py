@@ -9,7 +9,31 @@ from markupsafe import Markup
 
 from ux_dom import Document, __version__
 from ux_dom.alpinejs import DataSet
-from ux_dom.dom import *
+from ux_dom.dom import (
+    Block,
+    Component,
+    DoubleTags,
+    Elif,
+    Else,
+    For,
+    Fragment,
+    If,
+    JinjaBaseTag,
+    Load,
+    MarkdownElement,
+    MergeClassAttribute,
+    ReactiveComponent,
+    SingleTags,
+    Var,
+    a,
+    div,
+    li,
+    nav,
+    p,
+    section,
+    template,
+    ul,
+)
 from ux_dom.dom.src.dom_tag import attr
 from ux_dom.web_io._events import BaseEventManager
 
@@ -262,7 +286,8 @@ class TestComponentRenderReturns(unittest.TestCase):
 
             def render(self, *args, **kwargs):
                 # when more than one html-element is returned then it **DOESN'T** become
-                # the entry point and we CAN'T set attributes and add element to it like normal
+                # the entry point and we CAN'T set attributes and add element to it
+                # like normal
                 # we can only append element to it.
                 return Markup("<p></p><a></a>")
 

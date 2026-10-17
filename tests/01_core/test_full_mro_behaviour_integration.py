@@ -137,7 +137,8 @@ class TestFullMroSignatures(unittest.TestCase):
                         continue
                     if isinstance(raw, property) != isinstance(praw, property):
                         issues.append(
-                            f"{name}.{cls_name}.{method}: property/function kind vs {parent.__name__}"
+                            f"{name}.{cls_name}.{method}: property/function kind"
+                            f" vs {parent.__name__}"
                         )
                     pfn = _unwrap(praw)
                     if not callable(pfn) or isinstance(pfn, type):

@@ -105,7 +105,8 @@ def _field(label_text: str, *, name: str, type_: str = "text", model: str):
             autocomplete=name,
             className=(
                 "w-full rounded-md border border-slate-300 px-3 py-2 text-sm "
-                "focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+                "focus:border-sky-500 focus:outline-none "
+                "focus:ring-1 focus:ring-sky-500"
             ),
             **{"x-model": model},
         ),
@@ -230,10 +231,16 @@ class AuthShell(WebComponent):
             div(
                 div(
                     slot(name="header"),
-                    className="border-b border-slate-700 px-4 py-2 text-xs uppercase tracking-wide text-slate-400",
+                    className=(
+                        "border-b border-slate-700 px-4 py-2 text-xs "
+                        "uppercase tracking-wide text-slate-400"
+                    ),
                 ),
                 div(slot(), className="p-4"),
-                className="rounded-2xl bg-slate-900 text-slate-100 shadow-xl overflow-hidden",
+                className=(
+                    "rounded-2xl bg-slate-900 text-slate-100 "
+                    "shadow-xl overflow-hidden"
+                ),
                 **{"data-dom": "shadow"},
             ),
             **{"x-tagname": tag_name, "shadowroot": "true"},

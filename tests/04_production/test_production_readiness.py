@@ -84,7 +84,8 @@ class TestDocsConsistency(unittest.TestCase):
                 # FINAL_PLAN etc. should be cleaned
                 if "html_elements.js" in text:
                     self.fail(
-                        f"{path.name} still references html_elements.js without legacy note"
+                        f"{path.name} still references html_elements.js"
+                        " without legacy note"
                     )
 
 
@@ -115,8 +116,6 @@ class TestImportSurfaceStable(unittest.TestCase):
                 continue
             if path.name == "setup.py":
                 continue
-            # skip heavy demos under ux_dom if any
-            rel = path.relative_to(ROOT)
             if path.name.startswith("test"):
                 continue
             parts = list(path.with_suffix("").relative_to(ROOT).parts)
@@ -171,24 +170,11 @@ class TestScaffoldProductionArtifacts(unittest.TestCase):
             self.assertFalse((root / "assets/js/html_elements.js").exists())
             self.assertFalse((root / "assets/js/xcomponent.js").exists())
             main = (root / "app/main.py").read_text(encoding="utf-8")
-            self.assertTrue(
-                "XElement" in main
-                or "document.mount" in main
-                or "xelement=True" in main
-                or "XElement"
-                in Path(str(root if "root" in dir() else "."))
-                .joinpath("app/document.py")
-                .read_text()
-                if False
-                else ("XElement" in main or "document.mount" in main)
-            )
+            # (was a conditional expression whose ``if False`` branch made
+            # every alternative but this one dead)
+            self.assertTrue("XElement" in main or "document.mount" in main)
             doc = (root / "app/document.py").read_text(encoding="utf-8")
             self.assertTrue("XElement" in doc or "shell_fragments" in doc)
-            m = (root / "app/main.py").read_text(encoding="utf-8")
-            self.assertTrue(
-                "document.mount" in main
-                or "XElement" in (root / "app/document.py").read_text()
-            )
             self.assertNotIn("html_elements", doc)
             # product scaffold metadata is uxcompose, not ux-dom
             self.assertFalse((root / ".ux_dom-scaffold.json").exists())

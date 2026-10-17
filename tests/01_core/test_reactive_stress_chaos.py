@@ -111,7 +111,7 @@ class TestReactiveFailClosed(unittest.TestCase):
         try:
             html_after = b.__render__(pretty=False)
         except Exception as e:
-            self.fail("component unusable after failed render: %r" % (e,))
+            self.fail(f"component unusable after failed render: {e!r}")
         self.assertIn(">1<", html_after)
 
     def test_render_exception_parent_preserved(self):
@@ -311,7 +311,7 @@ class TestReactiveChaosStorm(unittest.TestCase):
             else:
                 b.n = i
                 html = root.__render__(pretty=False)
-                self.assertIn(">%d<" % i, html)
+                self.assertIn(f">{i}<", html)
         self.assertIs(b.parent, root)
 
     def test_rapid_identity_flip(self):
@@ -319,7 +319,7 @@ class TestReactiveChaosStorm(unittest.TestCase):
         for i in range(500):
             c.count = i % 7
         html = c.__render__(pretty=False)
-        self.assertIn(">%d<" % c.count, html)
+        self.assertIn(f">{c.count}<", html)
 
 
 if __name__ == "__main__":

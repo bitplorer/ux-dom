@@ -12,7 +12,7 @@ Test tree ontology
 | ``06_browser`` | Live Chromium / kit / auth custom elements |
 | ``fixtures/`` | Shared DOM fixtures (e.g. auth xelements) |
 | ``browser/`` | Playwright harness JS (not collected as tests) |
-| ``*_gate.py``, ``example_checks.py`` | Shared gates and assertions (importable by name) |
+| ``*_gate.py``, ``example_checks.py`` | Shared gates and assertions |
 
 Discovery order follows directory name prefixes (``01``…``09``).
 Within each module, test method order is preserved (do not reorder casually).

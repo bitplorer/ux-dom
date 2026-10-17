@@ -211,8 +211,8 @@ class TestSecurityTrust(unittest.TestCase):
     ]
 
     def test_defhtml_strips(self):
-        for p in self.PAYLOADS:
-            nodes = defHTML(f"<div>{p}</div>", escape=True)
+        for payload in self.PAYLOADS:
+            nodes = defHTML(f"<div>{payload}</div>", escape=True)
             html = "".join(n.__render__(pretty=False) for n in nodes)
             self.assertIsNone(re.search(r"(?i)<script[\s>]", html))
             self.assertIsNone(re.search(r"(?i)\son\w+\s*=", html))

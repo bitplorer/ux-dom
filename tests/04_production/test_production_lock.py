@@ -30,9 +30,10 @@ class TestBrandAndVersion(unittest.TestCase):
 class TestDocumentRuntimes(unittest.TestCase):
     def test_document_use_core_runtimes(self):
         doc = Document(head=[], body=[]).use(XElement(), Htmx(), Csp.auto())
-        html = str(doc) if hasattr(doc, "__str__") else None
-        # at least constructs
-        self.assertIsNotNone(doc)
+        self.assertEqual(
+            [type(r).__name__ for r in doc.runtimes()],
+            ["XElementRuntime", "HtmxControl", "Csp"],
+        )
 
     def test_xelement_url_is_package_mount(self):
         self.assertTrue(XELEMENT_JS_URL.startswith("/ux-dom/static/"))

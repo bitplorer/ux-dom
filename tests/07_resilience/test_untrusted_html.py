@@ -26,7 +26,10 @@ PAYLOADS = {
     "style_attr": '<p style="position:fixed;inset:0">f</p>',
     "form": '<form action="https://evil.example"><input name="password"></form>',
     "script": "<script>alert(1)</script>",
-    "svg_animate": '<svg><a><animate attributeName="href" values="javascript:alert(1)"/></a></svg>',
+    "svg_animate": (
+        '<svg><a><animate attributeName="href" values="javascript:alert(1)"/>'
+        "</a></svg>"
+    ),
     "iframe": '<iframe src="https://evil.example"></iframe>',
     "event_handler": "<img src=x onerror=alert(1)>",
     "js_url": '<a href="java&#x09;script:alert(1)">g</a>',
@@ -50,7 +53,10 @@ def test_defhtml_drops_everything_outside_the_allow_list(name):
 
 
 def test_defhtml_keeps_safe_formatting():
-    src = '<p class="note">a <b>b</b> <a href="https://x.org" rel="nofollow">l</a> <img alt="i" src="/i.png"></p>'
+    src = (
+        '<p class="note">a <b>b</b> <a href="https://x.org" rel="nofollow">l</a>'
+        ' <img alt="i" src="/i.png"></p>'
+    )
     assert render(defHTML(src)) == src
 
 

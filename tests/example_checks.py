@@ -47,7 +47,9 @@ def compact(html: str) -> str:
     return re.sub(r"\s*(<[^>]+>)\s*", r"\1", html)
 
 
-HTMX_CONFIG = '<meta content="{&quot;includeIndicatorStyles&quot;:false}" name="htmx-config">'
+HTMX_CONFIG = (
+    '<meta content="{&quot;includeIndicatorStyles&quot;:false}" name="htmx-config">'
+)
 
 
 def assert_htmx_csp_safe(html: str) -> None:

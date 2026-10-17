@@ -66,8 +66,8 @@ class TestStaticArtifactAndPackageStatic(unittest.TestCase):
                 [("x_element.js", "head")],
                 resource_prefix="",
             )
-        arts = list(contrib.artifacts())
         # may be empty if resource path resolution differs — still exercise API
+        self.assertIsInstance(list(contrib.artifacts()), list)
         html = contrib.scripts_html()
         self.assertIsInstance(html, str)
         list(contrib.document_head())

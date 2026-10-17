@@ -6,7 +6,6 @@ import re
 import unittest
 
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom.dom import div, script
@@ -40,7 +39,10 @@ class TestBuildHeader(unittest.TestCase):
         self.assertIn("form-action 'self'", h)
 
     def test_strict_dynamic_hosts_present_in_string(self):
-        """Hosts remain in the header string for legacy; modern browsers ignore under strict-dynamic."""
+        """Hosts stay in the header for legacy browsers.
+
+        Modern browsers ignore them under strict-dynamic.
+        """
         h = build_csp_header(
             "n",
             strict_dynamic=True,
