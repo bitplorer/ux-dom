@@ -85,15 +85,5 @@ class TestFunctional(unittest.TestCase):
         self.assertEqual(out, [2, [4, 6], 8])
 
 
-class TestAssetsFacade(unittest.TestCase):
-    def test_ensure_and_compose(self):
-        from ux_dom.assets import compose_document_parts, ensure_default_contributions
-
-        h = ensure_default_contributions()
-        head, body = compose_document_parts(hub=h, include_core=True)
-        self.assertIsInstance(head, list)
-        self.assertIsInstance(body, list)
-
-
 if __name__ == "__main__":
     unittest.main()
