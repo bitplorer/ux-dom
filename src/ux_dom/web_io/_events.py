@@ -68,7 +68,9 @@ class BaseEventManager:
                 )
             else:
                 warn(
-                    message=f"{activity} already added event {event_name} to method {method!r}"
+                    f"{activity} already added event {event_name} "
+                    f"to method {method!r}",
+                    stacklevel=2,
                 )
             return method
 

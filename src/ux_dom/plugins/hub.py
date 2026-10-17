@@ -408,7 +408,7 @@ class App:
         """
         set_hub(self.hub)
         app = asgi if asgi is not None else self._built
-        for name, host in self.hub.hosts.items():
+        for host in self.hub.hosts.values():
             app = host.mount(
                 app,
                 settings=None,
@@ -431,7 +431,7 @@ class App:
                 doc.mount(app)
             except Exception:
                 pass
-        for name, control in self.hub.controls.items():
+        for control in self.hub.controls.values():
             if app is not None:
                 control.mount(app)
         if app is not None:

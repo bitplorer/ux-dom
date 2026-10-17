@@ -191,9 +191,6 @@ def ensure_valio_pep649_compat() -> None:
     global _APPLIED
     if _APPLIED:
         return
-    if sys.version_info < (3, 14):
-        _APPLIED = True
-        return
     if "valio.validator.validators" in sys.modules and hasattr(
         sys.modules.get("valio"), "Validator"
     ):

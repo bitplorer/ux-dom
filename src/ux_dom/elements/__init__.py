@@ -13,11 +13,12 @@ from ._valio_pep649 import ensure_valio_pep649_compat
 
 ensure_valio_pep649_compat()
 
+# The patch above must run before valio is imported.
 # isort: split
-from .booleans import *
-from .buttons import *
-from .chars import *
-from .dates import *
-from .enums import *
-from .floats import *
-from .integers import *
+from .booleans import *  # noqa: E402
+from .buttons import *  # noqa: E402
+from .chars import *  # noqa: E402
+from .dates import *  # noqa: E402
+from .enums import *  # noqa: E402
+from .floats import *  # noqa: E402
+from .integers import *  # noqa: E402

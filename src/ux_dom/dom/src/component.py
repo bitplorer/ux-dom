@@ -490,7 +490,9 @@ class Fragment(Component):
             # ===================================================================
             if attr.startswith(":") and child.attributes.get(attr, None):
                 warnings.warn(
-                    message=f"{self.__class__.__name__} has not implemented merging attribute: x-bind"
+                    f"{self.__class__.__name__} has not implemented merging "
+                    "attribute: x-bind",
+                    stacklevel=2,
                 )
 
             child.set_attribute(*child.clean_pair(attr, value))

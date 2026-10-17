@@ -545,14 +545,14 @@ class dom_tag:
             # Children are accessed using integers
             try:
                 return object.__getattribute__(self, "children")[key]
-            except KeyError:
-                raise IndexError('Child with index "%s" does not exist.' % key)
+            except IndexError:
+                raise IndexError(f'Child with index "{key}" does not exist.') from None
         elif isinstance(key, str):
             # Attributes are accessed using strings
             try:
                 return object.__getattribute__(self, "attributes")[key]
             except KeyError:
-                raise AttributeError('Attribute "%s" does not exist.' % key)
+                raise AttributeError(f'Attribute "{key}" does not exist.') from None
         else:
             raise TypeError(
                 "Only integer and string types are valid for accessing "
