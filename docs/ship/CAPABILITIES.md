@@ -17,18 +17,18 @@ Version: **0.2.0** (ux-dom production line).
 - [x] `ReactiveComponent` re-render
 - [x] `HtmlDocument` placeholders + XTemplate/WC hoist
 - [x] `__render__` / `__async_render__` / `async with` (`__aenter__` / `__aexit__`)
-- [x] `uniqueid`, SVG tags, `defHTML` parse path
+- [x] `uniqueid`, SVG tags, `defHTML` allow-list sanitizer (`defHTML(s, escape=False)` for author markup)
 - [x] Top-level `from ux_dom import Component, Fragment, Document`
 
 ## Response
 
-- [x] `StreamingRoute` + `HTMLRoute` (response adapters)
+- [x] `StreamingRoute` + `HTMLRoute` (`ux_dom.response.fastapi`, plain `APIRoute` subclasses)
 - [x] Component `routes = [...]` convention (when author wires explicitly)
 
 ## Control (CTRL)
 
-- [x] HTMX attrs via Tags dialect (`hx_*`)
-- [x] `HtmxControl` plugin: scripts, partial policy, optional middleware
+- [x] HTMX attrs via Tags dialect (`hx_*`); request URLs same-origin unless `cross_origin(url)`
+- [x] `HtmxControl` plugin: pinned SRI scripts (htmx 1.9.12 / 2.0.4), partial policy, optional middleware
 - [x] `Htmx` decorator class + `HtmxMiddleware` (module paths stable in 0.1)
 - [x] `data-channel-*` attrs for ux-channel peer plane (no core import of channel)
 - [x] `NullControl` for tests

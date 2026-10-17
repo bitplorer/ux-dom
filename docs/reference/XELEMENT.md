@@ -42,14 +42,15 @@ from ux_dom.dom import div, template
 from ux_dom.dom.htmlelement import CustomElement
 
 class HelloLight(CustomElement):
+    tag_name = "hello-light"
+
     def render(self, tag_name: str = "hello-light"):
         return template(
             div("Hello from light DOM"),
             **{"x-tagname": tag_name},
         )
 
-definition = HelloLight("hello-light")
-host = definition()  # <x-hello-light>
+host = HelloLight()  # <x-hello-light>; Document emits the template once
 ```
 
 Full gallery: `examples/xelement_kit` → `/lightdom`  
@@ -94,11 +95,12 @@ Requires **both** `x-tagname` and `x-data`. After upgrade, `x_element.js` calls 
 `/ux-dom/static/x_element.js` (single copy from the installed package).
 
 ```python
+from ux_dom import Document
 from ux_dom.runtime import XElement
 from ux_dom.dom import script
 from ux_dom.scripts import x_element_js
 
-document = Document(...).use(XElement())  # package mount — preferred
+document = Document(head=[], body=[]).use(XElement())  # package mount — preferred
 
 # Escape hatch only (edge hosts / offline dual-copy):
 # script(src="/assets/js/x_element.js", defer=None)

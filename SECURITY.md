@@ -16,8 +16,11 @@
 | Safe package static | MorphState / `@action` (`ux-behavior`) |
 | Script-injection policy | Product deploy auth (`ux-compose`) |
 | Asset / `javascript:` URL policy | Encryption, sessions, cookies |
+| Text-by-default strings, `defHTML` sanitizer, safe Markdown (`docs/security/HTML_CONTENT.md`) | |
+| Same-origin htmx request URLs (`docs/security/ATTRIBUTES.md`) | |
+| Pinned CDN scripts with SRI (`docs/security/CSP.md`) | |
 
-If you put untrusted strings into a tree without the library's escaping discipline, you can create XSS. That is a caller bug unless a public render helper dropped escaping.
+Plain strings are escaped text everywhere. Markup is an explicit opt-in (`Markup`, `raw`, `defHTML(..., escape=False)`); passing untrusted input to an opt-in is a caller bug. Any other path that renders a string unescaped is a library bug: please report it.
 
 ## Reporting
 

@@ -14,14 +14,15 @@ Browser:     ``x_element.js`` clones ``<template x-tagname>`` into the host
 
 Pattern
 -------
-1. Define once: ``HelloLight("hello-light")``  → ``<template x-tagname="hello-light">``
-2. Use host:    ``HelloLight("hello-light")()`` or raw ``<x-hello-light>``
+1. Define:   ``class HelloLight(CustomElement): tag_name = "hello-light"``
+2. Use host: ``HelloLight()`` (or raw ``<x-hello-light>``); the Document emits
+   one ``<template x-tagname="hello-light">`` per definition.
 3. Optional light children become extra nodes under the host after upgrade
    only if you put them in the host tag before upgrade; template body is the UI.
 
 Load runtime in the document::
 
-    script(src="/assets/js/x_element.js", defer=None)
+    Document(head=[], body=[]).use(XElement())
 """
 from __future__ import annotations
 

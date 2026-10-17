@@ -84,6 +84,7 @@ How-to stays in `guides/`. API/facts moved to `reference/` (stubs remain in `gui
 | [SAFE_STATIC.md](security/SAFE_STATIC.md) | Package static |
 | [SCRIPT_INJECTION.md](security/SCRIPT_INJECTION.md) | Script injection |
 | [ATTRIBUTES.md](security/ATTRIBUTES.md) | Attribute escaping, unsafe URL schemes |
+| [HTML_CONTENT.md](security/HTML_CONTENT.md) | Text-by-default strings, `defHTML` sanitizer, safe Markdown |
 | [ASSETS.md](security/ASSETS.md) | Asset policy |
 | [WHY_JS_URL.md](security/WHY_JS_URL.md) | JS URL policy |
 
