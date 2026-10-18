@@ -107,6 +107,7 @@
   one shard per module under ``docs/internals/codemap/``; CI fails when a
   shard is stale (``--write-changed`` rewrites only those). See
   ``docs/internals/CODEMAP.md``.
+- **Tests/doctor:** remove green-forever ``if False`` asserts; doctor Tailwind check reports not-checked (``??``) instead of fake OK.
 
 ## 0.2.0 — remove deprecations
 
