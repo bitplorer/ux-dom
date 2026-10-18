@@ -180,7 +180,7 @@ class TestConcurrencyTrust(unittest.TestCase):
 
         def mut():
             for i in range(300):
-                root.replace_children(span(str(i), id="v"))
+                root._replace_children(span(str(i), id="v"))
 
         def ren():
             for _ in range(300):

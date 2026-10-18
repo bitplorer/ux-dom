@@ -72,8 +72,11 @@ Scaffold: `uxcompose create-app`.
 ux-dom ships no file router. `ux_dom.routing`, the `DirectoryRouting` plugin,
 `App.routes()` and `uxdom add route` were removed (F-18). Pure-dom demos wire
 explicit FastAPI routes (`app.get("/x")(lambda: HTMLResponse(Page()))`).
-Do not put HTTP-verb classmethods (`get`, `add`, `clear`, …) on a `Component`:
-they shadow the instance DOM API.
+Component method names are safe except the sealed query API: defining
+`get` or `matches` on a `Component` (instance method or classmethod) raises
+`TypeError` at class creation. Every other name, including `add` (e.g. a
+channel `@action def add`), is free: library internals attach children via
+`_add` and query via `_find` / `_matches`.
 
 ## What ux-dom does **not** own
 
