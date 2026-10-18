@@ -363,12 +363,16 @@ class Document(object):
                 else:
                     mount(app, hub=None)
         if files:
-            try:
-                from ux_dom.plugins.safe_static import install_safe_static
+            from ux_dom.plugins.safe_static import install_safe_static
 
-                install_safe_static(app, files)
-            except Exception:
-                pass
+            n = install_safe_static(app, files)
+            if n == 0 and files:
+                raise RuntimeError(
+                    "Document.mount: install_safe_static installed 0 of "
+                    f"{len(files)} file(s); app has no add_api_route/add_route "
+                    f"(got {type(app).__name__}). Static URLs like "
+                    "/ux-dom/static/… will 404."
+                )
         return app
 
     def __call__(self, *args, head=None, body=None, use=None, **kwargs) -> HtmlDocument:

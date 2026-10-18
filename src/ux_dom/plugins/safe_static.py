@@ -273,8 +273,10 @@ def install_safe_static(app: Any, files: Sequence[SafeStaticFile]) -> int:
             else:
                 continue
             installed += 1
-        except Exception:
-            pass
+        except Exception as exc:
+            raise RuntimeError(
+                f"install_safe_static failed for {f.url!r}: {exc}"
+            ) from exc
     return installed
 
 
