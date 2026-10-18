@@ -107,6 +107,9 @@
   one shard per module under ``docs/internals/codemap/``; CI fails when a
   shard is stale (``--write-changed`` rewrites only those). See
   ``docs/internals/CODEMAP.md``.
+- **F-17:** delete zero-consumer orphans — ``examples/{links,toggle}``, ``debug_gallery``,
+  ``plugins.response`` / ``plugins.style`` stubs, ``assets`` facade, ``cli.envfile``,
+  ``settings.paths``, ``utils.functional``. Absence locks in ``test_f17_orphans_absent.py``.
 
 ## 0.2.0 — remove deprecations
 
