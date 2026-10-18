@@ -107,6 +107,8 @@
   one shard per module under ``docs/internals/codemap/``; CI fails when a
   shard is stale (``--write-changed`` rewrites only those). See
   ``docs/internals/CODEMAP.md``.
+- **F-19:** delete retired ``demosite/`` (broken leftover snapshot).
+
 
 ## 0.2.0 — remove deprecations
 
