@@ -45,7 +45,7 @@ Core packages never hard-import each other.
 
 | Name | Is | Is not |
 |------|-----|--------|
-| `ux_dom.runtime.Channel` | Document plugin (`UxChannelRuntime`) | `ux_channel.Channel` |
+| `ux_dom.Channel` | Document plugin (`UxChannelRuntime`) | `ux_channel.Channel` |
 | `/ux-channel` | Default channel HTTP mount | Package name |
 | `as_ux_dom()` | Kwargs for dom tags (`data_channel_*`) | A separate product |
 
