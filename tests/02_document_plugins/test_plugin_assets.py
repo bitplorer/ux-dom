@@ -8,10 +8,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from fastapi.testclient import TestClient
-
-from ux_dom.assets import compose_document_parts, register_js
 from helpers import ScaffoldOptions, create_app
-from ux_dom.plugins import App, XElementRuntime, shell_fragments
+
+from ux_dom.plugins import App, XElementRuntime
 from ux_dom.plugins.control import HtmxControl
 from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
@@ -42,14 +41,38 @@ class TestContributionHub(unittest.TestCase):
         self.assertIn("x_element.js", "".join(str(x) for x in head))
         self.assertIn("htmx.org", "".join(str(x) for x in body))
 
-    def test_register_js_adhoc_still_copies_app_owned(self):
-        """Ad-hoc app JS is app-owned → materialize under assets is correct."""
+    def test_app_owned_js_contribution_is_materialized(self):
+        """App-owned JS (a contribution with artifacts) is copied under assets."""
+        from ux_dom.plugins.contribution import artifact_from_path
+
+        class DemoJs:
+            plugin_kind = "contribution"
+            name = "demo"
+
+            def __init__(self, path):
+                self.art = artifact_from_path(
+                    plugin="demo",
+                    key="p.js",
+                    path=path,
+                    disk_path="assets/js/vendor/demo/p.js",
+                    public_path="/assets/js/vendor/demo/p.js",
+                    inject="body",
+                )
+
+            def artifacts(self):
+                return (self.art,)
+
+            def document_head(self):
+                return ()
+
+            def document_body(self):
+                return ()
+
         with TemporaryDirectory() as td:
             src = Path(td) / "p.js"
             src.write_text("console.log(1)", encoding="utf-8")
             hub = PluginHub()
-            set_hub(hub)
-            register_js("demo", "p.js", source=src, placement="body", hub=hub)
+            hub.add_contribution(DemoJs(src))
             root = Path(td) / "app"
             root.mkdir()
             hub.materialize(root)
@@ -59,11 +82,7 @@ class TestContributionHub(unittest.TestCase):
 class TestScaffoldServesPackageJs(unittest.TestCase):
     def test_page_and_runtime_url(self):
         with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "ps", dest=Path(td) / "ps", force=True, with_tailwind=False
-                )
-            )
+            root = create_app(ScaffoldOptions("ps", dest=Path(td) / "ps", force=True))
             sys.path.insert(0, str(root))
             for k in list(sys.modules):
                 if k == "app" or k.startswith("app."):
