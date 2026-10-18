@@ -21,7 +21,7 @@ Page units live in `routes/`. `render()` returns ux-dom tag trees.
 
 ```python
 from ux_dom import Document, Component
-from ux_dom.runtime import XElement, Htmx, Csp
+from ux_dom import XElement, Htmx, Csp
 from ux_dom.dom import div, h1
 
 document = Document(head=[], body=[]).use(

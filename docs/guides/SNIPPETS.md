@@ -54,7 +54,7 @@ Serialize SSoT is tree.__render__() / tree.__async_render__(). Document.use stam
 
 ```python
 from ux_dom import Document, Component
-from ux_dom.runtime import XElement, Htmx, Csp
+from ux_dom import XElement, Htmx, Csp
 from ux_dom.dom import div, h1, p, button, section
 
 document = Document(head=[], body=[]).use(
@@ -105,7 +105,7 @@ print(ProductList(["Tee", "Tote"]).render().__render__())
 CSP is a Document.use contribution. See docs/security/CSP.md. Do not inline event handlers.
 
 ```python
-from ux_dom.runtime import Csp
+from ux_dom import Csp
 from ux_dom import Document
 from ux_dom.dom import div
 
@@ -180,7 +180,7 @@ Document.use stamps contributions. HTMX is never auto-attached by ux-compose; op
 
 ```python
 from ux_dom import Document
-from ux_dom.runtime import XElement, Htmx, Csp
+from ux_dom import XElement, Htmx, Csp
 from ux_dom.dom import div
 
 document = Document(head=[], body=[]).use(
