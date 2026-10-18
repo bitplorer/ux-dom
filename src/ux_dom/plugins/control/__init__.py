@@ -11,7 +11,7 @@ Public
 * ``NullControl`` — no-op control for tests / headless shells
 
 Attach via ``Document.use(...)`` or hub ``use_control(...)``.
-``Htmx`` is the runtime alias for ``HtmxControl`` (see ``ux_dom.runtime``).
+``Htmx`` is the top-level alias for ``HtmxControl`` (``from ux_dom import Htmx``).
 """
 
 from ux_dom.plugins.control.channel import ChannelControl

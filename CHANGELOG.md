@@ -107,6 +107,15 @@
   one shard per module under ``docs/internals/codemap/``; CI fails when a
   shard is stale (``--write-changed`` rewrites only those). See
   ``docs/internals/CODEMAP.md``.
+## Unreleased: remove `ux_dom.runtime`
+
+- **BREAKING: `ux_dom.runtime` removed.** It held four aliases over
+  `ux_dom.plugins` and had no logic of its own. Import the same names from the top level:
+  `from ux_dom import XElement, Htmx, Csp, Channel`. The implementations are
+  unchanged: `ux_dom.plugins.runtime.XElementRuntime` / `UxChannelRuntime`
+  (and `XELEMENT_JS_URL`, `XELEMENT_STATIC_PREFIX`),
+  `ux_dom.plugins.control.HtmxControl`, and `ux_dom.plugins.csp.Csp` / `CspMiddleware`.
+- `tests/07_resilience/test_runtime_facade_absent.py` keeps it gone.
 
 ## 0.2.0 — remove deprecations
 
