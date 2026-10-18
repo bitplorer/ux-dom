@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- **Security: ``Csp.auto()`` defaults to prod when DEBUG is unset.** Prod drops
+  script ``'unsafe-inline'`` and bare ``ws:``/``wss:`` (name hosts in overrides).
+
 ## 0.2.0 — remove deprecations
 
 - Removed deprecated modules `ux_dom.dom.ui` (Tortoise form helper),

@@ -420,13 +420,14 @@ def policy_dev(**overrides: Any) -> CspPolicy:
 
 
 def policy_prod(**overrides: Any) -> CspPolicy:
-    """Production: no CDN hosts, tight connect, form-action, optional HSTS-ish upgrade."""
+    """Production: no CDN hosts, no script unsafe-inline, no bare ws:/wss:."""
     base = CspPolicy(
         strict_dynamic=True,
         script_hosts=(),  # self-host via package static / SafeStatic
         style_hosts=(),
         style_unsafe_inline=False,  # prefer nonced <style> only
-        connect_src=("'self'", "ws:", "wss:"),  # tighten hosts in overrides
+        script_unsafe_inline_legacy=False,  # no Safari legacy hole in prod
+        connect_src=("'self'",),  # name wss://host in overrides if needed
         form_action="'self'",
         upgrade_insecure=True,
         frame_ancestors="'none'",
@@ -622,14 +623,15 @@ class Csp:
         """Pick dev vs prod from DEBUG (env or argument) — zero-choice DX.
 
         * ``debug=True`` / ``DEBUG=1`` → :meth:`dev` (CDN + style attrs OK)
-        * ``debug=False`` / ``DEBUG=0`` → :meth:`prod` (lock-down)
+        * ``debug=False`` / ``DEBUG=0`` / **unset** → :meth:`prod` (lock-down)
 
         Scaffold uses this so apps get CSP without learning presets first.
         """
         import os
 
         if debug is None:
-            debug = os.environ.get("DEBUG", "1") not in ("0", "false", "False")
+            # Unset DEBUG means production (fail closed). Set DEBUG=1 for DX.
+            debug = os.environ.get("DEBUG", "0") not in ("0", "false", "False", "")
         return cls.dev(**overrides) if debug else cls.prod(**overrides)
 
     @classmethod
