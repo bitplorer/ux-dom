@@ -55,7 +55,7 @@ class dom1core(object):
         """
         DOM API: Returns single element with matching id value.
         """
-        results = self.get(id=id)
+        results = list(self._find(id=id))
         if results is None:
             raise ValueError('No tags with id "%s".' % id)
         elif len(results) > 1:
@@ -70,7 +70,7 @@ class dom1core(object):
         DOM API: Returns all tags that match name.
         """
         if isinstance(name, basestring):
-            return self.get(name.lower())
+            return list(self._find(name.lower()))
         else:
             return None
 
@@ -78,7 +78,7 @@ class dom1core(object):
         """
         DOM API: Add an item to the end of the children list.
         """
-        self.add(obj)
+        self._add(obj)
         return self
 
     @property

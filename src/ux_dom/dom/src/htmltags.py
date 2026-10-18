@@ -340,11 +340,11 @@ class title(html_tag):
     """
 
     def _get_text(self):
-        return "".join(self.get(basestring))
+        return "".join(self._find(basestring))
 
     def _set_text(self, text):
-        self.clear()
-        self.add(text)
+        self._clear()
+        self._add(text)
 
     text = property(_get_text, _set_text)
 
