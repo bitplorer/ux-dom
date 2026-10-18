@@ -26,7 +26,6 @@ packages = [
 include = [
   "src/ux_dom/py.typed",
   "src/ux_dom/scripts/*.js",
-  "src/ux_dom/reloader/script/*.js",
   "src/ux_dom/**/*.js",
   "src/ux_dom/**/*.css",
   "src/ux_dom/**/*.html",
