@@ -15,7 +15,7 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 
 - Tag trees, `__render__` / `__async_render__`
 - Document shell: control, runtime tags, **CSP stamp**, style
-- Pure-dom CLI: `doctor` | `lint` | `profile` | `dashboard` | `add` | `ui`
+- Pure-dom CLI: `doctor` | `lint` | `profile` | `dashboard` | `add` | `ui` | `build` | `info`
 - className, stylesheet `<link>`
 - Package static (`/ux-dom/static/x_element.js`)
 
@@ -23,7 +23,8 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 
 | Concern | Home |
 |---------|------|
-| create-app / build / serve / deploy | **uxcompose only** |
+| create-app / serve / deploy | **uxcompose only** |
+| `uxdom build` / `uxdom info` | **ux-dom** (package/static inventory) |
 | Product page routes (`DirectoryRoutes`) | **ux-compose** |
 | Tailwind compiler / app asset layout (`WebAssets`) | **ux-compose** |
 | Host strategy / product App | ux-compose |

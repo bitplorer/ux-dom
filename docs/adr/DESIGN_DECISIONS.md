@@ -1,4 +1,4 @@
-# Design Decisions — Channel-Native Design System for ux-app
+# Design Decisions — Channel-Native Design System for ux-dom
 
 > **Diátaxis:** ADR · **Canonical:** `docs/adr/DESIGN_DECISIONS.md` · **Layer:** ux-dom  
 > Map: [INDEX.md](../INDEX.md).
