@@ -22,6 +22,10 @@
   `<script>` / `<style>` in a string, including injected ones. Strings now pass
   through unchanged; build trusted scripts as `script(...)` nodes.
   Migration: a string `<script>` that relied on the CSP nonce must be built as a `script()` node instead.
+- **Security: htmx/SSE/WS URLs are same-origin by default.** `hx-*` /
+  `data-hx-*` / `sse-connect` / `ws-connect` refuse absolute and
+  protocol-relative URLs unless wrapped in ``cross_origin(...)``.
+  Protocol-relative ``//host`` is also refused on ``href``/``src``.
 
 ## 0.2.0 — remove deprecations
 

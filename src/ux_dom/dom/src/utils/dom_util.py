@@ -50,6 +50,12 @@ __all__ = [
     "lazy",
     "dom_text",
     "raw",
+    "safe_attr_value",
+    "UNSAFE_URL",
+    "URL_ATTRIBUTES",
+    "SAME_ORIGIN_URL_ATTRIBUTES",
+    "cross_origin",
+    "CrossOriginURL",
 ]
 
 
@@ -106,8 +112,18 @@ URL_ATTRIBUTES = frozenset(
         "href", "src", "action", "formaction", "xlink:href", "poster",
         "cite", "background", "data", "codebase", "longdesc",
         "manifest", "ping", "icon", "archive", "usemap", "profile",
-        "lowsrc", "dynsrc", "hx-get", "hx-post", "hx-put", "hx-patch",
-        "hx-delete",
+        "lowsrc", "dynsrc",
+    }
+)
+# htmx / SSE / WS fetch+swap sinks: relative same-origin only unless
+# wrapped in ``cross_origin(...)``. Includes data-* aliases.
+SAME_ORIGIN_URL_ATTRIBUTES = frozenset(
+    {
+        "hx-get", "hx-post", "hx-put", "hx-patch", "hx-delete",
+        "data-hx-get", "data-hx-post", "data-hx-put", "data-hx-patch", "data-hx-delete",
+        "sse-connect", "ws-connect",
+        "data-sse-connect", "data-ws-connect",
+        "hx-sse", "hx-ws",
     }
 )
 # Attributes whose value is a whole HTML document, not a URL. A scheme check
@@ -118,7 +134,21 @@ UNSAFE_URL = "about:invalid#ux-dom-unsafe-url"
 _URL_NOISE = re.compile(r"[\x00-\x20\x7f]+")
 # Allow-list, not deny-list: anything not listed here fails closed.
 _SAFE_SCHEMES = frozenset({"http", "https", "mailto", "tel"})
+_CROSS_ORIGIN_SCHEMES = frozenset({"http", "https", "ws", "wss"})
 _SAFE_DATA_URL = re.compile(r"data:image/(?:png|jpeg|jpg|gif|webp)(?:[;,]|$)")
+
+
+class CrossOriginURL(str):
+    """A URL the author allows to point at another origin (see ``cross_origin``)."""
+
+
+def cross_origin(url):
+    """Opt one htmx/SSE/WebSocket URL out of the same-origin rule.
+
+    ``div(hx_get=cross_origin("https://api.example.com/feed"))``. The scheme
+    must still be ``http``, ``https``, ``ws`` or ``wss``.
+    """
+    return CrossOriginURL(url)
 
 
 class InvalidAttributeName(ValueError):
@@ -149,17 +179,45 @@ def escape_attr_minimal(data):
     return str(data).replace("&", "&amp;").replace('"', "&quot;")
 
 
+def _probe(text):
+    return _URL_NOISE.sub("", html.unescape(text)).lower()
+
+
+def _is_protocol_relative(probe):
+    return probe.startswith(("//", "\\\\", "/\\", "\\/"))
+
+
 def _is_safe_url(text):
-    """True for relative URLs, allow-listed schemes, and raster data: images."""
-    # Browsers decode entities before parsing the URL; check what they see.
-    probe = _URL_NOISE.sub("", html.unescape(text)).lower()
+    """True for relative same-host URLs, allow-listed schemes, raster data: images.
+
+    Protocol-relative ``//host/...`` is refused (it is cross-origin).
+    """
+    probe = _probe(text)
+    if _is_protocol_relative(probe):
+        return False
     head = re.split(r"[/?#]", probe, maxsplit=1)[0]
     if ":" not in head:
-        return True  # relative: "/a", "a/b", "?q", "#f", "//host/x"
+        return True  # relative: "/a", "a/b", "?q", "#f"
     scheme = head.split(":", 1)[0]
     if scheme == "data":
         return _SAFE_DATA_URL.match(probe) is not None
     return scheme in _SAFE_SCHEMES
+
+
+def _is_same_origin_url(text):
+    """True for relative URLs that stay on this origin (no scheme, no ``//host``)."""
+    probe = _probe(text)
+    if _is_protocol_relative(probe):
+        return False
+    return ":" not in re.split(r"[/?#]", probe, maxsplit=1)[0]
+
+
+def _is_safe_cross_origin_url(text):
+    probe = _probe(text)
+    if _is_protocol_relative(probe):
+        return False
+    head = re.split(r"[/?#]", probe, maxsplit=1)[0]
+    return ":" not in head or head.split(":", 1)[0] in _CROSS_ORIGIN_SCHEMES
 
 
 def safe_attr_value(attribute, value):
@@ -180,6 +238,11 @@ def safe_attr_value(attribute, value):
     if name in HTML_ATTRIBUTES:
         html_method = getattr(value, "__html__", None)
         return str(html_method()) if callable(html_method) else UNSAFE_URL
+    if name in SAME_ORIGIN_URL_ATTRIBUTES:
+        text = str(value)
+        if isinstance(value, CrossOriginURL):
+            return text if _is_safe_cross_origin_url(text) else UNSAFE_URL
+        return text if _is_same_origin_url(text) else UNSAFE_URL
     if name not in URL_ATTRIBUTES:
         return value
     # Stringify once and return that text: re-stringifying ``value`` later

@@ -76,3 +76,18 @@ renderer calls it (`dom_tag`, `ext.Tags`, `ext.StyleTags`).
 
 Tests: `tests/07_resilience/test_unsafe_url_attrs.py`,
 `tests/07_resilience/test_adversarial_render.py`.
+
+
+## htmx / SSE / WebSocket URLs
+
+`hx-get`/`hx-post`/… (and `data-hx-*`), `sse-connect`/`ws-connect` (and
+`data-*` aliases) accept **relative same-origin** URLs only. A foreign
+`https://…` or protocol-relative `//host/…` is replaced with
+`about:invalid#ux-dom-unsafe-url`. Opt in explicitly:
+
+```python
+from ux_dom.dom import cross_origin, div
+div(hx_get=cross_origin("https://api.example.com/feed"))
+```
+
+Ordinary `href`/`src` still allow `http`/`https`/… but also refuse `//host`.
