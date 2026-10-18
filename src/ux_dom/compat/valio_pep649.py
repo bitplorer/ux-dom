@@ -187,23 +187,26 @@ def _load(fullname: str, path: Path, *, is_pkg: bool = False):
 
 
 def ensure_valio_pep649_compat() -> None:
-    """Idempotent. Call before any ``import valio`` on Python 3.14+."""
+    """Idempotent. Call before any ``import valio`` on Python 3.14+.
+
+    Fail closed: ``_APPLIED`` is set only after a successful patch. On
+    Python 3.14+, a missing or broken valio install raises rather than
+    silently marking the patch done.
+    """
     global _APPLIED
     if _APPLIED:
         return
     if sys.version_info < (3, 14):
         _APPLIED = True
         return
+
     if "valio.validator.validators" in sys.modules and hasattr(
         sys.modules.get("valio"), "Validator"
     ):
-        # Already imported — still install safe hooks if Property is present.
-        try:
-            from valio.descriptor.descriptors import Property
+        # Already imported — install safe hooks; failure must not look applied.
+        from valio.descriptor.descriptors import Property
 
-            _install_safe_hooks(Property)
-        except Exception:
-            pass
+        _install_safe_hooks(Property)
         _APPLIED = True
         return
 
@@ -211,9 +214,11 @@ def ensure_valio_pep649_compat() -> None:
         from importlib.metadata import distribution
 
         dist = distribution("valio")
-    except Exception:
-        _APPLIED = True
-        return
+    except Exception as exc:
+        raise RuntimeError(
+            "ux-dom requires the valio package on Python 3.14+ "
+            "(PEP 649 annotation hooks). Install valio or upgrade to ux-valio."
+        ) from exc
 
     desc_path = None
     root = None
@@ -224,50 +229,63 @@ def ensure_valio_pep649_compat() -> None:
             root = desc_path.parent.parent  # .../valio
             break
     if not desc_path or not desc_path.is_file() or root is None:
-        _APPLIED = True
-        return
+        raise RuntimeError(
+            "valio is installed but descriptor/descriptors.py was not found; "
+            "cannot apply PEP 649 compat hooks."
+        )
 
-    # Drop any incomplete valio modules from a prior failed import
-    for k in list(sys.modules):
-        if k == "valio" or k.startswith("valio."):
-            del sys.modules[k]
+    try:
+        # Drop any incomplete valio modules from a prior failed import
+        for k in list(sys.modules):
+            if k == "valio" or k.startswith("valio."):
+                del sys.modules[k]
 
-    def pkg_shell(name: str, path: Path) -> types.ModuleType:
-        m = types.ModuleType(name)
-        m.__path__ = [str(path)]  # type: ignore[attr-defined]
-        m.__package__ = name
-        sys.modules[name] = m
-        return m
+        def pkg_shell(name: str, path: Path) -> types.ModuleType:
+            m = types.ModuleType(name)
+            m.__path__ = [str(path)]  # type: ignore[attr-defined]
+            m.__package__ = name
+            sys.modules[name] = m
+            return m
 
-    pkg_shell("valio", root)
-    pkg_shell("valio.error", root / "error")
-    pkg_shell("valio.logger", root / "logger")
-    pkg_shell("valio.descriptor", root / "descriptor")
+        pkg_shell("valio", root)
+        pkg_shell("valio.error", root / "error")
+        pkg_shell("valio.logger", root / "logger")
+        pkg_shell("valio.descriptor", root / "descriptor")
 
-    _load("valio.error.errors", root / "error" / "errors.py")
-    _load("valio.logger.loggers", root / "logger" / "loggers.py")
-    desc = _load("valio.descriptor.descriptors", root / "descriptor" / "descriptors.py")
-    if hasattr(desc, "Property"):
+        _load("valio.error.errors", root / "error" / "errors.py")
+        _load("valio.logger.loggers", root / "logger" / "loggers.py")
+        desc = _load(
+            "valio.descriptor.descriptors", root / "descriptor" / "descriptors.py"
+        )
+        if not hasattr(desc, "Property"):
+            raise RuntimeError("valio.descriptor.descriptors lacks Property")
         _install_safe_hooks(desc.Property)
 
-    # Keep patched descriptors; replace package shells with real inits
-    keep = {
-        "valio.descriptor.descriptors": sys.modules["valio.descriptor.descriptors"],
-        "valio.error.errors": sys.modules["valio.error.errors"],
-        "valio.logger.loggers": sys.modules["valio.logger.loggers"],
-    }
-    for k in list(sys.modules):
-        if k == "valio" or k.startswith("valio."):
-            if k not in keep:
-                del sys.modules[k]
-    sys.modules.update(keep)
+        # Keep patched descriptors; replace package shells with real inits
+        keep = {
+            "valio.descriptor.descriptors": sys.modules["valio.descriptor.descriptors"],
+            "valio.error.errors": sys.modules["valio.error.errors"],
+            "valio.logger.loggers": sys.modules["valio.logger.loggers"],
+        }
+        for k in list(sys.modules):
+            if k == "valio" or k.startswith("valio."):
+                if k not in keep:
+                    del sys.modules[k]
+        sys.modules.update(keep)
 
-    importlib.invalidate_caches()
-    valio = importlib.import_module("valio")
-    if not hasattr(valio, "Validator"):
-        if not getattr(valio, "__file__", None):
-            valio = _load("valio", root / "__init__.py", is_pkg=True)
+        importlib.invalidate_caches()
+        valio = importlib.import_module("valio")
+        if not hasattr(valio, "Validator"):
+            if not getattr(valio, "__file__", None):
+                valio = _load("valio", root / "__init__.py", is_pkg=True)
+        if not hasattr(valio, "Validator"):
+            raise RuntimeError("valio import succeeded but Validator is missing")
+    except Exception:
+        # Do not mark applied — a later call can retry after the caller fixes env.
+        raise
+
     _APPLIED = True
+
 
 
 __all__ = ["ensure_valio_pep649_compat"]

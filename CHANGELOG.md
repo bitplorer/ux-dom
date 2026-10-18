@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Bug: valio PEP 649 compat marks ``_APPLIED`` only on success** and raises on failure (fail closed).
+
 ## 0.2.0 — remove deprecations
 
 - Removed deprecated modules `ux_dom.dom.ui` (Tortoise form helper),
