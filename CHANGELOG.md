@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Examples: port ``with_ux_channel`` live_cart/market_board** to current Channel/Region API; CI pins ux-channel@83a580a and sets ``UX_DOM_REQUIRE_CHANNEL=1``.
+
 ## 0.2.0 — remove deprecations
 
 - Removed deprecated modules `ux_dom.dom.ui` (Tortoise form helper),

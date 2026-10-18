@@ -10,6 +10,9 @@ jobs:
     env:
       # Browser tests must run in CI; a missing toolchain fails, never skips.
       UX_DOM_REQUIRE_BROWSER: "1"
+      # Example tests must run against a pinned ux-channel; missing peer fails, never skips.
+      UX_DOM_REQUIRE_CHANNEL: "1"
+      UX_CHANNEL_CEK: "off"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -24,6 +27,8 @@ jobs:
         run: pip install poetry
       - name: Install dependencies
         run: poetry install --with dev,test --no-interaction --no-ansi
+      - name: Install ux-channel (pinned)
+        run: pip install "ux-channel @ git+https://github.com/bitplorer/ux-channel.git@83a580a045b86cb1f17257180c5f53a32ae3b80e#subdirectory=python"
       - name: Install browser test toolchain (Playwright + Chromium)
         run: |
           npm ci --prefix tests/browser
