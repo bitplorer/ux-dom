@@ -7,7 +7,8 @@ import unittest
 from ux_dom import Document
 from ux_dom.dom import div, meta, script, title
 from ux_dom.plugins.csp import reset_nonce, set_nonce
-from ux_dom.runtime import Htmx, XElement, XELEMENT_JS_URL
+from ux_dom import Htmx, XElement
+from ux_dom.plugins.runtime import XELEMENT_JS_URL
 
 
 class TestTwoStageOrder(unittest.TestCase):
