@@ -63,7 +63,7 @@ Do not analogize this layer to React / Next / htmx as its identity.
 |---------|------|
 | `ux_dom` | Document, Component, runtimes |
 | `ux_dom.dom` | Tags / serialize |
-| `ux_dom.runtime` | XElement, Htmx, Csp, Channel facades |
+| `ux_dom` (top level) | XElement, Htmx, Csp, Channel facades (over `ux_dom.plugins`) |
 | `ux_dom.plugins` | Document contributions (not product App path) |
 | `ux_dom.cli` | Pure-dom Typer CLI |
 | `ux_dom.ui` | Optional kit |

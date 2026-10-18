@@ -63,7 +63,7 @@ See [INSTALL.md](INSTALL.md) and [docs/INSTALL.md](docs/INSTALL.md).
 
 ```python
 from ux_dom import Document, Component
-from ux_dom.runtime import XElement, Htmx, Csp
+from ux_dom import XElement, Htmx, Csp
 from ux_dom.dom import div, h1
 
 document = Document(head=[], body=[]).use(
