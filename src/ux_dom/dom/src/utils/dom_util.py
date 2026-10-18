@@ -275,6 +275,7 @@ class dom_text(dom_tag):
     is_inline = False
 
     def __init__(self, _text, escape=True):
+        self.escaped = escape
         if escape:
             self.text = str_escape(_text)
         else:

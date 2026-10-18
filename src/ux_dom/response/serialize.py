@@ -189,7 +189,9 @@ def is_stream_renderable(content: Any) -> bool:
 
 
 def prepare_html_body(content: Any) -> Any:
-    """Stamp CSP + expand ``__render__`` / str nonces. No framework types.
+    """Stamp CSP nonces on trees, then expand ``__render__``. No framework types.
+
+    Strings are returned as they are: they are never nonce-stamped.
 
     Return value is what an HTTP adapter encodes to bytes. Starlette
     ``HTMLResponse.render`` should call this then ``super().render(...)``.
@@ -206,14 +208,6 @@ def prepare_html_body(content: Any) -> Any:
         pass
     if hasattr(content, "__render__"):
         content = content.__render__()
-    elif isinstance(content, str):
-        try:
-            from ux_dom.plugins.csp import get_nonce, stamp_nonce
-
-            if get_nonce():
-                content = stamp_nonce([content])[0]
-        except Exception:
-            pass
     return content
 
 
