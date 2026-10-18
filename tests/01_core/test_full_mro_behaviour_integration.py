@@ -271,7 +271,7 @@ class TestBehaviourIntegration(unittest.TestCase):
 
     def test_clear_iadd_uniqueid(self):
         d = div(span("1"), span("2"))
-        d.clear()
+        d._clear()
         self.assertEqual(len(d), 0)
         d += span("3")
         self.assertEqual(len(d.get(span)), 1)

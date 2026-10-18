@@ -74,7 +74,7 @@ class TestParallelRender(unittest.TestCase):
 
         def mut(_):
             with multi_tree_lock(root):
-                root.clear()
+                root._clear()
                 for i in range(10):
                     root.add(span(str(i)))
 

@@ -290,7 +290,7 @@ class TestReactiveReentrancyAndEdges(unittest.TestCase):
 
     def test_set_attribute_does_not_drop_state(self):
         c = Counter(count=2)
-        c.set_attribute("class", "x")
+        c._set_attribute("class", "x")
         html = c.__render__(pretty=False)
         self.assertIn("2", html)
         c.count = 8
