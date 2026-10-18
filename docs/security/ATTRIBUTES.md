@@ -139,3 +139,13 @@ character refuses the whole value (`swap:msg:part`). An empty name (`swap:`,
 matches `[A-Za-z0-9_.-]+`. `swap:https://…`, `send:wss://…`, `swap:msg:part`,
 and a bare `https://…` are refused. A `connect:` that is not
 at the start of a token is not a prefix (`prefixconnect:/feed` is refused).
+
+## String → HTML (`defHTML` / `Fragment(str)`)
+
+HTML strings ingested through `defHTML`, `Fragment`, `Component.render()->str`,
+`HTMLElement`, `JinjaElement`, or `MarkdownElement` always lose runnable
+constructs: dangerous tags (`script`, `iframe`, `style`, …), event handlers
+(`on*`, including `_onclick`), Alpine (`x-*`, `@*`, `:*`), htmx `hx-on*`, and
+dangerous URL schemes (`javascript:`, `vbscript:`, `data:text/html`). Safe
+markup (`<p>`, `<a href="/…">`, …) is kept. Use `raw()` for a hand-authored
+verbatim fragment that must not be sanitized.

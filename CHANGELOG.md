@@ -107,6 +107,12 @@
   one shard per module under ``docs/internals/codemap/``; CI fails when a
   shard is stale (``--write-changed`` rewrites only those). See
   ``docs/internals/CODEMAP.md``.
+- **Security: string→HTML parse always strips runnable markup.** `defHTML` /
+  `Fragment(str)` / `Component.render()->str` / `HTMLElement` / `JinjaElement` /
+  `MarkdownElement` drop `script`/`iframe`/`style`/…, `on*`, Alpine `x-*`/`@*`/`:*`,
+  `hx-on*`, and `javascript:`/`vbscript:`/`data:text/html` URLs (and dangerous
+  `style=` values). `escape=False` no longer keeps those; `raw()` is the
+  verbatim opt-out. Safe tags and attributes are kept.
 
 ## 0.2.0 — remove deprecations
 

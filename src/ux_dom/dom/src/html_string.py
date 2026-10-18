@@ -6,9 +6,11 @@
 
 """Parse HTML strings into ux-dom nodes (defHTML) and related helpers.
 
-escape=True strips/blocks dangerous constructs (script, iframe, on*, javascript:)
-for fail-closed ingestion of untrusted fragments.
+Always strips runnable constructs (script/iframe/on*/Alpine/hx-on/javascript:
+URLs, …). ``escape=True`` also HTML-escapes text nodes; ``escape=False`` keeps
+text literal but still drops the runnable bits. ``raw()`` is the verbatim opt-out.
 """
+
 import builtins
 import types
 import typing as T
@@ -53,9 +55,10 @@ def create_dynamic_element(tag_name: str) -> T.Type[ext.Tags]:
     return element
 
 
-# Tags / attrs neutralized when ``escape=True`` (untrusted HTML / markdown).
-# ``escape=False`` keeps full parse for trusted markup (HTMLElement, etc.).
-_UNSAFE_TAGS_WHEN_ESCAPE = frozenset(
+# Tags / attrs always stripped on the string→markup path (defHTML / Fragment /
+# Component / HTMLElement / JinjaElement / MarkdownElement). ``raw()`` is the
+# only verbatim opt-out; it never goes through this parser.
+_UNSAFE_TAGS = frozenset(
     {
         "script",
         "iframe",
@@ -67,28 +70,106 @@ _UNSAFE_TAGS_WHEN_ESCAPE = frozenset(
         "frame",
         "frameset",
         "applet",
+        "style",
+        "animate",
+        "animatetransform",
+        "animatemotion",
+        "set",
+        "foreignobject",
+        "math",
+        "maction",
+    }
+)
+
+_URL_ATTRS = frozenset(
+    {
+        "href",
+        "src",
+        "xlink:href",
+        "formaction",
+        "action",
+        "data",
+        "poster",
+        "cite",
+        "background",
+        "hx-get",
+        "hx-post",
+        "hx-put",
+        "hx-patch",
+        "hx-delete",
+        "data-hx-get",
+        "data-hx-post",
+        "data-hx-put",
+        "data-hx-patch",
+        "data-hx-delete",
+        "hx-sse",
+        "hx-ws",
+        "data-sse-connect",
+        "data-ws-connect",
     }
 )
 
 
-def _sanitize_attrs_when_escape(attrs: dict) -> dict:
-    """Drop event handlers and javascript: URLs from attribute dict."""
+def _norm_attr_name(key: str) -> str:
+    """Match renderer: leading ``_`` is stripped (``_onclick`` → ``onclick``)."""
+    k = str(key)
+    while k.startswith("_"):
+        k = k[1:]
+    return k.lower()
+
+
+def _scheme_is_dangerous(value: str) -> bool:
+    # Strip C0/whitespace that browsers ignore before the scheme.
+    cleaned = "".join(ch for ch in value if ch.isprintable() and not ch.isspace())
+    low = cleaned.lower()
+    for bad in ("javascript:", "vbscript:", "data:text/html"):
+        if low.startswith(bad):
+            return True
+    return False
+
+
+def _style_is_dangerous(value: str) -> bool:
+    low = value.lower().replace("\\", "").replace("\0", "")
+    return "javascript:" in low or "expression(" in low or "vbscript:" in low
+
+
+def _attr_is_dangerous(key: str, value) -> bool:
+    kl = _norm_attr_name(key)
+    if kl.startswith("on"):
+        return True
+    # Alpine / Vue-style runtimes and htmx on* handlers.
+    if kl.startswith("x-") or kl.startswith("x_"):
+        return True
+    if kl.startswith("@") or kl.startswith(":"):
+        return True
+    if kl.startswith("hx-on") or kl.startswith("data-hx-on"):
+        return True
+    if kl == "srcdoc":
+        return True
+    if not isinstance(value, str):
+        return False
+    if kl == "style" and _style_is_dangerous(value):
+        return True
+    if kl in _URL_ATTRS and _scheme_is_dangerous(value):
+        return True
+    return False
+
+
+def _sanitize_attrs(attrs: dict) -> dict:
+    """Drop event handlers, Alpine/htmx runtimes, and dangerous URLs."""
     if not attrs:
         return attrs
     out = {}
     for k, v in dict(attrs).items():
-        key = str(k)
-        kl = key.lower()
-        if kl.startswith("on"):
+        if _attr_is_dangerous(k, v):
             continue
-        if isinstance(v, str):
-            vl = v.strip().lower()
-            if vl.startswith("javascript:") or vl.startswith("vbscript:"):
-                continue
-            if kl in ("href", "src", "xlink:href", "formaction", "action") and vl.startswith("data:text/html"):
-                continue
         out[k] = v
     return out
+
+
+# Keep the old name as an alias so any external caller still resolves.
+_UNSAFE_TAGS_WHEN_ESCAPE = _UNSAFE_TAGS
+_sanitize_attrs_when_escape = _sanitize_attrs
 
 
 @dataclass
@@ -141,12 +222,10 @@ class StringToHTML(object):
                                 dom_text(data, escape=False)
                             else:
                                 if token.__class__.__name__ != "Comment":
-                                    if data.startswith("{") and data.endswith("}"):
-                                        # these are jinja tags
-                                        dom_text(data, escape=False)
-                                    else:
-                                        # normal text is here
-                                        dom_text(data, escape=self.escape)
+                                    # Braced text used to be emitted raw (Jinja
+                                    # hole). Treat it as text; use the Jinja DSL
+                                    # or raw() for real template fragments.
+                                    dom_text(data, escape=self.escape)
                                 else:
                                     # this is a comment section
                                     htmltags.comment(data)
@@ -168,13 +247,11 @@ class StringToHTML(object):
                 if element is None:
                     element = create_dynamic_element(tag_name=tag_name)
 
-                # Untrusted parse: drop dangerous tags entirely
-                if self.escape and str(token.name).lower() in _UNSAFE_TAGS_WHEN_ESCAPE:
+                # Always drop dangerous tags/attrs on the string→markup path.
+                if str(token.name).lower() in _UNSAFE_TAGS:
                     continue
 
-                attrs = token.attrs
-                if self.escape:
-                    attrs = _sanitize_attrs_when_escape(dict(attrs or {}))
+                attrs = _sanitize_attrs(dict(token.attrs or {}))
 
                 # tag = tag if tag is not None else ConcatTag()
 
