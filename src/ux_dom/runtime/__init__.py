@@ -17,6 +17,16 @@
     document.mount(app)      # FastAPI app
 
 These names wrap plugin implementations; they do not duplicate logic.
+
+XElement naming (F-20 / keep name)
+----------------------------------
+* ``ux_dom.runtime.XElement`` — Document plugin (``document.use(XElement())``);
+  loads ``x_element.js`` and registers custom-element definitions. Alias of
+  ``XElementRuntime``.
+* ``ux_dom.dom.XElement`` — component base class for authoring ``<x-*>`` hosts.
+  Subclass it; do not construct ``XElement()`` directly.
+
+Both names stay. Prefer the import path that matches the role (plugin vs class).
 """
 
 from __future__ import annotations

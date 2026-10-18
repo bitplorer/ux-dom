@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- **Docs/API:** clarify ``runtime.XElement`` (plugin) vs ``dom.XElement`` (component); both names kept.
+
 ## 0.2.0 — remove deprecations
 
 - Removed deprecated modules `ux_dom.dom.ui` (Tortoise form helper),
