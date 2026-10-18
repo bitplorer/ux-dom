@@ -107,6 +107,7 @@
   one shard per module under ``docs/internals/codemap/``; CI fails when a
   shard is stale (``--write-changed`` rewrites only those). See
   ``docs/internals/CODEMAP.md``.
+- **Docs:** fix Fragment SNIPPETS example; SYSTEM CLI lists ``build``/``info``; ADR title ux-dom; ``Csp()`` docstring matches auto→prod.
 
 ## 0.2.0 — remove deprecations
 
