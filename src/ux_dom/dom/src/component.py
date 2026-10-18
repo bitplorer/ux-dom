@@ -168,8 +168,15 @@ class Component(extension.Tags):
     def __init__(self, *args, **kwargs):
         super(Component, self).__init__()
 
-        # Local converter only — never mutate module-global markdown
-        md_convert = kwargs.pop("markdown", None) or markdown
+        # Local converter only — never mutate module-global markdown.
+        # Only steal markdown= when it is a callable converter; string/other
+        # values are render kwargs (F-23).
+        md_arg = kwargs.get("markdown", None)
+        if callable(md_arg):
+            kwargs.pop("markdown")
+            md_convert = md_arg
+        else:
+            md_convert = markdown
         md_convert = getattr(md_convert, "convert", md_convert)
         # first we get the child from the render method and sanitize it.
         child = self.render(*args, **kwargs)
