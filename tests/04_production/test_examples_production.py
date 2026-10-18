@@ -7,6 +7,26 @@ import unittest
 
 from fastapi.testclient import TestClient
 
+def _channel_available() -> bool:
+    return (
+        "ux_channel" in sys.modules
+        or __import__("importlib").util.find_spec("ux_channel") is not None
+    )
+
+
+def _require_channel_or_skip() -> None:
+    import os
+
+    if _channel_available():
+        return
+    if os.environ.get("UX_DOM_REQUIRE_CHANNEL") == "1":
+        raise RuntimeError(
+            "ux_channel is required (UX_DOM_REQUIRE_CHANNEL=1) but not installed"
+        )
+    raise unittest.SkipTest("uxchannel not installed")
+
+
+
 
 class TestHypermediaShop(unittest.TestCase):
     @classmethod
@@ -60,14 +80,10 @@ class TestRealtimeKit(unittest.TestCase):
         self.assertIn("Streamed", self.client.get("/stream").text)
 
 
-@unittest.skipUnless(
-    "ux_channel" in sys.modules
-    or __import__("importlib").util.find_spec("ux_channel") is not None,
-    "uxchannel not installed",
-)
 class TestLiveCart(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        _require_channel_or_skip()
         from examples.with_ux_channel.live_cart.app import app
 
         cls.client = TestClient(app)
@@ -84,14 +100,10 @@ class TestLiveCart(unittest.TestCase):
         )
 
 
-@unittest.skipUnless(
-    "ux_channel" in sys.modules
-    or __import__("importlib").util.find_spec("ux_channel") is not None,
-    "uxchannel not installed",
-)
 class TestMarketBoard(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        _require_channel_or_skip()
         from examples.with_ux_channel.market_board.app import app
 
         cls.client = TestClient(app)
