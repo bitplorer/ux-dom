@@ -1,6 +1,25 @@
 # Changelog
 
 ## Unreleased
+## Unreleased — DOM method shadowing fix
+
+- **Fix: a Component method named `add` no longer hijacks child attachment.**
+  `class Cart(Component): @action def add(...)` plus `with Cart(): li()` used to
+  call the action with the `li` as its first argument and drop the child.
+  Internals (constructor args, `with` exit, `+=`, Component delegation,
+  document assembly) now call `_add`; public `add` is a thin, overridable alias.
+- Internals query with `_find` / `_matches`. Public `get` / `matches` stay and
+  are **sealed**: defining either on a `dom_tag` subclass (instance method,
+  classmethod, staticmethod or attribute) raises `TypeError` with a rename hint.
+- **BREAKING: internal-only DOM mutators renamed with a leading underscore:**
+  `clear` → `_clear`, `remove` → `_remove`, `set_attribute` → `_set_attribute`,
+  `delete_attribute` → `_delete_attribute`, `setdocument` → `_setdocument`,
+  `replace_children` → `_replace_children`. Item syntax is unchanged:
+  `node["k"] = v` / `del node["k"]` / `node[0] = child`.
+- `tests/07_resilience/test_dom_method_shadowing.py` locks the old names absent
+  and covers the `Cart.add` regression.
+
+## Unreleased — F-18 remove DirectoryRouter
 
 - **Fix: ``@html_response()`` / ``@streaming_response()`` (with parentheses) work.**
   They wrapped ``None``, so calling the endpoint raised ``TypeError``. Both
