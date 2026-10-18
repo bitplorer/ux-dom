@@ -177,12 +177,6 @@ class TestScaffoldProductionArtifacts(unittest.TestCase):
                 "XElement" in main
                 or "document.mount" in main
                 or "xelement=True" in main
-                or "XElement"
-                in Path(str(root if "root" in dir() else "."))
-                .joinpath("app/document.py")
-                .read_text()
-                if False
-                else ("XElement" in main or "document.mount" in main)
             )
             doc = (root / "app/document.py").read_text(encoding="utf-8")
             self.assertTrue("XElement" in doc or "shell_fragments" in doc)

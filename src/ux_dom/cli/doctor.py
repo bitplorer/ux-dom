@@ -158,12 +158,13 @@ def run_doctor(
         Check("ux-channel", ch_ok, str(ch_detail), "info" if ch_ok else "warn")
     )
 
-    # CSS compile is product DX. This CLI does not probe or run Tailwind.
+    # CSS compile is product DX. This CLI does not probe or run Tailwind —
+    # do not report a green "ok" for a check that was never performed.
     report.checks.append(
         Check(
             "tailwind",
-            True,
-            "product CSS is uxcompose build (this CLI does not compile CSS)",
+            False,
+            "not checked here — product CSS is `uxcompose build` (this CLI does not compile CSS)",
             "info",
         )
     )
