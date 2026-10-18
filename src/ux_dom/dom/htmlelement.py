@@ -331,7 +331,7 @@ class XElement(component.Component):
                     break
             except (AttributeError, KeyError, TypeError):
                 try:
-                    x_tagname_attr = element.get(**{key: None})
+                    x_tagname_attr = list(element._find(**{key: None}))
                     if x_tagname_attr:
                         break
                 except Exception:
@@ -457,13 +457,13 @@ class WebComponent(XElement):
         try:
             shadow_root_attr = element["shadowroot"]
         except AttributeError:
-            shadow_root_attr = element.get(shadowroot=None)
+            shadow_root_attr = list(element._find(shadowroot=None))
 
         if not shadow_root_attr:
             try:
                 shadow_root_attr = element["shadowdom"]
             except AttributeError:
-                shadow_root_attr = element.get(shadowdom=None)
+                shadow_root_attr = list(element._find(shadowdom=None))
 
         if not shadow_root_attr:
             raise AttributeError(
@@ -513,7 +513,7 @@ class AlpineElement(component.Component):
         try:
             x_data_attr = element["x-data"]
         except AttributeError:
-            x_data_attr = element.get(x_data=None)
+            x_data_attr = list(element._find(x_data=None))
 
         if not x_data_attr:
             raise AttributeError(

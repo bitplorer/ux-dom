@@ -207,8 +207,8 @@ class Component(extension.Tags):
         # super(Component, self).__init__()
 
         if child is not self:
-            # Base-class call: a subclass override of ``add`` must not intercept init.
-            Component.add(self, child)
+            # Internal attach: a subclass method named ``add`` must not intercept init.
+            Component._add(self, child)
 
         self._entry = self if isinstance(child, (list, tuple)) else child
 
@@ -223,36 +223,37 @@ class Component(extension.Tags):
             raise ValueError(f"{self.render_tag=} can not be true for Components")
         return element
 
-    def add(self, *args):
+    def _add(self, *args):
         """
         Adding tags to a component appends them to the render.
         """
         if not self.render_tag and hasattr(self, "_entry") and self._entry is not self:
-            return self._entry.add(*args)
-        return super().add(*args)
+            return self._entry._add(*args)
+        return super()._add(*args)
 
-    def set_attribute(self, key, value):
+    def _set_attribute(self, key, value):
         if not self.render_tag and hasattr(self, "_entry") and self._entry is not self:
-            self._entry.set_attribute(key, value)
+            self._entry._set_attribute(key, value)
         else:
-            super(Component, self).set_attribute(key, value)
+            super(Component, self)._set_attribute(key, value)
 
-    __setitem__ = set_attribute
+    __setitem__ = _set_attribute
 
-    def delete_attribute(self, key):
+    def _delete_attribute(self, key):
         if not self.render_tag and hasattr(self, "_entry") and self._entry is not self:
-            self._entry.delete_attribute(key)
+            self._entry._delete_attribute(key)
         else:
-            super(Component, self).delete_attribute(key)
+            super(Component, self)._delete_attribute(key)
 
-    __delitem__ = delete_attribute
+    __delitem__ = _delete_attribute
 
-    def get(self, tag=None, **kwargs):
+    def _find(self, tag=None, **kwargs):
         """Search this Component: match self + ``_entry``, then descendants.
 
-        Previously only ``_entry.get(...)`` ran, which **skipped the entry
-        node itself** — so ``parent.get(div)`` failed when a Component rendered
-        a ``div``. Membership / MRO queries now see the transparent root.
+        ``get`` is ``list(self._find(...))`` (sealed on ``dom_tag``), so the
+        Component face lives here: ``parent.get(div)`` still finds a Component
+        that renders a ``div``, and membership / MRO queries see the
+        transparent root.
         """
         if not self.render_tag and hasattr(self, "_entry") and self._entry is not self:
             if tag is None:
@@ -260,17 +261,19 @@ class Component(extension.Tags):
             attrs = [
                 (self.clean_attribute(attr), value) for attr, value in kwargs.items()
             ]
-            results = []
+            seen: set = set()
             # Match Component and/or its rendered root
             for matched in self._match_nodes(self, tag, attrs):
-                if all(matched is not r for r in results):
-                    results.append(matched)
+                if id(matched) not in seen:
+                    seen.add(id(matched))
+                    yield matched
             # Descend into the entry's children (entry itself already considered)
-            for found in self._entry.get(tag, **kwargs):
-                if all(found is not r for r in results):
-                    results.append(found)
-            return results
-        return super(Component, self).get(tag, **kwargs)
+            for found in self._entry._find(tag, **kwargs):
+                if id(found) not in seen:
+                    seen.add(id(found))
+                    yield found
+            return
+        yield from super(Component, self)._find(tag, **kwargs)
 
     def __contains__(self, item):
         """Own class/instance existence + subtree (see ``dom_tag``)."""
@@ -292,11 +295,11 @@ class Component(extension.Tags):
 
     __getattr__ = __getitem__
 
-    def clear(self):
+    def _clear(self):
         if not self.render_tag and hasattr(self, "_entry") and self._entry is not self:
-            self._entry.clear()
+            self._entry._clear()
         else:
-            super().clear()
+            super()._clear()
 
     def __len__(self):
         if not self.render_tag and hasattr(self, "_entry") and self._entry is not self:
@@ -544,9 +547,9 @@ class Fragment(Component):
                     message=f"{self.__class__.__name__} has not implemented merging attribute: x-bind"
                 )
 
-            child.set_attribute(*child.clean_pair(attr, value))
+            child._set_attribute(*child.clean_pair(attr, value))
 
-    def add(self, *args):
+    def _add(self, *args):
         # First *tag* child may receive id=; further siblings get shared attrs only.
         apply_unique = not getattr(self, "_ux_dom_frag_unique_applied", False)
         for arg in args:
@@ -562,12 +565,12 @@ class Fragment(Component):
                         if apply_unique:
                             object.__setattr__(self, "_ux_dom_frag_unique_applied", True)
                             apply_unique = False
-        super().add(*args)
+        super()._add(*args)
 
     def render(self, *args, **kwargs):
-        self.add(kwargs)
+        self._add(kwargs)
         [
-            self.add(_string_child(arg)) if isinstance(arg, str) else self.add(arg)
+            self._add(_string_child(arg)) if isinstance(arg, str) else self._add(arg)
             for arg in args
         ]
 
@@ -596,13 +599,13 @@ class MergeClassAttribute(Fragment):
             value = " ".join([self.attributes[key], value])
         return key, value
 
-    def set_attribute(self, key, value):
+    def _set_attribute(self, key, value):
         if key == "class":
             key, value = self._merge_class_attr(key, value)
 
-        super().set_attribute(key, value)
+        super()._set_attribute(key, value)
 
-    __setitem__ = set_attribute
+    __setitem__ = _set_attribute
 
 
 @dataclass(eq=False)
@@ -749,10 +752,10 @@ class ReactiveComponent(Component):
             return
         # Multi-root fragment: entry face is the component itself
         if isinstance(child, (list, tuple)):
-            Component.add(self, child)
+            Component._add(self, child)
             self._entry = self
             return
-        Component.add(self, child)
+        Component._add(self, child)
         self._entry = child
 
     def _re_render(self, **states) -> extension.Tags:  # noqa
@@ -794,7 +797,7 @@ class ReactiveComponent(Component):
 
         # Commit: replace tree
         try:
-            self.clear()
+            self._clear()
             if (
                 old_entry is not None
                 and old_entry is not self
@@ -806,7 +809,7 @@ class ReactiveComponent(Component):
                     pass
             # clear again if del left residue
             if getattr(self, "children", None):
-                self.clear()
+                self._clear()
 
             self._attach_render_result(elements)
 
@@ -825,22 +828,22 @@ class ReactiveComponent(Component):
                 unadded = old_entry_children[len(new_entry_children) :]
                 if unadded:
                     try:
-                        self._entry.add(unadded)
+                        self._entry._add(unadded)
                     except Exception:
                         for node in unadded:
                             try:
-                                self._entry.add(node)
+                                self._entry._add(node)
                             except Exception:
                                 pass
 
             if old_parent is not None and index_of_entry is not None:
                 try:
-                    old_parent.set_attribute(index_of_entry, self)
+                    old_parent._set_attribute(index_of_entry, self)
                 except Exception:
                     # best-effort re-parent
                     try:
                         if self not in getattr(old_parent, "children", []):
-                            old_parent.add(self)
+                            old_parent._add(self)
                     except Exception:
                         pass
 
@@ -848,7 +851,7 @@ class ReactiveComponent(Component):
         except Exception:
             # Rollback to previous tree so the component stays usable
             try:
-                self.clear()
+                self._clear()
                 if hasattr(self, "_entry"):
                     try:
                         del self._entry
@@ -861,36 +864,36 @@ class ReactiveComponent(Component):
                     self._entry = self
                     for node in old_self_children:
                         try:
-                            extension.Tags.add(self, node)
+                            extension.Tags._add(self, node)
                         except Exception:
                             try:
-                                super(Component, self).add(node)
+                                super(Component, self)._add(node)
                             except Exception:
                                 pass
                 elif old_entry is not None and not isinstance(old_entry, (list, tuple)):
                     try:
-                        extension.Tags.add(self, old_entry)
+                        extension.Tags._add(self, old_entry)
                     except Exception:
-                        Component.add(self, old_entry)
+                        Component._add(self, old_entry)
                     self._entry = old_entry
                     if old_entry_children and not list(getattr(old_entry, "children", []) or []):
                         for node in old_entry_children:
                             try:
-                                old_entry.add(node)
+                                old_entry._add(node)
                             except Exception:
                                 pass
                 else:
                     # last resort: re-attach any known children
                     for node in old_self_children:
                         try:
-                            extension.Tags.add(self, node)
+                            extension.Tags._add(self, node)
                         except Exception:
                             pass
                     self._entry = self if old_self_children else old_entry
 
                 if old_parent is not None and index_of_entry is not None:
                     try:
-                        old_parent.set_attribute(index_of_entry, self)
+                        old_parent._set_attribute(index_of_entry, self)
                     except Exception:
                         pass
             except Exception:
@@ -949,12 +952,12 @@ class ReactiveComponent(Component):
         finally:
             object.__setattr__(self, "_ux_dom_reactive_updating", False)
 
-    def set_attribute(self, key, value):
+    def _set_attribute(self, key, value):
         # DOM attribute writes should not silently skip pending field re-renders
         self._check_states_and_update()
-        super().set_attribute(key=key, value=value)
+        super()._set_attribute(key=key, value=value)
 
-    __setitem__ = set_attribute
+    __setitem__ = _set_attribute
 
     def _render(
         self,
