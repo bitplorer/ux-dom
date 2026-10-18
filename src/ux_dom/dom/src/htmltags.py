@@ -381,9 +381,13 @@ class style(html_tag):
     The style element allows authors to embed style information in their
     documents. The style element is one of several inputs to the styling
     processing model. The element does not represent content for the user.
+
+    Raw text element: string children render verbatim (no HTML escaping);
+    ``</style`` is neutralized so text cannot close the element.
     """
 
     is_pretty = False
+    raw_text = "style"
 
 
 # Scripting
@@ -391,9 +395,13 @@ class script(html_tag):
     """
     The script element allows authors to include dynamic script and data blocks
     in their documents. The element does not represent content for the user.
+
+    Raw text element: string children render verbatim (``a < b && c``); only
+    ``</script`` and ``<!--`` are neutralized (``<\\/script``, ``<\\!--``).
     """
 
     is_pretty = True
+    raw_text = "script"
 
 
 class noscript(html_tag):

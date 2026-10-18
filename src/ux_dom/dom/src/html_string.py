@@ -17,7 +17,7 @@ from dataclasses import dataclass, field
 from ux_dom.dom.src import ext, htmltags, jinjatags, svgtags
 from ux_dom.dom.src.htmltags import html_tag
 from ux_dom.dom.src.parse_html import Element, tokenize_html
-from ux_dom.dom.src.utils import dom_text
+from ux_dom.dom.src.utils import dom_text, neutralize_raw_text
 
 __all__ = ["StringToHTML", "defHTML"]
 
@@ -135,8 +135,11 @@ class StringToHTML(object):
                     if data := token.data.strip("\n").strip(" ").strip("\n"):
                         with tag or ext.PlaceholderTag() as tag:  # type: ignore[assignment]
                             # handling
-                            if tag.__class__.__name__ == "script":
-                                dom_text(data, escape=False)
+                            raw_text = getattr(type(tag), "raw_text", None)
+                            if raw_text:
+                                # <script>/<style> body: raw text element — never
+                                # HTML-escaped; same breakout guard as tag.add().
+                                dom_text(neutralize_raw_text(data, raw_text), escape=False)
                             else:
                                 if token.__class__.__name__ != "Comment":
                                     if data.startswith("{") and data.endswith("}"):

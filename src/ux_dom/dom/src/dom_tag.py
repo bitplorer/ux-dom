@@ -131,6 +131,9 @@ class dom_tag(object):
     # modified
     is_inline = False
     escape_string = True
+    # Raw text element name ("script" / "style"): string children are emitted
+    # verbatim (no HTML escaping) with only end-tag breakouts neutralized.
+    raw_text: typing.Optional[str] = None
 
     def __new__(_cls, *args, **kwargs):
         """
@@ -378,9 +381,15 @@ class dom_tag(object):
                 obj = str(obj)
 
             if isinstance(obj, basestring):
+                raw_text = type(self).raw_text
+                # Raw text elements (<script>, <style>): the browser never
+                # entity-decodes their content, so escaping would corrupt JS/CSS.
+                # Neutralize only closing-tag / <!-- breakouts.
+                if raw_text:
+                    obj = neutralize_raw_text(obj, raw_text)
                 # we are going to add the support for escaping only those strings whoes parents
                 # have explicit variable "escape_string" set to True
-                if hasattr(self, "escape_string"):
+                elif hasattr(self, "escape_string"):
                     if self.escape_string:
                         obj = escape(obj)
                 else:
@@ -990,4 +999,9 @@ def attr(*args, **kwargs):
 
 
 # escape() is used in render
-from ux_dom.dom.src.utils.dom_util import checked_attr_name, escape, safe_attr_value
+from ux_dom.dom.src.utils.dom_util import (  # noqa: E402
+    checked_attr_name,
+    escape,
+    neutralize_raw_text,
+    safe_attr_value,
+)
