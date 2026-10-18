@@ -1,25 +1,19 @@
-"""Leftover App + DirectoryRouting composition (not product host)."""
+"""Leftover App composition (not product host)."""
+
 from __future__ import annotations
 
 import asyncio
-import sys
-import tempfile
-import textwrap
 import unittest
-from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
-from ux_dom import __version__, Component
-from ux_dom.dom import div, span, button
+from ux_dom import __version__
+from ux_dom.dom import button, div, span
 from ux_dom.plugins import App
-from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.plugins.control import HtmxControl, NullControl
-from ux_dom.plugins.style import NullStyle
-from ux_dom.plugins.response import StreamingResponsePlugin
-from ux_dom.response.starlette import StreamingResponse
+from ux_dom.response.starlette import StreamingResponse, html_response
 
 
 class TestVersion(unittest.TestCase):
@@ -67,73 +61,24 @@ class TestWalkStream(unittest.TestCase):
 
 
 class TestAppHostComposition(unittest.TestCase):
-    def test_build_fastapi_with_directory_routes(self):
-        with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
-            pkg = root / "cutapp"
-            (pkg / "app").mkdir(parents=True)
-            (pkg / "__init__.py").write_text("")
-            (pkg / "app" / "__init__.py").write_text("")
-            (pkg / "app" / "home.py").write_text(textwrap.dedent("""
-                    from ux_dom.dom import Component, div
-                    __all__ = ["Home"]
-                    class Home(Component):
-                        routes = ["get"]
-                        def render(self):
-                            return div("home-ok", id="home")
-                        @classmethod
-                        def get(cls):
-                            return cls()
-                    """))
-            sys.path.insert(0, str(root))
-            try:
-                api = (
-                    App(debug=False)
-                    .use(
-                        DirectoryRouting(
-                            package_dir=pkg,
-                            base_directory="app",
-                            prefix="/api",
-                        )
-                    )
-                    .use(HtmxControl(middleware=True))
-                    .use(NullStyle())
-                    .build(asgi=FastAPI(title="CutApp", debug=False, default_response_class=HTMLResponse))
-                )
-                self.assertIsNotNone(api)
-                client = TestClient(api)
-                # HTMX middleware present
-                r = client.get("/api/home")
-                self.assertEqual(r.status_code, 200)
-                self.assertIn("home-ok", r.text)
-                # openapi lists path
-                paths = api.openapi()["paths"]
-                self.assertTrue(any("home" in p.lower() for p in paths), paths)
-            finally:
-                sys.path.remove(str(root))
-
-    def test_null_control_and_response_plugin(self):
-        n = NullControl()
-        self.assertEqual(n.partial_policy(None), "full")
-        wrap = StreamingResponsePlugin().wrap
-
-        @wrap
-        def ep():
-            return div("w")
-
-        resp = ep()
-        self.assertTrue(hasattr(resp, "body_iterator"))
-
+    def test_build_fastapi_with_explicit_routes(self):
+        asgi = FastAPI(title="CutApp", debug=False, default_response_class=HTMLResponse)
+        asgi.get("/api/home")(html_response(lambda: div("home-ok", id="home")))
+        api = (
+            App(debug=False)
+            .use(HtmxControl(middleware=True))
+            .build(asgi=asgi)
+        )
+        client = TestClient(api)
+        r = client.get("/api/home")
+        self.assertEqual(r.status_code, 200)
+        self.assertIn("home-ok", r.text)
+        self.assertIn("/api/home", api.openapi()["paths"])
 
 class TestPluginSummary(unittest.TestCase):
     def test_summary_order(self):
-        app = (
-            App()
-            .use(NullStyle())
-            .use(NullControl())
-        )
+        app = App().use(NullControl())
         summary = app.plugin_summary()
-        self.assertIn("style:null", summary)
         self.assertIn("control:null", summary)
         self.assertNotIn("host:fastapi", summary)
 

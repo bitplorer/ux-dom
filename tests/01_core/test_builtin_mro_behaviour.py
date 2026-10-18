@@ -11,8 +11,7 @@ import warnings
 from pathlib import Path
 
 from ux_dom import Component, Document, Fragment, ReactiveComponent
-from ux_dom.dom import div, span, button
-from ux_dom.dom.src.dom_tag import dom_tag
+from ux_dom.dom import button, div, span
 from ux_dom.dom.src.parse_html import Element, tokenize_html
 
 BUILTINS = {
@@ -88,7 +87,7 @@ class TestBuiltinSignaturesAlongMro(unittest.TestCase):
                 if rel.name == "__init__.py"
                 else ".".join(rel.with_suffix("").parts)
             )
-            if name.startswith("ux_dom.cli") or name.startswith("ux_dom.examples"):
+            if name.startswith("ux_dom.cli"):
                 continue
             try:
                 with warnings.catch_warnings():
