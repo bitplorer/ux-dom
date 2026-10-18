@@ -1,4 +1,5 @@
-"""F-19 — retired demosite/ stays gone."""
+"""F-19 — retired demosite/ tree stays gone (absence lock)."""
+
 from __future__ import annotations
 
 import unittest
@@ -8,12 +9,15 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class TestF19DemositeAbsent(unittest.TestCase):
-    def test_demosite_dir_gone(self):
-        self.assertFalse((ROOT / "demosite").exists())
+    def test_demosite_directory_absent(self):
+        self.assertFalse(
+            (ROOT / "demosite").exists(),
+            "demosite/ must remain deleted (F-19)",
+        )
 
-    def test_demosite_import_error(self):
-        with self.assertRaises(ImportError):
-            import demosite  # noqa: F401
+    def test_no_demosite_python_modules(self):
+        hits = list(ROOT.glob("demosite/**/*.py"))
+        self.assertEqual(hits, [])
 
 
 if __name__ == "__main__":
