@@ -123,10 +123,8 @@ class TestProductCssFailClosed(unittest.TestCase):
         self.assertFalse(hasattr(ux_dom, "WebAssets"))
 
     def test_tailwind_style_is_absent(self):
-        from ux_dom.plugins import style
-
-        self.assertFalse(hasattr(style, "TailwindStyle"))
-        self.assertEqual(style.__all__, ["NullStyle"])
+        with self.assertRaises(ImportError):
+            import ux_dom.plugins.style  # noqa: F401
 
     def test_document_has_no_webassets_field(self):
         from dataclasses import fields
