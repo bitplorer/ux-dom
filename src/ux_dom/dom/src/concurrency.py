@@ -330,9 +330,20 @@ def build_parallel(
     max_workers: Optional[int] = None,
     parallel: Optional[bool] = None,
 ) -> list[R]:
-    """Map ``fn`` over items — parallel when policy allows, else sequential."""
+    """Map ``fn`` over items — parallel when policy allows, else sequential.
+
+    When called inside ``with tag:``, workers do not share the ContextVar parent
+    stack, so children would detach. Stay sequential whenever a with-frame is open.
+    """
     if not items:
         return []
+    try:
+        from ux_dom.dom.src.dom_tag import get_current
+
+        if get_current(None) is not None:
+            parallel = False
+    except Exception:
+        pass
     if not should_parallelize(len(items), max_workers=max_workers, parallel=parallel):
         return [fn(item) for item in items]
     workers = max_workers if max_workers is not None else min(default_workers(), len(items))
