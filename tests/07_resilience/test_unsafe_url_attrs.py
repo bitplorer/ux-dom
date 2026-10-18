@@ -183,12 +183,15 @@ def test_schemes_outside_allow_list_are_blocked(value):
         "rel/path",
         "?q=1",
         "#frag",
-        "//cdn.example.com/x.js",
         "",
     ],
 )
 def test_allow_listed_and_relative_urls_pass(value):
     assert safe_attr_value("src", value) == value
+
+
+def test_protocol_relative_src_refused():
+    assert safe_attr_value("src", "//cdn.example.com/x.js") == UNSAFE_URL
 
 
 @pytest.mark.parametrize("attr", ["icon", "archive", "usemap", "profile", "lowsrc", "dynsrc"])
