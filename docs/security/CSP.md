@@ -29,6 +29,10 @@ HTTP request
 
 After stamp, serialize is **read-agnostic** (attributes carry the nonce).
 
+Only **tree nodes** (`script(...)`, `style(...)`) are stamped. HTML passed as a
+plain string is never given a nonce: a nonce on a string would also bless any
+`<script>` an attacker got into it. Build trusted scripts as nodes.
+
 ---
 
 ## Presets
