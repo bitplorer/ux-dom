@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-import os
+import pytest
 
 from ux_dom.plugins.csp import Csp, build_csp_header, policy_prod
 
@@ -38,9 +38,20 @@ def test_policy_prod_knobs():
     assert p.connect_src == ("'self'",)
 
 
-def test_auto_debug_false_strings_are_prod(monkeypatch):
-    for val in ("0", "false", "False", ""):
-        monkeypatch.setenv("DEBUG", val)
-        c = Csp.auto()
-        assert list(c.script_hosts) == [], val
-        assert c.script_unsafe_inline_legacy is False, val
+@pytest.mark.parametrize(
+    "val",
+    ("0", "false", "False", "", "FALSE", "no", "off", "n", " 0", "0 "),
+)
+def test_auto_debug_false_strings_are_prod(monkeypatch, val):
+    monkeypatch.setenv("DEBUG", val)
+    c = Csp.auto()
+    assert list(c.script_hosts) == [], val
+    assert c.script_unsafe_inline_legacy is False, val
+
+
+@pytest.mark.parametrize("val", ("1", "true", " TRUE ", "yes", "on"))
+def test_auto_debug_truthy_strings_are_dev(monkeypatch, val):
+    monkeypatch.setenv("DEBUG", val)
+    c = Csp.auto()
+    assert c.style_unsafe_inline is True, val
+    assert list(c.script_hosts), val
