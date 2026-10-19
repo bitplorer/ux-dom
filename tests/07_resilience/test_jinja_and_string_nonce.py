@@ -116,11 +116,7 @@ def test_dom_text_without_escaped_attribute_is_data():
 
 
 def test_pua_e000_e001_round_trip_in_user_text_and_context():
-    """U+E000/U+E001 in user text and context values survive export unchanged.
-
-    Today the fixed brace sentinels are rewritten to ``&#123;`` / ``&#125;``,
-    including characters that were already in the text.
-    """
+    """U+E000/U+E001 in user text and context values survive export unchanged."""
     plain = "A\ue000B\ue001C"
     mixed = "{\ue000}\ue001"
     out = str(render_jinja(div(p(plain), a("x", title=mixed), Var("v")), v=plain))

@@ -10,10 +10,12 @@
   Context values are escaped, and `{{ }}` / `{% %}` in tree text or string
   attributes is shown as text instead of being run as template code (it was
   server-side template injection). Pass `raw()` for hand-written Jinja in a tree.
+  Pass `markupsafe.Markup` for trusted HTML in Jinja context.
 - **Security (BREAKING): string HTML is never nonce-stamped.** `stamp_tree`,
   `stamp_nonce` and `prepare_html_body` used to regex-add `nonce=` to every
   `<script>` / `<style>` in a string, including injected ones. Strings now pass
   through unchanged; build trusted scripts as `script(...)` nodes.
+  Migration: a string `<script>` that relied on the CSP nonce must be built as a `script()` node instead.
 
 ## 0.2.0 — remove deprecations
 
