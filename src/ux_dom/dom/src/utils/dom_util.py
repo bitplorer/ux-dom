@@ -259,15 +259,18 @@ def _sse_ws_directive(probe):
 def _sse_ws_value_ok(text, *, cross):
     """htmx 1.9.2 splits the value on JavaScript whitespace, then ``connect:``.
 
-    Only tokens that start with ``connect:`` (after the same noise strip as
-    other URLs) are URL prefixes. ``swap:`` and ``send:`` are not URLs, and
-    their names may not contain ``:``.
+    HTML entities are decoded before the split, so a character reference
+    cannot glue two tokens. Only tokens that start with ``connect:`` (after
+    the same noise strip as other URLs) are URL prefixes. ``swap:`` and
+    ``send:`` are not URLs, and their names may not contain ``:``.
     """
     inner_ok = _cross_origin_probe if cross else _relative_same_origin_probe
+    # Decode first. ``&#32;`` is a space; splitting the raw source would miss it.
+    decoded = html.unescape(str(text))
     # Tab/space between slashes is still a protocol-relative URL after the noise strip.
-    if _is_protocol_relative(_probe(text)):
+    if _is_protocol_relative(_probe(decoded)):
         return False
-    tokens = _js_ws_tokens(text)
+    tokens = _js_ws_tokens(decoded)
     if not tokens:
         return True
     index = 0

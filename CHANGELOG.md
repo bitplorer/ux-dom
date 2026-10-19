@@ -43,6 +43,10 @@
   ``hx-ws``, and the ``data-hx-*`` spellings. A ``swap:`` / ``send:`` name
   must match ``[A-Za-z0-9_.-]+``; a colon or any other character refuses the
   whole value. An empty name and a bare ``connect:`` are refused.
+- **Security: ``hx-sse`` / ``hx-ws`` decode HTML entities before splitting.**
+  ``connect:/f&#32;connect:wss:evil.com`` is refused on those attributes and
+  the ``data-hx-*`` spellings. A character reference cannot glue a same-origin
+  token to a foreign ``connect:``.
 
 ## 0.2.0 — remove deprecations
 

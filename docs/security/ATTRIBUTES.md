@@ -108,9 +108,11 @@ htmx 1.9.2 splits the attribute on JavaScript whitespace first (`trim` +
 `/\s+/`), then splits each token on the first colon. That `\s` set is
 `[\t\n\v\f\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]`
 (U+FEFF included). Python `str.split()` does not split on U+FEFF, so the
-gate uses this set. The same noise strip used for other URLs runs on each
-token (HTML-unescape, drop C0 controls, ASCII whitespace, and DEL, then
-ignore case). Only a token that starts with `connect:` is a URL prefix.
+gate uses this set. HTML entities are decoded before that split, so
+`connect:/f&#32;connect:wss:evil.com` is two tokens and is refused. The
+same noise strip used for other URLs then runs on each token (drop C0
+controls, ASCII whitespace, and DEL, then ignore case). Only a token that
+starts with `connect:` is a URL prefix.
 A `swap:` or `send:` name must match `[A-Za-z0-9_.-]+`. A colon or any other
 character refuses the whole value (`swap:msg:part`). An empty name (`swap:`,
 `send:`) and a bare `connect:` are refused.
@@ -125,6 +127,7 @@ character refuses the whole value (`swap:msg:part`). An empty name (`swap:`,
 | `https://evil.com/connect:/a`, `//evil.com/connect:/a` | inert URL (the tail does not replace the foreign prefix) |
 | `swap:x` + U+FEFF + `connect:wss:evil.com` | inert URL (U+FEFF separates the tokens) |
 | `swap:msg:part`, `send:`, `connect:` | inert URL |
+| `connect:/f&#32;connect:wss:evil.com` | inert URL (the entity is a space, decoded before the split) |
 
 `cross_origin(...)` opts the URL inside a leading `connect:` into `http` /
 `https` / `ws` / `wss`. `cross_origin("connect:javascript:…")`,
