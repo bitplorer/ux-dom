@@ -50,6 +50,12 @@ __all__ = [
     "lazy",
     "dom_text",
     "raw",
+    "safe_attr_value",
+    "UNSAFE_URL",
+    "URL_ATTRIBUTES",
+    "SAME_ORIGIN_URL_ATTRIBUTES",
+    "cross_origin",
+    "CrossOriginURL",
 ]
 
 
@@ -106,10 +112,30 @@ URL_ATTRIBUTES = frozenset(
         "href", "src", "action", "formaction", "xlink:href", "poster",
         "cite", "background", "data", "codebase", "longdesc",
         "manifest", "ping", "icon", "archive", "usemap", "profile",
-        "lowsrc", "dynsrc", "hx-get", "hx-post", "hx-put", "hx-patch",
-        "hx-delete",
+        "lowsrc", "dynsrc",
     }
 )
+# htmx / SSE / WS fetch+swap sinks: relative same-origin only unless
+# wrapped in ``cross_origin(...)``. Includes data-* aliases.
+SAME_ORIGIN_URL_ATTRIBUTES = frozenset(
+    {
+        "hx-get", "hx-post", "hx-put", "hx-patch", "hx-delete",
+        "data-hx-get", "data-hx-post", "data-hx-put", "data-hx-patch", "data-hx-delete",
+        "sse-connect", "ws-connect",
+        "data-sse-connect", "data-ws-connect",
+        "hx-sse", "hx-ws",
+        # htmx 1.9.2 getAttributeValue reads data-<name> as well as the bare name.
+        "data-hx-sse", "data-hx-ws",
+    }
+)
+_SSE_WS_ATTRIBUTES = frozenset({"hx-sse", "hx-ws", "data-hx-sse", "data-hx-ws"})
+# ECMAScript \s: WhiteSpace plus LineTerminator. Python str.split() omits U+FEFF.
+_JS_WS = re.compile(
+    "[\t\n\v\f\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+"
+)
+# Lowercased, because the probe already folded case. Empty is refused by
+# ``not name`` below; this set is the rest of ``[A-Za-z0-9_.-]+``.
+_SSE_WS_NAME_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789_.-")
 # Attributes whose value is a whole HTML document, not a URL. A scheme check
 # is meaningless there, so they are refused unless the value explicitly opts
 # in through the ``__html__`` protocol (MarkupSafe's ``Markup`` and friends).
@@ -118,7 +144,21 @@ UNSAFE_URL = "about:invalid#ux-dom-unsafe-url"
 _URL_NOISE = re.compile(r"[\x00-\x20\x7f]+")
 # Allow-list, not deny-list: anything not listed here fails closed.
 _SAFE_SCHEMES = frozenset({"http", "https", "mailto", "tel"})
+_CROSS_ORIGIN_SCHEMES = frozenset({"http", "https", "ws", "wss"})
 _SAFE_DATA_URL = re.compile(r"data:image/(?:png|jpeg|jpg|gif|webp)(?:[;,]|$)")
+
+
+class CrossOriginURL(str):
+    """A URL the author allows to point at another origin (see ``cross_origin``)."""
+
+
+def cross_origin(url):
+    """Opt one htmx/SSE/WebSocket URL out of the same-origin rule.
+
+    ``div(hx_get=cross_origin("https://api.example.com/feed"))``. The scheme
+    must still be ``http``, ``https``, ``ws`` or ``wss``.
+    """
+    return CrossOriginURL(url)
 
 
 class InvalidAttributeName(ValueError):
@@ -149,17 +189,109 @@ def escape_attr_minimal(data):
     return str(data).replace("&", "&amp;").replace('"', "&quot;")
 
 
+def _probe(text):
+    return _URL_NOISE.sub("", html.unescape(text)).lower()
+
+
+def _is_protocol_relative(probe):
+    return probe.startswith(("//", "\\\\", "/\\", "\\/"))
+
+
 def _is_safe_url(text):
-    """True for relative URLs, allow-listed schemes, and raster data: images."""
-    # Browsers decode entities before parsing the URL; check what they see.
-    probe = _URL_NOISE.sub("", html.unescape(text)).lower()
+    """True for relative same-host URLs, allow-listed schemes, raster data: images.
+
+    Protocol-relative ``//host/...`` is refused (it is cross-origin).
+    """
+    probe = _probe(text)
+    if _is_protocol_relative(probe):
+        return False
     head = re.split(r"[/?#]", probe, maxsplit=1)[0]
     if ":" not in head:
-        return True  # relative: "/a", "a/b", "?q", "#f", "//host/x"
+        return True  # relative: "/a", "a/b", "?q", "#f"
     scheme = head.split(":", 1)[0]
     if scheme == "data":
         return _SAFE_DATA_URL.match(probe) is not None
     return scheme in _SAFE_SCHEMES
+
+
+def _relative_same_origin_probe(probe):
+    """``probe`` is already noise-stripped. Relative only: no scheme, no ``//``."""
+    if not probe or _is_protocol_relative(probe):
+        return False
+    return ":" not in re.split(r"[/?#]", probe, maxsplit=1)[0]
+
+
+def _cross_origin_probe(probe):
+    """``probe`` is already noise-stripped. http/https/ws/wss, or a relative URL."""
+    if _is_protocol_relative(probe):
+        return False
+    if not probe:
+        return True
+    head = re.split(r"[/?#]", probe, maxsplit=1)[0]
+    return ":" not in head or head.split(":", 1)[0] in _CROSS_ORIGIN_SCHEMES
+
+
+def _is_same_origin_url(text):
+    """True for relative URLs that stay on this origin (no scheme, no ``//host``)."""
+    probe = _probe(text)
+    if not probe:
+        return True
+    return _relative_same_origin_probe(probe)
+
+
+def _is_safe_cross_origin_url(text):
+    return _cross_origin_probe(_probe(text))
+
+
+def _js_ws_tokens(text):
+    """Split the way htmx 1.9.2 does: trim and ``/\\s+/`` on the ECMAScript set."""
+    return [token for token in _JS_WS.split(str(text)) if token]
+
+
+def _sse_ws_directive(probe):
+    """True for ``swap``/``send`` whose name matches ``[A-Za-z0-9_.-]+``."""
+    keyword, sep, name = probe.partition(":")
+    if keyword not in {"swap", "send"} or not sep or not name:
+        return False
+    return all(char in _SSE_WS_NAME_CHARS for char in name)
+
+
+def _sse_ws_value_ok(text, *, cross):
+    """htmx 1.9.2 splits the value on JavaScript whitespace, then ``connect:``.
+
+    HTML entities are decoded before the split, so a character reference
+    cannot glue two tokens. Only tokens that start with ``connect:`` (after
+    the same noise strip as other URLs) are URL prefixes. ``swap:`` and
+    ``send:`` are not URLs, and their names may not contain ``:``.
+    """
+    inner_ok = _cross_origin_probe if cross else _relative_same_origin_probe
+    # Decode first. ``&#32;`` is a space; splitting the raw source would miss it.
+    # ``_probe`` decodes again. That second decode only over-refuses, so it
+    # fails closed. Leave it.
+    decoded = html.unescape(str(text))
+    # Tab/space between slashes is still a protocol-relative URL after the noise strip.
+    if _is_protocol_relative(_probe(decoded)):
+        return False
+    tokens = _js_ws_tokens(decoded)
+    if not tokens:
+        return True
+    index = 0
+    while index < len(tokens):
+        probe = _probe(tokens[index])
+        # A space after the colon is the same noise other URL checks strip.
+        if probe == "connect:" and index + 1 < len(tokens):
+            nxt = _probe(tokens[index + 1])
+            if not _sse_ws_directive(nxt):
+                probe = "connect:" + nxt
+                index += 1
+        if probe.startswith("connect:"):
+            inner = probe[len("connect:") :]
+            if not inner or not inner_ok(inner):
+                return False
+        elif not _sse_ws_directive(probe) and not inner_ok(probe):
+            return False
+        index += 1
+    return True
 
 
 def safe_attr_value(attribute, value):
@@ -180,6 +312,14 @@ def safe_attr_value(attribute, value):
     if name in HTML_ATTRIBUTES:
         html_method = getattr(value, "__html__", None)
         return str(html_method()) if callable(html_method) else UNSAFE_URL
+    if name in SAME_ORIGIN_URL_ATTRIBUTES:
+        text = str(value)
+        if name in _SSE_WS_ATTRIBUTES:
+            ok = _sse_ws_value_ok(text, cross=isinstance(value, CrossOriginURL))
+            return text if ok else UNSAFE_URL
+        if isinstance(value, CrossOriginURL):
+            return text if _is_safe_cross_origin_url(text) else UNSAFE_URL
+        return text if _is_same_origin_url(text) else UNSAFE_URL
     if name not in URL_ATTRIBUTES:
         return value
     # Stringify once and return that text: re-stringifying ``value`` later

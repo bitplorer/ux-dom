@@ -76,3 +76,66 @@ renderer calls it (`dom_tag`, `ext.Tags`, `ext.StyleTags`).
 
 Tests: `tests/07_resilience/test_unsafe_url_attrs.py`,
 `tests/07_resilience/test_adversarial_render.py`.
+
+
+## htmx / SSE / WebSocket URLs
+
+`hx-get`/`hx-post`/… (and `data-hx-*`), `sse-connect`/`ws-connect` (and
+`data-*` aliases), `hx-sse`/`hx-ws`, and `data-hx-sse`/`data-hx-ws` accept
+**relative same-origin** URLs only. A foreign `https://…` or protocol-relative
+`//host/…` is replaced with `about:invalid#ux-dom-unsafe-url`. Opt in explicitly:
+
+```python
+from ux_dom.dom import cross_origin, div
+div(hx_get=cross_origin("https://api.example.com/feed"))
+```
+
+Ordinary `href`/`src` still allow `http`/`https`/… but also refuse `//host`.
+
+### htmx 1.x `connect:<url>`
+
+htmx 1.9.2 reads `hx-sse` / `hx-ws` and the `data-hx-sse` / `data-hx-ws`
+spellings (`getAttributeValue` tries `data-` + the name). The value is
+whitespace-separated tokens. `connect:<url>` is the network target; `swap:<event>`
+and `send:<trigger>` are not URLs.
+
+This parsing applies only to `hx-sse`, `hx-ws`, `data-hx-sse`, and
+`data-hx-ws`. On `hx-get` and the other same-origin attributes the whole value
+is an ordinary URL, so `hx-get="connect:/feed"` has the scheme `connect` and
+is refused.
+
+htmx 1.9.2 splits the attribute on JavaScript whitespace first (`trim` +
+`/\s+/`), then splits each token on the first colon. That `\s` set is
+`[\t\n\v\f\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]`
+(U+FEFF included). Python `str.split()` does not split on U+FEFF, so the
+gate uses this set. HTML entities are decoded before that split, so
+`connect:/f&#32;connect:wss:evil.com` is two tokens and is refused.
+Double-encoded entity values are refused. The
+same noise strip used for other URLs then runs on each token (drop C0
+controls, ASCII whitespace, and DEL, then ignore case). Only a token that
+starts with `connect:` is a URL prefix.
+A `swap:` or `send:` name must match `[A-Za-z0-9_.-]+`. A colon or any other
+character refuses the whole value (`swap:msg:part`). An empty name (`swap:`,
+`send:`) and a bare `connect:` are refused.
+
+| Value | Result |
+| --- | --- |
+| `connect:/feed`, `connect:/ws`, `CONNECT:/feed`, `connect: /feed` | kept |
+| `connect:feed swap:msg` | kept (whitespace separates the tokens) |
+| `connect:http://evil`, `connect:https://evil.com/s`, `connect:wss://evil.com/s` | inert URL |
+| `connect://evil`, `connect:javascript:…` | inert URL |
+| `connect:/feed connect:https://evil.com/s` | inert URL (every leading `connect:` is checked) |
+| `https://evil.com/connect:/a`, `//evil.com/connect:/a` | inert URL (the tail does not replace the foreign prefix) |
+| `swap:x` + U+FEFF + `connect:wss:evil.com` | inert URL (U+FEFF separates the tokens) |
+| `swap:msg:part`, `send:`, `connect:` | inert URL |
+| `connect:/f&#32;connect:wss:evil.com` | inert URL (the entity is a space, decoded before the split) |
+
+`cross_origin(...)` opts the URL inside a leading `connect:` into `http` /
+`https` / `ws` / `wss`. `cross_origin("connect:javascript:…")`,
+`cross_origin("//evil")`, and
+`cross_origin("javascript:alert(1)//connect:/a")` stay refused.
+
+**Non-`connect:` tokens.** `swap:<name>` and `send:<name>` stay when `<name>`
+matches `[A-Za-z0-9_.-]+`. `swap:https://…`, `send:wss://…`, `swap:msg:part`,
+and a bare `https://…` are refused. A `connect:` that is not
+at the start of a token is not a prefix (`prefixconnect:/feed` is refused).
