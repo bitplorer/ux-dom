@@ -172,9 +172,9 @@ _JS_WS = re.compile(
 # Lowercased, because the probe already folded case. Empty is refused by
 # ``not name`` below; this set is the rest of ``[A-Za-z0-9_.-]+``.
 _SSE_WS_NAME_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789_.-")
-# Attributes whose value is a whole HTML document, not a URL. A scheme check
-# is meaningless there, so they are refused unless the value explicitly opts
-# in through the ``__html__`` protocol (MarkupSafe's ``Markup`` and friends).
+# Attributes whose value is a whole HTML document, not a URL. A string is
+# sanitized by the HTML-string allowlist. A non-string ``__html__`` opt-in
+# stays verbatim.
 HTML_ATTRIBUTES = frozenset({"srcdoc"})
 UNSAFE_URL = "about:invalid#ux-dom-unsafe-url"
 _URL_NOISE = re.compile(r"[\x00-\x20\x7f]+")
@@ -338,16 +338,16 @@ def safe_attr_value(attribute, value):
     on ``str(value)`` after HTML entities are decoded and the C0 controls and
     spaces that browsers ignore inside a scheme are removed.
 
-    HTML attributes (``srcdoc``) are refused unless the value implements
-    ``__html__``; then that HTML is returned (it is still attribute-escaped).
+    HTML attributes (``srcdoc``) run a string through the same allowlist
+    sanitizer as ``defHTML``. A non-string ``__html__`` value is still the
+    verbatim opt-in (it is still attribute-escaped by the renderer).
 
     For checked attributes the return value is always the ``str`` that was
     checked, so the renderer never stringifies the original object again.
     """
     name = str(attribute).lower()
     if name in HTML_ATTRIBUTES:
-        html_method = getattr(value, "__html__", None)
-        return str(html_method()) if callable(html_method) else UNSAFE_URL
+        return _srcdoc_value(value)
     if name in SAME_ORIGIN_URL_ATTRIBUTES:
         text = str(value)
         if name in _SSE_WS_ATTRIBUTES:
@@ -362,6 +362,22 @@ def safe_attr_value(attribute, value):
     # could yield something other than what was checked.
     text = str(value)
     return text if _is_safe_url(text) else UNSAFE_URL
+
+
+def _srcdoc_value(value):
+    """Sanitize string srcdoc with the HTML-string allowlist.
+
+    Local import: ``html_string`` imports this module, so a top-level import
+    would cycle.
+    """
+    from ux_dom.dom.src.html_string import _sanitized_html
+
+    if isinstance(value, str):
+        return _sanitized_html(value)
+    html_method = getattr(value, "__html__", None)
+    if callable(html_method):
+        return str(html_method())
+    return UNSAFE_URL
 
 
 _unescape = {

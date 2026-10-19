@@ -44,7 +44,7 @@ class TestDefHTMLEscapeSanitizes(unittest.TestCase):
         self.assertIn("ok", html)
 
     def test_script_stripped_even_when_escape_false(self):
-        # escape=False keeps text literal; runnable tags/attrs still go.
+        # Text is escaped on this path too, so a raw ``<`` cannot reopen a tag.
         # Verbatim opt-out is raw(), which never enters defHTML.
         nodes = defHTML("<script>alert(1)</script><p>ok</p>", escape=False)
         html = "".join(n.__render__(pretty=False) for n in nodes)

@@ -8,7 +8,7 @@ import re
 
 import pytest
 
-from ux_dom.dom import a, div, p, span
+from ux_dom.dom import a, div, p
 from ux_dom.dom.htmlelement import HTMLElement, JinjaElement, MarkdownElement
 from ux_dom.dom.src.component import Component, Fragment
 from ux_dom.dom.src.html_string import defHTML
@@ -139,27 +139,36 @@ def test_tree_nodes_still_accept_trusted_attrs():
 _ALPHABET = "<>\"'/= abcXYZ019scriptonerrorx-init@click:hx-onjavascript:style"
 
 
-def _walk_attrs(node):
-    attrs = getattr(node, "attributes", None) or {}
-    yield from attrs.items()
-    for child in getattr(node, "children", None) or []:
-        if not isinstance(child, str):
-            yield from _walk_attrs(child)
-
-
 def test_property_random_markup_never_emits_runnable_bits():
-    from ux_dom.dom.src.html_string import _attr_is_dangerous, _UNSAFE_TAGS
+    from html.parser import HTMLParser
+
     from ux_dom.dom.src.utils.dom_util import InvalidAttributeName
 
     rng = random.Random(20261018)
+
+    class P(HTMLParser):
+        def __init__(self):
+            super().__init__()
+            self.bad: list[str] = []
+
+        def handle_starttag(self, tag, attrs):
+            if tag.lower() in {"script", "iframe", "object", "embed", "portal"}:
+                self.bad.append(tag)
+            for key, value in attrs:
+                kl = key.lower().lstrip("_")
+                if kl.startswith(("on", "hx-", "data-hx-", "x-", "@", ":")):
+                    self.bad.append(kl)
+                low = (value or "").lower()
+                if "javascript:" in low or "vbscript:" in low:
+                    self.bad.append(value or "")
+
     for _ in range(20 if os.environ.get("MUTGATE") else 400):
         s = "".join(rng.choice(_ALPHABET) for _ in range(rng.randint(1, 80)))
         try:
             nodes = defHTML(s)
+            out = "".join(node.__render__(pretty=False) for node in nodes)
         except InvalidAttributeName:
             continue
-        for node in nodes:
-            tag = (getattr(node, "tagname", None) or type(node).__name__).lower()
-            assert tag not in _UNSAFE_TAGS, (s, tag)
-            for k, v in _walk_attrs(node):
-                assert not _attr_is_dangerous(k, v), (s, k, v)
+        parser = P()
+        parser.feed(out)
+        assert parser.bad == [], (s, out, parser.bad)

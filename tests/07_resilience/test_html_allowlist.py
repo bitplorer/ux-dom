@@ -105,29 +105,55 @@ REVIEW_PAYLOADS = [
 
 
 def _render(src: str, escape: bool = True) -> str:
-    return "".join(node.__render__(pretty=False) for node in defHTML(src, escape=escape))
+    return "".join(
+        node.__render__(pretty=False) for node in defHTML(src, escape=escape)
+    )
 
 
 def _live_bits(html: str) -> list[str]:
-    """Tags and attributes a browser could run. Text that merely says 'onfocus' is not one."""
+    """Tags and attributes a browser could run.
+
+    Text that merely says ``onfocus`` is not one of them.
+    """
     found: list[str] = []
 
     class P(HTMLParser):
         def handle_starttag(self, tag, attrs):
             name = tag.lower()
-            if name in {"script", "iframe", "object", "embed", "portal", "math", "frameset"}:
+            if name in {
+                "script",
+                "iframe",
+                "object",
+                "embed",
+                "portal",
+                "math",
+                "frameset",
+            }:
                 found.append(name)
             for key, value in attrs:
                 kl = key.lower()
                 while kl.startswith("_"):
                     kl = kl[1:]
                 val = value or ""
-                if kl.startswith("on") or kl.startswith("hx-") or kl.startswith("data-hx-"):
+                if (
+                    kl.startswith("on")
+                    or kl.startswith("hx-")
+                    or kl.startswith("data-hx-")
+                ):
                     found.append(kl)
-                if kl.startswith("x-") or kl.startswith("@") or kl.startswith(":"):
+                if kl.startswith(("x-", "@", ":")):
                     found.append(kl)
-                low = val.lower().replace("\t", "").replace("\n", "").replace("\x01", "")
-                if "javascript:" in low or "vbscript:" in low or "data:text/html" in low:
+                low = (
+                    val.lower()
+                    .replace("\t", "")
+                    .replace("\n", "")
+                    .replace("\x01", "")
+                )
+                if (
+                    "javascript:" in low
+                    or "vbscript:" in low
+                    or "data:text/html" in low
+                ):
                     found.append(val)
 
     P().feed(html)
@@ -180,7 +206,11 @@ def test_document_scripts_in_head_and_body_stripped():
 
 
 def test_document_title_amp_kept_as_written():
-    src = "<!DOCTYPE html><html><head><title>Tom &amp; Jerry</title></head><body></body></html>"
+    src = (
+        "<!DOCTYPE html><html><head>"
+        "<title>Tom &amp; Jerry</title>"
+        "</head><body></body></html>"
+    )
     for escape in (True, False):
         out = _render(src, escape=escape)
         assert "<title>Tom &amp; Jerry</title>" in out, (escape, out)
@@ -189,7 +219,10 @@ def test_document_title_amp_kept_as_written():
 
 
 def test_leading_whitespace_and_case_are_still_a_document():
-    src = " \n<!DoCtYpE html><HTML><head><title>T&amp;T</title></head><body><p>z</p></body></HTML>"
+    src = (
+        " \n<!DoCtYpE html><HTML><head><title>T&amp;T</title></head>"
+        "<body><p>z</p></body></HTML>"
+    )
     out = _render(src)
     assert out.startswith("<!DOCTYPE html>")
     assert "<title>T&amp;T</title>" in out

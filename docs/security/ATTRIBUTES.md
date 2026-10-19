@@ -18,10 +18,11 @@ Every attribute value goes through two steps when the tree renders.
    after HTML entities are decoded (`&#106;avascript:`, `javascript&colon;`)
    and after the whitespace and C0 controls browsers ignore in a scheme are
    removed (`java\tscript:`). Letter case is ignored.
-3. **HTML attributes are refused.** `srcdoc` holds a whole HTML document, so a
-   scheme check means nothing there. It renders as the inert URL unless the
-   value explicitly opts in through the `__html__` protocol (for example
-   MarkupSafe's `Markup`); the opted-in HTML is still attribute-escaped.
+3. **HTML attributes are sanitized.** `srcdoc` holds a whole HTML document, so
+   a scheme check means nothing there. A string goes through the same allowlist
+   sanitizer as `defHTML` (document mode included). A non-string value that
+   implements `__html__` stays verbatim. Either way the renderer still
+   attribute-escapes the result.
 
 URL-bearing attributes (`ux_dom.dom.src.utils.dom_util.URL_ATTRIBUTES`):
 `href`, `src`, `action`, `formaction`, `xlink:href`, `poster`, `cite`,
@@ -142,10 +143,50 @@ at the start of a token is not a prefix (`prefixconnect:/feed` is refused).
 
 ## String → HTML (`defHTML` / `Fragment(str)`)
 
-HTML strings ingested through `defHTML`, `Fragment`, `Component.render()->str`,
-`HTMLElement`, `JinjaElement`, or `MarkdownElement` always lose runnable
-constructs: dangerous tags (`script`, `iframe`, `style`, …), event handlers
-(`on*`, including `_onclick`), Alpine (`x-*`, `@*`, `:*`), htmx `hx-on*`, and
-dangerous URL schemes (`javascript:`, `vbscript:`, `data:text/html`). Safe
-markup (`<p>`, `<a href="/…">`, …) is kept. Use `raw()` for a hand-authored
-verbatim fragment that must not be sanitized.
+One allowlist. `defHTML`, `Fragment(str)`, `Component.render()->str`,
+`HTMLElement`, `JinjaElement`, `MarkdownElement`, `to_fragment(str)`, and
+`srcdoc` all use it. Strings stay HTML: known-safe tags are kept and
+sanitized, they are not turned into plain text. `raw()` is the verbatim
+opt-out, and a non-string `srcdoc` `__html__` value stays verbatim.
+
+**Tags.** A fragment may contain the known-safe set (the usual content tags,
+form controls, `html` / `head` / `body` / `title`, `template`, `noscript`,
+`textarea`, and SVG geometry such as `svg`, `circle`, `path`). `script`,
+`iframe`, `object`, `embed`, `base`, `frame`, `frameset`, `math`, and SVG
+animation (`animate`, `set`, `foreignObject`) are dropped with their children.
+Any other tag (`portal`, a custom element) is removed and its children are
+kept, so the tag cannot run and the text is not thrown away. `style`, `meta`,
+and `link` are not fragment tags.
+
+**Attributes, per tag.** Global attributes (`class`, `id`, `title`, `lang`,
+`dir`, `role`, `style`, `tabindex`, `hidden`, …), `aria-*`, and `data-*`
+except `data-hx-*` are kept on an allowed tag. Each tag also has its own
+extras (`a` gets `href` / `rel` / `target`, `img` gets `src` / `alt`, `td`
+gets `colspan`, …). Anything else is dropped, including every `on*` handler
+(`_onclick` included), every `hx-*` and `data-hx-*` attribute, and Alpine
+`x-*` / `@*` / `:*`. `srcdoc` is not an allowed attribute on a parsed tag.
+
+**URLs and style.** A URL attribute that stays on the allowlist (`href`,
+`src`, `action`, `formaction`, …) still drops `javascript:`, `vbscript:`, and
+`data:text/html`. The renderer’s scheme allow-list runs again at serialize
+time. `style` drops `expression(`, `javascript:`, and `vbscript:`.
+
+**Text.** Text is escaped whether `escape` is true or false, so a `<` in a
+text node cannot be parsed again as a tag. Character references are
+re-emitted on this path (`&amp;`, `&#39;`, `&#x61;`) and are not passed
+through `escape()` — that helper encodes a leading `&`, and this path does
+not depend on it letting a reference through. Same-line spaces stay, so
+`Tom &amp; Jerry` is still that text. A newline is source indentation and is
+still removed. An unknown entity name stays the letters the parser already
+yielded (`AT&T` is still `ATT`).
+
+**Document mode.** If the first non-whitespace starts with `<!DOCTYPE` or
+`<html` (case-insensitive), the string is a document, not a fragment. Also
+kept: the doctype, `title` with its entities as written, `meta` except
+`http-equiv=refresh` (that meta is dropped), `link` whose `rel` is only
+`stylesheet` and/or `icon` and whose `href` is a relative same-origin URL or
+`https` (`javascript:` and `http://` links are dropped), and `style`. Scripts,
+handlers, `hx-*`, and unknown tags are still stripped inside the document.
+
+Tests: `tests/07_resilience/test_html_allowlist.py`,
+`tests/07_resilience/test_html_parse_sanitizer.py`.

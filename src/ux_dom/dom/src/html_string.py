@@ -6,20 +6,35 @@
 
 """Parse HTML strings into ux-dom nodes (defHTML) and related helpers.
 
-Always strips runnable constructs (script/iframe/on*/Alpine/hx-on/javascript:
-URLs, …). ``escape=True`` also HTML-escapes text nodes; ``escape=False`` keeps
-text literal but still drops the runnable bits. ``raw()`` is the verbatim opt-out.
+One allowlist sanitizer. Safe tags and their attributes are kept; everything
+else is stripped. Text is escaped on both ``escape`` settings so a ``<`` in
+text cannot reopen a tag. Character references are re-emitted here
+(``&amp;``, ``&#39;``) and are not passed through ``escape()``. ``raw()`` is
+the verbatim opt-out.
+
+A string whose first non-whitespace starts with ``<!DOCTYPE`` or ``<html``
+is a document: the doctype, ``html``/``head``/``body``, ``title``, safe
+``meta``, stylesheet/icon ``link``, and ``style`` are kept. A fragment is not.
 """
 
 import builtins
+import html
+import re
 import types
 import typing as T
 from dataclasses import dataclass, field
+from html.entities import name2codepoint
 
 from ux_dom.dom.src import ext, htmltags, jinjatags, svgtags
 from ux_dom.dom.src.htmltags import html_tag
-from ux_dom.dom.src.parse_html import Element, tokenize_html
-from ux_dom.dom.src.utils import dom_text
+from ux_dom.dom.src.parse_html import (
+    Char,
+    Declaration,
+    Element,
+    Entity,
+    tokenize_html,
+)
+from ux_dom.dom.src.utils import dom_text, escape
 
 __all__ = ["StringToHTML", "defHTML"]
 
@@ -55,22 +70,19 @@ def create_dynamic_element(tag_name: str) -> T.Type[ext.Tags]:
     return element
 
 
-# Tags / attrs always stripped on the string→markup path (defHTML / Fragment /
-# Component / HTMLElement / JinjaElement / MarkdownElement). ``raw()`` is the
-# only verbatim opt-out; it never goes through this parser.
-_UNSAFE_TAGS = frozenset(
+# Tags dropped with their children. Unknown tags are unwrapped instead, so
+# their text stays and the tag does not. ``link`` / ``meta`` / ``style`` are
+# not in this set: a fragment drops them, a document keeps them under rules.
+_DROP_TAGS = frozenset(
     {
         "script",
         "iframe",
         "object",
         "embed",
         "base",
-        "link",
-        "meta",
         "frame",
         "frameset",
         "applet",
-        "style",
         "animate",
         "animatetransform",
         "animatemotion",
@@ -80,7 +92,383 @@ _UNSAFE_TAGS = frozenset(
         "maction",
     }
 )
+_DOCUMENT_ONLY_TAGS = frozenset({"link", "meta", "style"})
 
+# Known-safe tags for a fragment. Document mode adds ``_DOCUMENT_ONLY_TAGS``.
+_ALLOWED_TAGS = frozenset(
+    {
+        "a",
+        "abbr",
+        "address",
+        "area",
+        "article",
+        "aside",
+        "audio",
+        "b",
+        "bdi",
+        "bdo",
+        "blockquote",
+        "body",
+        "br",
+        "button",
+        "canvas",
+        "caption",
+        "cite",
+        "code",
+        "col",
+        "colgroup",
+        "data",
+        "datalist",
+        "dd",
+        "del",
+        "details",
+        "dfn",
+        "dialog",
+        "div",
+        "dl",
+        "dt",
+        "em",
+        "fieldset",
+        "figcaption",
+        "figure",
+        "font",
+        "footer",
+        "form",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "head",
+        "header",
+        "hgroup",
+        "hr",
+        "html",
+        "i",
+        "img",
+        "input",
+        "ins",
+        "kbd",
+        "label",
+        "legend",
+        "li",
+        "main",
+        "map",
+        "mark",
+        "menu",
+        "meter",
+        "nav",
+        "noscript",
+        "ol",
+        "optgroup",
+        "option",
+        "output",
+        "p",
+        "picture",
+        "pre",
+        "progress",
+        "q",
+        "rp",
+        "rt",
+        "ruby",
+        "s",
+        "samp",
+        "section",
+        "select",
+        "slot",
+        "small",
+        "source",
+        "span",
+        "strong",
+        "sub",
+        "summary",
+        "sup",
+        "table",
+        "tbody",
+        "td",
+        "template",
+        "textarea",
+        "tfoot",
+        "th",
+        "thead",
+        "time",
+        "title",
+        "tr",
+        "track",
+        "u",
+        "ul",
+        "var",
+        "video",
+        "wbr",
+        # SVG geometry. Animation / foreignObject / math stay in ``_DROP_TAGS``.
+        "circle",
+        "defs",
+        "desc",
+        "ellipse",
+        "g",
+        "line",
+        "marker",
+        "mask",
+        "path",
+        "pattern",
+        "polygon",
+        "polyline",
+        "rect",
+        "stop",
+        "svg",
+        "switch",
+        "symbol",
+        "text",
+        "tspan",
+        "use",
+        "view",
+    }
+)
+
+_GLOBAL_ATTRS = frozenset(
+    {
+        "accesskey",
+        "autocapitalize",
+        "autofocus",
+        "class",
+        "contenteditable",
+        "dir",
+        "draggable",
+        "enterkeyhint",
+        "hidden",
+        "id",
+        "inert",
+        "inputmode",
+        "lang",
+        "popover",
+        "role",
+        "slot",
+        "spellcheck",
+        "style",
+        "tabindex",
+        "title",
+        "translate",
+    }
+)
+
+_TAG_ATTRS: dict[str, frozenset[str]] = {
+    "a": frozenset(
+        {"href", "target", "rel", "hreflang", "type", "download", "referrerpolicy"}
+    ),
+    "area": frozenset({"alt", "coords", "shape", "href", "target", "rel", "download"}),
+    "audio": frozenset({"src", "controls", "loop", "muted", "preload", "autoplay"}),
+    "blockquote": frozenset({"cite"}),
+    "button": frozenset(
+        {
+            "type",
+            "name",
+            "value",
+            "disabled",
+            "form",
+            "formaction",
+            "formenctype",
+            "formmethod",
+            "formnovalidate",
+            "formtarget",
+        }
+    ),
+    "col": frozenset({"span"}),
+    "colgroup": frozenset({"span"}),
+    "data": frozenset({"value"}),
+    "del": frozenset({"cite", "datetime"}),
+    "details": frozenset({"open"}),
+    "font": frozenset({"color", "face", "size"}),
+    "form": frozenset(
+        {"action", "method", "enctype", "name", "novalidate", "target", "autocomplete"}
+    ),
+    "html": frozenset({"xmlns"}),
+    "img": frozenset(
+        {
+            "src",
+            "alt",
+            "width",
+            "height",
+            "srcset",
+            "sizes",
+            "loading",
+            "decoding",
+            "referrerpolicy",
+            "crossorigin",
+            "usemap",
+            "ismap",
+        }
+    ),
+    "input": frozenset(
+        {
+            "type",
+            "name",
+            "value",
+            "placeholder",
+            "checked",
+            "disabled",
+            "readonly",
+            "required",
+            "min",
+            "max",
+            "step",
+            "maxlength",
+            "minlength",
+            "pattern",
+            "size",
+            "multiple",
+            "accept",
+            "alt",
+            "src",
+            "list",
+            "form",
+            "autocomplete",
+            "width",
+            "height",
+            "formaction",
+            "formenctype",
+            "formmethod",
+            "formnovalidate",
+            "formtarget",
+        }
+    ),
+    "ins": frozenset({"cite", "datetime"}),
+    "label": frozenset({"for", "form"}),
+    "li": frozenset({"value"}),
+    "link": frozenset(
+        {
+            "href",
+            "rel",
+            "type",
+            "media",
+            "sizes",
+            "as",
+            "crossorigin",
+            "hreflang",
+            "referrerpolicy",
+        }
+    ),
+    "meta": frozenset(
+        {"charset", "content", "name", "property", "http-equiv", "media"}
+    ),
+    "meter": frozenset({"value", "min", "max", "low", "high", "optimum"}),
+    "ol": frozenset({"start", "reversed", "type"}),
+    "optgroup": frozenset({"label", "disabled"}),
+    "option": frozenset({"value", "selected", "disabled", "label"}),
+    "progress": frozenset({"value", "max"}),
+    "q": frozenset({"cite"}),
+    "select": frozenset(
+        {"name", "multiple", "disabled", "required", "size", "form", "autocomplete"}
+    ),
+    "source": frozenset({"src", "type", "srcset", "sizes", "media"}),
+    "style": frozenset({"media", "type", "nonce"}),
+    "td": frozenset({"colspan", "rowspan", "headers", "abbr"}),
+    "textarea": frozenset(
+        {
+            "name",
+            "rows",
+            "cols",
+            "placeholder",
+            "disabled",
+            "readonly",
+            "required",
+            "maxlength",
+            "minlength",
+            "wrap",
+            "autocomplete",
+            "form",
+        }
+    ),
+    "th": frozenset({"colspan", "rowspan", "headers", "scope", "abbr"}),
+    "time": frozenset({"datetime"}),
+    "track": frozenset({"src", "kind", "srclang", "label", "default"}),
+    "video": frozenset(
+        {
+            "src",
+            "controls",
+            "poster",
+            "preload",
+            "loop",
+            "muted",
+            "autoplay",
+            "width",
+            "height",
+            "crossorigin",
+        }
+    ),
+}
+
+_SVG_TAGS = frozenset(
+    {
+        "circle",
+        "defs",
+        "desc",
+        "ellipse",
+        "g",
+        "line",
+        "marker",
+        "mask",
+        "path",
+        "pattern",
+        "polygon",
+        "polyline",
+        "rect",
+        "stop",
+        "svg",
+        "switch",
+        "symbol",
+        "text",
+        "tspan",
+        "use",
+        "view",
+    }
+)
+_SVG_ATTRS = frozenset(
+    {
+        "cx",
+        "cy",
+        "d",
+        "fill",
+        "fill-opacity",
+        "font-family",
+        "font-size",
+        "fx",
+        "fy",
+        "height",
+        "href",
+        "offset",
+        "opacity",
+        "pathlength",
+        "points",
+        "preserveaspectratio",
+        "r",
+        "rx",
+        "ry",
+        "stop-color",
+        "stop-opacity",
+        "stroke",
+        "stroke-linecap",
+        "stroke-linejoin",
+        "stroke-opacity",
+        "stroke-width",
+        "text-anchor",
+        "transform",
+        "viewbox",
+        "width",
+        "x",
+        "x1",
+        "x2",
+        "xlink:href",
+        "xmlns",
+        "y",
+        "y1",
+        "y2",
+    }
+)
+
+# URL attributes that remain on the allowlist. ``hx-*`` is not here: those
+# attributes are never kept. Scheme checks match the renderer; document
+# ``<link href>`` is stricter (same-origin or https) in ``_link_href_ok``.
 _URL_ATTRS = frozenset(
     {
         "href",
@@ -88,24 +476,9 @@ _URL_ATTRS = frozenset(
         "xlink:href",
         "formaction",
         "action",
-        "data",
         "poster",
         "cite",
         "background",
-        "hx-get",
-        "hx-post",
-        "hx-put",
-        "hx-patch",
-        "hx-delete",
-        "data-hx-get",
-        "data-hx-post",
-        "data-hx-put",
-        "data-hx-patch",
-        "data-hx-delete",
-        "hx-sse",
-        "hx-ws",
-        "data-sse-connect",
-        "data-ws-connect",
     }
 )
 
@@ -133,43 +506,126 @@ def _style_is_dangerous(value: str) -> bool:
     return "javascript:" in low or "expression(" in low or "vbscript:" in low
 
 
-def _attr_is_dangerous(key: str, value) -> bool:
-    kl = _norm_attr_name(key)
-    if kl.startswith("on"):
-        return True
-    # Alpine / Vue-style runtimes and htmx on* handlers.
-    if kl.startswith("x-") or kl.startswith("x_"):
-        return True
-    if kl.startswith("@") or kl.startswith(":"):
-        return True
-    if kl.startswith("hx-on") or kl.startswith("data-hx-on"):
-        return True
-    if kl == "srcdoc":
-        return True
-    if not isinstance(value, str):
+def _link_href_ok(value: str) -> bool:
+    """Document ``<link href>``: relative same-origin, or ``https``.
+
+    ``http://`` (cross-origin; no document origin is known here),
+    protocol-relative ``//host``, and ``javascript:`` fail. This is the
+    document-mode rule. Other URL attributes keep the renderer scheme check.
+    """
+    cleaned = "".join(
+        ch for ch in html.unescape(value) if ch.isprintable() and not ch.isspace()
+    )
+    low = cleaned.lower()
+    if not low or low.startswith(("//", "\\\\", "/\\", "\\/")):
         return False
+    head = re.split(r"[/?#]", low, maxsplit=1)[0]
+    if ":" not in head:
+        return True
+    return head.split(":", 1)[0] == "https"
+
+
+def _is_document(raw: str) -> bool:
+    head = raw.lstrip().lower()
+    return head.startswith("<!doctype") or head.startswith("<html")
+
+
+def _tag_allowed(name: str, document: bool) -> bool:
+    if name in _ALLOWED_TAGS:
+        return True
+    return document and name in _DOCUMENT_ONLY_TAGS
+
+
+def _reference_text(token: Char | Entity) -> str:
+    """Re-emit a character reference without calling ``escape()``.
+
+    ``escape()`` on main encodes the leading ``&``, so a reference must not
+    be passed through it. Unknown names stay the letters the parser already
+    produced (``AT&T`` → ``ATT``).
+    """
+    if isinstance(token, Char):
+        return token.render()
+    name = str(token.data)
+    if name in name2codepoint:
+        return f"&{name};"
+    return name
+
+
+def _attr_kept(tag: str, key: str, value) -> bool:
+    kl = _norm_attr_name(key)
+    if not kl or kl == "srcdoc":
+        return False
+    if kl.startswith("on") or kl.startswith("hx-") or kl.startswith("data-hx-"):
+        return False
+    if (
+        kl.startswith("x-")
+        or kl.startswith("x_")
+        or kl.startswith("@")
+        or kl.startswith(":")
+    ):
+        return False
+    allowed = (
+        kl in _GLOBAL_ATTRS
+        or kl in _TAG_ATTRS.get(tag, frozenset())
+        or (tag in _SVG_TAGS and kl in _SVG_ATTRS)
+        or kl.startswith("aria-")
+        or (kl.startswith("data-") and not kl.startswith("data-hx-"))
+    )
+    if not allowed:
+        return False
+    if not isinstance(value, str):
+        return True
     if kl == "style" and _style_is_dangerous(value):
-        return True
+        return False
     if kl in _URL_ATTRS and _scheme_is_dangerous(value):
-        return True
-    return False
+        return False
+    return True
 
 
-def _sanitize_attrs(attrs: dict) -> dict:
-    """Drop event handlers, Alpine/htmx runtimes, and dangerous URLs."""
+def _filter_attrs(tag: str, attrs: dict) -> dict:
     if not attrs:
-        return attrs
-    out = {}
-    for k, v in dict(attrs).items():
-        if _attr_is_dangerous(k, v):
-            continue
-        out[k] = v
-    return out
+        return {}
+    return {
+        key: value
+        for key, value in dict(attrs).items()
+        if _attr_kept(tag, key, value)
+    }
 
 
-# Keep the old name as an alias so any external caller still resolves.
-_UNSAFE_TAGS_WHEN_ESCAPE = _UNSAFE_TAGS
-_sanitize_attrs_when_escape = _sanitize_attrs
+def _meta_attrs(attrs: dict) -> dict | None:
+    for key, value in dict(attrs or {}).items():
+        if (
+            _norm_attr_name(key) == "http-equiv"
+            and str(value).strip().lower() == "refresh"
+        ):
+            return None
+    return _filter_attrs("meta", attrs)
+
+
+def _link_attrs(attrs: dict) -> dict | None:
+    rel = ""
+    href = None
+    for key, value in dict(attrs or {}).items():
+        name = _norm_attr_name(key)
+        if name == "rel":
+            rel = str(value).strip().lower()
+        elif name == "href":
+            href = value
+    tokens = rel.split()
+    if not tokens or any(token not in {"stylesheet", "icon"} for token in tokens):
+        return None
+    if href is None or not _link_href_ok(str(href)):
+        return None
+    return _filter_attrs("link", attrs)
+
+
+def _text_data(raw: str) -> str:
+    """Keep same-line spaces. Newlines are source indentation and drop."""
+    if "\n" in raw:
+        return raw.strip("\n").strip(" ").strip("\n")
+    if raw.strip(" "):
+        return raw
+    return ""
 
 
 @dataclass
@@ -183,17 +639,20 @@ class StringToHTML(object):
     html_string_or_token: T.Union[str, Element, list[Element], ext.Tags]
     modules: list[types.ModuleType] = field(default_factory=list)
     escape: bool = field(default=True)
+    document: bool = field(default=False)
 
     def __post_init__(self):
-        self.tokens: T.Union[Element, list[Element], ext.Tags] = (
-            tokenize_html(
+        if isinstance(self.html_string_or_token, (str, html_tag)):
+            raw = (
                 self.html_string_or_token
-                if not isinstance(self.html_string_or_token, html_tag)
+                if isinstance(self.html_string_or_token, str)
                 else str(self.html_string_or_token)
-            ).children
-            if isinstance(self.html_string_or_token, (str, html_tag))
-            else self.html_string_or_token
-        )
+            )
+            if isinstance(self.html_string_or_token, str):
+                self.document = _is_document(raw)
+            self.tokens = tokenize_html(raw).children
+        else:
+            self.tokens = self.html_string_or_token
 
         # for html, svg and jinja tags lookup
         if htmltags not in self.modules:
@@ -205,67 +664,124 @@ class StringToHTML(object):
         if jinjatags not in self.modules:
             self.modules.append(jinjatags)
 
+    def _child_parser(self, token) -> "StringToHTML":
+        return StringToHTML(
+            [token],
+            modules=self.modules,
+            escape=self.escape,
+            document=self.document,
+        )
+
+    def _add_text(self, tag, text: str, *, already_escaped: bool):
+        with tag or ext.PlaceholderTag() as tag:  # type: ignore[assignment]
+            # ``already_escaped`` text must not go through ``escape()`` again.
+            # Character references are in that bucket. Raw data is escaped
+            # first, on both escape settings, so ``<`` cannot reopen a tag.
+            dom_text(text, escape=False if already_escaped else True)
+        return tag
+
+    def _unwrap(self, token, tag):
+        children = list(token.children)
+        if not children:
+            return tag
+        if tag is not None:
+            for child in children:
+                self._child_parser(child).parse(tag=tag)
+            return tag
+        holder = ext.PlaceholderTag()
+        for child in children:
+            self._child_parser(child).parse(tag=holder)
+        return holder if holder.children else tag
+
     def parse(self, tag: T.Optional[ext.Tags] = None) -> T.Union[str, ext.Tags, None]:
         for token in self.tokens:  # type: ignore[union-attr]
-            if not token.name:
-                # myst_parser gives out Data['abc'] kind of Token with {"name":'', 'data': 'abc', ...} attributes
-                # we are parsing plain strings, <script> body or jinja token strings here
+            if isinstance(token, (Char, Entity)):
+                text = _reference_text(token)
+                if text:
+                    tag = self._add_text(tag, text, already_escaped=True)
+                continue
 
-                if hasattr(token, "data"):
-                    # handle leading and trailing newline with spaces in myst parser Data Token ex: "  \n Hello\n  "
-                    if data := token.data.strip("\n").strip(" ").strip("\n"):
-                        with tag or ext.PlaceholderTag() as tag:  # type: ignore[assignment]
-                            # handling
-                            if getattr(type(tag), "raw_text", None):
-                                # <script>/<style> body: raw text element — never
-                                # HTML-escaped; breakouts neutralized at render.
-                                dom_text(data, escape=False)
-                            else:
-                                if token.__class__.__name__ != "Comment":
-                                    # Braced text used to be emitted raw (Jinja
-                                    # hole). Treat it as text; use the Jinja DSL
-                                    # or raw() for real template fragments.
-                                    dom_text(data, escape=self.escape)
-                                else:
-                                    # this is a comment section
-                                    htmltags.comment(data)
-
-            else:
-                element = None
-                tag_name = token.name
-                if tag_name in builtins.__dict__:
-                    # work around for builtins like 'input' tag
-                    tag_name = "".join([token.name, "_"])
-
-                for module in self.modules:
-                    try:
-                        element = getattr(module, tag_name)
-                        if element is not None:
-                            break
-                    except (AttributeError,):
-                        pass
-                if element is None:
-                    element = create_dynamic_element(tag_name=tag_name)
-
-                # Always drop dangerous tags/attrs on the string→markup path.
-                if str(token.name).lower() in _UNSAFE_TAGS:
-                    continue
-
-                attrs = _sanitize_attrs(dict(token.attrs or {}))
-
-                # tag = tag if tag is not None else ConcatTag()
-
+            if (
+                self.document
+                and isinstance(token, Declaration)
+                and str(token.data).lower().startswith("doctype")
+            ):
+                rest = str(token.data).split(None, 1)
+                label = rest[1] if len(rest) > 1 else "html"
                 if tag is not None:
                     with tag:
-                        with element(**attrs) as child_tag:
-                            StringToHTML(
-                                token.children, modules=self.modules, escape=self.escape
-                            ).parse(tag=child_tag)
+                        htmltags.DocType(label)
                 else:
-                    with element(**attrs) as tag:
+                    tag = htmltags.DocType(label)
+                continue
+
+            if not token.name:
+                # Data, comments. Newlines are source indentation. A space on
+                # the same line as the words belongs to the text.
+                if hasattr(token, "data"):
+                    data = _text_data(token.data)
+                    if not data:
+                        continue
+                    with tag or ext.PlaceholderTag() as tag:  # type: ignore[assignment]
+                        if token.__class__.__name__ == "Comment":
+                            htmltags.comment(data)
+                        else:
+                            # Braced text is text. Jinja stays the tag DSL
+                            # or raw(), not a hole in this parser.
+                            dom_text(escape(data), escape=False)
+                continue
+
+            name = str(token.name).lower()
+            if name in _DROP_TAGS or (name in _DOCUMENT_ONLY_TAGS and not self.document):
+                continue
+            if not _tag_allowed(name, self.document):
+                tag = self._unwrap(token, tag)
+                continue
+
+            if name == "meta":
+                attrs = _meta_attrs(dict(token.attrs or {}))
+                if attrs is None:
+                    continue
+            elif name == "link":
+                attrs = _link_attrs(dict(token.attrs or {}))
+                if attrs is None:
+                    continue
+            else:
+                attrs = _filter_attrs(name, dict(token.attrs or {}))
+
+            element = None
+            tag_name = token.name
+            if tag_name in builtins.__dict__:
+                # work around for builtins like 'input' tag
+                tag_name = "".join([token.name, "_"])
+
+            for module in self.modules:
+                try:
+                    element = getattr(module, tag_name)
+                    if element is not None:
+                        break
+                except (AttributeError,):
+                    pass
+            if element is None:
+                element = create_dynamic_element(tag_name=tag_name)
+
+            if tag is not None:
+                with tag:
+                    with element(**attrs) as child_tag:
                         StringToHTML(
-                            token.children, modules=self.modules, escape=self.escape
-                        ).parse(tag=tag)
+                            token.children,
+                            modules=self.modules,
+                            escape=self.escape,
+                            document=self.document,
+                        ).parse(tag=child_tag)
+            else:
+                with element(**attrs) as tag:
+                    StringToHTML(
+                        token.children,
+                        modules=self.modules,
+                        escape=self.escape,
+                        document=self.document,
+                    ).parse(tag=tag)
         return tag
 
     def __repr__(self):
@@ -285,16 +801,24 @@ def defHTML(raw_string, escape=True) -> T.List[ext.Tags]:  # noqa
         return []
     if not isinstance(raw_string, str):
         raw_string = str(raw_string)
+    document = _is_document(raw_string)
     tokens = tokenize_html(raw_string).children
     elements = []
     for token in tokens:
-        element = StringToHTML([token], escape=escape).parse()
+        element = StringToHTML([token], escape=escape, document=document).parse()
         if element:
             assert isinstance(
                 element, ext.Tags
             ), f"{element=} is not instance of {ext.Tags}"
             elements.append(element)
     return elements
+
+
+def _sanitized_html(raw_string, escape=True) -> str:
+    """String form of ``defHTML``. Not a second sanitizer and not public."""
+    return "".join(
+        element.__render__(pretty=False) for element in defHTML(raw_string, escape=escape)
+    )
 
 
 # if __name__ == '__main__':

@@ -26,6 +26,8 @@ from __future__ import annotations
 
 from typing import Any, Mapping, Optional
 
+from ux_dom.dom.src.html_string import _sanitized_html
+
 __all__ = [
     "channel_available",
     "stamp_region",
@@ -46,11 +48,15 @@ def channel_available() -> bool:
 
 
 def to_fragment(node: Any) -> str:
-    """Coerce ux-dom / str / ``__html__`` to an HTML string."""
+    """Coerce ux-dom / str / ``__html__`` to an HTML string.
+
+    A plain string is HTML and goes through the same allowlist sanitizer as
+    ``defHTML`` (including document mode). Tag trees render as built.
+    """
     if node is None:
         return ""
     if isinstance(node, str):
-        return node
+        return _sanitized_html(node)
     if hasattr(node, "__html__"):
         return str(node.__html__())  # type: ignore[misc]
     # ux-dom render path
