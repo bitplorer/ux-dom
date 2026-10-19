@@ -81,9 +81,10 @@ class TestTailwindCommandFailClosed(unittest.TestCase):
             import ux_dom.settings.commands  # noqa: F401
 
     def test_style_construct_is_absent(self):
-        from ux_dom.plugins import style
-
-        self.assertFalse(hasattr(style, "TailwindStyle"))
+        style_pkg = ROOT / "src" / "ux_dom" / "plugins" / "style"
+        self.assertFalse(style_pkg.exists(), f"module still present: {style_pkg}")
+        with self.assertRaises(ModuleNotFoundError):
+            import ux_dom.plugins.style  # noqa: F401
 
 
 class TestDoctorReportsProductCss(unittest.TestCase):
