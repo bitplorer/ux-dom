@@ -2,10 +2,13 @@
 
 from __future__ import annotations
 
+import re
+
 import pytest
 
 from ux_dom.dom import cross_origin, div
 from ux_dom.dom.src.html_string import StringToHTML
+from ux_dom.dom.src.utils import dom_util
 from ux_dom.dom.src.utils.dom_util import (
     SAME_ORIGIN_URL_ATTRIBUTES,
     UNSAFE_URL,
@@ -66,6 +69,21 @@ def test_rendered_attribute():
 
 # htmx 1.9.2 reads hx-sse / hx-ws and the data- spellings as connect:<url>.
 SSE_WS_ATTRS = ["hx-sse", "hx-ws", "data-hx-sse", "data-hx-ws"]
+
+
+def _ws_id(char):
+    return f"U+{ord(char):04X}"
+
+
+# The 25 characters in ``_JS_WS``. ASCII first, then the non-ASCII set below.
+_JS_WS_CHARS = [
+    "\t",
+    "\n",
+    "\v",
+    "\f",
+    "\r",
+    " ",
+]
 # ECMAScript \s, minus ASCII. Python str.split() does not split on U+FEFF.
 _JS_NON_ASCII_WS = [
     "\u00a0",
@@ -88,6 +106,15 @@ _JS_NON_ASCII_WS = [
     "\u3000",
     "\ufeff",
 ]
+_JS_WS_CHARS.extend(_JS_NON_ASCII_WS)
+
+
+def _js_ws_class_without(dropped):
+    """``_JS_WS`` with one character removed. Used to prove the splitter tests bite."""
+    kept = "".join(char for char in _JS_WS_CHARS if char != dropped)
+    return re.compile(f"[{kept}]+")
+
+
 CONNECT_FOREIGN = [
     "connect:http://evil",
     "connect:https://evil.com/s",
@@ -310,3 +337,68 @@ def test_connect_matches_only_a_leading_prefix():
     assert safe_attr_value("hx-sse", "x connect:/feed") == "x connect:/feed"
     assert safe_attr_value("hx-sse", "prefixconnect:/feed") == UNSAFE_URL
     assert safe_attr_value("hx-ws", "https://evil.com/connect:/a") == UNSAFE_URL
+
+
+# ``swap:x{sep}connect:...`` is also refused by the name charset when the
+# separator is not split, so it does not lock ``_JS_WS``. These values stay
+# allowed unless the separator is actually a split: the inner ``/feed...``
+# hides the later colon, and ``connect:{sep}//evil`` hides ``//`` when the
+# separator is not ASCII noise.
+@pytest.mark.parametrize("sep", _JS_WS_CHARS, ids=_ws_id)
+@pytest.mark.parametrize("attr", SSE_WS_ATTRS)
+def test_each_js_ws_char_splits_a_second_connect(attr, sep):
+    value = f"connect:/feed{sep}connect:wss:evil.com"
+    assert safe_attr_value(attr, value) == UNSAFE_URL
+
+
+@pytest.mark.parametrize("sep", _JS_WS_CHARS, ids=_ws_id)
+@pytest.mark.parametrize("attr", SSE_WS_ATTRS)
+def test_each_js_ws_char_splits_a_protocol_relative_connect(attr, sep):
+    value = f"connect:{sep}//evil.com"
+    assert safe_attr_value(attr, value) == UNSAFE_URL
+
+
+@pytest.mark.parametrize("attr", SSE_WS_ATTRS)
+def test_connect_feed_stays_same_origin(attr):
+    assert safe_attr_value(attr, "connect:/feed") == "connect:/feed"
+
+
+@pytest.mark.parametrize("dropped", _JS_WS_CHARS, ids=_ws_id)
+@pytest.mark.parametrize("attr", SSE_WS_ATTRS)
+def test_dropping_one_js_ws_char_keeps_the_foreign_connect(attr, dropped, monkeypatch):
+    """Fails closed only while this character is in ``_JS_WS``.
+
+    With the character removed, ``connect:/feed{sep}connect:wss:evil.com`` is
+    kept, so ``test_each_js_ws_char_splits_a_second_connect`` would fail.
+    """
+    monkeypatch.setattr(dom_util, "_JS_WS", _js_ws_class_without(dropped))
+    value = f"connect:/feed{dropped}connect:wss:evil.com"
+    assert safe_attr_value(attr, value) != UNSAFE_URL
+
+
+@pytest.mark.parametrize("dropped", _JS_NON_ASCII_WS, ids=_ws_id)
+@pytest.mark.parametrize("attr", SSE_WS_ATTRS)
+def test_dropped_non_ascii_ws_keeps_protocol_relative(attr, dropped, monkeypatch):
+    """ASCII separators are still noise-stripped; these 19 are not.
+
+    Dropping one of them keeps ``connect:{sep}//evil.com``, so
+    ``test_each_js_ws_char_splits_a_protocol_relative_connect`` would fail.
+    """
+    monkeypatch.setattr(dom_util, "_JS_WS", _js_ws_class_without(dropped))
+    value = f"connect:{dropped}//evil.com"
+    assert safe_attr_value(attr, value) != UNSAFE_URL
+
+
+@pytest.mark.parametrize("attr", SSE_WS_ATTRS)
+@pytest.mark.parametrize(
+    "value",
+    [
+        "connect:/feed\ufeffconnect:wss:evil.com",
+        "connect:\ufeff//evil.com",
+    ],
+    ids=["second-connect", "protocol-relative"],
+)
+def test_str_split_mutant_keeps_a_bom_separated_connect(attr, value, monkeypatch):
+    """``str.split()`` does not split on U+FEFF, so both refuse-tests would fail."""
+    monkeypatch.setattr(dom_util, "_js_ws_tokens", lambda text: str(text).split())
+    assert safe_attr_value(attr, value) != UNSAFE_URL
