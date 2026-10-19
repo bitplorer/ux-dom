@@ -71,7 +71,17 @@ tpl = For("name in names", li(Var("name")))
 html = tpl(names=["a", "b"])  # expanded HTML string/tree
 ```
 
-**See:** `tests/01_core/test_ux_dom.py::TestJinja`, kit `/jinja`.
+Safety model:
+
+- Rendering uses a **sandboxed, autoescaped** Jinja environment. Context values
+  (`names=[...]`) are text: `<img onerror>` comes out as `&lt;img …`.
+- Only the tag DSL (`For`, `If`, `Var`, …) produces template code. `{` / `}` in
+  ordinary text children and string attribute values are user data; they are
+  emitted as `&#123;` / `&#125;` and never evaluated. Use `raw()` for a
+  hand-written Jinja fragment inside a tree.
+
+**See:** `tests/01_core/test_ux_dom.py::TestJinja`,
+`tests/07_resilience/test_jinja_and_string_nonce.py`, kit `/jinja`.
 
 ## Slots
 

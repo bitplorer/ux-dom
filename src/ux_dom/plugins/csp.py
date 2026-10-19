@@ -30,7 +30,6 @@ only reads the tree — **no ContextVar required** after stamp.
 
 from __future__ import annotations
 
-import re
 import secrets
 from contextvars import ContextVar, Token
 from dataclasses import dataclass, field
@@ -179,23 +178,7 @@ def _set_attr(node: Any, key: str, value: str) -> Any:
         except Exception:
             pass
         return node
-    if isinstance(node, str):
-        return _inject_nonce_html(node, value)
     return node
-
-
-def _inject_nonce_html(html: str, nonce: str) -> str:
-    def repl(m: re.Match[str]) -> str:
-        tag = m.group(0)
-        if re.search(r"\bnonce\s*=", tag, re.I):
-            return tag
-        if tag.endswith("/>"):
-            return tag[:-2] + f' nonce="{nonce}" />'
-        if tag.endswith(">"):
-            return tag[:-1] + f' nonce="{nonce}">'
-        return tag
-
-    return re.sub(r"<(?:script|style)(\s[^>]*)?>", repl, html, flags=re.I)
 
 
 def stamp_tree(
@@ -218,7 +201,9 @@ def stamp_tree(
             stamp_tree(child, n)
         return node
     if isinstance(node, str):
-        return _inject_nonce_html(node, n)
+        # String HTML is never stamped: a nonce on a string would also bless
+        # any <script> an attacker got into it. Use tree nodes (script(...)).
+        return node
 
     tag = (
         getattr(node, "tagname", None)
@@ -255,7 +240,7 @@ def stamp_nonce(
     out: list[Any] = []
     for node in seq:
         if isinstance(node, str):
-            out.append(_inject_nonce_html(node, n))
+            out.append(node)
             continue
         tag = (
             getattr(node, "tagname", None)
