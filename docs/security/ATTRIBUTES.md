@@ -99,26 +99,32 @@ spellings (`getAttributeValue` tries `data-` + the name). The value is
 whitespace-separated tokens. `connect:<url>` is the network target; `swap:<event>`
 and `send:<trigger>` are not URLs.
 
-The same noise strip used for other URLs runs first (HTML-unescape, drop C0
-controls, whitespace, and DEL, then ignore case). Each `connect:` prefix is
-then removed and the URL after it is checked:
+This parsing applies only to `hx-sse`, `hx-ws`, `data-hx-sse`, and
+`data-hx-ws`. On `hx-get` and the other same-origin attributes the whole value
+is an ordinary URL, so `hx-get="connect:/feed"` has the scheme `connect` and
+is refused.
+
+htmx 1.9.2 splits the attribute on whitespace first (`trim` + `/\s+/`), then
+splits each token on the first colon. The same noise strip used for other
+URLs runs on each token (HTML-unescape, drop C0 controls, whitespace, and DEL,
+then ignore case). Only a token that starts with `connect:` is a URL prefix.
+A `:` later in a `swap:` or `send:` name is part of that name (`swap:msg:part`).
 
 | Value | Result |
 | --- | --- |
 | `connect:/feed`, `connect:/ws`, `CONNECT:/feed`, `connect: /feed` | kept |
+| `connect:feed swap:msg` | kept (whitespace separates the tokens) |
 | `connect:http://evil`, `connect:https://evil.com/s`, `connect:wss://evil.com/s` | inert URL |
 | `connect://evil`, `connect:javascript:…` | inert URL |
-| `connect:/feed connect:https://evil.com/s` | inert URL (every `connect:` URL is checked) |
+| `connect:/feed connect:https://evil.com/s` | inert URL (every leading `connect:` is checked) |
+| `https://evil.com/connect:/a`, `//evil.com/connect:/a` | inert URL (the tail does not replace the foreign prefix) |
 
-`cross_origin(...)` opts the URL inside `connect:` into `http` / `https` /
-`ws` / `wss`. `cross_origin("connect:javascript:…")` and
-`cross_origin("//evil")` stay refused.
+`cross_origin(...)` opts the URL inside a leading `connect:` into `http` /
+`https` / `ws` / `wss`. `cross_origin("connect:javascript:…")`,
+`cross_origin("//evil")`, and
+`cross_origin("javascript:alert(1)//connect:/a")` stay refused.
 
-**Non-`connect:` values (conservative).** A value with no `connect:` prefix is
-kept only when, after the noise strip, it is one or more `swap:<name>` or
-`send:<name>` directives and `<name>` contains no `:`, `/`, or `\`.
-`swap:message` and `send:submit` stay. `swap:https://…`, `send:wss://…`, and a
-bare `https://…` are refused. `connect:/feed swap:message` stays, because the
-`connect:` URL is `/feed` and `swap:message` is a directive. The same `connect:`
-rule lives in the shared same-origin helper, so `hx-get="connect:/feed"` is
-judged on `/feed` as well.
+**Non-`connect:` tokens.** `swap:<name>` and `send:<name>` stay when `<name>`
+contains no `/` or `\`. The name may contain `:`. `swap:https://…`,
+`send:wss://…`, and a bare `https://…` are refused. A `connect:` that is not
+at the start of a token is not a prefix (`prefixconnect:/feed` is refused).

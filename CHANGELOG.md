@@ -31,7 +31,12 @@
   ``connect:`` as a prefix, not a scheme. ``connect:/feed`` is kept;
   ``connect:http://evil``, ``connect:https://…``, ``connect:wss://…``,
   ``connect://host``, and ``connect:javascript:…`` are refused. ``swap:`` /
-  ``send:`` names that are not URLs are kept. See
+  ``send:`` names that are not URLs are kept. The prefix is parsed only on
+  those four attributes, and the value is split on whitespace the way htmx
+  1.9.2 does (``connect:feed swap:msg``). A ``:`` inside a ``swap:`` or
+  ``send:`` name is part of the name. On ``hx-get``, ``connect:/feed`` is an
+  ordinary URL and is refused. A non-leading ``connect:`` does not hide a
+  foreign prefix (``https://evil.com/connect:/a``). See
   ``docs/security/ATTRIBUTES.md``.
 
 ## 0.2.0 — remove deprecations
