@@ -266,6 +266,8 @@ def _sse_ws_value_ok(text, *, cross):
     """
     inner_ok = _cross_origin_probe if cross else _relative_same_origin_probe
     # Decode first. ``&#32;`` is a space; splitting the raw source would miss it.
+    # ``_probe`` decodes again. That second decode only over-refuses, so it
+    # fails closed. Leave it.
     decoded = html.unescape(str(text))
     # Tab/space between slashes is still a protocol-relative URL after the noise strip.
     if _is_protocol_relative(_probe(decoded)):

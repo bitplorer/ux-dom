@@ -363,6 +363,21 @@ def test_connect_feed_stays_same_origin(attr):
     assert safe_attr_value(attr, "connect:/feed") == "connect:/feed"
 
 
+# A single separator is still split by ``maxsplit=1``, so the two-token tests
+# above do not lock a full split. This one does: the second separator must
+# also split, or the foreign connect stays glued to ``/feed``.
+@pytest.mark.parametrize("sep", (" ", "\ufeff"), ids=("U+0020", "U+FEFF"))
+@pytest.mark.parametrize("attr", SSE_WS_ATTRS)
+def test_every_separator_is_split(attr, sep):
+    value = f"swap:a{sep}connect:/feed{sep}connect:wss:evil.com"
+    assert safe_attr_value(attr, value) == UNSAFE_URL
+
+
+# Meta tests. They monkeypatch a broken splitter and assert the bad value is
+# kept, so they stay green if production regresses. The locks are
+# ``test_each_js_ws_char_splits_a_second_connect``,
+# ``test_each_js_ws_char_splits_a_protocol_relative_connect``, and
+# ``test_every_separator_is_split`` (that last one is the ``maxsplit=1`` lock).
 @pytest.mark.parametrize("dropped", _JS_WS_CHARS, ids=_ws_id)
 @pytest.mark.parametrize("attr", SSE_WS_ATTRS)
 def test_dropping_one_js_ws_char_keeps_the_foreign_connect(attr, dropped, monkeypatch):
