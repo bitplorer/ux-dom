@@ -28,7 +28,11 @@ jobs:
       - name: Install dependencies
         run: poetry install --with dev,test --no-interaction --no-ansi
       - name: Install ux-channel (pinned)
-        run: pip install "ux-channel @ git+https://github.com/bitplorer/ux-channel.git@83a580a045b86cb1f17257180c5f53a32ae3b80e#subdirectory=python"
+        # poetry install creates a virtualenv; a bare `pip install` lands on the
+        # setup-python interpreter, so `poetry run pytest` never sees ux_channel.
+        run: |
+          poetry run pip install "ux-channel @ git+https://github.com/bitplorer/ux-channel.git@83a580a045b86cb1f17257180c5f53a32ae3b80e#subdirectory=python"
+          poetry run python -c "import ux_channel"
       - name: Install browser test toolchain (Playwright + Chromium)
         run: |
           npm ci --prefix tests/browser
