@@ -579,10 +579,24 @@ class Csp:
     """
     **The** CSP plugin — installs middleware. One line, no other wiring.
 
+    ``Csp()`` keeps CDN script hosts and is prod-safe on script and connect:
+
+    * no script ``'unsafe-inline'`` (``script_unsafe_inline_legacy=False``)
+    * ``connect-src`` ``'self'`` only (no bare ``ws:`` / ``wss:``)
+    * ``style_unsafe_inline=False``
+
+    ``Csp.dev()`` is the DX preset: CDN hosts, ``style_unsafe_inline=True``,
+    legacy script ``'unsafe-inline'``, and bare ``ws:`` / ``wss:`` in
+    ``connect-src``.
+
+    ``Csp.prod()``: no CDN hosts, no script ``'unsafe-inline'``, no bare
+    ``ws:`` / ``wss:``, plus ``upgrade-insecure-requests`` and
+    ``worker-src 'self'``. ``style_unsafe_inline`` stays off.
+
     ::
 
-        document.use(Csp())      # no script unsafe-inline; connect-src 'self'
-        document.use(Csp.dev())  # DX: CDNs, style attrs, legacy inline, ws:
+        document.use(Csp())
+        document.use(Csp.dev())
         document.use(Csp.prod())
         document.use(Csp.report_only())
 
@@ -648,7 +662,7 @@ class Csp:
 
     @classmethod
     def prod(cls, **overrides: Any) -> "Csp":
-        """Production lock-down: no CDN script hosts, nonced styles preferred."""
+        """Production: no CDN hosts, no script unsafe-inline, no bare ws:/wss:."""
         pol = policy_prod(**overrides)
         return cls.from_policy(pol)
 

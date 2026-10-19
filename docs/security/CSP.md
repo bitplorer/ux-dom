@@ -5,9 +5,15 @@
 ```python
 from ux_dom.plugins import Csp
 
-document.use(Csp())        # prod-safe: no script unsafe-inline, connect-src 'self'
-document.use(Csp.dev())    # create-app / local DX
-document.use(Csp.prod())   # production lock-down
+document.use(Csp())
+# CDN script hosts; no script 'unsafe-inline'; connect-src 'self' only;
+# style_unsafe_inline=False
+document.use(Csp.dev())
+# CDN hosts; style_unsafe_inline=True; legacy script 'unsafe-inline';
+# connect-src 'self' ws: wss:
+document.use(Csp.prod())
+# no CDN hosts; no script 'unsafe-inline'; no bare ws:/wss:;
+# upgrade-insecure-requests; worker-src 'self'; style_unsafe_inline=False
 document.use(Csp.report_only())  # observe only
 ```
 
@@ -36,9 +42,9 @@ After stamp, serialize is **read-agnostic** (attributes carry the nonce).
 
 | Preset | Scripts | Styles | Other |
 |--------|---------|--------|--------|
-| **`Csp()`** | CDN hosts + nonce + strict-dynamic, no `'unsafe-inline'` | nonce + `'self'` | connect-src `'self'` (no bare `ws:`/`wss:`), form-action `'self'` |
-| **`Csp.dev()`** | CDNs (unpkg, jsDelivr, Tailwind CDN) | + **`style_unsafe_inline`** | DX for Alpine/Tailwind attrs |
-| **`Csp.prod()`** | **no CDN hosts** | nonced `<style>` only | `upgrade-insecure-requests`, `worker-src 'self'` |
+| **`Csp()`** | CDN hosts + nonce + strict-dynamic; no `'unsafe-inline'` | nonce + `'self'`; `style_unsafe_inline=False` | connect-src `'self'` only (no bare `ws:`/`wss:`) |
+| **`Csp.dev()`** | CDN hosts + legacy `'unsafe-inline'` | **`style_unsafe_inline=True`** | connect-src `'self' ws: wss:` |
+| **`Csp.prod()`** | **no CDN hosts**; no `'unsafe-inline'` | nonced `<style>` only; `style_unsafe_inline=False` | connect-src `'self'`; `upgrade-insecure-requests`; `worker-src 'self'` |
 | **`Csp.report_only()`** | like prod knobs | like prod | header is **Report-Only** (no block) |
 
 ```python
