@@ -5,7 +5,8 @@
 ```python
 from ux_dom.plugins import Csp
 
-document.use(Csp.dev())    # create-app / local DX (default knobs if Csp())
+document.use(Csp())        # prod-safe: no script unsafe-inline, connect-src 'self'
+document.use(Csp.dev())    # create-app / local DX
 document.use(Csp.prod())   # production lock-down
 document.use(Csp.report_only())  # observe only
 ```
@@ -35,7 +36,7 @@ After stamp, serialize is **read-agnostic** (attributes carry the nonce).
 
 | Preset | Scripts | Styles | Other |
 |--------|---------|--------|--------|
-| **`Csp()` / historical** | CDN hosts + nonce + strict-dynamic | nonce + `'self'` | form-action `'self'` |
+| **`Csp()`** | CDN hosts + nonce + strict-dynamic, no `'unsafe-inline'` | nonce + `'self'` | connect-src `'self'` (no bare `ws:`/`wss:`), form-action `'self'` |
 | **`Csp.dev()`** | CDNs (unpkg, jsDelivr, Tailwind CDN) | + **`style_unsafe_inline`** | DX for Alpine/Tailwind attrs |
 | **`Csp.prod()`** | **no CDN hosts** | nonced `<style>` only | `upgrade-insecure-requests`, `worker-src 'self'` |
 | **`Csp.report_only()`** | like prod knobs | like prod | header is **Report-Only** (no block) |

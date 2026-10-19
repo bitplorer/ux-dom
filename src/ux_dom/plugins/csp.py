@@ -278,9 +278,9 @@ def build_csp_header(
     script_hosts: Sequence[str] = (),
     style_hosts: Sequence[str] = (),
     style_unsafe_inline: bool = False,
-    script_unsafe_inline_legacy: bool = True,
+    script_unsafe_inline_legacy: bool = False,
     img_src: Sequence[str] = ("'self'", "data:"),
-    connect_src: Sequence[str] = ("'self'", "ws:", "wss:"),
+    connect_src: Sequence[str] = ("'self'",),
     font_src: Sequence[str] = ("'self'", "data:"),
     frame_ancestors: str = "'none'",
     base_uri: str = "'self'",
@@ -367,9 +367,9 @@ class CspPolicy:
     script_hosts: tuple = _DEFAULT_SCRIPT_HOSTS
     style_hosts: tuple = ()
     style_unsafe_inline: bool = False
-    script_unsafe_inline_legacy: bool = True
+    script_unsafe_inline_legacy: bool = False
     img_src: tuple = ("'self'", "data:")
-    connect_src: tuple = ("'self'", "ws:", "wss:")
+    connect_src: tuple = ("'self'",)
     font_src: tuple = ("'self'", "data:")
     frame_ancestors: str = "'none'"
     base_uri: str = "'self'"
@@ -411,6 +411,8 @@ def policy_dev(**overrides: Any) -> CspPolicy:
         strict_dynamic=True,
         script_hosts=_DEFAULT_SCRIPT_HOSTS,
         style_unsafe_inline=True,  # style-src-attr for style="" ; style-src token is legacy-only
+        # Bare Csp() defaults this off; dev keeps the Safari fallback.
+        script_unsafe_inline_legacy=True,
         connect_src=("'self'", "ws:", "wss:"),
         debug_header=False,
     )
@@ -472,8 +474,8 @@ class CspMiddleware:
         script_hosts: Sequence[str] = (),
         style_hosts: Sequence[str] = (),
         style_unsafe_inline: bool = False,
-        script_unsafe_inline_legacy: bool = True,
-        connect_src: Sequence[str] = ("'self'", "ws:", "wss:"),
+        script_unsafe_inline_legacy: bool = False,
+        connect_src: Sequence[str] = ("'self'",),
         img_src: Sequence[str] = ("'self'", "data:"),
         font_src: Sequence[str] = ("'self'", "data:"),
         frame_ancestors: str = "'none'",
@@ -579,8 +581,8 @@ class Csp:
 
     ::
 
-        document.use(Csp())           # same as Csp.dev() defaults
-        document.use(Csp.dev())
+        document.use(Csp())      # no script unsafe-inline; connect-src 'self'
+        document.use(Csp.dev())  # DX: CDNs, style attrs, legacy inline, ws:
         document.use(Csp.prod())
         document.use(Csp.report_only())
 
@@ -596,10 +598,8 @@ class Csp:
     )
     style_hosts: Sequence[str] = field(default_factory=tuple)
     style_unsafe_inline: bool = False
-    script_unsafe_inline_legacy: bool = True
-    connect_src: Sequence[str] = field(
-        default_factory=lambda: ["'self'", "ws:", "wss:"]
-    )
+    script_unsafe_inline_legacy: bool = False
+    connect_src: Sequence[str] = field(default_factory=lambda: ["'self'"])
     img_src: Sequence[str] = field(default_factory=lambda: ["'self'", "data:"])
     font_src: Sequence[str] = field(default_factory=lambda: ["'self'", "data:"])
     frame_ancestors: str = "'none'"
