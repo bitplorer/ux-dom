@@ -5,6 +5,8 @@ from __future__ import annotations
 import re
 
 import pytest
+from hypothesis import given, settings
+from hypothesis import strategies as st
 
 from ux_dom.dom import cross_origin, div
 from ux_dom.dom.src.html_string import StringToHTML
@@ -370,6 +372,41 @@ def test_connect_feed_stays_same_origin(attr):
 @pytest.mark.parametrize("attr", SSE_WS_ATTRS)
 def test_every_separator_is_split(attr, sep):
     value = f"swap:a{sep}connect:/feed{sep}connect:wss:evil.com"
+    assert safe_attr_value(attr, value) == UNSAFE_URL
+
+
+# Same-origin connect targets. A tail that still starts with one of these
+# hides the foreign colon after ``/``, so a bounded ``maxsplit`` keeps it.
+_LOCAL_CONNECT_TOKENS = (
+    "connect:/feed",
+    "connect:/ok",
+    "connect:/a",
+    "connect:/ws",
+)
+
+
+@st.composite
+def _tokens_ending_in_foreign_connect(draw):
+    """1-8 tokens, a random JS-whitespace separator between each, evil last."""
+    count = draw(st.integers(min_value=1, max_value=8))
+    tokens = [
+        draw(st.sampled_from(_LOCAL_CONNECT_TOKENS)) for _ in range(count - 1)
+    ]
+    tokens.append("connect:wss:evil.com")
+    if count == 1:
+        return tokens[0]
+    pieces = [tokens[0]]
+    for token in tokens[1:]:
+        pieces.append(draw(st.sampled_from(tuple(_JS_WS_CHARS))))
+        pieces.append(token)
+    return "".join(pieces)
+
+
+@pytest.mark.parametrize("attr", SSE_WS_ATTRS)
+@settings(max_examples=100, deadline=None)
+@given(value=_tokens_ending_in_foreign_connect())
+def test_foreign_connect_is_refused_at_any_token_count(attr, value):
+    """Any fixed ``maxsplit`` misses a longer value. 2 and 3 both fail here."""
     assert safe_attr_value(attr, value) == UNSAFE_URL
 
 

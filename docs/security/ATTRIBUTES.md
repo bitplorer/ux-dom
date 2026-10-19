@@ -109,7 +109,8 @@ htmx 1.9.2 splits the attribute on JavaScript whitespace first (`trim` +
 `[\t\n\v\f\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]`
 (U+FEFF included). Python `str.split()` does not split on U+FEFF, so the
 gate uses this set. HTML entities are decoded before that split, so
-`connect:/f&#32;connect:wss:evil.com` is two tokens and is refused. The
+`connect:/f&#32;connect:wss:evil.com` is two tokens and is refused.
+Double-encoded entity values are refused. The
 same noise strip used for other URLs then runs on each token (drop C0
 controls, ASCII whitespace, and DEL, then ignore case). Only a token that
 starts with `connect:` is a URL prefix.
