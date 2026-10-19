@@ -5,8 +5,15 @@
 ```python
 from ux_dom.plugins import Csp
 
-document.use(Csp.dev())    # create-app / local DX (default knobs if Csp())
-document.use(Csp.prod())   # production lock-down
+document.use(Csp())
+# CDN script hosts; no script 'unsafe-inline'; connect-src 'self' only;
+# style_unsafe_inline=False
+document.use(Csp.dev())
+# CDN hosts; style_unsafe_inline=True; legacy script 'unsafe-inline';
+# connect-src 'self' ws: wss:
+document.use(Csp.prod())
+# no CDN hosts; no script 'unsafe-inline'; no bare ws:/wss:;
+# upgrade-insecure-requests; worker-src 'self'; style_unsafe_inline=False
 document.use(Csp.report_only())  # observe only
 ```
 
@@ -39,9 +46,9 @@ plain string is never given a nonce: a nonce on a string would also bless any
 
 | Preset | Scripts | Styles | Other |
 |--------|---------|--------|--------|
-| **`Csp()` / historical** | CDN hosts + nonce + strict-dynamic | nonce + `'self'` | form-action `'self'` |
-| **`Csp.dev()`** | CDNs (unpkg, jsDelivr, Tailwind CDN) | + **`style_unsafe_inline`** | DX for Alpine/Tailwind attrs |
-| **`Csp.prod()`** | **no CDN hosts** | nonced `<style>` only | `upgrade-insecure-requests`, `worker-src 'self'` |
+| **`Csp()`** | CDN hosts + nonce + strict-dynamic; no `'unsafe-inline'` | nonce + `'self'`; `style_unsafe_inline=False` | connect-src `'self'` only (no bare `ws:`/`wss:`) |
+| **`Csp.dev()`** | CDN hosts + legacy `'unsafe-inline'` | **`style_unsafe_inline=True`** | connect-src `'self' ws: wss:` |
+| **`Csp.prod()`** | **no CDN hosts**; no `'unsafe-inline'` | nonced `<style>` only; `style_unsafe_inline=False` | connect-src `'self'`; `upgrade-insecure-requests`; `worker-src 'self'` |
 | **`Csp.report_only()`** | like prod knobs | like prod | header is **Report-Only** (no block) |
 
 ```python

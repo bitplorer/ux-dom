@@ -40,7 +40,7 @@ def test_policy_prod_knobs():
 
 @pytest.mark.parametrize(
     "val",
-    ("0", "false", "False", "", "FALSE", "no", "off", "n", " 0", "0 "),
+    ("0", "false", "False", "", "FALSE", "no", "off", "n", " 0", "0 ", "garbage"),
 )
 def test_auto_debug_false_strings_are_prod(monkeypatch, val):
     monkeypatch.setenv("DEBUG", val)
