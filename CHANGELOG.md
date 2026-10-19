@@ -33,11 +33,16 @@
   ``connect://host``, and ``connect:javascript:…`` are refused. ``swap:`` /
   ``send:`` names that are not URLs are kept. The prefix is parsed only on
   those four attributes, and the value is split on whitespace the way htmx
-  1.9.2 does (``connect:feed swap:msg``). A ``:`` inside a ``swap:`` or
-  ``send:`` name is part of the name. On ``hx-get``, ``connect:/feed`` is an
+  1.9.2 does (``connect:feed swap:msg``). On ``hx-get``, ``connect:/feed`` is an
   ordinary URL and is refused. A non-leading ``connect:`` does not hide a
   foreign prefix (``https://evil.com/connect:/a``). See
   ``docs/security/ATTRIBUTES.md``.
+- **Security: ``hx-sse`` / ``hx-ws`` split on JavaScript whitespace.** The
+  splitter is the ECMAScript ``\s`` set, including U+FEFF, so
+  ``swap:x`` + U+FEFF + ``connect:wss:evil.com`` is refused on ``hx-sse``,
+  ``hx-ws``, and the ``data-hx-*`` spellings. A ``swap:`` / ``send:`` name
+  must match ``[A-Za-z0-9_.-]+``; a colon or any other character refuses the
+  whole value. An empty name and a bare ``connect:`` are refused.
 
 ## 0.2.0 — remove deprecations
 

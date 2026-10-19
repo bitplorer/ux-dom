@@ -104,11 +104,16 @@ This parsing applies only to `hx-sse`, `hx-ws`, `data-hx-sse`, and
 is an ordinary URL, so `hx-get="connect:/feed"` has the scheme `connect` and
 is refused.
 
-htmx 1.9.2 splits the attribute on whitespace first (`trim` + `/\s+/`), then
-splits each token on the first colon. The same noise strip used for other
-URLs runs on each token (HTML-unescape, drop C0 controls, whitespace, and DEL,
-then ignore case). Only a token that starts with `connect:` is a URL prefix.
-A `:` later in a `swap:` or `send:` name is part of that name (`swap:msg:part`).
+htmx 1.9.2 splits the attribute on JavaScript whitespace first (`trim` +
+`/\s+/`), then splits each token on the first colon. That `\s` set is
+`[\t\n\v\f\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]`
+(U+FEFF included). Python `str.split()` does not split on U+FEFF, so the
+gate uses this set. The same noise strip used for other URLs runs on each
+token (HTML-unescape, drop C0 controls, ASCII whitespace, and DEL, then
+ignore case). Only a token that starts with `connect:` is a URL prefix.
+A `swap:` or `send:` name must match `[A-Za-z0-9_.-]+`. A colon or any other
+character refuses the whole value (`swap:msg:part`). An empty name (`swap:`,
+`send:`) and a bare `connect:` are refused.
 
 | Value | Result |
 | --- | --- |
@@ -118,6 +123,8 @@ A `:` later in a `swap:` or `send:` name is part of that name (`swap:msg:part`).
 | `connect://evil`, `connect:javascript:…` | inert URL |
 | `connect:/feed connect:https://evil.com/s` | inert URL (every leading `connect:` is checked) |
 | `https://evil.com/connect:/a`, `//evil.com/connect:/a` | inert URL (the tail does not replace the foreign prefix) |
+| `swap:x` + U+FEFF + `connect:wss:evil.com` | inert URL (U+FEFF separates the tokens) |
+| `swap:msg:part`, `send:`, `connect:` | inert URL |
 
 `cross_origin(...)` opts the URL inside a leading `connect:` into `http` /
 `https` / `ws` / `wss`. `cross_origin("connect:javascript:…")`,
@@ -125,6 +132,6 @@ A `:` later in a `swap:` or `send:` name is part of that name (`swap:msg:part`).
 `cross_origin("javascript:alert(1)//connect:/a")` stay refused.
 
 **Non-`connect:` tokens.** `swap:<name>` and `send:<name>` stay when `<name>`
-contains no `/` or `\`. The name may contain `:`. `swap:https://…`,
-`send:wss://…`, and a bare `https://…` are refused. A `connect:` that is not
+matches `[A-Za-z0-9_.-]+`. `swap:https://…`, `send:wss://…`, `swap:msg:part`,
+and a bare `https://…` are refused. A `connect:` that is not
 at the start of a token is not a prefix (`prefixconnect:/feed` is refused).

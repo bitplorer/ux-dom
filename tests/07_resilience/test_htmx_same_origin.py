@@ -240,10 +240,7 @@ def test_hx_get_connect_is_an_ordinary_url():
 
 
 def test_embedded_connect_does_not_hide_a_foreign_prefix():
-    """A ``connect:`` later in the value must not replace the foreign prefix.
-
-    These three fail if the prefix guard in ``_connect_targets_ok`` is removed.
-    """
+    """A foreign prefix is an ordinary URL. The tail does not replace it."""
     assert safe_attr_value("hx-get", "https://evil.com/connect:/a") == UNSAFE_URL
     assert safe_attr_value("data-hx-post", "//evil.com/connect:/a") == UNSAFE_URL
     foreign = cross_origin("javascript:alert(1)//connect:/a")

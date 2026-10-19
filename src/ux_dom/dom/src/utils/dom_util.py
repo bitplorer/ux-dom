@@ -129,8 +129,13 @@ SAME_ORIGIN_URL_ATTRIBUTES = frozenset(
     }
 )
 _SSE_WS_ATTRIBUTES = frozenset({"hx-sse", "hx-ws", "data-hx-sse", "data-hx-ws"})
-# Text glued in front of a non-leading connect: may only be swap:/send: names.
-_SSE_WS_META = re.compile(r"^(?:(?:swap|send):[^:/\\]+)+$")
+# ECMAScript \s: WhiteSpace plus LineTerminator. Python str.split() omits U+FEFF.
+_JS_WS = re.compile(
+    "[\t\n\v\f\r \u00a0\u1680\u2000-\u200a\u2028\u2029\u202f\u205f\u3000\ufeff]+"
+)
+# Lowercased, because the probe already folded case. Empty is refused by
+# ``not name`` below; this set is the rest of ``[A-Za-z0-9_.-]+``.
+_SSE_WS_NAME_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789_.-")
 # Attributes whose value is a whole HTML document, not a URL. A scheme check
 # is meaningless there, so they are refused unless the value explicitly opts
 # in through the ``__html__`` protocol (MarkupSafe's ``Markup`` and friends).
@@ -226,70 +231,43 @@ def _cross_origin_probe(probe):
     return ":" not in head or head.split(":", 1)[0] in _CROSS_ORIGIN_SCHEMES
 
 
-def _connect_targets_ok(probe, inner_ok):
-    """Check each htmx ``connect:`` URL inside an already-probed value.
-
-    Returns None when ``probe`` has no ``connect:`` prefix. ``connect:`` is a
-    prefix, not a scheme: the origin check runs on the URL after it. A repeated
-    ``connect:`` is checked too, because htmx 1.9.2 opens one socket per token.
-    Text before the first ``connect:`` may only be ``swap:`` / ``send:`` names.
-    """
-    if "connect:" not in probe:
-        return None
-    prefix, *targets = probe.split("connect:")
-    if prefix and _SSE_WS_META.fullmatch(prefix) is None:
-        return False
-    return all(inner_ok(target) for target in targets)
-
-
-def _embedded_connect(probe, inner_ok):
-    """Refuse a foreign prefix hiding in front of a non-leading ``connect:``.
-
-    A leading ``connect:`` is an hx-sse/hx-ws token, not a rule for every URL.
-    """
-    if "connect:" not in probe or probe.startswith("connect:"):
-        return None
-    return _connect_targets_ok(probe, inner_ok)
-
-
 def _is_same_origin_url(text):
     """True for relative URLs that stay on this origin (no scheme, no ``//host``)."""
     probe = _probe(text)
     if not probe:
         return True
-    connected = _embedded_connect(probe, _relative_same_origin_probe)
-    if connected is not None:
-        return connected
     return _relative_same_origin_probe(probe)
 
 
 def _is_safe_cross_origin_url(text):
-    probe = _probe(text)
-    connected = _embedded_connect(probe, _cross_origin_probe)
-    if connected is not None:
-        return connected
-    return _cross_origin_probe(probe)
+    return _cross_origin_probe(_probe(text))
+
+
+def _js_ws_tokens(text):
+    """Split the way htmx 1.9.2 does: trim and ``/\\s+/`` on the ECMAScript set."""
+    return [token for token in _JS_WS.split(str(text)) if token]
 
 
 def _sse_ws_directive(probe):
-    """True for a swap/send name. ``:`` is allowed; ``/`` and ``\\`` are not."""
+    """True for ``swap``/``send`` whose name matches ``[A-Za-z0-9_.-]+``."""
     keyword, sep, name = probe.partition(":")
     if keyword not in {"swap", "send"} or not sep or not name:
         return False
-    return "/" not in name and "\\" not in name
+    return all(char in _SSE_WS_NAME_CHARS for char in name)
 
 
 def _sse_ws_value_ok(text, *, cross):
-    """htmx 1.9.2 splits the value on whitespace, then reads a leading ``connect:``.
+    """htmx 1.9.2 splits the value on JavaScript whitespace, then ``connect:``.
 
     Only tokens that start with ``connect:`` (after the same noise strip as
-    other URLs) are URL prefixes. ``swap:`` and ``send:`` are not URLs.
+    other URLs) are URL prefixes. ``swap:`` and ``send:`` are not URLs, and
+    their names may not contain ``:``.
     """
     inner_ok = _cross_origin_probe if cross else _relative_same_origin_probe
     # Tab/space between slashes is still a protocol-relative URL after the noise strip.
     if _is_protocol_relative(_probe(text)):
         return False
-    tokens = str(text).split()
+    tokens = _js_ws_tokens(text)
     if not tokens:
         return True
     index = 0
