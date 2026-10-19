@@ -402,3 +402,10 @@ def test_str_split_mutant_keeps_a_bom_separated_connect(attr, value, monkeypatch
     """``str.split()`` does not split on U+FEFF, so both refuse-tests would fail."""
     monkeypatch.setattr(dom_util, "_js_ws_tokens", lambda text: str(text).split())
     assert safe_attr_value(attr, value) != UNSAFE_URL
+
+
+@pytest.mark.parametrize("attr", SSE_WS_ATTRS)
+def test_entity_space_cannot_glue_a_foreign_connect(attr):
+    """``&#32;`` is a space and must be decoded before the split."""
+    value = "connect:/f&#32;connect:wss:evil.com"
+    assert safe_attr_value(attr, value) == UNSAFE_URL
