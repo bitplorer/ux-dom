@@ -26,6 +26,13 @@
   `data-hx-*` / `sse-connect` / `ws-connect` refuse absolute and
   protocol-relative URLs unless wrapped in ``cross_origin(...)``.
   Protocol-relative ``//host`` is also refused on ``href``/``src``.
+- **Security: htmx 1.x ``connect:`` URLs.** ``hx-sse`` / ``hx-ws`` and
+  ``data-hx-sse`` / ``data-hx-ws`` (htmx 1.9.2 reads both spellings) treat
+  ``connect:`` as a prefix, not a scheme. ``connect:/feed`` is kept;
+  ``connect:http://evil``, ``connect:https://…``, ``connect:wss://…``,
+  ``connect://host``, and ``connect:javascript:…`` are refused. ``swap:`` /
+  ``send:`` names that are not URLs are kept. See
+  ``docs/security/ATTRIBUTES.md``.
 
 ## 0.2.0 — remove deprecations
 

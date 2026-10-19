@@ -81,9 +81,9 @@ Tests: `tests/07_resilience/test_unsafe_url_attrs.py`,
 ## htmx / SSE / WebSocket URLs
 
 `hx-get`/`hx-post`/… (and `data-hx-*`), `sse-connect`/`ws-connect` (and
-`data-*` aliases) accept **relative same-origin** URLs only. A foreign
-`https://…` or protocol-relative `//host/…` is replaced with
-`about:invalid#ux-dom-unsafe-url`. Opt in explicitly:
+`data-*` aliases), `hx-sse`/`hx-ws`, and `data-hx-sse`/`data-hx-ws` accept
+**relative same-origin** URLs only. A foreign `https://…` or protocol-relative
+`//host/…` is replaced with `about:invalid#ux-dom-unsafe-url`. Opt in explicitly:
 
 ```python
 from ux_dom.dom import cross_origin, div
@@ -91,3 +91,34 @@ div(hx_get=cross_origin("https://api.example.com/feed"))
 ```
 
 Ordinary `href`/`src` still allow `http`/`https`/… but also refuse `//host`.
+
+### htmx 1.x `connect:<url>`
+
+htmx 1.9.2 reads `hx-sse` / `hx-ws` and the `data-hx-sse` / `data-hx-ws`
+spellings (`getAttributeValue` tries `data-` + the name). The value is
+whitespace-separated tokens. `connect:<url>` is the network target; `swap:<event>`
+and `send:<trigger>` are not URLs.
+
+The same noise strip used for other URLs runs first (HTML-unescape, drop C0
+controls, whitespace, and DEL, then ignore case). Each `connect:` prefix is
+then removed and the URL after it is checked:
+
+| Value | Result |
+| --- | --- |
+| `connect:/feed`, `connect:/ws`, `CONNECT:/feed`, `connect: /feed` | kept |
+| `connect:http://evil`, `connect:https://evil.com/s`, `connect:wss://evil.com/s` | inert URL |
+| `connect://evil`, `connect:javascript:…` | inert URL |
+| `connect:/feed connect:https://evil.com/s` | inert URL (every `connect:` URL is checked) |
+
+`cross_origin(...)` opts the URL inside `connect:` into `http` / `https` /
+`ws` / `wss`. `cross_origin("connect:javascript:…")` and
+`cross_origin("//evil")` stay refused.
+
+**Non-`connect:` values (conservative).** A value with no `connect:` prefix is
+kept only when, after the noise strip, it is one or more `swap:<name>` or
+`send:<name>` directives and `<name>` contains no `:`, `/`, or `\`.
+`swap:message` and `send:submit` stay. `swap:https://…`, `send:wss://…`, and a
+bare `https://…` are refused. `connect:/feed swap:message` stays, because the
+`connect:` URL is `/feed` and `swap:message` is a directive. The same `connect:`
+rule lives in the shared same-origin helper, so `hx-get="connect:/feed"` is
+judged on `/feed` as well.

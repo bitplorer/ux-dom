@@ -124,8 +124,13 @@ SAME_ORIGIN_URL_ATTRIBUTES = frozenset(
         "sse-connect", "ws-connect",
         "data-sse-connect", "data-ws-connect",
         "hx-sse", "hx-ws",
+        # htmx 1.9.2 getAttributeValue reads data-<name> as well as the bare name.
+        "data-hx-sse", "data-hx-ws",
     }
 )
+_SSE_WS_ATTRIBUTES = frozenset({"hx-sse", "hx-ws", "data-hx-sse", "data-hx-ws"})
+# swap:<event> and send:<trigger> are not URLs. The name cannot contain : / \.
+_SSE_WS_META = re.compile(r"^(?:(?:swap|send):[^:/\\]+)+$")
 # Attributes whose value is a whole HTML document, not a URL. A scheme check
 # is meaningless there, so they are refused unless the value explicitly opts
 # in through the ``__html__`` protocol (MarkupSafe's ``Markup`` and friends).
@@ -204,20 +209,61 @@ def _is_safe_url(text):
     return scheme in _SAFE_SCHEMES
 
 
-def _is_same_origin_url(text):
-    """True for relative URLs that stay on this origin (no scheme, no ``//host``)."""
-    probe = _probe(text)
-    if _is_protocol_relative(probe):
+def _relative_same_origin_probe(probe):
+    """``probe`` is already noise-stripped. Relative only: no scheme, no ``//``."""
+    if not probe or _is_protocol_relative(probe):
         return False
     return ":" not in re.split(r"[/?#]", probe, maxsplit=1)[0]
 
 
-def _is_safe_cross_origin_url(text):
-    probe = _probe(text)
+def _cross_origin_probe(probe):
+    """``probe`` is already noise-stripped. http/https/ws/wss, or a relative URL."""
     if _is_protocol_relative(probe):
         return False
+    if not probe:
+        return True
     head = re.split(r"[/?#]", probe, maxsplit=1)[0]
     return ":" not in head or head.split(":", 1)[0] in _CROSS_ORIGIN_SCHEMES
+
+
+def _connect_targets_ok(probe, inner_ok):
+    """Check each htmx ``connect:`` URL inside an already-probed value.
+
+    Returns None when ``probe`` has no ``connect:`` prefix. ``connect:`` is a
+    prefix, not a scheme: the origin check runs on the URL after it. A repeated
+    ``connect:`` is checked too, because htmx 1.9.2 opens one socket per token.
+    Text before the first ``connect:`` may only be ``swap:`` / ``send:`` names.
+    """
+    if "connect:" not in probe:
+        return None
+    prefix, *targets = probe.split("connect:")
+    if prefix and _SSE_WS_META.fullmatch(prefix) is None:
+        return False
+    return all(inner_ok(target) for target in targets)
+
+
+def _is_same_origin_url(text):
+    """True for relative URLs that stay on this origin (no scheme, no ``//host``).
+
+    htmx 1.x writes SSE/WebSocket targets as ``connect:<url>``. The prefix is
+    stripped after the same noise strip as other URLs, then the inner URL is
+    checked. ``connect:/feed`` stays; ``connect:http://evil`` does not.
+    """
+    probe = _probe(text)
+    if not probe:
+        return True
+    connected = _connect_targets_ok(probe, _relative_same_origin_probe)
+    if connected is not None:
+        return connected
+    return _relative_same_origin_probe(probe)
+
+
+def _is_safe_cross_origin_url(text):
+    probe = _probe(text)
+    connected = _connect_targets_ok(probe, _cross_origin_probe)
+    if connected is not None:
+        return connected
+    return _cross_origin_probe(probe)
 
 
 def safe_attr_value(attribute, value):
@@ -240,6 +286,10 @@ def safe_attr_value(attribute, value):
         return str(html_method()) if callable(html_method) else UNSAFE_URL
     if name in SAME_ORIGIN_URL_ATTRIBUTES:
         text = str(value)
+        # swap:/send: are event or trigger names, not URLs. Kept only when the
+        # name cannot itself be a URL (no ":", "/", or "\\").
+        if name in _SSE_WS_ATTRIBUTES and _SSE_WS_META.fullmatch(_probe(text)):
+            return text
         if isinstance(value, CrossOriginURL):
             return text if _is_safe_cross_origin_url(text) else UNSAFE_URL
         return text if _is_same_origin_url(text) else UNSAFE_URL
