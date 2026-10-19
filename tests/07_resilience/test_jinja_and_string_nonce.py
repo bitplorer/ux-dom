@@ -9,7 +9,9 @@ import random
 import pytest
 
 from ux_dom.dom import a, div, li, p, script
+from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.jinjatags import For, Var, render_jinja
+from ux_dom.dom.src.utils import dom_text
 from ux_dom.plugins.csp import reset_nonce, set_nonce, stamp_nonce, stamp_tree
 from ux_dom.response.serialize import prepare_html_body, to_html_bytes
 
@@ -86,11 +88,47 @@ def test_unbalanced_braces_render_as_text(payload):
 
 
 def test_escaped_text_node_is_data_but_raw_is_template():
-    from ux_dom.dom.src.utils import dom_text, raw
+    from ux_dom.dom.src.utils import raw
 
     out = str(render_jinja(div(dom_text("{{ 7*7 }}"), raw("{{ 6*7 }}"))))
     assert "49" not in out and "&#123;&#123; 7*7 &#125;&#125;" in out
     assert "42" in out
+
+
+def test_dom_text_without_escaped_attribute_is_data():
+    """Missing ``escaped`` fails closed: the node is text, not template code.
+
+    Kills the default-False mutant: a node built without ``dom_text.__init__``
+    (``__new__`` / copy / a subclass that skips it) has no ``escaped`` attribute.
+    ``{{ 7*7 }}`` must render as entities, not ``49``.
+    """
+
+    class _BareText(dom_text):
+        def __init__(self, text):
+            self.text = text
+            dom_tag.__init__(self)
+
+    node = _BareText("{{ 7*7 }}")
+    assert not hasattr(node, "escaped")
+    out = str(render_jinja(div(node)))
+    assert "49" not in out
+    assert "&#123;&#123; 7*7 &#125;&#125;" in out
+
+
+def test_pua_e000_e001_round_trip_in_user_text_and_context():
+    """U+E000/U+E001 in user text and context values survive export unchanged.
+
+    Today the fixed brace sentinels are rewritten to ``&#123;`` / ``&#125;``,
+    including characters that were already in the text.
+    """
+    plain = "A\ue000B\ue001C"
+    mixed = "{\ue000}\ue001"
+    out = str(render_jinja(div(p(plain), a("x", title=mixed), Var("v")), v=plain))
+    decoded = html.unescape(out)
+    assert decoded.count(plain) == 2
+    assert decoded.count(mixed) == 1
+    assert decoded.count("\ue000") == 3
+    assert decoded.count("\ue001") == 3
 
 
 def test_export_does_not_change_the_tree():
