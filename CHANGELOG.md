@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Defaults of ``build_csp_header``, ``CspPolicy``, and ``CspMiddleware`` also drop legacy script ``'unsafe-inline'`` and bare ``ws:``/``wss:``. Apps that use cross-origin websockets must list them in ``connect_src``.
 - **Security (breaking default): bare ``Csp()`` is tightened to ``Csp.prod()`` on script inline and connect-src.**
   ``Csp()``, ``CspPolicy``, ``CspMiddleware``, and ``build_csp_header`` no longer
   ship script ``'unsafe-inline'`` or bare ``ws:``/``wss:``. Apps that need inline
