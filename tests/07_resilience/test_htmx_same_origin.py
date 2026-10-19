@@ -66,6 +66,28 @@ def test_rendered_attribute():
 
 # htmx 1.9.2 reads hx-sse / hx-ws and the data- spellings as connect:<url>.
 SSE_WS_ATTRS = ["hx-sse", "hx-ws", "data-hx-sse", "data-hx-ws"]
+# ECMAScript \s, minus ASCII. Python str.split() does not split on U+FEFF.
+_JS_NON_ASCII_WS = [
+    "\u00a0",
+    "\u1680",
+    "\u2000",
+    "\u2001",
+    "\u2002",
+    "\u2003",
+    "\u2004",
+    "\u2005",
+    "\u2006",
+    "\u2007",
+    "\u2008",
+    "\u2009",
+    "\u200a",
+    "\u2028",
+    "\u2029",
+    "\u202f",
+    "\u205f",
+    "\u3000",
+    "\ufeff",
+]
 CONNECT_FOREIGN = [
     "connect:http://evil",
     "connect:https://evil.com/s",
@@ -236,13 +258,55 @@ def test_sse_ws_splits_on_whitespace_like_htmx():
     )
 
 
-def test_event_name_may_contain_a_colon():
-    assert safe_attr_value("hx-sse", "swap:msg:part") == "swap:msg:part"
-    assert safe_attr_value("hx-ws", "send:click:once") == "send:click:once"
-    assert (
-        safe_attr_value("hx-sse", "connect:/feed swap:user:login")
-        == "connect:/feed swap:user:login"
-    )
+def test_event_name_must_not_contain_a_colon():
+    """A swap/send name is ``[A-Za-z0-9_.-]+``. ``:`` refuses the whole value."""
+    assert safe_attr_value("hx-sse", "swap:msg:part") == UNSAFE_URL
+    assert safe_attr_value("hx-ws", "send:click:once") == UNSAFE_URL
+    glued = "connect:/feed swap:user:login"
+    assert safe_attr_value("hx-sse", glued) == UNSAFE_URL
+
+
+@pytest.mark.parametrize("attr", SSE_WS_ATTRS)
+def test_bom_separator_cannot_hide_a_foreign_connect(attr):
+    """U+FEFF is JavaScript whitespace. htmx splits; ``str.split()`` does not."""
+    value = "swap:x\ufeffconnect:wss:evil.com"
+    assert safe_attr_value(attr, value) == UNSAFE_URL
+
+
+def test_bom_separator_cannot_hide_an_sse_https_target():
+    value = "swap:x\ufeffconnect:https:evil.com"
+    assert safe_attr_value("hx-sse", value) == UNSAFE_URL
+    assert safe_attr_value("data-hx-sse", value) == UNSAFE_URL
+
+
+@pytest.mark.parametrize(
+    "sep", _JS_NON_ASCII_WS, ids=lambda char: f"U+{ord(char):04X}"
+)
+@pytest.mark.parametrize("attr", SSE_WS_ATTRS)
+def test_js_whitespace_separates_sse_ws_tokens(attr, sep):
+    value = f"swap:x{sep}connect:wss:evil.com"
+    assert safe_attr_value(attr, value) == UNSAFE_URL
+
+
+def test_empty_swap_or_send_name_is_refused():
+    """Fails if the empty-name check in ``_sse_ws_directive`` is removed."""
+    assert safe_attr_value("hx-sse", "swap:") == UNSAFE_URL
+    assert safe_attr_value("hx-ws", "send:") == UNSAFE_URL
+    assert safe_attr_value("data-hx-sse", "connect:/feed swap:") == UNSAFE_URL
+    assert safe_attr_value("data-hx-ws", "connect:/ws send:") == UNSAFE_URL
+
+
+def test_bare_connect_is_refused():
+    """Fails if the empty ``connect:`` target check is removed.
+
+    ``cross_origin`` treats an empty probe as allowed, so a bare ``connect:``
+    stays refused only while that empty-target check is present.
+    """
+    assert safe_attr_value("hx-sse", "connect:") == UNSAFE_URL
+    assert safe_attr_value("hx-ws", "connect:") == UNSAFE_URL
+    assert safe_attr_value("data-hx-sse", "connect:") == UNSAFE_URL
+    assert safe_attr_value("hx-sse", cross_origin("connect:")) == UNSAFE_URL
+    assert safe_attr_value("data-hx-ws", cross_origin("connect:")) == UNSAFE_URL
 
 
 def test_connect_matches_only_a_leading_prefix():
