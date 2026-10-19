@@ -209,3 +209,43 @@ def test_cross_origin_refuses_protocol_relative():
 def test_sse_ws_attrs_stay_in_the_gate(attr):
     assert attr in SAME_ORIGIN_URL_ATTRIBUTES
     assert safe_attr_value(attr, "connect:http://evil") == UNSAFE_URL
+
+
+def test_hx_get_connect_is_an_ordinary_url():
+    """``connect:`` is an hx-sse/hx-ws prefix, not an hx-get prefix."""
+    assert safe_attr_value("hx-get", "connect:/feed") == UNSAFE_URL
+    assert safe_attr_value("data-hx-post", "connect:/feed") == UNSAFE_URL
+
+
+def test_embedded_connect_does_not_hide_a_foreign_prefix():
+    """A ``connect:`` later in the value must not replace the foreign prefix.
+
+    These three fail if the prefix guard in ``_connect_targets_ok`` is removed.
+    """
+    assert safe_attr_value("hx-get", "https://evil.com/connect:/a") == UNSAFE_URL
+    assert safe_attr_value("data-hx-post", "//evil.com/connect:/a") == UNSAFE_URL
+    foreign = cross_origin("javascript:alert(1)//connect:/a")
+    assert safe_attr_value("hx-get", foreign) == UNSAFE_URL
+
+
+def test_sse_ws_splits_on_whitespace_like_htmx():
+    assert safe_attr_value("hx-sse", "connect:feed swap:msg") == "connect:feed swap:msg"
+    assert (
+        safe_attr_value("data-hx-ws", "connect:feed send:submit")
+        == "connect:feed send:submit"
+    )
+
+
+def test_event_name_may_contain_a_colon():
+    assert safe_attr_value("hx-sse", "swap:msg:part") == "swap:msg:part"
+    assert safe_attr_value("hx-ws", "send:click:once") == "send:click:once"
+    assert (
+        safe_attr_value("hx-sse", "connect:/feed swap:user:login")
+        == "connect:/feed swap:user:login"
+    )
+
+
+def test_connect_matches_only_a_leading_prefix():
+    assert safe_attr_value("hx-sse", "x connect:/feed") == "x connect:/feed"
+    assert safe_attr_value("hx-sse", "prefixconnect:/feed") == UNSAFE_URL
+    assert safe_attr_value("hx-ws", "https://evil.com/connect:/a") == UNSAFE_URL
