@@ -630,8 +630,14 @@ class Csp:
         import os
 
         if debug is None:
-            # Unset DEBUG means production (fail closed). Set DEBUG=1 for DX.
-            debug = os.environ.get("DEBUG", "0") not in ("0", "false", "False", "")
+            # Truthy allowlist only. Unset, empty, and typos mean prod.
+            # Set DEBUG=1 for dev.
+            debug = os.environ.get("DEBUG", "").strip().lower() in (
+                "1",
+                "true",
+                "yes",
+                "on",
+            )
         return cls.dev(**overrides) if debug else cls.prod(**overrides)
 
     @classmethod
