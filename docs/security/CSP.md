@@ -51,7 +51,7 @@ plain string is never given a nonce: a nonce on a string would also bless any
 | **`Csp.prod()`** | **no CDN hosts**; no `'unsafe-inline'` | nonced `<style>` only; `style_unsafe_inline=False` | connect-src `'self'`; `upgrade-insecure-requests`; `worker-src 'self'` |
 | **`Csp.report_only()`** | like prod knobs | like prod | header is **Report-Only** (no block) |
 
-The defaults of `build_csp_header`, `CspPolicy`, and `CspMiddleware` also drop legacy script `'unsafe-inline'` and bare `ws:`/`wss:`, so apps that use cross-origin websockets must list them in `connect_src`.
+The defaults of `build_csp_header`, `CspPolicy`, and `CspMiddleware` also drop legacy script `'unsafe-inline'` and bare `ws:`/`wss:`. `connect_src` replaces that default, so `'self'` must be listed alongside any cross-origin websocket.
 
 ```python
 # tighten production websockets to your host

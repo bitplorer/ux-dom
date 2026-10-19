@@ -2,12 +2,12 @@
 
 ## Unreleased
 
-- Defaults of ``build_csp_header``, ``CspPolicy``, and ``CspMiddleware`` also drop legacy script ``'unsafe-inline'`` and bare ``ws:``/``wss:``. Apps that use cross-origin websockets must list them in ``connect_src``.
 - **Security (breaking default): bare ``Csp()`` is tightened to ``Csp.prod()`` on script inline and connect-src.**
   ``Csp()``, ``CspPolicy``, ``CspMiddleware``, and ``build_csp_header`` no longer
   ship script ``'unsafe-inline'`` or bare ``ws:``/``wss:``. Apps that need inline
   scripts or websockets must opt in via ``Csp.dev()`` or explicit arguments.
-  ``Csp.dev()`` is unchanged.
+  ``connect_src`` replaces the default, so ``'self'`` must be listed alongside
+  any cross-origin websocket. ``Csp.dev()`` is unchanged.
 - **Security: ``Csp.auto()`` defaults to prod when DEBUG is unset.** Prod drops
   script ``'unsafe-inline'`` and bare ``ws:``/``wss:`` (name hosts in overrides).
 - unset DEBUG now means prod; set DEBUG=1 for dev
