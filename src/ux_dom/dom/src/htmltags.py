@@ -8,6 +8,8 @@
 
 Imported via ux_dom.dom. Attribute cleaning: Tags.clean_attribute.
 """
+import re
+
 from ux_dom.dom.src.main import extension
 from ux_dom.dom.src.utils.dom_util import (
     checked_comment_text,
@@ -383,6 +385,93 @@ class meta(html_tag):
     is_single = True
 
 
+# HTML spec §13.2.6 (tree construction dispatcher): below these elements the
+# HTML rules apply again, so <style> / <script> are raw text there.
+_SVG_HTML_INTEGRATION_POINTS = frozenset({"foreignobject", "desc", "title"})
+_MATHML_TEXT_INTEGRATION_POINTS = frozenset({"mi", "mo", "mn", "ms", "mtext"})
+_HTML_ENCODINGS = frozenset({"text/html", "application/xhtml+xml"})
+
+
+def _ascii_lower(text):
+    # The parser folds ASCII case only. A non-ASCII name matches nothing here.
+    text = str(text)
+    return text.lower() if text.isascii() else text
+
+
+def _element_name(node):
+    """Lowercase name of the start tag ``node`` writes, or ``None`` if none.
+
+    Tag-less wrappers (``render_tag=False``: Component, PlaceholderTag),
+    ``open_tag`` markup and template delimiters write no element.
+    """
+    if not isinstance(node, extension.Tags) or node.left_delimiter != "<":
+        return None
+    if not node._control(node.RENDER_TAG, True) or node._control(node.OPEN_TAG):
+        return None
+    return _ascii_lower(node._clean_name(node._tagname()))
+
+
+def _html_encoding(node):
+    # Attributes render sorted and a browser keeps the first duplicate, so
+    # every spelling of ``encoding`` must name HTML.
+    values = [
+        v
+        for k, v in node.attributes.items()
+        if _ascii_lower(k) == "encoding" and v is not False
+    ]
+    return bool(values) and all(
+        isinstance(v, str) and _ascii_lower(v) in _HTML_ENCODINGS for v in values
+    )
+
+
+def _parsed_namespace(node):
+    """``"html"``, ``"svg"`` or ``"math"``: the namespace an HTML parser gives
+    ``node`` where the tree puts it (§13.2.6).
+
+    Below a foreign element that is not an integration point, every child stays
+    foreign. The parser would pop a breakout start tag (``<div>``, ``<p>``, …)
+    back to HTML; counting it as foreign only escapes more, never less.
+    """
+    chain, seen = [], set()
+    while node is not None and id(node) not in seen:
+        seen.add(id(node))
+        name = _element_name(node)
+        if name is not None:
+            chain.append((name, node))
+        node = getattr(node, "parent", None)
+    ns, parent, parent_name = "html", None, None
+    for name, el in reversed(chain):
+        if ns == "svg":
+            html_rules = parent_name in _SVG_HTML_INTEGRATION_POINTS
+        elif ns == "math":
+            html_rules = (
+                parent_name in _MATHML_TEXT_INTEGRATION_POINTS
+                and name not in ("mglyph", "malignmark")
+            ) or (
+                parent_name == "annotation-xml"
+                and (name == "svg" or _html_encoding(parent))
+            )
+        else:
+            html_rules = True
+        if html_rules:
+            ns = name if name in ("svg", "math") else "html"
+        parent, parent_name = el, name
+    return ns
+
+
+# An author's own outer ``<![CDATA[ ... ]]>`` (the usual SVG idiom), with no
+# ``]]>`` inside it. It is unwrapped and wrapped again by the renderer.
+_AUTHOR_CDATA = re.compile(r"\s*<!\[CDATA\[((?:(?!\]\]>).)*)\]\]>\s*", re.S)
+
+
+def _cdata(text):
+    """``text`` as one CDATA section; a ``]]>`` in it is split across two."""
+    m = _AUTHOR_CDATA.fullmatch(text)
+    if m:
+        text = m.group(1)
+    return "<![CDATA[" + text.replace("]]>", "]]]]><![CDATA[>") + "]]>"
+
+
 class _RawTextElement(html_tag):
     """Raw text element (``script`` / ``style``, HTML spec §13.1.2).
 
@@ -391,6 +480,13 @@ class _RawTextElement(html_tag):
     ``"ipt>"``), added later, or set by index cannot close the element. Overriding
     ``_render_children`` also routes the async compact walker through ``_render``
     (``ext._delegates_to_render``), so sync and async output are identical.
+
+    Inside ``<svg>`` / ``<math>`` (foreign content, §13.2.6.5) the element is
+    not raw text: the parser reads its body as markup. There the body is one
+    CDATA section, which the parser keeps verbatim (§13.2.5.42), so the CSS or
+    JS is the author's text. It is neutralized first as well: if the parser
+    pops back to HTML (a breakout tag such as ``svg(div(style()))``), the
+    element is raw text again and ``<![CDATA[`` is plain text there.
     """
 
     def _render_children(self, sb, indent_level, indent_str, pretty, xhtml, _seen=None):
@@ -398,7 +494,8 @@ class _RawTextElement(html_tag):
         inline = super()._render_children(
             body, indent_level, indent_str, pretty, xhtml, _seen=_seen
         )
-        sb.append(neutralize_raw_text("".join(map(str, body)), self.raw_text))
+        text = neutralize_raw_text("".join(map(str, body)), self.raw_text)
+        sb.append(text if _parsed_namespace(self) == "html" else _cdata(text))
         return inline
 
 
