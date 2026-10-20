@@ -36,6 +36,7 @@
    "escape_attr_minimal",
    "include",
    "lazy",
+   "neutralize_raw_text",
    "raw",
    "safe_attr_value",
    "system",

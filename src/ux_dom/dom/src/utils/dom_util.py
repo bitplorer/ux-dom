@@ -50,6 +50,7 @@ __all__ = [
     "lazy",
     "dom_text",
     "raw",
+    "neutralize_raw_text",
     "safe_attr_value",
     "UNSAFE_URL",
     "URL_ATTRIBUTES",
@@ -101,6 +102,41 @@ def escape(data, quote=True):
         data = data.replace('"', "&" + "quot;")
         data = data.replace("'", "&" + "#39;")
     return data
+
+
+# Raw text elements (HTML spec §13.1.2): their text is never entity-decoded by
+# the browser, so HTML-escaping corrupts JS/CSS. The only hazards are sequences
+# that end the element early or (script only) enter the escaped states.
+_RAW_TEXT_HAZARDS = {
+    "script": re.compile(r"</(script)|<!--", re.IGNORECASE),
+    "style": re.compile(r"</(style)", re.IGNORECASE),
+}
+
+
+def neutralize_raw_text(data, tagname):
+    """Make text safe as the content of a raw text element without escaping it.
+
+    ``</script`` / ``</style`` (any case) become ``<\\/script`` / ``<\\/style`` —
+    identical meaning inside JS and CSS strings, but no longer an end tag.
+    In ``<script>``, ``<!--`` becomes ``\\u003C!--`` so the parser never enters
+    the script-data-escaped states (spec "restrictions for contents of script
+    elements"). Both forms are valid in JS strings, JSON (``application/json``,
+    ``importmap``) and u-flag regexes (unlike ``\\!``). Everything else (``<``,
+    ``&``, quotes) is emitted verbatim. Callers pass the element's whole joined
+    body: neutralizing children one by one misses hazards split across them.
+    """
+    if not isinstance(data, str):
+        data = str(data)
+    pattern = _RAW_TEXT_HAZARDS.get(str(tagname).lower())
+    if pattern is None:
+        return data
+
+    def _sub(m):
+        if m.group(1) is not None:
+            return "<\\/" + m.group(1)
+        return "\\u003C!--"
+
+    return pattern.sub(_sub, data)
 
 
 # URL-bearing attributes. A script-capable scheme here is an XSS sink, so the

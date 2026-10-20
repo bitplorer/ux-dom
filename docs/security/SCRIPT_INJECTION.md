@@ -48,6 +48,30 @@ One entry per `plugin.name` on the hub.
 Scaffold: document uses `shell_fragments` only; live routes do **not** also
 `raw(ch.scripts())`.
 
+## Inline `<script>` / `<style>` text (raw text elements)
+
+`script` and `style` are HTML raw text elements: the browser never decodes
+entities inside them, so ux-dom emits their **string** children verbatim:
+
+```python
+script("if (a < b && c) go();")   # <script>if (a < b && c) go();</script>
+style("p > a { content: '&'; }")  # <style>p > a { content: '&'; }</style>
+```
+
+Only sequences that could end the element early are rewritten (any case):
+`</script` → `<\/script` and `<!--` → `\u003C!--` in scripts, `</style` →
+`<\/style` in styles. These forms mean the same thing inside JS strings, JSON
+(`type="application/json"`, `importmap`), u-flag regexes and CSS strings, so
+user data embedded in an inline script cannot close the tag.
+
+The rewrite runs at **render time over the joined body** (sync and async,
+pretty and compact), so a hazard split across children (`"</scr"`, `"ipt>"`),
+appended later with `.add()`, or set by index is still caught. `raw(...)`
+children skip HTML escaping but are part of that joined body.
+
+Embedding untrusted data in JS is still a JS-context problem: serialize it
+with `json.dumps` (or a `data-*` attribute) rather than string concatenation.
+
 ## What dedupe does *not* fix
 
 - Two **different** URLs for the same library (e.g. CDN htmx + local htmx)  

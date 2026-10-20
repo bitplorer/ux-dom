@@ -10,6 +10,7 @@
    "docs/internals/CONTEXT_SYNC_ASYNC.md",
    "docs/security/ASSETS.md",
    "docs/security/CSP.md",
+   "tests/01_core/test_raw_text_elements.py",
    "tests/02_document_plugins/test_app_composition.py",
    "tests/02_document_plugins/test_csp_auto_prod.py",
    "tests/02_document_plugins/test_csp_bare_defaults.py",

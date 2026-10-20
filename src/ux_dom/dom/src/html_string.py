@@ -135,7 +135,9 @@ class StringToHTML(object):
                     if data := token.data.strip("\n").strip(" ").strip("\n"):
                         with tag or ext.PlaceholderTag() as tag:  # type: ignore[assignment]
                             # handling
-                            if tag.__class__.__name__ == "script":
+                            if getattr(type(tag), "raw_text", None):
+                                # <script>/<style> body: raw text element — never
+                                # HTML-escaped; breakouts neutralized at render.
                                 dom_text(data, escape=False)
                             else:
                                 if token.__class__.__name__ != "Comment":
