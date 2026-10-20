@@ -118,6 +118,7 @@
    "tests/07_resilience/test_markdown_render_kwarg.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/07_resilience/test_raw_string_sinks.py",
+   "tests/07_resilience/test_text_state_parents.py",
    "tests/07_resilience/test_unsafe_url_attrs.py",
    "tests/fixtures/auth_xelements.py",
    "tests/helpers.py"
@@ -140,6 +141,7 @@
     "ux_dom.dom.src.utils.dom_util"
    ],
    "module_level": [
+    "ux_dom.dom.src.ext",
     "ux_dom.dom.src.main",
     "ux_dom.dom.src.utils.dom_util"
    ],

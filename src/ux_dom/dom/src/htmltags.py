@@ -10,6 +10,7 @@ Imported via ux_dom.dom. Attribute cleaning: Tags.clean_attribute.
 """
 import re
 
+from ux_dom.dom.src.ext import _ascii_lower, _element_name
 from ux_dom.dom.src.main import extension
 from ux_dom.dom.src.utils.dom_util import (
     checked_comment_text,
@@ -390,25 +391,6 @@ class meta(html_tag):
 _SVG_HTML_INTEGRATION_POINTS = frozenset({"foreignobject", "desc", "title"})
 _MATHML_TEXT_INTEGRATION_POINTS = frozenset({"mi", "mo", "mn", "ms", "mtext"})
 _HTML_ENCODINGS = frozenset({"text/html", "application/xhtml+xml"})
-
-
-def _ascii_lower(text):
-    # The parser folds ASCII case only. A non-ASCII name matches nothing here.
-    text = str(text)
-    return text.lower() if text.isascii() else text
-
-
-def _element_name(node):
-    """Lowercase name of the start tag ``node`` writes, or ``None`` if none.
-
-    Tag-less wrappers (``render_tag=False``: Component, PlaceholderTag),
-    ``open_tag`` markup and template delimiters write no element.
-    """
-    if not isinstance(node, extension.Tags) or node.left_delimiter != "<":
-        return None
-    if not node._control(node.RENDER_TAG, True) or node._control(node.OPEN_TAG):
-        return None
-    return _ascii_lower(node._clean_name(node._tagname()))
 
 
 def _html_encoding(node):

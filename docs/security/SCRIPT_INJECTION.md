@@ -103,6 +103,27 @@ the element. Nest HTML under `foreignObject`.
 body as SVG markup. If a `style` / `script` inside may carry data, build
 `svg` / `math` as tags, not as `raw()` / `Markup`.
 
+### Inside `textarea`, `title`, `xmp`, `iframe`, `noembed`, `noframes`, `noscript`
+
+The parser reads the body of these elements as text up to their own end tag:
+RCDATA for `textarea` / `title` (character references decoded), RAWTEXT for
+the rest (`noscript` when scripting is on). A `style` / `script` body, a
+comment or `raw()` anywhere below them is not escaped, so each element checks
+its own joined body for `</name` (any ASCII case):
+
+```python
+textarea(style("</textarea><img src=x onerror=alert(1)>"))
+# <textarea><style>&lt;/textarea><img src=x onerror=alert(1)></style></textarea>
+noscript(style("</noscript><img src=x onerror=alert(1)>"))
+# InvalidNodeContext: <noscript> is RAWTEXT: its content would end it early
+```
+
+In RCDATA `&lt;` reads as `<`, so the value is unchanged. RAWTEXT has no other
+spelling, so the render raises `InvalidNodeContext`; `noscript(style(...),
+img(...))` without that sequence renders as before. The check holds in every
+namespace, because a breakout tag (`svg(p(textarea(...)))`) puts the parser
+back in HTML. `plaintext` has no end tag, so nothing below it can end it.
+
 Embedding untrusted data in JS is still a JS-context problem: serialize it
 with `json.dumps` (or a `data-*` attribute) rather than string concatenation.
 

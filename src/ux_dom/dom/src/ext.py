@@ -34,10 +34,12 @@ from ux_dom.dom.src.utils.dom_util import (
     escape,
     checked_attr_name,
     checked_tag_name,
+    checked_text_state_body,
     escape_attr_minimal,
     InvalidNodeContext,
     lazy,
     safe_attr_value,
+    TEXT_STATE_ELEMENTS,
 )
 
 __all__ = [
@@ -132,6 +134,39 @@ def _mixed_content(children) -> bool:
     if memo is None:
         memo = {}
     return any(_shows_text(c, memo) for c in children)
+
+
+def _ascii_lower(text):
+    # The parser folds ASCII case only. A non-ASCII name matches nothing here.
+    text = str(text)
+    return text.lower() if text.isascii() else text
+
+
+def _element_name(node):
+    """Lowercase name of the start tag ``node`` writes, or ``None`` if none.
+
+    Tag-less wrappers (``render_tag=False``: Component, PlaceholderTag),
+    ``open_tag`` markup and template delimiters write no element.
+    """
+    if not isinstance(node, Tags) or node.left_delimiter != "<":
+        return None
+    if not node._control(Tags.RENDER_TAG, True) or node._control(Tags.OPEN_TAG):
+        return None
+    return _ascii_lower(node._clean_name(node._tagname()))
+
+
+def _text_state_name(node, name):
+    """``node``'s name if the tokenizer reads its body as RCDATA / RAWTEXT.
+
+    ``name`` is the node's cleaned tag name (a cheap filter for the hot path).
+    Namespace is not consulted: in ``<svg>`` a breakout tag (``<div>``, ``<p>``)
+    pops the parser back to HTML, so an element the tree puts in foreign
+    content can still be HTML there (§13.2.6.5).
+    """
+    name = _ascii_lower(name)
+    if name in TEXT_STATE_ELEMENTS and _element_name(node) == name:
+        return name
+    return None
 
 
 class Tags(dom_tag, dom1core):
@@ -472,8 +507,11 @@ class Tags(dom_tag, dom1core):
                 pretty=pretty,
             )
 
+        # RCDATA / RAWTEXT (#90): check the joined body, as #53 does.
+        text_state = _text_state_name(self, name) if self_render_tag else None
+        body = [] if text_state else sb
         inline = self._render_children(
-            sb,
+            body,
             (
                 indent_level + 1
                 if not self.is_single or not self_child_dedent
@@ -484,6 +522,8 @@ class Tags(dom_tag, dom1core):
             xhtml,
             _seen=_seen,
         )
+        if text_state:
+            sb.append(checked_text_state_body("".join(map(str, body)), text_state))
         inline = self.is_inline and inline
         if self_render_tag and not self.is_single:
             sb, inline = self._new_line_and_inline_handler(
@@ -644,6 +684,12 @@ class Tags(dom_tag, dom1core):
 
         if self_render_tag:
             name = self._clean_name(self._tagname())
+            if _text_state_name(self, name):  # its body is checked as a whole
+                _seen.discard(sid)
+                yield from self._render(
+                    [], indent_level, indent_str, pretty, xhtml, _seen=_seen
+                )
+                return
             if open_tag:
                 yield str(open_tag)
             else:

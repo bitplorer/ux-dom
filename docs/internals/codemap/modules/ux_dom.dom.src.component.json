@@ -69,6 +69,7 @@
    "tests/07_resilience/test_html_string_mxss.py",
    "tests/07_resilience/test_markdown_render_kwarg.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
+   "tests/07_resilience/test_text_state_parents.py",
    "tests/helpers.py"
   ],
   "imported_by": {
