@@ -11,11 +11,6 @@
   `WebSocketAdapter`), and `WebComponentSlot.__checks__` (inherited). The
   `_adapter` usage note and `ux_dom.scripts` docstring now match the real API and
   the package URL `/ux-dom/static/x_element.js`.
-- **Refactor: ``uxdom build`` reports only checks that can fail.** The always-green
-  ``assets-mount`` / ``css`` / ``css-artifacts`` steps are gone; ``SyncReport`` gains
-  ``errors`` and ``ok`` reflects them, so a static-sync error fails the build;
-  ``--package`` syncs once. The unused ``uxdom dashboard`` panel/asset registry
-  (``Asset``, ``Panel``, ``register_panel``, …) is removed; output is unchanged.
 - **Fix: ``Csp`` presets honour later field edits.** ``Csp.dev()`` / ``prod()`` /
   ``report_only()`` no longer cache a ``policy``, so ``c.debug_header = True`` or
   ``dataclasses.replace(c, ...)`` reach ``to_policy()``. Preset headers are unchanged.
