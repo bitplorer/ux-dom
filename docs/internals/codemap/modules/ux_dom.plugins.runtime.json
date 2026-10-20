@@ -26,6 +26,7 @@
    "tests/02_document_plugins/test_plugin_assets.py",
    "tests/02_document_plugins/test_safe_static.py",
    "tests/02_document_plugins/test_script_dedupe.py",
+   "tests/03_routing_cli/test_build_honest_steps.py",
    "tests/03_routing_cli/test_build_package.py",
    "tests/04_production/test_docs_integrity.py",
    "tests/04_production/test_production_lock.py",

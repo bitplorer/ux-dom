@@ -1,6 +1,7 @@
 {
  "ux_dom.cli.static_assets": {
   "consumers": [
+   "tests/03_routing_cli/test_build_honest_steps.py",
    "tests/03_routing_cli/test_build_package.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
    "tests/07_resilience/test_dead_surface_removed.py"
@@ -10,7 +11,9 @@
     "ux_dom.cli.build"
    ],
    "module_level": [],
-   "type_checking": []
+   "type_checking": [
+    "ux_dom.cli.build"
+   ]
   },
   "imports_internal": {
    "function_level": [

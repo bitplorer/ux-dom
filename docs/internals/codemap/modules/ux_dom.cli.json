@@ -5,6 +5,7 @@
    "tests/01_core/test_full_mro_behaviour_integration.py",
    "tests/01_core/test_host_path_coverage.py",
    "tests/01_core/test_mro_signatures.py",
+   "tests/03_routing_cli/test_build_honest_steps.py",
    "tests/03_routing_cli/test_dx_cli.py",
    "tests/03_routing_cli/test_scaffold_check.py",
    "tests/03_routing_cli/test_serve_dx.py",

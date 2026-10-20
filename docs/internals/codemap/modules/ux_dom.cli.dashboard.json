@@ -18,14 +18,7 @@
   "layer": "cli",
   "path": "src/ux_dom/cli/dashboard.py",
   "public": [
-   "Asset",
-   "Panel",
-   "clear_panels",
-   "configure_dashboard",
-   "register_assets",
-   "register_panel",
    "run_dashboard",
-   "unregister_panel",
    "write_dom_dashboard"
   ]
  }
