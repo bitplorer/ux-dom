@@ -103,14 +103,15 @@ class Hello(Component):
             className="flex items-center gap-3",
         )
 
-    @classmethod
-    def get(cls):
-        from document import page
-        return page(cls().render())
-
     @action(caps=())
     def inc(self):
         self.n = int(self.n) + 1
+
+
+def page_view():
+    """GET handler: a module-level function, not a ``get`` classmethod."""
+    from document import page
+    return page(Hello().render())
 ```
 
 HTMX is **opt-in** at the Document layer, not a hard dependency.
