@@ -1,4 +1,4 @@
-"""Pure-dom DX residuals: envfile + doctor. Compiler is uxcompose build.
+"""Pure-dom DX residuals: doctor. Compiler is uxcompose build.
 
 Product lifecycle (create-app / build / serve / deploy) lives on uxcompose
 only. This module locks that absence and keeps pure-dom tooling tests.
@@ -7,13 +7,11 @@ from __future__ import annotations
 
 import unittest
 from pathlib import Path
-from tempfile import TemporaryDirectory
 
 from click import unstyle
 from typer.testing import CliRunner
 
 from ux_dom.cli.cli import app as cli_app
-from ux_dom.cli.envfile import env_files_for, load_env_files, parse_env_text
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -76,43 +74,16 @@ class TestCssCompilerNotOnUxDom(unittest.TestCase):
             import ux_dom.cli.tailwind  # noqa: F401
 
 
-class TestEnvFiles(unittest.TestCase):
-    def test_parse_and_load_does_not_clobber(self):
-        parsed = parse_env_text(
-            '# c\nexport FOO=bar\nQUOTED="x y"\nEMPTY=\nNOPE\n=bad\n'
-        )
-        self.assertEqual(parsed["FOO"], "bar")
-        self.assertEqual(parsed["QUOTED"], "x y")
-        self.assertEqual(parsed["EMPTY"], "")
-        self.assertNotIn("NOPE", parsed)
-
-        with TemporaryDirectory() as td:
-            root = Path(td)
-            (root / ".env").write_text("A=from-env\nB=env\n")
-            (root / ".env.local").write_text("B=local\nC=local\n")
-            (root / ".env.development").write_text("C=dev\n")
-            env = {"A": "process"}
-            read = load_env_files(root, mode="dev", environ=env)
-            self.assertEqual(env["A"], "process")
-            self.assertEqual(env["B"], "local")
-            self.assertEqual(env["C"], "dev")
-            self.assertGreaterEqual(len(read), 2)
-
-    def test_env_files_for_prod(self):
-        names = [p.name for p in env_files_for(Path("/tmp"), mode="prod")]
-        self.assertIn(".env.production", names)
-        self.assertNotIn(".env.development", names)
-
-
 class TestTailwindCommandFailClosed(unittest.TestCase):
     def test_command_module_is_absent(self):
         with self.assertRaises(ImportError):
             import ux_dom.settings.commands  # noqa: F401
 
     def test_style_construct_is_absent(self):
-        from ux_dom.plugins import style
-
-        self.assertFalse(hasattr(style, "TailwindStyle"))
+        style_pkg = ROOT / "src" / "ux_dom" / "plugins" / "style"
+        self.assertFalse(style_pkg.exists(), f"module still present: {style_pkg}")
+        with self.assertRaises(ModuleNotFoundError):
+            import ux_dom.plugins.style  # noqa: F401
 
 
 class TestDoctorReportsProductCss(unittest.TestCase):

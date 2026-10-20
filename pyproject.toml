@@ -94,7 +94,6 @@ ignore_missing_imports = true
 mypy_path = "src"
 exclude = [
   "ux_dom/elements/",
-  "ux_dom/examples/",
 ]
 
 [tool.ruff]
@@ -110,7 +109,6 @@ branch = false
 source = ["ux_dom"]
 omit = [
   "ux_dom/elements/*",
-  "ux_dom/examples/*",
   "ux_dom/alpinejs/*",
   "*/__main__.py",
 ]

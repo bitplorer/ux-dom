@@ -11,10 +11,10 @@ class DeadSurfaceRemoved(unittest.TestCase):
 
         self.assertFalse(hasattr(App, "web"))
 
-    def test_compose_document_parts_has_no_include_controls(self):
-        from ux_dom.assets import compose_document_parts
+    def test_assets_compat_facade_removed(self):
+        import importlib.util
 
-        self.assertNotIn("include_controls", inspect.signature(compose_document_parts).parameters)
+        self.assertIsNone(importlib.util.find_spec("ux_dom.assets"))
 
     def test_sync_runtime_assets_has_no_ignored_params(self):
         from ux_dom.cli.static_assets import sync_runtime_assets

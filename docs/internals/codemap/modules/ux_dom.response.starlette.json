@@ -24,9 +24,7 @@
    "tests/05_chaos/test_stress_races_js_pipeline.py"
   ],
   "imported_by": {
-   "function_level": [
-    "ux_dom.plugins.response"
-   ],
+   "function_level": [],
    "module_level": [
     "ux_dom.response",
     "ux_dom.routing._directory_router_impl"

@@ -17,8 +17,6 @@ from ux_dom.dom import div, span, button
 from ux_dom.plugins import App
 from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.plugins.control import HtmxControl, NullControl
-from ux_dom.plugins.style import NullStyle
-from ux_dom.plugins.response import StreamingResponsePlugin
 from ux_dom.response.starlette import StreamingResponse
 
 
@@ -97,7 +95,6 @@ class TestAppHostComposition(unittest.TestCase):
                         )
                     )
                     .use(HtmxControl(middleware=True))
-                    .use(NullStyle())
                     .build(asgi=FastAPI(title="CutApp", debug=False, default_response_class=HTMLResponse))
                 )
                 self.assertIsNotNone(api)
@@ -112,28 +109,18 @@ class TestAppHostComposition(unittest.TestCase):
             finally:
                 sys.path.remove(str(root))
 
-    def test_null_control_and_response_plugin(self):
+    def test_null_control_partial_policy(self):
         n = NullControl()
         self.assertEqual(n.partial_policy(None), "full")
-        wrap = StreamingResponsePlugin().wrap
-
-        @wrap
-        def ep():
-            return div("w")
-
-        resp = ep()
-        self.assertTrue(hasattr(resp, "body_iterator"))
 
 
 class TestPluginSummary(unittest.TestCase):
     def test_summary_order(self):
         app = (
             App()
-            .use(NullStyle())
             .use(NullControl())
         )
         summary = app.plugin_summary()
-        self.assertIn("style:null", summary)
         self.assertIn("control:null", summary)
         self.assertNotIn("host:fastapi", summary)
 

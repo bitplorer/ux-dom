@@ -11,7 +11,6 @@
     "ux_dom.plugins.csp"
    ],
    "module_level": [
-    "ux_dom.assets",
     "ux_dom.plugins"
    ],
    "type_checking": []

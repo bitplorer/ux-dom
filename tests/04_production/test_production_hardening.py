@@ -23,7 +23,6 @@ from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.utils.parameters import Parameters
 from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
 from ux_dom.response.starlette import StreamingResponse, HTMLResponse
-from ux_dom.settings.paths import MakePath
 from ux_dom.dom.htmldocument import HtmlDocument
 
 
@@ -160,14 +159,6 @@ class TestParametersRequired(unittest.TestCase):
         p = Parameters(f)()
         self.assertIs(p["x"], inspect.Parameter.empty)
         self.assertEqual(p["y"], 1)
-
-
-class TestMakePathVersionDir(unittest.TestCase):
-    def test_version_dir_created(self):
-        with tempfile.TemporaryDirectory() as td:
-            target = str(Path(td) / "v1.2.3")
-            MakePath([target], create_file=False).make_path()
-            self.assertTrue(Path(target).is_dir())
 
 
 class TestHeadBodyInference(unittest.TestCase):

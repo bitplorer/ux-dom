@@ -115,18 +115,9 @@ class TestDiagnosticsMessages(unittest.TestCase):
 
 
 class TestGallery(unittest.TestCase):
-    def test_gallery_page_renders(self):
-        from ux_dom.debug_gallery import gallery_page
-
-        class H(CustomElement):
-            tag_name = "g"
-
-            def render(self, tag_name="g"):
-                return template(div("hi"), **{"x-tagname": tag_name})
-
-        html = str(gallery_page([H.definition()]))
-        self.assertIn("ux_dom-gallery", html)
-        self.assertIn("x-tagname", html)
+    def test_debug_gallery_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.debug_gallery  # noqa: F401
 
 
 class TestCliEntry(unittest.TestCase):

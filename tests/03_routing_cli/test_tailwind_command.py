@@ -14,11 +14,9 @@ class TestTailwindCommandAbsent(unittest.TestCase):
 
 
 class TestTailwindStyleAbsent(unittest.TestCase):
-    def test_only_null_style(self):
-        from ux_dom.plugins import style
-
-        self.assertFalse(hasattr(style, "TailwindStyle"))
-        self.assertTrue(callable(style.NullStyle))
+    def test_style_plugin_package_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.plugins.style  # noqa: F401
 
 
 class TestCliTailwindAbsent(unittest.TestCase):
