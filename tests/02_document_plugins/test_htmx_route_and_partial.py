@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from ux_dom.htmx import Htmx
+from ux_dom.htmx.middleware import HtmxDetails
 from ux_dom.plugins.control.htmx import HtmxControl
 
 VERBS = ("get", "post", "put", "patch", "delete")
@@ -50,6 +51,28 @@ class TestHtmxPartialPolicy(unittest.TestCase):
 
     def test_no_headers_is_full(self):
         self.assertEqual(self._policy(None), "full")
+
+    def test_header_dict_with_type_key_is_not_a_scope(self):
+        headers = {"type": "x", "HX-Request": "true"}
+        self.assertEqual(self._policy(headers), "partial")
+
+
+class TestHtmxDetailsPartial(unittest.TestCase):
+    def test_partial_values(self):
+        cases = [
+            ({"HX-Request": "true"}, True),
+            ({"hx-request": "true"}, True),
+            ({"HX-Request": "True"}, False),
+            ({"HX-Request": True}, False),
+            ({"HX-Request": "1"}, False),
+            ({"HX-Request": "false"}, False),
+            ({}, False),
+            ({"HX-Request": "true", "HX-History-Restore-Request": "true"}, False),
+            ({"HX-Request": "true", "HX-History-Restore-Request": "false"}, True),
+        ]
+        for headers, expected in cases:
+            with self.subTest(headers=headers):
+                self.assertIs(HtmxDetails(headers).partial, expected)
 
 
 if __name__ == "__main__":

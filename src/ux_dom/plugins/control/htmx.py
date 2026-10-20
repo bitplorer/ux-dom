@@ -1,11 +1,10 @@
 """HtmxControl — HTMX script tags and optional middleware (optional SSE ext)."""
 from __future__ import annotations
 
-from types import SimpleNamespace
 from typing import Any, Sequence
 
 from ux_dom.dom import script
-from ux_dom.htmx.middleware import HtmxDetails
+from ux_dom.htmx.middleware import HtmxDetails, HtmxMiddleware
 
 
 class HtmxControl:
@@ -65,18 +64,14 @@ class HtmxControl:
         return dict(kwargs)
 
     def partial_policy(self, request: Any) -> str:
-        headers = getattr(request, "headers", None) or {}
-        if not hasattr(headers, "get"):
-            headers = {}
-        details = HtmxDetails(SimpleNamespace(headers=headers))
+        # Pass the request, not a bare header dict: HtmxDetails reads a dict
+        # with a "type" key as an ASGI scope.
+        headers = getattr(request, "headers", None)
+        details = HtmxDetails(request if hasattr(headers, "get") else {})
         return "partial" if details.partial else "full"
 
     def mount(self, app: Any, **kwargs: Any) -> None:
         if not self.middleware:
-            return
-        try:
-            from ux_dom.htmx.middleware import HtmxMiddleware
-        except Exception:
             return
         # Starlette/FastAPI style
         if hasattr(app, "add_middleware"):
