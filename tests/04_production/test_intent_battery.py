@@ -1,6 +1,7 @@
 """End-to-end intent checks: scaffolded apps behave as product docs claim."""
 from __future__ import annotations
 
+from markupsafe import Markup
 import asyncio
 import concurrent.futures
 import copy
@@ -88,7 +89,7 @@ class TestIntentContracts(unittest.TestCase):
         raw_html = div(raw("<b>x</b>")).__render__(pretty=False)
         self.assertIn("<b>x</b>", raw_html)
         el = div("body")
-        el["open_tag"] = "<!--O-->"
+        el["open_tag"] = Markup("<!--O-->")
         a = el.__render__(pretty=False)
         self.assertEqual(a, el.__render__(pretty=False))
         self.assertTrue(a.startswith("<!--O-->"))

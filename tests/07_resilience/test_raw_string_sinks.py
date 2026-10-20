@@ -232,3 +232,77 @@ def test_to_fragment_duck_typed_render():
             return "<b>ok</b>"
 
     assert to_fragment(Card()) == "<b>ok</b>"
+
+
+# ── tag[i] = sequence / dom_string: each element takes the add() path ───
+
+
+@pytest.mark.parametrize("wrap", [list, tuple])
+def test_setitem_sequence_adds_each_element(wrap):
+    node = div("a", "b")
+    node[0] = wrap([IMG, raw("<i>r</i>")])
+    out = _render(node)
+    assert out == "<div>&lt;img src=x onerror=alert(1)&gt;<i>r</i>b</div>"
+    assert _async_render(node) == out
+    assert "&lt;img" in node.__render__()  # pretty mode renders too
+
+
+@pytest.mark.parametrize("wrap", [list, tuple])
+def test_setitem_sequence_unescaped_is_sanitized(wrap):
+    node = div("a", __escape_string=False)
+    node[0] = wrap([IMG, "<script>alert(1)</script>"])
+    assert _render(node) == '<div><img src="x"></div>'
+
+
+def test_setitem_dom_string_is_escaped_like_add():
+    from ux_dom.dom.src.dom_tag import dom_string
+
+    node = div("a")
+    node[0] = dom_string(IMG)
+    assert _render(node) == "<div>&lt;img src=x onerror=alert(1)&gt;</div>"
+    assert _render(div(dom_string(IMG))) == _render(node)
+
+
+@pytest.mark.parametrize("value", [None, True, {"id": "x"}])
+def test_setitem_rejects_non_children(value):
+    node = div("a")
+    with pytest.raises(TypeError):
+        node[0] = value
+    assert _render(node) == "<div>a</div>"
+
+
+# ── open_tag / close_tag: verbatim markup overrides need Markup ─────────
+
+
+def _set_control(how, key, value):
+    if how == "kwarg":
+        return div("x", **{key: value})
+    if how == "dict":
+        return div({key: value}, "x")
+    node = div("x")
+    node[key] = value
+    return node
+
+
+@pytest.mark.parametrize("how", ["kwarg", "dict", "item"])
+@pytest.mark.parametrize("key", ["open_tag", "close_tag"])
+def test_plain_str_open_close_tag_is_rejected(how, key):
+    node = _set_control(how, key, IMG)
+    with pytest.raises(TypeError):
+        node.__render__(pretty=False)
+    with pytest.raises(TypeError):
+        _async_render(node)
+
+
+def test_markup_open_close_tag_verbatim():
+    node = div("x", open_tag=Markup("<!--O-->"), close_tag=Markup("<!--C-->"))
+    assert _render(node) == "<!--O-->x<!--C-->"
+    assert _render(node) == _async_render(node)
+
+
+def test_jinja_templates_still_render():
+    from ux_dom.dom import For, If, Var
+
+    out = _render(div(For("x in xs", If("x", Var("x")))))
+    assert "{% for x in xs %}" in out and "{% endfor %}" in out
+    assert "{% if x %}" in out and "{{ x }}" in out

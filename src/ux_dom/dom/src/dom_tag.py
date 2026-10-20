@@ -124,16 +124,6 @@ class dom_string(basestring):
     pass
 
 
-def _is_text_child(value) -> bool:
-    """A value add() turns into text: str, bytes-like, or a number.
-
-    ``dom_string`` is already a processed child and keeps its identity.
-    """
-    if isinstance(value, dom_string) or isinstance(value, bool):
-        return False
-    return isinstance(value, (basestring, bytes, bytearray, memoryview, numbers.Number))
-
-
 class dom_tag(object):
     is_single = False  # Tag does not require matching end tag (ex. <hr/>)
     is_pretty = True  # Text inside the tag should be left as-is (ex. <pre>)
@@ -313,17 +303,26 @@ class dom_tag(object):
         when re-parenting a node by index).
         """
         extra = []
-        if isinstance(key, int) and isinstance(value, dom_tag):
-            prev = getattr(value, "parent", None)
-            if prev is not None and prev is not self:
-                extra.append(prev)
+        if isinstance(key, int):
+            items = value if isinstance(value, (list, tuple)) else (value,)
+            for item in items:
+                if isinstance(item, dom_tag):
+                    prev = getattr(item, "parent", None)
+                    if prev is not None and prev is not self:
+                        extra.append(prev)
         with multi_tree_lock(self, *extra):
             self._set_attribute_unlocked(key, value)
 
     def _set_attribute_unlocked(self, key, value):
-        if isinstance(key, int) and _is_text_child(value):
-            # Same escape / sanitize / bytes rules as add(): splice the
-            # child out and add() the value in its place.
+        if isinstance(key, int) and not isinstance(value, dom_tag):
+            if value is None or isinstance(value, (bool, dict)):
+                raise TypeError(
+                    "cannot set child %d to %s; expected str, Markup, a tag, "
+                    "or a sequence of them" % (key, type(value).__name__)
+                )
+            # Same escape / sanitize / bytes rules as add(): splice the child
+            # out and add() the value in its place. A list / tuple adds each
+            # element; a dom_string is escaped, as add() escapes it.
             index = range(len(self.children))[key]
             old = self.children[index]
             tail = self.children[index + 1 :]
@@ -353,8 +352,6 @@ class dom_tag(object):
                         pass
                 value.parent = self
                 value._setdocument(self.document)
-            elif isinstance(value, dom_string):
-                value.parent = self
             self.children[key] = value
         elif isinstance(key, basestring):
             self.attributes[key] = value

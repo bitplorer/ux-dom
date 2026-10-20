@@ -13,3 +13,10 @@
   `lazy()` result that is not a tag, `raw()` or `Markup` is escaped as text
   (verbatim inside `script` / `style`). `to_fragment` accepts any object with
   `__render__`.
+- **Security: `tag[i] = [..]`, `dom_string`, and `open_tag` / `close_tag`.**
+  A list or tuple set by index adds each element through `add()` (it used to
+  render as raw `str(list)`); a `dom_string` is escaped like `add()` escapes
+  it; `None`, `bool` and `dict` raise `TypeError`. `open_tag` / `close_tag`
+  replace the tag verbatim, so they must be `markupsafe.Markup` (the Jinja
+  template tags build theirs that way); a plain string raises `TypeError` at
+  render.

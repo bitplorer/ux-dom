@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from markupsafe import Markup
 import asyncio
 import concurrent.futures
 import threading
@@ -142,7 +143,7 @@ class TestRenderChaos(unittest.TestCase):
 
     def test_open_tag_sticky_concurrent(self):
         el = div("body")
-        el["open_tag"] = "<!--OPEN-->"
+        el["open_tag"] = Markup("<!--OPEN-->")
         with concurrent.futures.ThreadPoolExecutor(10) as ex:
             outs = list(ex.map(lambda _: el.__render__(pretty=False), range(50)))
         self.assertEqual(len(set(outs)), 1)

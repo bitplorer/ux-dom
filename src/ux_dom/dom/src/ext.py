@@ -24,6 +24,7 @@ import typing
 from pathlib import Path
 
 from jinja2.utils import htmlsafe_json_dumps
+from markupsafe import Markup
 
 from ux_dom.dom.src.dom1core import dom1core
 from ux_dom.dom.src.dom_tag import dom_tag, unicode
@@ -131,6 +132,21 @@ class Tags(dom_tag, dom1core):
         if key in self.attributes:
             return self.attributes[key]
         return getattr(self, key, default)
+
+    def _markup_control(self, key):
+        """``open_tag`` / ``close_tag``: verbatim markup that replaces the tag.
+
+        They are emitted as-is, so a value must be trusted ``Markup``
+        (``__html__``), as the template tags build it. A plain string from
+        kwargs, a dict child, or ``tag["open_tag"]`` raises ``TypeError``.
+        """
+        value = self._control(key, False)
+        if not value or callable(getattr(value, "__html__", None)):
+            return value
+        raise TypeError(
+            "%s must be markupsafe.Markup (it is emitted verbatim); got %s"
+            % (key, type(value).__name__)
+        )
 
     def _clean_name(self, name):
         if any(name):
@@ -383,8 +399,8 @@ class Tags(dom_tag, dom1core):
             return sb
         _seen.add(sid)
 
-        self.open_tag = self._control(Tags.OPEN_TAG, False)
-        self.close_tag = self._control(Tags.CLOSE_TAG, False)
+        self.open_tag = self._markup_control(Tags.OPEN_TAG)
+        self.close_tag = self._markup_control(Tags.CLOSE_TAG)
         pretty = pretty and self.is_pretty and not self.is_inline
 
         self_dedent = self._control(Tags.SELF_DEDENT, False)
@@ -573,8 +589,8 @@ class Tags(dom_tag, dom1core):
             return
         _seen.add(sid)
 
-        open_tag = self._control(Tags.OPEN_TAG, False)
-        close_tag = self._control(Tags.CLOSE_TAG, False)
+        open_tag = self._markup_control(Tags.OPEN_TAG)
+        close_tag = self._markup_control(Tags.CLOSE_TAG)
         self_render_tag = self._control(Tags.RENDER_TAG, True)
         self.open_tag = open_tag
         self.close_tag = close_tag
@@ -743,7 +759,7 @@ class SingleTemplates(SingleTags):
             )
         )
         super(SingleTemplates, self).__init__(
-            open_tag=open_tag,
+            open_tag=Markup(open_tag),
             self_dedent=self_dedent or self.self_dedent,
             child_dedent=child_dedent or self.child_dedent,
             **kwargs,
@@ -793,8 +809,8 @@ class DoubleTemplates(DoubleTags):
             ]
         )
         super(DoubleTemplates, self).__init__(
-            open_tag=open_tag,
-            close_tag=close_tag,
+            open_tag=Markup(open_tag),
+            close_tag=Markup(close_tag),
             self_dedent=self_dedent or self.self_dedent,
             child_dedent=child_dedent or self.child_dedent,
             **kwargs,
