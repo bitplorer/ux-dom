@@ -31,3 +31,8 @@ from .src.dom_tag import *  # isort: skip
 
 from .src.html_string import *  # isort: skip
 from .uniqueid import *  # isort: skip
+
+# Public seam (F-15): stable names for siblings — prefer these over ``ux_dom.dom.src.*``.
+from .src.component import Component as Component
+from .src.dom_tag import dom_tag as dom_tag
+from .src.utils.dom_util import escape as escape, raw as raw
