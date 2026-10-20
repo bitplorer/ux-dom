@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import inspect
 import itertools
+import re
 from collections import abc, deque
 from html.parser import HTMLParser
 from typing import Any, Callable, Iterable, Iterator
@@ -466,6 +467,27 @@ class HtmlToAst(HTMLParser):
     def handle_comment(self, data: str):  # type: ignore[override]
         self.struct.nest_terminal(Comment, data)
 
+    def close(self) -> None:
+        """Finish the input, keeping a reference that ends it (``AT&T``).
+
+        Python 3.14.0's ``close`` drops the ``&`` of that reference (3.14.1+
+        reports it), so it is finished here the same way on every version.
+        """
+        match = _TRAILING_REFERENCE.fullmatch(self.rawdata)
+        if match:
+            self.rawdata = ""
+            if match.group(1) is not None:
+                self.handle_charref(match.group(1))
+            else:
+                self.handle_entityref(match.group(2))
+        super().close()
+
+
+# A character reference cut off by the end of the input.
+_TRAILING_REFERENCE = re.compile(
+    r"&(?:#([0-9]+|[xX][0-9a-fA-F]+)|([a-zA-Z][-.a-zA-Z0-9]*))"
+)
+
 
 def tokenize_html(text: str, name: str = "", convert_charrefs: bool = False) -> Root:
     if text is None:
@@ -473,4 +495,6 @@ def tokenize_html(text: str, name: str = "", convert_charrefs: bool = False) -> 
     elif not isinstance(text, str):
         text = str(text)
     parser = HtmlToAst(name, convert_charrefs=convert_charrefs)
-    return parser.feed(text)
+    parser.feed(text)
+    parser.close()
+    return parser.struct.outmost
