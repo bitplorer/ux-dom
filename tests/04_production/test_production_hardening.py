@@ -16,14 +16,14 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from ux_dom import Component, Document
-from ux_dom.dom import button, div, span
-from ux_dom.dom.htmldocument import HtmlDocument
+from ux_dom import Component, Document, Fragment, __version__
+from ux_dom.dom import div, span, button, template
 from ux_dom.dom.src.ext import Tags
 from ux_dom.dom.uniqueid import uniqueid
-from ux_dom.response.starlette import HTMLResponse, StreamingResponse
-from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
 from ux_dom.utils.parameters import Parameters
+from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
+from ux_dom.response.starlette import StreamingResponse, HTMLResponse
+from ux_dom.dom.htmldocument import HtmlDocument
 
 
 class TestRenderIdempotency(unittest.TestCase):
@@ -86,8 +86,7 @@ class TestCSRFInstanceIsolation(unittest.TestCase):
         except AttributeError:
             pass
         # class default should not stick as True from factory if we fixed it
-        # After instance construction with ensure_csrf_token=True,
-        # the class may still be the original
+        # After instance construction with ensure_csrf_token=True, class may still be original
         Document(ensure_csrf_token=False)(div("ok"))
         # concurrent mixed
         errors = []

@@ -8,9 +8,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from fastapi.testclient import TestClient
-from helpers import ScaffoldOptions, create_app
 
-from ux_dom.plugins import App, XElementRuntime
+from helpers import ScaffoldOptions, create_app
+from ux_dom.plugins import App, XElementRuntime, shell_fragments
 from ux_dom.plugins.control import HtmxControl
 from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
@@ -72,6 +72,7 @@ class TestContributionHub(unittest.TestCase):
             src = Path(td) / "p.js"
             src.write_text("console.log(1)", encoding="utf-8")
             hub = PluginHub()
+            set_hub(hub)
             hub.add_contribution(DemoJs(src))
             root = Path(td) / "app"
             root.mkdir()
@@ -82,7 +83,11 @@ class TestContributionHub(unittest.TestCase):
 class TestScaffoldServesPackageJs(unittest.TestCase):
     def test_page_and_runtime_url(self):
         with TemporaryDirectory() as td:
-            root = create_app(ScaffoldOptions("ps", dest=Path(td) / "ps", force=True))
+            root = create_app(
+                ScaffoldOptions(
+                    "ps", dest=Path(td) / "ps", force=True, with_tailwind=False
+                )
+            )
             sys.path.insert(0, str(root))
             for k in list(sys.modules):
                 if k == "app" or k.startswith("app."):

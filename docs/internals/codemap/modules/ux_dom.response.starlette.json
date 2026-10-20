@@ -10,7 +10,6 @@
    "standalone/mcp_app/app.py",
    "standalone/sse_app/app.py",
    "standalone/ws_app/app.py",
-   "tests/01_core/test_full_mro_behaviour_integration.py",
    "tests/01_core/test_host_path_coverage.py",
    "tests/01_core/test_response_decorators.py",
    "tests/01_core/test_streaming_and_attrs.py",

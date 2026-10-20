@@ -3,6 +3,7 @@
   "consumers": [
    "examples/xelement_kit/app/document.py",
    "tests/02_document_plugins/test_csp_nonce.py",
+   "tests/02_document_plugins/test_plugin_assets.py",
    "tests/02_document_plugins/test_script_dedupe.py"
   ],
   "imported_by": {

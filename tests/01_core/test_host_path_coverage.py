@@ -1,10 +1,10 @@
 """CreateAsgi, host, and document mount paths used in production scaffolds."""
-
 from __future__ import annotations
 
 import unittest
 
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
 
 
 class TestCreateAsgiCoverage(unittest.TestCase):
@@ -66,8 +66,8 @@ class TestStaticArtifactAndPackageStatic(unittest.TestCase):
                 [("x_element.js", "head")],
                 resource_prefix="",
             )
+        arts = list(contrib.artifacts())
         # may be empty if resource path resolution differs — still exercise API
-        self.assertIsInstance(list(contrib.artifacts()), list)
         html = contrib.scripts_html()
         self.assertIsInstance(html, str)
         list(contrib.document_head())
@@ -153,7 +153,6 @@ class TestCLIModulesImport(unittest.TestCase):
     def test_imports(self):
         import ux_dom.cli.build  # noqa: F401
         import ux_dom.cli.lint  # noqa: F401
-
         with self.assertRaises(ImportError):
             import ux_dom.cli.scaffold  # noqa: F401
 

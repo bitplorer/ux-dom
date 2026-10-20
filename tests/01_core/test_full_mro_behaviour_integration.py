@@ -7,6 +7,9 @@ import concurrent.futures
 import importlib
 import inspect
 import random
+import sys
+import tempfile
+import textwrap
 import unittest
 import warnings
 from pathlib import Path
@@ -16,14 +19,14 @@ from fastapi.responses import HTMLResponse
 from fastapi.testclient import TestClient
 
 from ux_dom import Component, Document, Fragment, ReactiveComponent
-from ux_dom.dom import button, div, span
+from ux_dom.dom import div, span, button, attr
 from ux_dom.dom.src.dom_tag import dom_tag
-from ux_dom.dom.src.ext import Tags
+from ux_dom.dom.src.ext import Tags, StyleTags
 from ux_dom.dom.src.parse_html import tokenize_html
 from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
-from ux_dom.response.starlette import html_response
+from ux_dom.plugins.routing import DirectoryRouting
 from ux_dom.web_io import HtmxEvents
 
 SKIP = {
@@ -137,8 +140,7 @@ class TestFullMroSignatures(unittest.TestCase):
                         continue
                     if isinstance(raw, property) != isinstance(praw, property):
                         issues.append(
-                            f"{name}.{cls_name}.{method}: property/function kind"
-                            f" vs {parent.__name__}"
+                            f"{name}.{cls_name}.{method}: property/function kind vs {parent.__name__}"
                         )
                     pfn = _unwrap(praw)
                     if not callable(pfn) or isinstance(pfn, type):
@@ -180,7 +182,6 @@ class TestSharedProtocolParams(unittest.TestCase):
 
     def test_html_parser_param_names(self):
         from html.parser import HTMLParser
-
         from ux_dom.dom.src.parse_html import HtmlToAst
 
         for method in (
@@ -263,6 +264,7 @@ class TestBehaviourIntegration(unittest.TestCase):
             Tags.clean_attribute("x_on_click") == "@click"
             or Tags.clean_attribute("x_on_click").startswith("@")
         )
+        self.assertFalse(StyleTags.clean_attribute("x_on_click").startswith("@"))
 
     def test_membership_triad(self):
         c = Card(n=5)
@@ -278,25 +280,71 @@ class TestBehaviourIntegration(unittest.TestCase):
         self.assertIn("hi", str(ast))
 
     def test_http_app_parallel(self):
-        class Page(Component):
-            def render(self):
-                return div(span("pg"), button("b", hx_get="/x"), id="page")
+        with tempfile.TemporaryDirectory() as td:
+            rootp = Path(td)
+            pkg = rootp / "intapp"
+            (pkg / "app" / "items" / "[id]").mkdir(parents=True)
+            for p in [
+                pkg,
+                pkg / "app",
+                pkg / "app" / "items",
+                pkg / "app" / "items" / "[id]",
+            ]:
+                (p / "__init__.py").write_text("")
+            (pkg / "app" / "page.py").write_text(textwrap.dedent("""
+                    from ux_dom.dom import Component, div, span, button
+                    __all__ = ["Page", "Bump"]
+                    class Page(Component):
+                        routes = ["get"]
+                        def render(self):
+                            return div(span("pg"), button("b", hx_get="/x"), id="page")
+                        @classmethod
+                        def get(cls):
+                            return cls()
+                    class Bump(Component):
+                        routes = ["get", "go"]
+                        def render(self, n=0):
+                            return div(f"n={n}", id="bump")
+                        @classmethod
+                        def get(cls):
+                            return cls(n=0)
+                        @classmethod
+                        def go(cls):
+                            return cls(n=1)
+                    """))
+            (pkg / "app" / "items" / "[id]" / "route.py").write_text(
+                "def get(id: str):\n"
+                "    from ux_dom.dom import div\n"
+                "    return div(f'item-{id}')\n"
+            )
+            sys.path.insert(0, str(rootp))
+            try:
+                api = (
+                    App(debug=False)
+                    .use(
+                        DirectoryRouting(
+                            package_dir=pkg, base_directory="app", prefix="/a"
+                        )
+                    )
+                    .use(HtmxControl(middleware=True))
+                    .build(asgi=FastAPI(title="int", debug=False, default_response_class=HTMLResponse))
+                )
+                client = TestClient(api)
+                self.assertIn("pg", client.get("/a/page").text)
+                self.assertIn("item-xyz", client.get("/a/items/xyz").text)
+                paths = [
+                    "/a/page",
+                    "/a/items/1",
+                ]
 
-        asgi = FastAPI(title="int", debug=False, default_response_class=HTMLResponse)
-        asgi.get("/a/page")(html_response(lambda: Page()))
-        asgi.get("/a/items/{id}")(html_response(lambda id: div(f"item-{id}")))
-        api = App(debug=False).use(HtmxControl(middleware=True)).build(asgi=asgi)
-        client = TestClient(api)
-        self.assertIn("pg", client.get("/a/page").text)
-        self.assertIn("item-xyz", client.get("/a/items/xyz").text)
-        paths = ["/a/page", "/a/items/1"]
+                def hit(_):
+                    return client.get(random.choice(paths)).status_code
 
-        def hit(_):
-            return client.get(random.choice(paths)).status_code
-
-        with concurrent.futures.ThreadPoolExecutor(12) as ex:
-            codes = list(ex.map(hit, range(80)))
-        self.assertTrue(all(c == 200 for c in codes))
+                with concurrent.futures.ThreadPoolExecutor(12) as ex:
+                    codes = list(ex.map(hit, range(80)))
+                self.assertTrue(all(c == 200 for c in codes))
+            finally:
+                sys.path.remove(str(rootp))
 
     def test_clear_iadd_uniqueid(self):
         d = div(span("1"), span("2"))

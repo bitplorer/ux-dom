@@ -12,7 +12,7 @@ pytest tests/ --cov=ux_dom --cov-report=term-missing
 | Setting | Value |
 |---------|--------|
 | **fail_under** | **70%** |
-| **omit** | `elements/*`, `examples/*`, demo CLI glue, alpinejs |
+| **omit** | `elements/*`, `alpinejs/*`, `*/__main__.py` |
 
 Omits avoid punishing large tag tables / experimental UI while keeping the
 hypermedia spine honest.
