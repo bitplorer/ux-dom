@@ -27,7 +27,6 @@ from ux_dom.response.serialize import (
 
 __all__ = ["HTMLResponse", "html_response", "StreamingResponse", "streaming_response"]
 
-CallableType = T.TypeVar("CallableType", bound=T.Callable[..., T.Any])
 
 
 def _response_decorator(
@@ -80,7 +79,7 @@ class HTMLResponse(StarletteHTMLResponse):
 
 
 def html_response(
-    endpoint: T.Optional[CallableType] = None,
+    endpoint: T.Optional[T.Callable[..., T.Any]] = None,
 ) -> T.Callable[..., T.Any]:
     """Decorator: renderable endpoint results become :class:`HTMLResponse`.
 
@@ -119,7 +118,7 @@ class StreamingResponse(StarletteStreamingResponse):
 
 
 def streaming_response(
-    endpoint: T.Optional[CallableType] = None,
+    endpoint: T.Optional[T.Callable[..., T.Any]] = None,
 ) -> T.Callable[..., T.Any]:
     """Decorator: stream-renderable endpoint results become :class:`StreamingResponse`.
 
