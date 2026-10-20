@@ -27,6 +27,7 @@
   "layer": "cli",
   "path": "src/ux_dom/cli/doctor.py",
   "public": [
+   "CSS_NOTE",
    "Check",
    "DoctorReport",
    "format_report",

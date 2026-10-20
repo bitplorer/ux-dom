@@ -121,10 +121,7 @@ class TestDoctorReportsProductCss(unittest.TestCase):
 
         rep = run_doctor(cwd=ROOT, port=59990)
         names = {c.name for c in rep.checks}
-        self.assertIn("tailwind", names)
         self.assertIn("python", names)
-        tw = next(c for c in rep.checks if c.name == "tailwind")
-        self.assertIn("uxcompose build", tw.detail)
 
     def test_doctor_cli_path_flag(self):
         runner = CliRunner()
@@ -132,7 +129,6 @@ class TestDoctorReportsProductCss(unittest.TestCase):
             cli_app, ["doctor", "--path", str(ROOT), "--port", "59989"]
         )
         self.assertIn("uxdom doctor", result.output)
-        self.assertIn("tailwind", result.output)
         self.assertIn("uxcompose build", result.output)
 
     def test_doctor_path_option_in_help(self):

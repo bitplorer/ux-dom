@@ -1,14 +1,19 @@
-"""F-22: doctor must not green-wash an unchecked Tailwind probe."""
+"""F-22: doctor reports only checks that can fail; CSS is a footer note, not a check."""
 
 from __future__ import annotations
 
-from ux_dom.cli.doctor import run_doctor
+from ux_dom.cli.doctor import CSS_NOTE, format_report, run_doctor
 
 
-def test_tailwind_check_is_not_a_fake_pass():
-    report = run_doctor()
-    tw = next(c for c in report.checks if c.name == "tailwind")
-    assert tw.ok is False
-    assert tw.level == "info"
-    assert "not checked" in tw.detail.lower() or "uxcompose" in tw.detail.lower()
-    assert report.ok is True  # info-level non-ok must not fail the report
+def test_tailwind_is_not_a_check():
+    report = run_doctor(port=59988)
+    assert "tailwind" not in {c.name for c in report.checks}
+    assert "tailwind" not in {c["name"] for c in report.to_dict()["checks"]}
+
+
+def test_css_note_is_a_footer_not_a_check_row():
+    text = format_report(run_doctor(port=59988))
+    assert text.splitlines()[-1] == CSS_NOTE
+    assert "uxcompose build" in CSS_NOTE
+    rows = [ln for ln in text.splitlines() if ln.lstrip().startswith("[")]
+    assert not any("uxcompose build" in ln for ln in rows)
