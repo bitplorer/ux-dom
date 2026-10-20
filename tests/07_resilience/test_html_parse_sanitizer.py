@@ -119,8 +119,10 @@ def test_braced_data_is_text_not_a_raw_hole():
     # Braces themselves are not HTML-special; the hole was emitting them via
     # escape=False so a "{<script>...}" payload ran. Text now, so tags die.
     out = str(Fragment("{<script>alert(1)</script>}"))
-    assert "<script>" not in out
-    assert "&lt;script&gt;" in out or "script" not in out.lower() or "{" in out
+    assert "<script" not in out.lower()
+    assert "alert(1)" not in out
+    # The braces are text and stay; the script between them is dropped.
+    assert "".join(out.split()) == "{}"
     plain = str(Fragment("{% for x in xs %}{{ x }}{% endfor %}"))
     assert "<script>" not in plain
 
