@@ -84,17 +84,23 @@ class MergeAlpineAttributes(Fragment):
         return key, value
 
     def _merge_bind_attr(self, key, value):
-        if self.attributes.get(key, None) and key != ":class":
-            raise ValueError(f"{key} merging not implemented yet")
+        existing = self.attributes.get(key, None)
+        if not existing or existing == value:
+            return key, value
+        if key != ":class":
+            raise ValueError(
+                f"{self.__class__.__name__}: conflicting bindings for {key}: "
+                f"{existing!r} vs {value!r}; set a single {key} explicitly"
+            )
         # am not sure how well have I handled this case, maybe in future
         # I will be more clear on how to merge bindings. Till then let
         # there be some working usage.
-        if self.attributes.get(key, None):
-            value = "; ".join([self.attributes[key], value])
-        return key, value
+        return key, "; ".join([existing, value])
 
     def _merge_transition_attr(self, key, value):
-        # a boolean x-transition (True / name=name) is bare: it adds no classes
+        # False removes x-transition; a boolean one (True / name=name) is bare
+        if value is False:
+            return key, value
         if value is True or value == key:
             value = None
         existing = self.attributes.get(key, None)

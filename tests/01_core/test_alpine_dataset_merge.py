@@ -22,7 +22,7 @@ def test_each_dataset_helper_renders_inside_dataset(name, helper):
     assert html.startswith("<div ") and "x-data=" in html
 
 
-def test_two_datasets_merge():
+def test_two_dataset_helpers_combine_in_one_dataset():
     with DataSet() as d:
         ds.dataset_focused()
         ds.dataset_hovered()
@@ -61,3 +61,36 @@ def test_dataset_bool_x_transition_after_value_keeps_value():
         attr(x_transition=True)
         div("x")
     assert d.__render__(pretty=False) == '<div x-transition="opacity">x</div>'
+
+
+def test_identical_bind_is_deduped():
+    with DataSet() as d:
+        attr(**{":aria-busy": "loading"})
+        attr(**{":aria-busy": "loading"})
+        div("x")
+    assert ':aria-busy="loading"' in d.__render__(pretty=False)
+
+
+def test_conflicting_bind_fails_loud_naming_both_expressions():
+    with pytest.raises(ValueError, match=r":aria-focused.*'focused'.*'focusVisible'"):
+        with DataSet():
+            ds.dataset_focused()
+            ds.dataset_focus_visible()
+
+
+@pytest.mark.parametrize("group", [Fragment, DataSet])
+@pytest.mark.parametrize("child_value", ["opacity", True])
+def test_false_x_transition_on_group_removes_child_transition(group, child_value):
+    with group() as d:
+        attr(x_transition=False)
+        div("x", x_transition=child_value)
+    assert d.__render__(pretty=False) == "<div>x</div>"
+
+
+@pytest.mark.parametrize("earlier", ["opacity", True])
+def test_dataset_false_x_transition_removes_earlier_value(earlier):
+    with DataSet() as d:
+        attr(x_transition=earlier)
+        attr(x_transition=False)
+        div("x")
+    assert d.__render__(pretty=False) == "<div>x</div>"

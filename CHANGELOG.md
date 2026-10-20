@@ -19,6 +19,11 @@
   stamping no longer hides errors, and its walk only reads ``str`` tag names and
   list/tuple ``children`` (a Component field ``name: int`` no longer breaks it).
 - **Fix: Alpine `dataset_*` helpers no longer raise `KeyError` inside `DataSet`; a boolean `x-transition` merged by `Fragment` / `DataSet` renders bare or keeps the other side's classes instead of `"opacity x-transition"`.**
+  `x-transition` merge rule (Fragment fan-out and DataSet `attr()` stacking): `False` removes the
+  attribute (string or bare); `True` / bare contributes no classes, so it yields the other side's
+  classes, or a bare `x-transition` when both are bare; two class strings are space-joined.
+  A repeated `x-bind` with an identical expression is deduped; a conflicting one raises
+  `ValueError` naming both expressions (`:class` still joins).
 - **Security (breaking default): bare ``Csp()`` is tightened to ``Csp.prod()`` on script inline and connect-src.**
   ``Csp()``, ``CspPolicy``, ``CspMiddleware``, and ``build_csp_header`` no longer
   ship script ``'unsafe-inline'`` or bare ``ws:``/``wss:``. Apps that need inline
