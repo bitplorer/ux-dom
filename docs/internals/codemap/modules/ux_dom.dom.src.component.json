@@ -37,6 +37,7 @@
    "standalone/sse_app/app.py",
    "standalone/ws_app/app.py",
    "tests/01_core/test_alpine_dataset_merge.py",
+   "tests/01_core/test_async_render_parity.py",
    "tests/01_core/test_builtin_mro_behaviour.py",
    "tests/01_core/test_component_capabilities.py",
    "tests/01_core/test_extract_by_id.py",

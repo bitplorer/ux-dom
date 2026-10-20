@@ -4,6 +4,7 @@
    "docs/internals/ARCHITECTURE.md",
    "docs/internals/CORE.md",
    "docs/internals/MODULE_MAP.md",
+   "tests/01_core/test_async_render_parity.py",
    "tests/01_core/test_full_mro_behaviour_integration.py",
    "tests/01_core/test_mro_signatures.py",
    "tests/01_core/test_render_phases.py",
@@ -23,6 +24,7 @@
     "ux_dom.dom.htmlelement",
     "ux_dom.dom.src.component",
     "ux_dom.dom.src.dom_tag",
+    "ux_dom.dom.src.ext",
     "ux_dom.dom.src.main"
    ],
    "type_checking": []

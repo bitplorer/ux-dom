@@ -83,6 +83,10 @@ _walker_delegates: dict = {}  # type -> bool, filled once per class
 
 
 def _delegates_to_render(cls) -> bool:
+    """True when the compact walker must serialize ``cls`` via ``_render``."""
+    cached = _walker_delegates.get(cls)
+    if cached is not None:
+        return cached
     # ``_walk_covers`` lists overrides the class's own walker already runs.
     covered = getattr(cls, "_walk_covers", ())
     found = any(

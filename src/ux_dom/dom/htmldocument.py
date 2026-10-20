@@ -29,6 +29,7 @@ from dataclasses import dataclass, field
 from ux_dom.dom.htmlelement import XTemplate
 from ux_dom.dom.src import component
 from ux_dom.dom.src.dom_tag import dom_tag
+from ux_dom.dom.src.ext import _delegates_to_render
 from ux_dom.dom.src.main import extension
 
 __all__ = ["HtmlDocument"]
@@ -312,11 +313,12 @@ class HtmlDocument(component.Component):
         """Token walk with pre_render once — pretty path must not double-run it.
 
         Compact (pretty=False) runs ``__pre_render__`` here, then streams tokens
-        with the fast walker (``_walk_covers`` below). Pretty delegates to
-        ``_render``, which also calls ``__pre_render__``, so we skip it here.
+        with the fast walker (``_walk_covers`` below). Pretty, or a subclass that
+        overrides a serialize hook, goes through ``_render``, which calls
+        ``__pre_render__`` itself, so we skip it here.
         """
         pretty_flag = pretty and self.is_pretty and not self.is_inline
-        if not pretty_flag:
+        if not pretty_flag and not _delegates_to_render(type(self)):
             self.__pre_render__()
         return super()._walk_render_tokens(
             indent_level, indent_str, pretty, xhtml, _seen=_seen

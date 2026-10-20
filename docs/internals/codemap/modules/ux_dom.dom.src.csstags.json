@@ -1,6 +1,8 @@
 {
  "ux_dom.dom.src.csstags": {
-  "consumers": [],
+  "consumers": [
+   "tests/01_core/test_async_render_parity.py"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [

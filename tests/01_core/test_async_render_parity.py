@@ -155,6 +155,43 @@ class TestAsyncRenderParity(unittest.TestCase):
         self.assertEqual(calls["n"], 0)
         self.assertEqual(html, doc.__render__(pretty=False))
 
+    def test_pre_render_once_per_serialize_on_every_path(self):
+        class HookedDocument(HtmlDocument):
+            # Overriding a serialize hook makes the walker delegate to _render.
+            def _render_children(self, sb, *a, **k):
+                return super()._render_children(sb, *a, **k)
+
+        def make(cls):
+            if cls is HtmlDocument:  # the page Document(...)(...) returns
+                return Document(ensure_csrf_token=False)(div("a"))
+            return cls(div("a"), ensure_csrf_token=False)
+
+        calls = {"n": 0}
+        orig = HtmlDocument.__pre_render__
+
+        def spy(self, *a, **k):
+            calls["n"] += 1
+            return orig(self, *a, **k)
+
+        HtmlDocument.__pre_render__ = spy  # type: ignore
+        try:
+            for cls in (HtmlDocument, HookedDocument):
+                doc = make(cls)
+                self.assertIsInstance(doc, cls)
+                serializers = {
+                    "sync": lambda: doc.__render__(pretty=False),
+                    "sync-pretty": lambda: doc.__render__(pretty=True),
+                    "async": lambda: _arender(doc, pretty=False),
+                    "async-pretty": lambda: _arender(doc, pretty=True),
+                }
+                for name, serialize in serializers.items():
+                    with self.subTest(cls=cls.__name__, path=name):
+                        calls["n"] = 0
+                        serialize()
+                        self.assertEqual(calls["n"], 1)
+        finally:
+            HtmlDocument.__pre_render__ = orig  # type: ignore
+
     def test_every_serialize_hook_override_has_parity_case(self):
         for mod in pkgutil.walk_packages(ux_dom.dom.__path__, "ux_dom.dom."):
             importlib.import_module(mod.name)
