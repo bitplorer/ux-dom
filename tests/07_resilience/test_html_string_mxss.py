@@ -526,6 +526,9 @@ def test_charref_handler_never_emits_markup():
     parser = HtmlToAst()
     parser.handle_charref("62b<img src=x onerror=alert(1)>")
     parser.handle_charref("<svg onload=alert(1)>")
-    out = str(parser.struct.outmost)
-    assert "<" not in out, out
+    kids = list(parser.struct.outmost.children)
+    assert [type(k).__name__ for k in kids] == ["Char", "Data", "Data"], kids
+    assert kids[0].render() == "&#62;"
+    out = _render(StringToHTML(kids).parse() for _ in [0])
+    assert "<img" not in out and "<svg" not in out, out
     assert "<" not in Char("x<img>").render(), Char("x<img>").render()

@@ -305,14 +305,18 @@ class Char(TerminalElement):
     """Represent character codes like: `&#0`"""
 
     def render(self, **kwargs) -> str:  # type: ignore[override]
-        return f"&#{self.data};"
+        if _CHARREF_NAME.fullmatch(self.data):
+            return f"&#{self.data};"
+        return "&amp;#" + _escape_text(self.data)
 
 
 class Entity(TerminalElement):
     """Represent entities like `&amp`"""
 
     def render(self, **kwargs) -> str:  # type: ignore[override]
-        return f"&{self.data};"
+        if _ENTITYREF_NAME.fullmatch(self.data):
+            return f"&{self.data};"
+        return "&amp;" + _escape_text(self.data)
 
 
 def _normalize_attrs(attrs) -> dict:
@@ -456,10 +460,25 @@ class HtmlToAst(HTMLParser):
         self.struct.nest_terminal(Declaration, data)
 
     def handle_charref(self, name: str):  # type: ignore[override]
-        self.struct.nest_terminal(Char, name)
+        self._reference(Char, _CHARREF_NAME, "&#", name)
 
     def handle_entityref(self, name: str):  # type: ignore[override]
-        self.struct.nest_terminal(Entity, name)
+        self._reference(Entity, _ENTITYREF_NAME, "&", name)
+
+    def _reference(self, kind, valid: re.Pattern[str], lead: str, name: str):
+        """Keep only a well-formed reference name; the rest is plain text.
+
+        CPython 3.14.1+ ``close`` passes the whole unparsed tail after an
+        unfinished ``&#62b`` as the name, markup included. Plain text is
+        escaped by the sanitizer, so that tail can never become markup.
+        """
+        match = valid.match(name)
+        if match is None:
+            self.struct.nest_terminal(Data, lead + name)
+            return
+        self.struct.nest_terminal(kind, match.group())
+        if match.end() < len(name):
+            self.struct.nest_terminal(Data, name[match.end() :])
 
     def handle_pi(self, data: str):  # type: ignore[override]
         self.struct.nest_terminal(Pi, data)
@@ -468,25 +487,42 @@ class HtmlToAst(HTMLParser):
         self.struct.nest_terminal(Comment, data)
 
     def close(self) -> None:
-        """Finish the input, keeping a reference that ends it (``AT&T``).
+        """Finish the input, keeping a reference left unfinished (``AT&T``).
 
-        Python 3.14.0's ``close`` drops the ``&`` of that reference (3.14.1+
-        reports it), so it is finished here the same way on every version.
+        The parser holds back from an unfinished reference to the end of the
+        input (``&#62b<img>`` waits for more digits). A browser ends the
+        reference at the first character that cannot continue it and parses
+        the rest as HTML, so that is done here: emit the reference, feed the
+        rest. Doing it here also keeps 3.14.0 (whose ``close`` drops the
+        ``&``) and 3.14.1+ (which hands the whole tail to ``handle_charref``)
+        the same.
         """
-        match = _TRAILING_REFERENCE.fullmatch(self.rawdata)
-        if match:
+        while True:
+            match = _LEADING_REFERENCE.match(self.rawdata)
+            if match is None:
+                break
+            rest = self.rawdata[match.end() :]
             self.rawdata = ""
             if match.group(1) is not None:
                 self.handle_charref(match.group(1))
             else:
                 self.handle_entityref(match.group(2))
+            if not rest:
+                break
+            HTMLParser.feed(self, rest)
         super().close()
 
 
-# A character reference cut off by the end of the input.
-_TRAILING_REFERENCE = re.compile(
+_CHARREF_NAME = re.compile(r"[0-9]+|[xX][0-9a-fA-F]+")
+_ENTITYREF_NAME = re.compile(r"[a-zA-Z][-.a-zA-Z0-9]*")
+# A reference the parser is still holding when the input ends.
+_LEADING_REFERENCE = re.compile(
     r"&(?:#([0-9]+|[xX][0-9a-fA-F]+)|([a-zA-Z][-.a-zA-Z0-9]*))"
 )
+
+
+def _escape_text(text: str) -> str:
+    return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
 def tokenize_html(text: str, name: str = "", convert_charrefs: bool = False) -> Root:
