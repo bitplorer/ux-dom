@@ -14,7 +14,21 @@ from dataclasses import dataclass
 
 import ux_dom.dom
 from ux_dom import Document, ReactiveComponent
-from ux_dom.dom import CSS, CSSClass, CSSId, Keyframes, div, span, style
+from ux_dom.dom import (
+    CSS,
+    CSSClass,
+    CSSId,
+    Keyframes,
+    br,
+    div,
+    li,
+    p,
+    pre,
+    span,
+    style,
+    ul,
+    wbr,
+)
 from ux_dom.dom.htmldocument import HtmlDocument
 from ux_dom.dom.src.ext import StyleTags, Tags
 
@@ -113,6 +127,34 @@ class TestAsyncRenderParity(unittest.TestCase):
         for make in PARITY_CASES[ReactiveComponent]:
             self.assert_parity(make)
 
+    def test_non_pretty_root_keeps_children_compact(self):
+        # pre/style/br/wbr are not pretty: sync never reflows their subtree, and
+        # whitespace inside <pre> is content.
+        for tag in (pre, style, br, wbr):
+            with self.subTest(tag=tag.__name__):
+                make = lambda: tag(div(p("x"), ul(li("a"))))  # noqa: E731
+                self.assertNotIn("\n", _arender(make(), pretty=True))
+                self.assert_parity(make)
+
+    def test_document_compact_does_not_call_render(self):
+        # Mirrors test_pretty_stream's pin: a plain Document stays on the fast
+        # walker (pre_render once, no _render for the page or its plain children).
+        doc = Document(ensure_csrf_token=False)(div(span("a"), span("b")))
+        calls = {"n": 0}
+        orig = Tags._render
+
+        def counting(self, sb, *a, **k):
+            calls["n"] += 1
+            return orig(self, sb, *a, **k)
+
+        Tags._render = counting  # type: ignore
+        try:
+            html = _arender(doc, pretty=False)
+        finally:
+            Tags._render = orig  # type: ignore
+        self.assertEqual(calls["n"], 0)
+        self.assertEqual(html, doc.__render__(pretty=False))
+
     def test_every_serialize_hook_override_has_parity_case(self):
         for mod in pkgutil.walk_packages(ux_dom.dom.__path__, "ux_dom.dom."):
             importlib.import_module(mod.name)
@@ -155,6 +197,19 @@ class TestBodyAssetInference(unittest.TestCase):
         html = self.render(body=["/css/APP.CSS"])
         self.assertIn('<link href="/css/APP.CSS" rel="stylesheet">', html)
         self.assertNotIn('<script src="/css/APP.CSS"', html)
+
+    def test_body_explicit_link_tag_wins(self):
+        html = self.render(
+            body=[
+                {"tag": "link", "href": "/a.css", "name": "x"},
+                {"tag": "css", "href": "/b.css", "charset": "utf-8"},
+                {"tag": "link", "src": "/c.css"},
+            ]
+        )
+        self.assertIn('<link href="/a.css" name="x" rel="stylesheet">', html)
+        self.assertIn('<link charset="utf-8" href="/b.css" rel="stylesheet">', html)
+        self.assertIn('<link rel="stylesheet" src="/c.css">', html)
+        self.assertNotIn('<meta charset="utf-8" href', html)
 
     def test_body_defaults_unchanged(self):
         html = self.render(body=["/js/app.js", "/app", "/a.css", {"href": "/b.css"}])

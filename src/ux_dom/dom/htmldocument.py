@@ -242,15 +242,15 @@ class HtmlDocument(component.Component):
             return tags.script(src=item)
         d = dict(item)
         tag = d.pop("tag", None)
-        if tag in ("script", "js") or ("src" in d and "href" not in d):
-            return tags.script(**d)
-        if tag == "meta" or ("charset" in d or "name" in d or "http_equiv" in d):
-            return tags.meta(**d)
-        if (
-            default == "link"
-            or tag in ("link", "css")
-            or ("href" in d and "src" not in d)
-        ):
+        explicit_link = tag in ("link", "css")
+        # Body honours an explicit link tag first. Head keeps its historical
+        # order (script/meta inference before the tag), which is pinned.
+        if not (explicit_link and default == "script"):
+            if tag in ("script", "js") or ("src" in d and "href" not in d):
+                return tags.script(**d)
+            if tag == "meta" or ("charset" in d or "name" in d or "http_equiv" in d):
+                return tags.meta(**d)
+        if default == "link" or explicit_link or ("href" in d and "src" not in d):
             d.setdefault("rel", "stylesheet")
             return tags.link(**d)
         return tags.script(**d)
@@ -308,10 +308,26 @@ class HtmlDocument(component.Component):
 
         return doc, self.html
 
-    # No _walk_render_tokens override: Tags' walker delegates any class that
-    # overrides _render to it, so both stream modes pre_render exactly once here.
+    def _walk_render_tokens(self, indent_level, indent_str, pretty, xhtml, _seen=None):
+        """Token walk with pre_render once — pretty path must not double-run it.
+
+        Compact (pretty=False) runs ``__pre_render__`` here, then streams tokens
+        with the fast walker (``_walk_covers`` below). Pretty delegates to
+        ``_render``, which also calls ``__pre_render__``, so we skip it here.
+        """
+        pretty_flag = pretty and self.is_pretty and not self.is_inline
+        if not pretty_flag:
+            self.__pre_render__()
+        return super()._walk_render_tokens(
+            indent_level, indent_str, pretty, xhtml, _seen=_seen
+        )
+
     def _render(
         self, sb, indent_level=1, indent_str="  ", pretty=True, xhtml=False, _seen=None
     ):
         self.__pre_render__()
         return super()._render(sb, indent_level, indent_str, pretty, xhtml, _seen=_seen)
+
+    # Our _render only adds __pre_render__, which _walk_render_tokens runs too,
+    # so the compact walker need not hand the page to _render.
+    _walk_covers = (_render,)

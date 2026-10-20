@@ -79,6 +79,18 @@ _WALKER_INLINED_HOOKS = (
     "_render_close_tag",
     "_render_children",
 )
+_walker_delegates: dict = {}  # type -> bool, filled once per class
+
+
+def _delegates_to_render(cls) -> bool:
+    # ``_walk_covers`` lists overrides the class's own walker already runs.
+    covered = getattr(cls, "_walk_covers", ())
+    found = any(
+        (fn := getattr(cls, h)) is not getattr(Tags, h) and fn not in covered
+        for h in _WALKER_INLINED_HOOKS
+    )
+    _walker_delegates[cls] = found
+    return found
 
 
 class Tags(dom_tag, dom1core):
@@ -538,11 +550,12 @@ class Tags(dom_tag, dom1core):
             return
 
         # Overridden hooks (StyleTags dialects, ReactiveComponent's pre-serialize
-        # refresh, HtmlDocument's pre_render) only run inside ``_render``.
+        # refresh) only run inside ``_render``.
         cls = type(self)
-        if any(
-            getattr(cls, h) is not getattr(Tags, h) for h in _WALKER_INLINED_HOOKS
-        ):
+        delegate = _walker_delegates.get(cls)
+        if delegate is None:
+            delegate = _delegates_to_render(cls)
+        if delegate:
             yield from self._render(
                 [], indent_level, indent_str, pretty, xhtml, _seen=_seen
             )
