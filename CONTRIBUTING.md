@@ -83,6 +83,14 @@ Rules:
 4. Prefer `document.use(runtimes)` over hub-only wiring
 5. Prefer package-mounted library JS (`/ux-dom/static/…`) over dual-copy into `/assets`
 
+## Changelog
+
+Do not edit `CHANGELOG.md` in a PR. Add one fragment, `changelog.d/<slug>.<type>.md`
+(slug: PR number or branch name; type: `added|changed|deprecated|removed|fixed|security`),
+holding one or a few bullets. CI runs `python scripts/changelog.py --check`;
+`--preview` shows the assembled section. See [changelog.d/README.md](changelog.d/README.md)
+and [ADR 0001](docs/adr/0001-changelog-fragments.md).
+
 ## Pull requests
 
 - Feature branches. Never commit directly to `main`. Never force-push `main`.
