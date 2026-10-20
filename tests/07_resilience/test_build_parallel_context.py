@@ -7,10 +7,11 @@ from ux_dom.dom import div, span
 
 
 def test_one_and_many_attach_under_with():
+    # Force the parallel policy so the test cannot pass via global settings.
     with div() as root1:
-        build_parallel(lambda i: span(str(i)), [1])
+        build_parallel(lambda i: span(str(i)), [1], parallel=True, max_workers=4)
     with div() as root2:
-        build_parallel(lambda i: span(str(i)), [1, 2])
+        build_parallel(lambda i: span(str(i)), [1, 2], parallel=True, max_workers=4)
     assert len(root1.children) == 1
     assert len(root2.children) == 2
 
