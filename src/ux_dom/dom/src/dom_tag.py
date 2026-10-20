@@ -303,14 +303,42 @@ class dom_tag(object):
         when re-parenting a node by index).
         """
         extra = []
-        if isinstance(key, int) and isinstance(value, dom_tag):
-            prev = getattr(value, "parent", None)
-            if prev is not None and prev is not self:
-                extra.append(prev)
+        if isinstance(key, int):
+            items = value if isinstance(value, (list, tuple)) else (value,)
+            for item in items:
+                if isinstance(item, dom_tag):
+                    prev = getattr(item, "parent", None)
+                    if prev is not None and prev is not self:
+                        extra.append(prev)
         with multi_tree_lock(self, *extra):
             self._set_attribute_unlocked(key, value)
 
     def _set_attribute_unlocked(self, key, value):
+        if isinstance(key, int) and not isinstance(value, dom_tag):
+            if value is None or isinstance(value, (bool, dict)):
+                raise TypeError(
+                    "cannot set child %d to %s; expected str, Markup, a tag, "
+                    "or a sequence of them" % (key, type(value).__name__)
+                )
+            # Same escape / sanitize / bytes rules as add(): splice the child
+            # out and add() the value in its place. A list / tuple adds each
+            # element; a dom_string is escaped, as add() escapes it.
+            index = range(len(self.children))[key]
+            old = self.children[index]
+            tail = self.children[index + 1 :]
+            del self.children[index:]
+            try:
+                self._add_unlocked(value)
+            except BaseException:
+                del self.children[index:]
+                self.children.append(old)
+                raise
+            finally:
+                self.children.extend(tail)
+            if isinstance(old, dom_tag) and getattr(old, "parent", None) is self:
+                if old not in self.children:
+                    old.parent = None
+            return
         if isinstance(key, int):
             old = self.children[key]
             if isinstance(old, dom_tag) and getattr(old, "parent", None) is self:
@@ -324,8 +352,6 @@ class dom_tag(object):
                         pass
                 value.parent = self
                 value._setdocument(self.document)
-            elif isinstance(value, dom_string):
-                value.parent = self
             self.children[key] = value
         elif isinstance(key, basestring):
             self.attributes[key] = value
@@ -418,6 +444,15 @@ class dom_tag(object):
             if obj is True:
                 # Bare True is never meaningful DOM content
                 continue
+            if isinstance(obj, bytes):
+                # Strict UTF-8, then the str path. Invalid UTF-8 raises.
+                obj = obj.decode("utf-8")
+            elif isinstance(obj, (bytearray, memoryview)):
+                # Iterable: falling through would spell them out as integers.
+                raise TypeError(
+                    "cannot add %s as a child; expected str, Markup, or a tag"
+                    % type(obj).__name__
+                )
             if isinstance(obj, numbers.Number):
                 # Convert to string so we fall into next if block
                 obj = str(obj)
@@ -426,9 +461,19 @@ class dom_tag(object):
                 # Raw text elements (<script>, <style>): the browser never
                 # entity-decodes their content, so escaping would corrupt JS/CSS.
                 # Breakouts are neutralized at render time, over the joined body.
-                # Other elements escape unless ``escape_string`` is explicitly False.
-                if not type(self).raw_text and getattr(self, "escape_string", True):
-                    obj = escape(obj)
+                if not type(self).raw_text:
+                    if getattr(self, "escape_string", True):
+                        obj = escape(obj)
+                    elif not callable(getattr(obj, "__html__", None)):
+                        # escape_string falsy: the string is HTML, so it goes
+                        # through the defHTML allowlist (ADR 0002). Markup is
+                        # the verbatim opt-out. Local import: html_string
+                        # imports Tags, which subclasses dom_tag.
+                        from ux_dom.dom.src.html_string import defHTML
+
+                        for node in defHTML(obj):
+                            self._add_unlocked(node)
+                        continue
 
                 # we are wrapping str into dom_string because when we use .get method we may
                 # for some reason want to get the parent of the string values in children,
@@ -656,6 +701,16 @@ class dom_tag(object):
 
     __getattr__ = __getitem__
 
+    def _tagname(self):
+        """The element name: an instance or class ``tagname``, else the class
+        name. Never an HTML attribute: ``__getattr__`` falls back to
+        ``attributes``, so ``getattr(self, "tagname")`` would let
+        ``div(tagname=...)`` or ``{"tagname": ...}`` rename the element."""
+        try:
+            return object.__getattribute__(self, "tagname")
+        except AttributeError:
+            return type(self).__name__
+
     def __len__(self):
         """
         Number of child elements.
@@ -877,14 +932,15 @@ class dom_tag(object):
 
         pretty = pretty and self.is_pretty
 
-        name = getattr(self, "tagname", type(self).__name__)
+        name = self._tagname()
 
         # Workaround for python keywords and standard classes/methods
         # (del, object, input)
-        if name[-1] == "_":
+        if name and name[-1] == "_":
             name = name[:-1]
-        if name[0] == "_":
+        if name and name[0] == "_":
             name = name[1:]
+        name = checked_tag_name(name)
 
         # open tag
         sb.append("<")
@@ -1038,4 +1094,9 @@ def attr(*args, **kwargs):
 
 
 # escape() is used in render
-from ux_dom.dom.src.utils.dom_util import checked_attr_name, escape, safe_attr_value
+from ux_dom.dom.src.utils.dom_util import (
+    checked_attr_name,
+    checked_tag_name,
+    escape,
+    safe_attr_value,
+)

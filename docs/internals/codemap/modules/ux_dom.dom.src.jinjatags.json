@@ -5,7 +5,8 @@
    "examples/xelement_kit/app/routes/jinja.py",
    "tests/02_document_plugins/test_hypermedia_surface.py",
    "tests/07_resilience/test_jinja_and_string_nonce.py",
-   "tests/07_resilience/test_jinja_in_event_loop.py"
+   "tests/07_resilience/test_jinja_in_event_loop.py",
+   "tests/07_resilience/test_raw_string_sinks.py"
   ],
   "imported_by": {
    "function_level": [],

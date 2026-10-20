@@ -52,22 +52,29 @@ def to_fragment(node: Any) -> str:
 
     A ``__html__`` value (``Markup``) is trusted and returned verbatim. A
     plain string is HTML and goes through the same allowlist sanitizer as
-    ``defHTML``, in fragment mode. Tag trees render as built.
+    ``defHTML``, in fragment mode; ``bytes`` are strict UTF-8 first. Tag
+    trees and other ``__render__`` objects render as built. Anything else
+    raises ``TypeError``.
     """
     if node is None:
         return ""
     # ``__html__`` first: MarkupSafe ``Markup`` is a ``str`` and is trusted.
     if callable(getattr(node, "__html__", None)):
         return str(node.__html__())  # type: ignore[misc]
+    if isinstance(node, bytes):
+        # Strict UTF-8, then the str path. Invalid UTF-8 raises.
+        node = node.decode("utf-8")
     if isinstance(node, str):
         return _sanitized_html(node)
-    # ux-dom render path
-    if hasattr(node, "__render__"):
-        try:
-            return str(node.__render__())
-        except Exception:
-            pass
-    return str(node)
+    # Render protocol (any ``__render__``, not only ux-dom tags): the result
+    # is serialized output, as it is for a tag tree.
+    if callable(getattr(node, "__render__", None)):
+        return str(node.__render__())
+    # No ``str(node)`` fallback: an arbitrary ``__str__`` would be live HTML.
+    raise TypeError(
+        "to_fragment cannot coerce %s; expected str, Markup, or a tag"
+        % type(node).__name__
+    )
 
 
 def stamp_region(node: Any, *, uid: str, **data_attrs: str) -> Any:

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from markupsafe import Markup
 import asyncio
 import concurrent.futures
 import threading
@@ -30,7 +31,7 @@ class TestRenderIdempotency(unittest.TestCase):
 
     def test_open_tag_stable(self):
         el = div("body")
-        el["open_tag"] = "<!--open-->"
+        el["open_tag"] = Markup("<!--open-->")
         a = el.__render__(pretty=False)
         b = el.__render__(pretty=False)
         self.assertEqual(a, b)

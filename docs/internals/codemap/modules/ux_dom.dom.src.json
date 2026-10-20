@@ -6,7 +6,8 @@
    "tests/01_core/test_streaming_and_attrs.py",
    "tests/07_resilience/test_f18_directory_router_absent.py",
    "tests/07_resilience/test_html_string_mxss.py",
-   "tests/07_resilience/test_no_deprecations.py"
+   "tests/07_resilience/test_no_deprecations.py",
+   "tests/07_resilience/test_raw_string_sinks.py"
   ],
   "imported_by": {
    "function_level": [],

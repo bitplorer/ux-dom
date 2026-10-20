@@ -19,6 +19,7 @@
    "tests/07_resilience/test_html_string_mxss.py",
    "tests/07_resilience/test_htmx_same_origin.py",
    "tests/07_resilience/test_jinja_and_string_nonce.py",
+   "tests/07_resilience/test_raw_string_sinks.py",
    "tests/07_resilience/test_unsafe_url_attrs.py"
   ],
   "imported_by": {
@@ -30,6 +31,7 @@
     "ux_dom.dom.src.component",
     "ux_dom.dom.src.dom_tag",
     "ux_dom.dom.src.ext",
+    "ux_dom.dom.src.html_string",
     "ux_dom.dom.src.htmltags",
     "ux_dom.dom.src.utils",
     "ux_dom.dom.src.ws_rpc"
@@ -50,10 +52,15 @@
   "public": [
    "CrossOriginURL",
    "InvalidAttributeName",
+   "InvalidMarkupToken",
+   "InvalidTagName",
    "SAME_ORIGIN_URL_ATTRIBUTES",
    "UNSAFE_URL",
    "URL_ATTRIBUTES",
    "checked_attr_name",
+   "checked_comment_text",
+   "checked_doctype",
+   "checked_tag_name",
    "cross_origin",
    "dom_text",
    "escape",

@@ -44,6 +44,11 @@ __all__ = [
     "escape_attr_minimal",
     "InvalidAttributeName",
     "checked_attr_name",
+    "checked_tag_name",
+    "checked_comment_text",
+    "checked_doctype",
+    "InvalidMarkupToken",
+    "InvalidTagName",
     "unescape",
     "url_escape",
     "url_unescape",
@@ -212,6 +217,77 @@ def checked_attr_name(name):
     text = str(name)
     if not text or _BAD_ATTR_NAME.search(text):
         raise InvalidAttributeName(f"invalid attribute name: {text!r}")
+    return text
+
+
+class InvalidTagName(ValueError):
+    """A tag name that could break out of the tag (fail closed)."""
+
+
+# Names without ``-``: HTML, camelCase SVG (``linearGradient``) and namespaced
+# (``svg:rect``) names, ASCII only. No whitespace, quotes, ``/``, ``=`` or
+# ``>``, so a name cannot add attributes or close the tag.
+_TAG_NAME = re.compile(r"[A-Za-z][A-Za-z0-9._:-]*")
+# Names with ``-``: the HTML spec's valid custom element name grammar
+# (``[a-z] PCENChar* '-' PCENChar*``), which allows non-ASCII (``x-ñ``).
+# Built-in hyphenated SVG names (``font-face``) fit it too.
+_PCEN_CHARS = (
+    "-._0-9a-z\u00b7\u00c0-\u00d6\u00d8-\u00f6\u00f8-\u037d\u037f-\u1fff"
+    "\u200c-\u200d\u203f-\u2040\u2070-\u218f\u2c00-\u2fef\u3001-\ud7ff"
+    "\uf900-\ufdcf\ufdf0-\ufffd\U00010000-\U000effff"
+)
+_CUSTOM_TAG_NAME = re.compile("[a-z][%s]*-[%s]*" % (_PCEN_CHARS, _PCEN_CHARS))
+
+
+def checked_tag_name(name):
+    """Return ``name`` as text, or raise InvalidTagName."""
+    text = str(name)
+    rule = _CUSTOM_TAG_NAME if "-" in text else _TAG_NAME
+    if not rule.fullmatch(text):
+        raise InvalidTagName(f"invalid tag name: {text!r}")
+    return text
+
+
+class InvalidMarkupToken(ValueError):
+    """Comment or doctype text that would end the token early (fail closed)."""
+
+
+def checked_comment_text(text):
+    """Return ``text`` if it is valid HTML comment text, else raise.
+
+    HTML spec (comments): the text must not start with ``>`` or ``->``,
+    must not contain ``-->``, ``--!>`` or ``<!--``, and must not end with
+    ``<!-``.
+    """
+    text = str(text)
+    if (
+        text.startswith((">", "->"))
+        or "-->" in text
+        or "--!>" in text
+        or "<!--" in text
+        or text.endswith("<!-")
+    ):
+        raise InvalidMarkupToken(f"invalid comment text: {text!r}")
+    return text
+
+
+_QUOTED = r"(?:\"[^\">]*\"|'[^'>]*')"
+_DOCTYPE = re.compile(
+    r"[A-Za-z][A-Za-z0-9]*"
+    r"(?:\s+(?:PUBLIC\s+%s(?:\s+%s)?|SYSTEM\s+%s))?" % (_QUOTED, _QUOTED, _QUOTED),
+    re.IGNORECASE,
+)
+
+
+def checked_doctype(text):
+    """Return ``text`` if it is ``name [PUBLIC "id" ["id"] | SYSTEM "id"]``.
+
+    The name is ASCII alphanumeric; identifiers are quoted and contain no
+    ``>`` or their own quote, so nothing can close the doctype early.
+    """
+    text = str(text)
+    if not _DOCTYPE.fullmatch(text):
+        raise InvalidMarkupToken(f"invalid doctype: {text!r}")
     return text
 
 
@@ -454,7 +530,14 @@ class lazy(dom_tag):
 
     def _render(self, sb, *a, **kw):
         r = self.func(*self.args, **self.kwargs)
-        sb.append(str(r))
+        text = str(r)
+        # A str result is text, like a str child. Tags, raw() and Markup
+        # (``__html__``) are HTML already. Inside script / style the parent
+        # neutralizes breakouts over the joined body at render time.
+        trusted = isinstance(r, dom_tag) or callable(getattr(r, "__html__", None))
+        if not trusted and not getattr(type(self.parent), "raw_text", None):
+            text = str_escape(text)
+        sb.append(text)
         return sb
 
 

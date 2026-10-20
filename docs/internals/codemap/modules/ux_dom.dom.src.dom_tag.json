@@ -22,7 +22,8 @@
    "tests/07_resilience/test_add_raw_string_absent.py",
    "tests/07_resilience/test_attr_name_validation.py",
    "tests/07_resilience/test_dom_method_shadowing.py",
-   "tests/07_resilience/test_jinja_and_string_nonce.py"
+   "tests/07_resilience/test_jinja_and_string_nonce.py",
+   "tests/07_resilience/test_raw_string_sinks.py"
   ],
   "imported_by": {
    "function_level": [
@@ -38,13 +39,17 @@
     "ux_dom.dom.src.jinjatags",
     "ux_dom.dom.src.utils.dom_util",
     "ux_dom.elements.buttons",
+    "ux_dom.plugins.csp",
+    "ux_dom.plugins.dedupe",
     "ux_dom.response.serialize",
     "ux_dom.ui.dropdown_menu"
    ],
    "type_checking": []
   },
   "imports_internal": {
-   "function_level": [],
+   "function_level": [
+    "ux_dom.dom.src.html_string"
+   ],
    "module_level": [
     "ux_dom.dom.src.concurrency",
     "ux_dom.dom.src.utils.dom_util"

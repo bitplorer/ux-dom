@@ -35,6 +35,8 @@ from contextvars import ContextVar, Token
 from dataclasses import dataclass, field
 from typing import Any, Iterable, Optional, Sequence
 
+from ux_dom.dom.src.dom_tag import dom_tag
+
 # ── secure generation ─────────────────────────────────────────────────────
 
 # 32 bytes → ~43 urlsafe chars; unguessable for CSP nonce budgets.
@@ -184,6 +186,9 @@ def _set_attr(node: Any, key: str, value: str) -> Any:
 def _tag_name(node: Any) -> str:
     """Lower-cased tag name; only ``str`` values count (a Component field
     ``name: int`` / Enum is data, not a tag)."""
+    if isinstance(node, dom_tag):
+        # The rendered name, never an attribute (``div(tagname="script")``).
+        return str(node._tagname()).lower()
     for cand in (getattr(node, "tagname", None), getattr(node, "name", None)):
         if isinstance(cand, str) and cand:
             return cand.lower()

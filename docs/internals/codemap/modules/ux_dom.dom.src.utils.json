@@ -3,7 +3,8 @@
   "consumers": [
    "tests/07_resilience/test_html_parse_sanitizer.py",
    "tests/07_resilience/test_htmx_same_origin.py",
-   "tests/07_resilience/test_jinja_and_string_nonce.py"
+   "tests/07_resilience/test_jinja_and_string_nonce.py",
+   "tests/07_resilience/test_raw_string_sinks.py"
   ],
   "imported_by": {
    "function_level": [],
@@ -27,10 +28,15 @@
   "public": [
    "CrossOriginURL",
    "InvalidAttributeName",
+   "InvalidMarkupToken",
+   "InvalidTagName",
    "SAME_ORIGIN_URL_ATTRIBUTES",
    "UNSAFE_URL",
    "URL_ATTRIBUTES",
    "checked_attr_name",
+   "checked_comment_text",
+   "checked_doctype",
+   "checked_tag_name",
    "cross_origin",
    "dom_text",
    "escape",

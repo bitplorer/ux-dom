@@ -6,6 +6,8 @@ from __future__ import annotations
 import re
 from typing import Any, Iterable, List
 
+from ux_dom.dom.src.dom_tag import dom_tag
+
 # Match src= or href= in rendered HTML (attribute order varies)
 _SRC_HREF = re.compile(r"""(?i)\b(?:src|href)\s*=\s*["']([^"']+)["']""")
 # Raw HTML string that is itself a script/link tag (not a wrapper around one)
@@ -20,7 +22,10 @@ def _resource(node: Any) -> tuple[str, str, str] | None:
         return None
     attrs = getattr(node, "attributes", None) or getattr(node, "attrs", None)
     if isinstance(attrs, dict):
-        tag = str(getattr(node, "tagname", None) or type(node).__name__).lower()
+        if isinstance(node, dom_tag):
+            tag = str(node._tagname()).lower()
+        else:
+            tag = str(getattr(node, "tagname", None) or type(node).__name__).lower()
         if tag not in ("script", "link"):
             return None  # wrappers and other tags pass through
         url = attrs.get("src" if tag == "script" else "href")

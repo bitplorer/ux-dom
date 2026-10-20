@@ -24,6 +24,7 @@ import typing
 from pathlib import Path
 
 from jinja2.utils import htmlsafe_json_dumps
+from markupsafe import Markup
 
 from ux_dom.dom.src.dom1core import dom1core
 from ux_dom.dom.src.dom_tag import dom_tag, unicode
@@ -31,6 +32,7 @@ from ux_dom.dom.src.utils.dom_util import (
     dom_text,
     escape,
     checked_attr_name,
+    checked_tag_name,
     escape_attr_minimal,
     safe_attr_value,
 )
@@ -131,6 +133,21 @@ class Tags(dom_tag, dom1core):
         if key in self.attributes:
             return self.attributes[key]
         return getattr(self, key, default)
+
+    def _markup_control(self, key):
+        """``open_tag`` / ``close_tag``: verbatim markup that replaces the tag.
+
+        They are emitted as-is, so a value must be trusted ``Markup``
+        (``__html__``), as the template tags build it. A plain string from
+        kwargs, a dict child, or ``tag["open_tag"]`` raises ``TypeError``.
+        """
+        value = self._control(key, False)
+        if not value or callable(getattr(value, "__html__", None)):
+            return value
+        raise TypeError(
+            "%s must be markupsafe.Markup (it is emitted verbatim); got %s"
+            % (key, type(value).__name__)
+        )
 
     def _clean_name(self, name):
         if any(name):
@@ -251,7 +268,7 @@ class Tags(dom_tag, dom1core):
             sb.append("%s" % open_tag)
         else:
             sb.append(self.left_delimiter)
-            sb.append(name)
+            sb.append(checked_tag_name(name))
             self._render_attribute(sb, indent_level, indent_str, pretty)
             sb.append(
                 "".join(["/", self.right_delimiter])
@@ -265,7 +282,7 @@ class Tags(dom_tag, dom1core):
             sb.append("%s" % close_tag)
         else:
             sb.append("".join([self.left_delimiter, "/"]))
-            sb.append(name)
+            sb.append(checked_tag_name(name))
             sb.append(self.right_delimiter)
         return sb
 
@@ -383,8 +400,8 @@ class Tags(dom_tag, dom1core):
             return sb
         _seen.add(sid)
 
-        self.open_tag = self._control(Tags.OPEN_TAG, False)
-        self.close_tag = self._control(Tags.CLOSE_TAG, False)
+        self.open_tag = self._markup_control(Tags.OPEN_TAG)
+        self.close_tag = self._markup_control(Tags.CLOSE_TAG)
         pretty = pretty and self.is_pretty and not self.is_inline
 
         self_dedent = self._control(Tags.SELF_DEDENT, False)
@@ -398,7 +415,7 @@ class Tags(dom_tag, dom1core):
             indent_level = self._dedent_handler(dedent, indent_level)
 
         if self_render_tag:
-            name = self._clean_name(getattr(self, "tagname", type(self).__name__))
+            name = self._clean_name(self._tagname())
             self._render_open_tag(
                 sb=sb,
                 name=name,
@@ -426,7 +443,7 @@ class Tags(dom_tag, dom1core):
             sb, inline = self._new_line_and_inline_handler(
                 sb, indent_level, indent_str, pretty, inline
             )
-            name = self._clean_name(getattr(self, "tagname", type(self).__name__))
+            name = self._clean_name(self._tagname())
             self._render_close_tag(sb=sb, name=name, close_tag=self.close_tag)
 
         return sb
@@ -573,19 +590,19 @@ class Tags(dom_tag, dom1core):
             return
         _seen.add(sid)
 
-        open_tag = self._control(Tags.OPEN_TAG, False)
-        close_tag = self._control(Tags.CLOSE_TAG, False)
+        open_tag = self._markup_control(Tags.OPEN_TAG)
+        close_tag = self._markup_control(Tags.CLOSE_TAG)
         self_render_tag = self._control(Tags.RENDER_TAG, True)
         self.open_tag = open_tag
         self.close_tag = close_tag
 
         if self_render_tag:
-            name = self._clean_name(getattr(self, "tagname", type(self).__name__))
+            name = self._clean_name(self._tagname())
             if open_tag:
                 yield str(open_tag)
             else:
                 yield self.left_delimiter
-                yield name
+                yield checked_tag_name(name)
                 yield from self._iter_html_attrs(indent_level, indent_str, pretty)
                 if self.is_single and xhtml:
                     yield "/"
@@ -602,13 +619,13 @@ class Tags(dom_tag, dom1core):
                     yield str(child)
 
         if self_render_tag and not self.is_single:
-            name = self._clean_name(getattr(self, "tagname", type(self).__name__))
+            name = self._clean_name(self._tagname())
             if close_tag:
                 yield str(close_tag)
             else:
                 yield self.left_delimiter
                 yield "/"
-                yield name
+                yield checked_tag_name(name)
                 yield self.right_delimiter
 
     def __and__(self, other: dom_tag) -> "Tags":
@@ -743,7 +760,7 @@ class SingleTemplates(SingleTags):
             )
         )
         super(SingleTemplates, self).__init__(
-            open_tag=open_tag,
+            open_tag=Markup(open_tag),
             self_dedent=self_dedent or self.self_dedent,
             child_dedent=child_dedent or self.child_dedent,
             **kwargs,
@@ -793,8 +810,8 @@ class DoubleTemplates(DoubleTags):
             ]
         )
         super(DoubleTemplates, self).__init__(
-            open_tag=open_tag,
-            close_tag=close_tag,
+            open_tag=Markup(open_tag),
+            close_tag=Markup(close_tag),
             self_dedent=self_dedent or self.self_dedent,
             child_dedent=child_dedent or self.child_dedent,
             **kwargs,

@@ -151,7 +151,28 @@ sanitized: `escape=False` does not bypass the allowlist; the ignored parameter i
 pending removal ([ADR 0004](../adr/0004-no-compat-shims-pre-release.md)). Trusted markup uses `raw()` / `Markup` (verbatim). A
 `__html__` value is checked before the `str` check, so a `Markup` (a `str`
 subclass) passed to `to_fragment`, `srcdoc`, `Fragment`, or returned from
-`Component.render()` stays verbatim. Policy:
+`Component.render()` stays verbatim. A string child added to a tag whose
+`escape_string` is falsy (`__escape_string=False`, as on `HTMLElement`) is
+HTML and goes through the same allowlist; a `Markup` child stays verbatim.
+`bytes` (a child or `to_fragment(bytes)`) are strict UTF-8 first, then the
+`str` path; `bytearray` / `memoryview` children and `to_fragment` of any
+other object without `__render__` raise `TypeError` (no `str(obj)`
+fallback). `tag[i] = value` follows the same rules as `add()` (a list or
+tuple adds each element; a `dom_string` is escaped; `None` / `bool` / `dict`
+raise `TypeError`). The `open_tag` / `close_tag` controls replace the tag
+verbatim, so they accept only `Markup`; a plain string raises `TypeError`. A
+`lazy()` result is escaped as text unless it is a tag, `raw()`, or `Markup`.
+`raw()` is the explicit verbatim opt-out. The element name comes only from
+an instance or class `tagname` (`dom_tag._tagname()`), never from the
+attribute dict, so `div(tagname=…)` is an ordinary attribute. Tag names are
+checked at render
+(`checked_tag_name`, `[A-Za-z][A-Za-z0-9._:-]*`) wherever they come from;
+a bad name raises `InvalidTagName` (`ValueError`). A name containing `-`
+must instead be a valid custom element name (`[a-z] PCENChar* - PCENChar*`,
+non-ASCII allowed). `comment()` text and `DocType()` text are checked
+against the HTML spec's comment and doctype grammar; a breakout raises
+`InvalidMarkupToken` (`ValueError`). Jinja DSL arguments (`Var`, `For`, …)
+are template source, trusted like `raw()`. Policy:
 [ADR 0002](../adr/0002-html-string-sanitizer-policy.md).
 
 **Tags.** A fragment may contain the known-safe set (the usual content tags,
