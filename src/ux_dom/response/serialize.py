@@ -198,14 +198,11 @@ def prepare_html_body(content: Any) -> Any:
     """
     if content is None:
         return content
-    try:
-        from ux_dom.plugins.csp import resolve_nonce, stamp_tree
+    from ux_dom.plugins.csp import resolve_nonce, stamp_tree
 
-        n = resolve_nonce()
-        if n:
-            stamp_tree(content, n)
-    except Exception:
-        pass
+    n = resolve_nonce()
+    if n:
+        stamp_tree(content, n)
     if hasattr(content, "__render__"):
         content = content.__render__()
     return content
@@ -241,14 +238,11 @@ def prepare_html_stream(html_content: Any) -> Any:
     if isinstance(html_content, dom_tag.dom_tag) or hasattr(
         html_content, "__async_render__"
     ):
-        try:
-            from ux_dom.plugins.csp import resolve_nonce, stamp_tree
+        from ux_dom.plugins.csp import resolve_nonce, stamp_tree
 
-            n = resolve_nonce()
-            if n:
-                stamp_tree(html_content, n)
-        except Exception:
-            pass
+        n = resolve_nonce()
+        if n:
+            stamp_tree(html_content, n)
         return html_content.__async_render__(pretty=False)
 
     if isinstance(html_content, (bytes, bytearray, memoryview)):

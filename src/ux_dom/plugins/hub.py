@@ -464,12 +464,9 @@ class App:
         # Document is SSoT: it mounts its own runtimes/static/middleware
         doc = self.document
         if doc is not None and hasattr(doc, "mount") and app is not None:
-            try:
-                if hasattr(doc, "hub"):
-                    doc.hub = self.hub
-                doc.mount(app)
-            except Exception:
-                pass
+            if hasattr(doc, "hub"):
+                doc.hub = self.hub
+            doc.mount(app)
         for name, routing in self.hub.routing.items():
             if app is not None:
                 routing.include(app)
