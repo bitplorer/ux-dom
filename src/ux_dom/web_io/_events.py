@@ -111,7 +111,7 @@ class BaseEventManager(object):
     def registered_activities(self) -> Dict[str, Dict[str, List[Callable]]]:
         return self.__events_with_activities
 
-    def _set_event_with_activity(
+    def set_event(
         self, activity: str, event_name_or_method: Union[str, CALLABLE]
     ) -> CALLABLE:
         method = None
@@ -131,16 +131,8 @@ class BaseEventManager(object):
             return self._on(activity, event_name)(method)
         return self._on(activity, event_name)
 
-    def _get_events_with_activity(self, activity: str) -> Dict[str, List[Callable]]:
-        return self.registered_activities[activity]
-
-    def set_event(
-        self, activity: str, event_name_or_method: Union[str, CALLABLE]
-    ) -> CALLABLE:
-        return self._set_event_with_activity(activity, event_name_or_method)
-
     def get_events(self, activity: str) -> Dict[str, List[Callable]]:
-        return self._get_events_with_activity(activity)
+        return self.registered_activities[activity]
 
 
 class WebSocketEvents(BaseEventManager):
@@ -186,9 +178,6 @@ class HtmxEvents(BaseEventManager):
     @property
     def hx_get_events(self):
         return super().get_events(activity="hx-get")
-
-    # Attribute alias (not callable override of get_events)
-    get_event_map = hx_get_events
 
     def post(self, event: Union[str, Callable]) -> Callable:
         return super().set_event(activity="hx-post", event_name_or_method=event)

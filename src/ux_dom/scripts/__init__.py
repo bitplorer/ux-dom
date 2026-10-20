@@ -14,11 +14,13 @@ Contract
 | JS file | ``x_element.js``  | Browser runtime (this package)          |
 | Helper  | ``x_element_js``  | Component that embeds / saves the JS    |
 
-::
+The browser loads the runtime from the installed package at
+``/ux-dom/static/x_element.js`` (``Document.use(XElement())`` mounts it); do not
+copy it into app assets. ``x_element_js`` is for inline embedding::
 
     from ux_dom.scripts import x_element_js
 
-    script(src=f"/assets/js/{x_element_js().save(file_or_dir=assets.js)}")
+    script(x_element_js())
 """
 
 from __future__ import annotations

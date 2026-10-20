@@ -6,7 +6,6 @@
 """web_io adapter internals. Private transport helpers; not a public app API."""
 import asyncio
 import json
-from abc import ABC, abstractmethod
 from asyncio import create_task, gather, sleep
 from collections import defaultdict
 from json.decoder import JSONDecodeError
@@ -28,54 +27,6 @@ async def _run_handlers(handlers):
 __all__ = ["WebSocketAdapter", "WebSocketClientHandler", "DataFetcher"]
 
 
-class GenericAdapter(ABC):
-    connections: set
-
-    @abstractmethod
-    async def sleep(self):
-        pass
-
-    @abstractmethod
-    async def connect(self, websocket: WebSocket):
-        pass
-
-    @abstractmethod
-    async def on_connect(self, *args, websocket: WebSocket, **kwargs):
-        pass
-
-    @abstractmethod
-    async def disconnect(self, websocket: WebSocket):
-        pass
-
-    @abstractmethod
-    async def on_disconnect(
-        self, *args, websocket: WebSocket, message: Optional[MESSAGE], **kwargs
-    ):
-        pass
-
-    @abstractmethod
-    async def receive(self, websocket: WebSocket) -> MESSAGE:
-        pass
-
-    @abstractmethod
-    async def on_receive(self, *args, websocket: WebSocket, message: MESSAGE, **kwargs):
-        pass
-
-    @abstractmethod
-    async def on_relay(
-        self,
-        *args,
-        websocket: WebSocket,
-        message: MESSAGE,
-        connections: Optional[set[WebSocket]] = None,
-        **kwargs,
-    ):
-        pass
-
-    async def __call__(self, *args, **kwargs):
-        pass
-
-
 class DataFetcher:
     def __init__(self, data_class: type):
         self.data_class = data_class
@@ -84,7 +35,7 @@ class DataFetcher:
         raise NotImplementedError
 
 
-class WebSocketAdapter(GenericAdapter):
+class WebSocketAdapter:
     """
     A WebSocket adapter that handles stateful communication with a data class instance.
 
@@ -336,8 +287,8 @@ class WebSocketAdapter(GenericAdapter):
 
 
 class WebSocketClientHandler(object):
-    def __init__(self, adapters: dict[str, GenericAdapter]):
-        self.adapters: dict[str, GenericAdapter] = adapters
+    def __init__(self, adapters: dict[str, WebSocketAdapter]):
+        self.adapters: dict[str, WebSocketAdapter] = adapters
         self.all_connections: defaultdict = defaultdict(set)
 
     async def __call__(self, websocket: WebSocket, adapter_name: str, *args, **kwargs):
@@ -354,7 +305,7 @@ class WebSocketClientHandler(object):
 
             try:
                 # Per-connection (default) or shared data instance
-                await adapter.ensure_instance(websocket, *args, **kwargs)  # type: ignore[attr-defined]
+                await adapter.ensure_instance(websocket, *args, **kwargs)
                 await adapter.on_connect(websocket=websocket)
                 while True:
                     message = await adapter.receive(websocket)
@@ -388,21 +339,29 @@ class WebSocketClientHandler(object):
                         *args, websocket=websocket, message=message, **kwargs
                     )
                 finally:
-                    adapter.release_instance(websocket)  # type: ignore[attr-defined]
+                    adapter.release_instance(websocket)
 
 
 """
-usage 
+usage
 
-app = Starlette()
+from starlette.applications import Starlette
+from starlette.routing import WebSocketRoute
 
-class MyAdapter(WebSocketAdapter):
-    ...
+class Counter:
+    count = 0
 
-adapter = MyAdapter()
-websocket_endpoint = WebSocketEndpoint(app, "/ws", adapter)
+events = WebSocketEvents()
 
-@app.websocket_route("/ws")
-async def my_handler(websocket: WebSocket):
-    await websocket_endpoint(websocket)
+@events.on_receive("bump")
+async def bump(self: Counter, websocket, message):
+    self.count += 1
+    await websocket.send_json({"event": "update", "count": self.count})
+
+handler = WebSocketClientHandler({"counter": WebSocketAdapter(Counter, events)})
+
+async def ws(websocket):
+    await handler(websocket, websocket.path_params["name"])
+
+app = Starlette(routes=[WebSocketRoute("/ws/{name}", ws)])
 """
