@@ -136,26 +136,19 @@ class dom_tag(object):
     # time over the joined body (see htmltags._RawTextElement).
     raw_text: typing.Optional[str] = None
 
-    #: Public DOM query API. Library code calls ``_find`` / ``_matches``; a
-    #: subclass whose MRO resolves these names anywhere but ``dom_tag`` (own
-    #: method, classmethod, staticmethod, plain attribute, or a mixin earlier
-    #: in the MRO) is rejected at class creation so it can never silently
-    #: shadow tree queries. To customize queries, override ``_find`` /
-    #: ``_matches``.
+    #: Public DOM query API, sealed. Library internals never call these:
+    #: they query via ``_find`` / ``_matches`` (and attach via ``_add``), so
+    #: the internal walk is safe either way. The seal protects *callers*:
+    #: ``node.get(...)`` / ``node.matches(...)`` are the documented query
+    #: surface of every tag (ux-compose and tests query trees through them),
+    #: and a route-style ``get`` classmethod or a ``matches`` field silently
+    #: replacing it returns wrong answers instead of failing. So a subclass
+    #: whose MRO resolves either name anywhere but ``dom_tag`` (own method,
+    #: classmethod, staticmethod, plain attribute, or a mixin earlier in the
+    #: MRO) is rejected at class creation. To customize queries, override
+    #: ``_find`` / ``_matches``. Every other public name (``add``, ``clear``,
+    #: ``remove``, ...) is free for user methods and actions.
     _SEALED_DOM_API = ("get", "matches")
-
-    #: Old public names of internal mutators (renamed with a leading ``_``).
-    #: Internals only call the ``_`` names, so an override of an old name
-    #: would be silently ignored. No compat dispatch: defining one (directly
-    #: or via a mixin) fails loud and names the hook to override instead.
-    _RENAMED_DOM_API = (
-        "clear",
-        "remove",
-        "set_attribute",
-        "delete_attribute",
-        "setdocument",
-        "replace_children",
-    )
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
@@ -171,20 +164,6 @@ class dom_tag(object):
                 f"the DOM query method dom_tag.{name}(). Rename it (e.g. "
                 f"'{name}_view' or 'on_{name}'); to customize tree queries "
                 f"override '_find' / '_matches'."
-            )
-        for name in dom_tag._RENAMED_DOM_API:
-            owner = next(
-                (k for k in cls.__mro__ if k is not object and name in vars(k)),
-                None,
-            )
-            if owner is None:
-                continue
-            via = "" if owner is cls else f" (inherited from {owner.__qualname__})"
-            raise TypeError(
-                f"{where} defines {name!r}{via}, the old name of an internal "
-                f"DOM mutator; library code calls '_{name}' and would ignore "
-                f"it. To customize this behaviour override '_{name}' (the "
-                f"supported extension hook); otherwise rename the method."
             )
 
     def __new__(_cls, *args, **kwargs):

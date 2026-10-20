@@ -3,7 +3,8 @@
 * Regression: a Component with an action named ``add`` still adopts children
   from ``with`` blocks, constructor args and ``+=`` (internals call ``_add``).
 * Seal: ``get`` / ``matches`` cannot be redefined on a ``dom_tag`` subclass.
-* Absence lock: internal-only mutators exist only under their ``_`` names.
+* Absence lock: internal mutators exist only under their ``_`` names; the old
+  public names are free for user methods (e.g. a ``remove`` action).
 """
 from __future__ import annotations
 
@@ -193,23 +194,50 @@ class TestOldInternalNamesAbsent(unittest.TestCase):
                     )
                     self.assertTrue(callable(getattr(cls, f"_{name}")))
 
-    def test_defining_old_name_fails_loud(self):
-        # Review lock (#51): an override of a renamed mutator would be silently
-        # ignored (internals call the ``_`` name). No compat dispatch (ADR 0004):
-        # defining the old name raises at class creation and names the hook.
-        for base in (div, Component, dom_tag):
-            for name in OLD_INTERNAL:
-                with self.subTest(base=base.__name__, name=name):
-                    with self.assertRaisesRegex(TypeError, f"override '_{name}'"):
-                        type("Bad", (base,), {name: lambda self, *a, **k: None})
+    def test_old_public_names_are_free_for_user_methods(self):
+        # Coordinator decision (#51): DOM internals use the ``_`` hooks, so
+        # ``remove`` / ``clear`` / ... are free for user methods and actions
+        # and never touch DOM building.
+        class TodoList(Component):
+            def render(self):
+                return ul(id="todos")
 
-    def test_old_name_from_mixin_fails_loud(self):
-        class LegacyMixin:
+            @action
+            def remove(self, item_id):
+                self.removed = item_id
+                return "removed"
+
+            def clear(self):
+                self.cleared = True
+                return "cleared"
+
             def set_attribute(self, key, value):
-                pass
+                raise AssertionError("library must not call the old name")
 
-        with self.assertRaisesRegex(TypeError, "override '_set_attribute'"):
-            type("Upper", (LegacyMixin, div), {})
+        with TodoList() as t:
+            li("a")
+            li("b")
+        t += li("c")
+        self.assertEqual(
+            t.__render__(pretty=False),
+            '<ul id="todos"><li>a</li><li>b</li><li>c</li></ul>',
+        )
+        self.assertEqual(t.remove(7), "removed")
+        self.assertEqual(t.removed, 7)
+        self.assertEqual(t.clear(), "cleared")
+        self.assertTrue(t.cleared)
+        self.assertEqual(len(t._entry.children), 3)
+
+        class Mixin:
+            def replace_children(self, *a):
+                return "mine"
+
+        class Box(Mixin, div):
+            pass
+
+        b = Box(span("x"))
+        self.assertEqual(b.replace_children(), "mine")
+        self.assertIn("<span>x</span>", b.__render__(pretty=False))
 
     def test_underscore_hooks_are_the_extension_point(self):
         calls = []
