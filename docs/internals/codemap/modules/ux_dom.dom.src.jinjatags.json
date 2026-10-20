@@ -3,6 +3,7 @@
   "consumers": [
    "docs/reference/HYPERMEDIA.md",
    "examples/xelement_kit/app/routes/jinja.py",
+   "tests/01_core/test_pretty_inline_text.py",
    "tests/02_document_plugins/test_hypermedia_surface.py",
    "tests/07_resilience/test_jinja_and_string_nonce.py",
    "tests/07_resilience/test_jinja_in_event_loop.py",

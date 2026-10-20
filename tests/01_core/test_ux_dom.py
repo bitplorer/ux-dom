@@ -36,7 +36,16 @@ class TestContext(unittest.TestCase):
 
         self.assertEqual(
             context.__render__(),
-            "<div>context<div>sub context<div>inside subcontext</div></div></div>",
+            dedent("""\
+                <div>
+                  context
+                  <div>
+                    sub context
+                    <div>
+                      inside subcontext
+                    </div>
+                  </div>
+                </div>"""),
         )
 
 
@@ -84,11 +93,11 @@ class TestSingleTag(unittest.TestCase):
     def test_single_tag_with_children(self):
         self.assertEqual(
             str(self.SingleTagTest(self.SingleTagTest())),
-            """<single-tag>\n<single-tag>""",
+            """<single-tag><single-tag>""",
         )
         self.assertEqual(
             str(self.SingleTagTest(self.DoubleTagTest())),
-            """<single-tag>\n<double-tag>\n</double-tag>""",
+            """<single-tag><double-tag></double-tag>""",
         )
 
 
@@ -104,18 +113,19 @@ class TestDoubleTag(unittest.TestCase):
         self.SingleTagTest = SingleTagTest
 
     def test_double_tag(self):
-        # test when __render__(pretty=True)
-        self.assertEqual(str(self.DoubleTagTest()), "<double-tag>\n</double-tag>")
+        # test when __render__(pretty=True): an unknown tag is inline, so
+        # a pretty newline inside it would show as a space
+        self.assertEqual(str(self.DoubleTagTest()), "<double-tag></double-tag>")
         self.assertEqual(
-            str(self.DoubleTagTest(x=1)), """<double-tag x="1">\n</double-tag>"""
+            str(self.DoubleTagTest(x=1)), """<double-tag x="1"></double-tag>"""
         )
         self.assertEqual(
             str(self.DoubleTagTest().__render__(xhtml=True)),
-            "<double-tag>\n</double-tag>",
+            "<double-tag></double-tag>",
         )
         self.assertEqual(
             str(self.DoubleTagTest(x=1).__render__(xhtml=True)),
-            """<double-tag x="1">\n</double-tag>""",
+            """<double-tag x="1"></double-tag>""",
         )
 
         # test when __render__(pretty=False)
@@ -139,11 +149,11 @@ class TestDoubleTag(unittest.TestCase):
     def test_double_tag_with_children(self):
         self.assertEqual(
             str(self.DoubleTagTest(self.DoubleTagTest())),
-            """<double-tag>\n  <double-tag>\n  </double-tag>\n</double-tag>""",
+            """<double-tag><double-tag></double-tag></double-tag>""",
         )
         self.assertEqual(
             str(self.DoubleTagTest(self.SingleTagTest())),
-            """<double-tag>\n  <single-tag>\n</double-tag>""",
+            """<double-tag><single-tag></double-tag>""",
         )
 
 
@@ -313,8 +323,7 @@ class TestComponentRenderReturns(unittest.TestCase):
             """\
 <p>
 </p>
-<a>
-</a>
+<a></a>
 <p>
 </p>""",
         )
@@ -346,8 +355,7 @@ class TestComponentRenderReturns(unittest.TestCase):
 <self-entry class="xyz">
   <p>
   </p>
-  <a>
-  </a>
+  <a></a>
   <div>
   </div>
 </self-entry>""",
@@ -422,11 +430,7 @@ class TestStates(unittest.TestCase):
         self.assertEqual(
             state_elem.__render__(),
             """\
-<p a="2">
-  <div>
-    state child
-  </div>
-</p>""",
+<p a="2"><div>state child</div></p>""",
         )
 
         state_elem.a += 1
@@ -445,11 +449,7 @@ class TestStates(unittest.TestCase):
         self.assertEqual(
             state_elem.__render__(),
             """\
-<p a="3">
-  <div>
-    state child
-  </div>
-</p>""",
+<p a="3"><div>state child</div></p>""",
         )
 
 
@@ -569,9 +569,7 @@ class TestJinja(unittest.TestCase):
     <ul>
       {% for item in menu_items %}
         <li>
-          <a href="{{ item.link }}">
-            {{ item.name }}
-          </a>
+          <a href="{{ item.link }}">{{ item.name }}</a>
         </li>
       {% endfor %}
     </ul>
