@@ -130,6 +130,7 @@ behavior, motion IR, or product lifecycle.
 | [adr/DESIGN_DECISIONS.md](adr/DESIGN_DECISIONS.md) | Design decisions |
 | [adr/OWNERSHIP_COUNCIL.md](adr/OWNERSHIP_COUNCIL.md) | Ownership council |
 | [adr/0001-changelog-fragments.md](adr/0001-changelog-fragments.md) | Per-PR changelog fragments |
+| [adr/0002-html-string-sanitizer-policy.md](adr/0002-html-string-sanitizer-policy.md) | HTML string sanitizer policy |
 | [adr/0003-layer-boundary.md](adr/0003-layer-boundary.md) | Layer boundary: ux-dom vs ux-compose |
 | [plans/2026-09-12-extract-by-id.md](plans/2026-09-12-extract-by-id.md) | Historical C2 extract-by-id plan (shipped #20; GAP appendix is pre-ship) |
 | [plans/2026-09-12-tip-d107209-serialize-surface.md](plans/2026-09-12-tip-d107209-serialize-surface.md) | PLAN-ONLY TELOS tip d107209 serialize/response surface (Soft queue empty) |

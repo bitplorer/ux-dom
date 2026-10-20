@@ -146,17 +146,32 @@ at the start of a token is not a prefix (`prefixconnect:/feed` is refused).
 One allowlist. `defHTML`, `Fragment(str)`, `Component.render()->str`,
 `HTMLElement`, `JinjaElement`, `MarkdownElement`, `to_fragment(str)`, and
 `srcdoc` all use it. Strings stay HTML: known-safe tags are kept and
-sanitized, they are not turned into plain text. `raw()` is the verbatim
-opt-out, and a non-string `srcdoc` `__html__` value stays verbatim.
+sanitized, they are not turned into plain text. String HTML is always
+sanitized: `escape=False` is accepted for compatibility and does not bypass
+the allowlist. Trusted markup uses `raw()` / `Markup` (verbatim), and a
+non-string `srcdoc` `__html__` value stays verbatim. Policy:
+[ADR 0002](../adr/0002-html-string-sanitizer-policy.md).
 
 **Tags.** A fragment may contain the known-safe set (the usual content tags,
-form controls, `html` / `head` / `body` / `title`, `template`, `noscript`,
-`textarea`, and SVG geometry such as `svg`, `circle`, `path`). `script`,
-`iframe`, `object`, `embed`, `base`, `frame`, `frameset`, `math`, and SVG
-animation (`animate`, `set`, `foreignObject`) are dropped with their children.
-Any other tag (`portal`, a custom element) is removed and its children are
-kept, so the tag cannot run and the text is not thrown away. `style`, `meta`,
-and `link` are not fragment tags.
+form controls, `html` / `head` / `body` / `title`, `textarea`, and SVG
+geometry such as `svg`, `circle`, `path`). `script`, `iframe`, `object`,
+`embed`, `base`, `frame`, `frameset`, `math`, and SVG animation (`animate`,
+`set`, `foreignObject`) are dropped with their children. So are the elements a
+browser parses as raw text while Python parses their children as markup:
+`noscript`, `noembed`, `noframes`, `xmp`, `plaintext`, and `template`. Kept,
+`<noscript><!-- </noscript><img onerror=…> --></noscript>` would end early in
+a browser and run the `<img>`. Any other tag (`portal`, a custom element) is
+removed and its children are kept, so the tag cannot run and the text is not
+thrown away. `style`, `meta`, and `link` are not fragment tags.
+
+**Comments** are dropped. A browser ends a comment at `--!>` and in other
+places Python does not, so a kept comment can carry live markup.
+
+**Custom elements** are kept only when the caller names them:
+`defHTML(s, allow_custom_elements=["x-counter"])` or a `"x-*"` prefix pattern.
+A name must be a valid custom element name (lowercase, with `-`, not
+reserved), so the opt-in cannot re-allow `script`. A kept custom element gets
+the global, `aria-*` and `data-*` attributes only.
 
 **Attributes, per tag.** Global attributes (`class`, `id`, `title`, `lang`,
 `dir`, `role`, `style`, `tabindex`, `hidden`, …), `aria-*`, and `data-*`
@@ -180,13 +195,22 @@ not depend on it letting a reference through. Same-line spaces stay, so
 still removed. An unknown entity name stays the letters the parser already
 yielded (`AT&T` is still `ATT`).
 
-**Document mode.** If the first non-whitespace starts with `<!DOCTYPE` or
-`<html` (case-insensitive), the string is a document, not a fragment. Also
-kept: the doctype, `title` with its entities as written, `meta` except
-`http-equiv=refresh` (that meta is dropped), `link` whose `rel` is only
-`stylesheet` and/or `icon` and whose `href` is a relative same-origin URL or
-`https` (`javascript:` and `http://` links are dropped), and `style`. Scripts,
+**Document mode** is a keyword the caller passes (`defHTML(s,
+document=True)`, `StringToHTML(s, document=True)`). The input never selects
+it: a string that starts with `<!DOCTYPE` or `<html>` is still a fragment, so
+untrusted HTML cannot bring in a stylesheet, a `<style>` (CSS exfiltration) or
+a `<meta http-equiv>`. Inside ux-dom only an author's HTML file returned from
+`Component.render()` as a `Path` opts in. Also kept in document mode: the
+doctype, `title` with its entities as written, `meta` without `http-equiv` or
+with `http-equiv` `content-type` / `content-language` / `x-ua-compatible`
+(`refresh`, `set-cookie`, `content-security-policy`, … drop the meta), `link`
+whose `rel` is only `stylesheet` and/or `icon` and whose `href` is a relative
+same-origin URL or `https` (`javascript:` and `http://` links are dropped),
+and `style`. `style` text is emitted verbatim (`a > b` stays `a > b`); a
+`style` whose text contains `<` is dropped, which covers `</style` in any case
+and `<svg><style>` (a browser parses those children as markup). Scripts,
 handlers, `hx-*`, and unknown tags are still stripped inside the document.
 
 Tests: `tests/07_resilience/test_html_allowlist.py`,
-`tests/07_resilience/test_html_parse_sanitizer.py`.
+`tests/07_resilience/test_html_parse_sanitizer.py`,
+`tests/07_resilience/test_html_string_mxss.py`.
