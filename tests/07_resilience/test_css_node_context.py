@@ -164,3 +164,30 @@ def test_lazy_tag_result_still_renders_in_html():
     assert div(lazy(lambda: span("a<b"))).__render__(pretty=False) == (
         "<div><span>a&lt;b</span></div>"
     )
+
+
+def test_lazy_reuse_of_a_rendered_node_renders_it_again():
+    """Reuse in another position is not a cycle (main rendered it twice too)."""
+    shared = span("x")
+    host = div(shared)
+    host.add(lazy(lambda: shared))
+    other = div(span("y"))
+    twice = div(lazy(lambda: other), lazy(lambda: other))
+    for out in _renders(host):
+        assert out.replace("\n", "").replace(" ", "") == (
+            "<div><span>x</span><span>x</span></div>"
+        ), out
+    for out in _renders(twice):
+        assert "cycle" not in out and out.count("y") == 2, out
+
+
+def test_lazy_returning_an_ancestor_is_a_cycle():
+    """A true cycle stops with a comment (main recursed until RecursionError)."""
+    root = div(span("a"))
+    root.add(lazy(lambda: root))
+    inner = span("b")
+    deep = div(inner)
+    inner.add(lazy(lambda: deep))
+    for node, name in ((root, "div"), (deep, "div")):
+        for out in _renders(node):
+            assert out.count("<!--cycle:%s-->" % name) == 1, out

@@ -539,11 +539,17 @@ class lazy(dom_tag):
         if isinstance(r, dom_tag):
             # A tag renders as a child at this position: same layout arguments,
             # and its context checks (a CSS rule outside <style>, #81) see
-            # this node's parent.
+            # this node's parent. The cycle guard gets this node's ancestors
+            # only: a node rendered elsewhere in the tree is reuse, not a cycle.
+            ancestors: set = set()
+            node = self
+            while node is not None and id(node) not in ancestors:
+                ancestors.add(id(node))
+                node = node.parent
             with multi_tree_lock(r):
                 parent, r.parent = r.parent, self.parent
                 try:
-                    text = "".join(r._render([], *a, **kw))
+                    text = "".join(r._render([], *a, **{**kw, "_seen": ancestors}))
                 finally:
                     r.parent = parent
         else:
