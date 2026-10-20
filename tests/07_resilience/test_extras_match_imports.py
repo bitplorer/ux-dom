@@ -11,7 +11,7 @@ def _poetry() -> dict:
 
 
 def test_only_fastapi_extra():
-    # fastapi brings starlette for ux_dom.response.starlette.
+    # fastapi brings starlette for ux_dom.response.starlette and install_safe_static.
     assert _poetry()["extras"] == {"fastapi": ["fastapi"]}
 
 

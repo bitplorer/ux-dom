@@ -83,8 +83,9 @@ Rules:
 1. ux-dom declares no extension point for a ux-compose feature: no protocol, hub slot or
    `App.use_*` for HMR, style compile, asset layout or host.
 2. ux-dom extras contain only packages that `src/ux_dom` imports. The only extra is
-   `fastapi` (`ux-dom[fastapi]` = `fastapi`), which brings starlette for
-   `ux_dom.response.starlette`.
+   `fastapi` (`ux-dom[fastapi]` = `fastapi`). It brings starlette, which
+   `ux_dom.response.starlette` imports, and `install_safe_static` imports when called.
+   No other `ux_dom` module needs it.
 3. `uxdom` checks and writes nothing a product scaffold owns: no port, `DEBUG`, `.env`,
    scaffold marker or deploy bundle.
 4. **Remove from ux-dom only after ux-compose ships the equivalent or the owner records a
@@ -97,7 +98,7 @@ Checked against ux-compose `04994da`:
 
 | Capability | ux-dom today | ux-compose today | Blocks |
 |------------|--------------|------------------|--------|
-| `pytailwindcss` extra | `ux-dom[dev]`, `ux-dom[fastapidev]` | `tailwind.py` imports it lazily; `pyproject.toml` declares only `serve` and `dev` extras, neither with `pytailwindcss` | Nothing: waived (see below) |
+| `pytailwindcss` extra | None: `ux-dom[dev]` / `ux-dom[fastapidev]` removed in [#80](https://github.com/bitplorer/ux-dom/pull/80) | `tailwind.py` imports it lazily; `pyproject.toml` declares only `serve` and `dev` extras, neither with `pytailwindcss` | Nothing: waived (see below) |
 | Runnable bundle | `uxdom build --package/--archive` (`dist/<name>/`, `run.sh`, `MANIFEST.json`, tar.gz) | `uxcompose deploy` writes Docker/fly/render/railway/systemd files; nothing writes a runnable dir or archive | Removing `--package/--archive` |
 | Prod and port pre-flight | `uxdom doctor --prod` (`DEBUG`, `.env`) and `--port` | `uxcompose doctor` has no `--prod`, `DEBUG`, `.env` or port check; `deploy` only prints "DEBUG=false" advice | Removing those doctor rows |
 

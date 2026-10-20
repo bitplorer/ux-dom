@@ -25,6 +25,7 @@
    "tests/05_chaos/test_chaos_integration.py",
    "tests/05_chaos/test_pentest_chaos.py",
    "tests/05_chaos/test_stress_races_js_pipeline.py",
+   "tests/07_resilience/test_extras_match_imports.py",
    "tests/helpers.py"
   ],
   "imported_by": {

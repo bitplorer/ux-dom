@@ -26,7 +26,7 @@ pip install 'ux-dom[fastapi]'
 
 | Extra | Provides |
 |-------|----------|
-| **`fastapi`** | fastapi (brings Starlette for `ux_dom.response.starlette`) |
+| **`fastapi`** | fastapi, which brings Starlette: imported by `ux_dom.response.starlette`, and by `install_safe_static` when called |
 
 Extras carry only packages `src/ux_dom` imports
 ([ADR 0003](adr/0003-layer-boundary.md) rule 2). There is no `dev`, `fastapidev`,

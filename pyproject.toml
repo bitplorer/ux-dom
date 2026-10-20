@@ -42,7 +42,8 @@ typer = ">=0.12,<1"
 # Imported directly by ux_dom.compat.valio_pep649; declared, not borrowed from valio.
 typingx = ">=0.6.0,<0.7"
 
-# Optional runtime extra: fastapi brings starlette for ux_dom.response.starlette.
+# Optional runtime extra: fastapi brings starlette, which ux_dom.response.starlette
+# imports, and plugins.safe_static.install_safe_static imports when called.
 # Extras carry only packages src/ux_dom imports (ADR 0003 rule 2).
 fastapi = { version = ">=0.115.0", optional = true }
 

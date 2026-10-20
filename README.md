@@ -39,7 +39,7 @@ This layer **renders**. It does not own Intent, Caps, Result ops, product state 
 ```bash
 pip install ux-dom
 # extra:
-pip install "ux-dom[fastapi]"      # FastAPI (brings Starlette for ux_dom.response.starlette)
+pip install "ux-dom[fastapi]"      # FastAPI + Starlette (ux_dom.response.starlette, install_safe_static)
 ```
 
 From this tree:
