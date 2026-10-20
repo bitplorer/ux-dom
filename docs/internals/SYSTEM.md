@@ -24,7 +24,7 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 | Concern | Home |
 |---------|------|
 | create-app / product build / serve / deploy | **uxcompose only** |
-| `uxdom build` (pure-dom `app/main.py` verify) | ux-dom today; ownership of `--package`/`--archive` bundling is open (S4, #59) |
+| `uxdom build` (pure-dom `app/main.py` verify) | ux-dom (verify only); `--package`/`--archive` bundling moves to ux-compose per [ADR 0003](../adr/0003-layer-boundary.md) |
 | Product page routes (`DirectoryRoutes`) | **ux-compose** |
 | Tailwind compiler / app asset layout (`WebAssets`) | **ux-compose** |
 | Host strategy / product App | ux-compose |
@@ -36,7 +36,7 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 ```bash
 uxcompose create-app myapp
 uxcompose build
-uxcompose serve app:asgi
+uxcompose serve dev app:asgi
 uxcompose deploy --provider docker
 
 uxdom doctor | lint | profile | add

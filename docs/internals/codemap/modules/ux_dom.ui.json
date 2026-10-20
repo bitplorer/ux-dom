@@ -1,6 +1,7 @@
 {
  "ux_dom.ui": {
   "consumers": [
+   "docs/adr/0003-layer-boundary.md",
    "docs/adr/DESIGN_DECISIONS.md",
    "docs/adr/OWNERSHIP_COUNCIL.md",
    "docs/guides/SNIPPETS.md",

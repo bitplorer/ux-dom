@@ -1,13 +1,9 @@
-# Tunnel / public share
+# Moved
 
-> **Diátaxis:** how-to · **Canonical:** `docs/guides/TUNNEL.md` · **Layer:** ux-dom  
-> Map: [INDEX.md](../INDEX.md).
+- **Original path:** `docs/guides/TUNNEL.md`
+- **Date:** 2026-10-20
+- **Why:** Tunnel is a ux-compose delivery feature (`uxcompose serve dev --tunnel none|ngrok|cloudflare`), not ux-dom ([ADR 0003](../adr/0003-layer-boundary.md)).
+- **Successor:** [ux-compose serve / HMR / tunnel guide](https://github.com/bitplorer/ux-compose/blob/main/docs/guides/serve-hmr-tunnel.md)
+- **Do not cite this stub as the canonical page.**
 
-Product serve lives on **uxcompose**. Expose with host tooling:
-
-```bash
-uxcompose serve app:asgi --port 8080
-# then: ngrok http 8080   or   cloudflared tunnel --url http://127.0.0.1:8080
-```
-
-ux-dom does not ship a product tunnel CLI.
+Canonical content lives at the successor. This path is kept so existing links resolve.

@@ -10,7 +10,7 @@ ux-dom is the **hypermedia render** layer: trees → `__render__` / `__async_ren
 ```bash
 uxcompose create-app myapp
 uxcompose build
-uxcompose serve app:asgi --port 8080
+uxcompose serve dev app:asgi --port 8080
 uxcompose deploy --provider docker
 ```
 

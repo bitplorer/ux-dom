@@ -2,6 +2,7 @@
  "ux_dom/scripts/x_element.js": {
   "consumers": [
    "docs/START_HERE.md",
+   "docs/adr/0003-layer-boundary.md",
    "docs/internals/ARCHITECTURE.md",
    "docs/internals/MODULE_MAP.md",
    "docs/internals/SYSTEM.md",

@@ -26,7 +26,7 @@ def home():
 
 ```bash
 uxcompose create-app shop --host auto --level auto
-cd shop && uxcompose build && uxcompose serve app:asgi --port 8080
+cd shop && uxcompose build && uxcompose serve dev app:asgi --port 8080
 ```
 
 ## HTMX partial

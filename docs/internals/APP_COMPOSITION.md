@@ -22,7 +22,7 @@ ux-compose →  DirectoryRoutes, WebAssets, build(), serve, deploy
 ```bash
 uxcompose create-app myapp && cd myapp
 uxcompose build
-uxcompose serve app:asgi --port 8080
+uxcompose serve dev app:asgi --port 8080
 ```
 
 Composition root emitted by create-app:

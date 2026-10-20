@@ -1,6 +1,7 @@
 {
  "ux_dom.response": {
   "consumers": [
+   "docs/adr/0003-layer-boundary.md",
    "docs/internals/CORE.md",
    "docs/plans/2026-09-12-extract-by-id.md",
    "docs/plans/2026-09-12-tip-d107209-serialize-surface.md",

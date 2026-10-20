@@ -9,7 +9,7 @@
 |------|---------|
 | Scaffold | `uxcompose create-app` |
 | CSS minify | `uxcompose build` |
-| Run | `uxcompose serve app:asgi` |
+| Run | `uxcompose serve dev app:asgi` |
 | Deploy configs | `uxcompose deploy` |
 | Product health | `uxcompose doctor` |
 

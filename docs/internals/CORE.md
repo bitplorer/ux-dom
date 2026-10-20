@@ -43,7 +43,7 @@ folders are **not** taught from this package. They fail closed or redirect:
 # product
 uxcompose create-app myapp
 uxcompose build
-uxcompose serve app:asgi --port 8080
+uxcompose serve dev app:asgi --port 8080
 
 # pure-dom tooling
 uxdom doctor

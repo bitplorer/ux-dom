@@ -65,7 +65,6 @@ behavior, motion IR, or product lifecycle.
 | [guides/CLI.md](guides/CLI.md) | `uxdom` doctor · lint · profile · add |
 | [guides/COOKBOOK.md](guides/COOKBOOK.md) | Recipes |
 | [guides/DX.md](guides/DX.md) | DX principles |
-| [guides/TUNNEL.md](guides/TUNNEL.md) | Tunnel is **uxcompose**, not ux-dom |
 | [examples/README.md](examples/README.md) | Example slot → repo `examples/` |
 | [ship/DEPLOY.md](ship/DEPLOY.md) | Deploy notes |
 | [ship/PUBLISHING.md](ship/PUBLISHING.md) | Publishing |
@@ -131,6 +130,7 @@ behavior, motion IR, or product lifecycle.
 | [adr/DESIGN_DECISIONS.md](adr/DESIGN_DECISIONS.md) | Design decisions |
 | [adr/OWNERSHIP_COUNCIL.md](adr/OWNERSHIP_COUNCIL.md) | Ownership council |
 | [adr/0001-changelog-fragments.md](adr/0001-changelog-fragments.md) | Per-PR changelog fragments |
+| [adr/0003-layer-boundary.md](adr/0003-layer-boundary.md) | Layer boundary: ux-dom vs ux-compose |
 | [plans/2026-09-12-extract-by-id.md](plans/2026-09-12-extract-by-id.md) | Historical C2 extract-by-id plan (shipped #20; GAP appendix is pre-ship) |
 | [plans/2026-09-12-tip-d107209-serialize-surface.md](plans/2026-09-12-tip-d107209-serialize-surface.md) | PLAN-ONLY TELOS tip d107209 serialize/response surface (Soft queue empty) |
 

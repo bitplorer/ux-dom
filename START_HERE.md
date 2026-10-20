@@ -66,7 +66,7 @@ uxdom doctor
 pip install ux-compose ux-dom
 uxcompose create-app myapp && cd myapp
 uxcompose build
-uxcompose serve app:asgi --port 8080
+uxcompose serve dev app:asgi --port 8080
 ```
 
 Product CSS is `uxcompose build`.

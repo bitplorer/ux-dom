@@ -32,7 +32,7 @@ Product apps::
 
     uxcompose create-app myapp
     uxcompose build
-    uxcompose serve app:asgi
+    uxcompose serve dev app:asgi
     # composition root + CSS compile + delivery — see ux-compose FLOW:
     # https://github.com/bitplorer/ux-compose/blob/main/docs/FLOW.md
 

@@ -33,7 +33,7 @@ guesswork and the ASGI host stays debuggable:
 ```bash
 uxcompose create-app myapp && cd myapp
 uxcompose build
-uxcompose serve app:asgi --port 8080
+uxcompose serve dev app:asgi --port 8080
 ```
 
 ```python
