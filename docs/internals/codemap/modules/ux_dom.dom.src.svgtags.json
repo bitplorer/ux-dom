@@ -4,11 +4,13 @@
    "docs/reference/DOCUMENT.md",
    "examples/ux_kit/app/document.py",
    "examples/xelement_kit/app/document.py",
+   "tests/01_core/test_pretty_raw_text_verbatim.py",
    "tests/01_core/test_raw_text_elements.py",
    "tests/02_document_plugins/test_document_plugins.py",
    "tests/02_document_plugins/test_document_runtimes_create.py",
    "tests/02_document_plugins/test_document_two_stage.py",
    "tests/02_document_plugins/test_document_using.py",
+   "tests/06_browser/test_pretty_raw_text_browser.py",
    "tests/07_resilience/test_foreign_content_raw_text.py",
    "tests/07_resilience/test_raw_string_sinks.py",
    "tests/07_resilience/test_text_state_parents.py"

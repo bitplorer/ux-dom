@@ -39,6 +39,7 @@ from ux_dom.dom.src.utils.dom_util import (
     InvalidNodeContext,
     safe_attr_value,
     TEXT_STATE_ELEMENTS,
+    VERBATIM_ELEMENTS,
 )
 
 __all__ = [
@@ -579,6 +580,8 @@ class Tags(dom_tag, dom1core):
         self.open_tag = self._markup_control(Tags.OPEN_TAG)
         self.close_tag = self._markup_control(Tags.CLOSE_TAG)
         pretty = pretty and self.is_pretty and not self.is_inline
+        # Whitespace in a raw text or preformatted body is content (#88).
+        pretty = pretty and _element_name(self) not in VERBATIM_ELEMENTS
         # Inline neighbours render flat: ``<b>a</b><i>b</i>`` must not show as
         # ``a b``, nor ``a&#39;b`` as ``a ' b``.
         pretty = pretty and not _inline_neighbours(self)

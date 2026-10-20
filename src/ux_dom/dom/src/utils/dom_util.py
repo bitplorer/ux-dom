@@ -154,6 +154,11 @@ _RCDATA_ELEMENTS = frozenset({"textarea", "title"})
 TEXT_STATE_ELEMENTS = _RCDATA_ELEMENTS | {
     "xmp", "iframe", "noembed", "noframes", "noscript",
 }
+# Elements whose body keeps every whitespace character: raw text, RCDATA,
+# RAWTEXT, PLAINTEXT and preformatted text. Pretty render adds none there.
+VERBATIM_ELEMENTS = TEXT_STATE_ELEMENTS | {
+    "script", "style", "plaintext", "pre", "listing",
+}
 # The tokenizer folds ASCII case only, so ``re.A``.
 _TEXT_STATE_END = {
     name: re.compile("</" + name, re.I | re.A) for name in TEXT_STATE_ELEMENTS
