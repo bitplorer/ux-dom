@@ -34,11 +34,11 @@ class SyncReport:
     files: list[SyncedFile] = field(default_factory=list)
     mounts: list[tuple[str, str]] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
+    errors: list[str] = field(default_factory=list)
 
     @property
     def ok(self) -> bool:
-        # package mounts don't need files under root
-        return True
+        return not self.errors
 
 
 def _sha256(data: bytes) -> str:
@@ -85,7 +85,7 @@ def sync_runtime_assets(
             report.mounts.append((f.url, str(f.path)))
             report.notes.append(f"safe file {f.url} → {f.path.name}")
     except Exception as e:
-        report.notes.append(f"served_static_files: {e}")
+        report.errors.append(f"served_static_files: {e}")
 
     # Only materialize non-empty artifacts (explicit webassets escape hatch)
     rep = hub.materialize(root)
@@ -160,10 +160,13 @@ def write_runnable_package(
     out_dir: Optional[Path] = None,
     name: Optional[str] = None,
     archive: bool = False,
+    sync: Optional[SyncReport] = None,
 ) -> Path:
     """
     Runnable app tree. Library JS is **not** vendored — install via pip
     (requirements.txt). Package mounts resolve from site-packages at runtime.
+
+    ``sync`` reuses a report the caller already produced for ``root``.
     """
     import json
 
@@ -175,7 +178,8 @@ def write_runnable_package(
         shutil.rmtree(dest)
     dest.mkdir(parents=True)
 
-    sync = sync_runtime_assets(root)
+    if sync is None:
+        sync = sync_runtime_assets(root)
     files = collect_package_files(root)
     manifest_files = []
     for src in files:

@@ -16,7 +16,10 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
+
+if TYPE_CHECKING:
+    from ux_dom.cli.static_assets import SyncReport
 
 
 @dataclass
@@ -97,6 +100,7 @@ def run_build(
     )
 
     # ── static JS sync (package data → project assets/) ──────────────────
+    sync: Optional[SyncReport] = None
     if skip_static_sync:
         report.steps.append(BuildStep("static-sync", True, "skipped"))
     else:
@@ -104,12 +108,12 @@ def run_build(
             from ux_dom.cli.static_assets import sync_runtime_assets
 
             sync = sync_runtime_assets(root)
-            # Single-copy model: package mounts are success even with zero app files
-            mount_bits = [f"{p}→{d}" for p, d in getattr(sync, "mounts", [])]
+            mount_bits = [f"{p}→{d}" for p, d in sync.mounts]
             file_bits = [f"{f.rel} ({f.action}, {f.bytes}B)" for f in sync.files]
-            detail = "; ".join(mount_bits + file_bits) or "no mounts or files"
-            ok = bool(sync.mounts) or bool(sync.files) or sync.ok
-            report.steps.append(BuildStep("static-sync", ok, detail))
+            detail = "; ".join(sync.errors + mount_bits + file_bits)
+            report.steps.append(
+                BuildStep("static-sync", sync.ok, detail or "no mounts or files")
+            )
         except Exception as e:
             report.steps.append(BuildStep("static-sync", False, str(e)))
 
@@ -128,44 +132,6 @@ def run_build(
         )
     except Exception as e:
         report.steps.append(BuildStep("x_element.js", False, str(e)))
-
-    # Ensure create-app style StaticFiles mount hint (informational)
-    main_txt = main.read_text(encoding="utf-8") if main.is_file() else ""
-    mounts_assets = "/assets" in main_txt or "StaticFiles" in main_txt
-    report.steps.append(
-        BuildStep(
-            "assets-mount",
-            True,  # soft — custom hosts may mount differently
-            (
-                "app.main references StaticFiles or /assets"
-                if mounts_assets
-                else "WARNING: app.main may not mount assets/ — ensure /assets/js/* is served"
-            ),
-        )
-    )
-
-    # ── CSS compile is product DX (this command does not run Tailwind)
-    report.steps.append(
-        BuildStep(
-            "css",
-            True,
-            "product CSS compile is uxcompose build "
-            "(this command does not run the Tailwind CLI)",
-        )
-    )
-    css_dir = root / "assets" / "css"
-    css_candidates = list(css_dir.glob("*.css")) if css_dir.is_dir() else []
-    out_css = root / "assets" / "static" / "file" / "css" / "output.css"
-    if out_css.is_file():
-        css_candidates.append(out_css)
-    report.steps.append(
-        BuildStep(
-            "css-artifacts",
-            True,
-            ", ".join(str(p.relative_to(root)) for p in css_candidates[:5])
-            or "no css files yet under assets/css",
-        )
-    )
 
     # ── Import ASGI app ──────────────────────────────────────────────────
     if skip_import:
@@ -253,6 +219,7 @@ def run_build(
                     out_dir=out_dir or (root / "dist"),
                     name=package_name,
                     archive=archive,
+                    sync=sync,
                 )
                 report.package_path = path
                 # verify package contains x_element.js
