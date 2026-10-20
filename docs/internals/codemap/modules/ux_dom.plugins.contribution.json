@@ -1,11 +1,11 @@
 {
  "ux_dom.plugins.contribution": {
   "consumers": [
-   "tests/01_core/test_host_path_coverage.py"
+   "tests/01_core/test_host_path_coverage.py",
+   "tests/02_document_plugins/test_plugin_assets.py"
   ],
   "imported_by": {
    "function_level": [
-    "ux_dom.assets",
     "ux_dom.plugins.runtime"
    ],
    "module_level": [

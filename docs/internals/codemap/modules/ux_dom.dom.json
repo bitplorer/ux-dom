@@ -141,9 +141,6 @@
     "ux_dom.ui.channel_bridge"
    ],
    "module_level": [
-    "ux_dom.debug_gallery",
-    "ux_dom.examples.links",
-    "ux_dom.examples.toggle",
     "ux_dom.plugins.control.htmx",
     "ux_dom.scripts",
     "ux_dom.ui.alert",

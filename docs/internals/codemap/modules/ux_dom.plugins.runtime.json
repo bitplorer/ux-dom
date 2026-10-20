@@ -42,7 +42,6 @@
     "ux_dom.plugins.hub"
    ],
    "module_level": [
-    "ux_dom.assets",
     "ux_dom.plugins",
     "ux_dom.runtime"
    ],

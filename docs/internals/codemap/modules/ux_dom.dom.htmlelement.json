@@ -33,7 +33,6 @@
     "ux_dom.dom",
     "ux_dom.dom.htmldocument",
     "ux_dom.dom.src.ws_rpc",
-    "ux_dom.examples.links",
     "ux_dom.slots.custom_element_slot",
     "ux_dom.slots.slots",
     "ux_dom.slots.web_component_slot"

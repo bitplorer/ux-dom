@@ -36,7 +36,6 @@
     "ux_dom.settings.document"
    ],
    "module_level": [
-    "ux_dom.assets",
     "ux_dom.plugins",
     "ux_dom.plugins.shell"
    ],

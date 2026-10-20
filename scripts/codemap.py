@@ -36,20 +36,17 @@ OUT_DIR = ROOT / "docs" / "internals" / "codemap"
 # ontology in AGENTS.md with layers it does not name: dom (tags / serialize), document (Document, contributions, runtime
 # facades, package static), components (typed trees on top of dom), ui (optional
 # kit), cli (pure-dom Typer CLI), integrations (HTTP / ASGI / IO adapters),
-# support (shared helpers), examples (in-package demos).
+# support (shared helpers).
 LAYERS: dict[str, str] = {
     "ux_dom": "root",
     "ux_dom.__main__": "cli",
     "ux_dom.alpinejs": "components",
-    "ux_dom.assets": "document",
     "ux_dom.cli": "cli",
     "ux_dom.compat": "support",
     "ux_dom.concurrency": "support",
-    "ux_dom.debug_gallery": "examples",
     "ux_dom.diagnostics": "support",
     "ux_dom.dom": "dom",
     "ux_dom.elements": "components",
-    "ux_dom.examples": "examples",
     "ux_dom.htmx": "integrations",
     "ux_dom.plugins": "document",
     "ux_dom.profiling": "support",

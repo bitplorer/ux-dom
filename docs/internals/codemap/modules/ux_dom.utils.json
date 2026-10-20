@@ -1,6 +1,8 @@
 {
  "ux_dom.utils": {
-  "consumers": [],
+  "consumers": [
+   "tests/07_resilience/test_f17_orphans_absent.py"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [],

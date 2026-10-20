@@ -7,7 +7,6 @@
    "docs/reference/API_SURFACE.md",
    "tests/01_core/test_alpine_dataset_merge.py",
    "tests/01_core/test_attr_dialects.py",
-   "tests/01_core/test_builtin_mro_behaviour.py",
    "tests/01_core/test_contextvar_stack.py",
    "tests/01_core/test_find_lazy_membership.py",
    "tests/01_core/test_full_mro_behaviour_integration.py",
