@@ -47,6 +47,7 @@
    "tests/05_chaos/test_production_trust.py",
    "tests/06_browser/test_custom_elements_auth_browser.py",
    "tests/07_resilience/test_ownership_hard_cut.py",
+   "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/helpers.py"
   ],
   "imported_by": {

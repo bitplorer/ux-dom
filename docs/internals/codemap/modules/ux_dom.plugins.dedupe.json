@@ -2,6 +2,7 @@
  "ux_dom.plugins.dedupe": {
   "consumers": [
    "docs/security/SCRIPT_INJECTION.md",
+   "tests/01_core/test_pass3_defects.py",
    "tests/01_core/test_surface_coverage.py",
    "tests/02_document_plugins/test_script_dedupe.py"
   ],

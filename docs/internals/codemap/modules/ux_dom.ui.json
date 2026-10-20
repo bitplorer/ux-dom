@@ -9,6 +9,7 @@
    "examples/ux_kit/README.md",
    "examples/ux_kit/app/routes/index.py",
    "tests/01_core/test_host_path_coverage.py",
+   "tests/01_core/test_pass3_defects.py",
    "tests/02_document_plugins/test_ui_battery.py",
    "tests/02_document_plugins/test_ui_kit.py",
    "tests/02_document_plugins/test_ui_kit_defects.py",

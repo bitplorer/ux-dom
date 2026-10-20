@@ -31,6 +31,7 @@
    "tests/04_production/test_production_lock.py",
    "tests/06_browser/test_custom_elements_auth_browser.py",
    "tests/07_resilience/test_no_deprecations.py",
+   "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/helpers.py"
   ],
   "imported_by": {

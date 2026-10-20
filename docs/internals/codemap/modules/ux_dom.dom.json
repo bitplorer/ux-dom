@@ -66,6 +66,7 @@
    "tests/01_core/test_membership_contract.py",
    "tests/01_core/test_membership_mro_boolean.py",
    "tests/01_core/test_parallel_first_class.py",
+   "tests/01_core/test_pass3_defects.py",
    "tests/01_core/test_pretty_stream.py",
    "tests/01_core/test_reactive_component.py",
    "tests/01_core/test_reactive_stress_chaos.py",
@@ -118,6 +119,7 @@
    "tests/07_resilience/test_jinja_and_string_nonce.py",
    "tests/07_resilience/test_jinja_in_event_loop.py",
    "tests/07_resilience/test_no_deprecations.py",
+   "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/07_resilience/test_unsafe_url_attrs.py",
    "tests/fixtures/auth_xelements.py",
    "tests/helpers.py"

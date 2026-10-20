@@ -32,6 +32,7 @@
    "tests/06_browser/test_custom_elements_auth_browser.py",
    "tests/07_resilience/test_no_deprecations.py",
    "tests/07_resilience/test_ownership_hard_cut.py",
+   "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/conftest.py"
   ],
   "imported_by": {

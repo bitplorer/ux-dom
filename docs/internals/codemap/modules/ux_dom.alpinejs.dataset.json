@@ -1,6 +1,7 @@
 {
  "ux_dom.alpinejs.dataset": {
   "consumers": [
+   "tests/01_core/test_alpine_dataset_merge.py",
    "tests/01_core/test_ux_dom.py",
    "tests/07_resilience/test_attr_escape_isolation.py"
   ],

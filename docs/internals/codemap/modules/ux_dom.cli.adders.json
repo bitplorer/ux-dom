@@ -2,6 +2,7 @@
  "ux_dom.cli.adders": {
   "consumers": [
    "docs/internals/ARCHITECTURE.md",
+   "tests/01_core/test_pass3_defects.py",
    "tests/03_routing_cli/test_cli_route_maturity.py",
    "tests/03_routing_cli/test_dx_cli.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
