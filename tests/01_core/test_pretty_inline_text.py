@@ -19,16 +19,21 @@ from ux_dom.dom import (
     b,
     body,
     comment,
+    dd,
     div,
     head,
+    header,
+    hr,
     html,
     i,
     lazy,
     li,
     meta,
+    option,
     p,
     pre,
     q,
+    ruby,
     script,
     span,
     style,
@@ -40,6 +45,10 @@ from ux_dom.dom import (
     ul,
 )
 from ux_dom.dom.src import ext
+from ux_dom.dom.src.htmltags import html_tag
+
+dialog = type("dialog", (html_tag,), {})
+nobr = type("nobr", (html_tag,), {})
 
 
 class TestPrettyInlineText(unittest.TestCase):
@@ -153,10 +162,42 @@ class TestPrettyInlineText(unittest.TestCase):
             table(tbody(tr(td("a"))), "x"),
             "<table><tbody><tr><td>a</td></tr></tbody>x</table>",
         )
+        # <dialog> closes a <p>; an <a> or <nobr> closes the one it is in.
+        self.assertPretty(
+            div(p("a", dialog("b")), "c"), "<div><p>a<dialog>b</dialog></p>c</div>"
+        )
+        self.assertPretty(
+            nobr(div("a"), nobr(), div("b")),
+            "<nobr><div>a</div><nobr></nobr><div>b</div></nobr>",
+        )
+        # A table part in a cell closes it; the tail lands in front of the table.
+        self.assertPretty(
+            div("x", table(tbody(tr(td(tbody("y")))))),
+            "<div>x<table><tbody><tr><td><tbody>y</tbody></td></tr></tbody>"
+            "</table></div>",
+        )
+        # Below the top of the document the parser drops <html>/<head>/<body>.
+        self.assertPretty(div("x", body("y")), "<div>x<body>y</body></div>")
+        self.assertPretty(div(html("x"), "y"), "<div><html>x</html>y</div>")
+        self.assertPretty(div(head("x", "y")), "<div>\n  <head>xy</head>\n</div>")
+        # A void element writes no end tag, so its children follow it.
+        self.assertPretty(div(hr("x"), "y"), "<div><hr>xy</div>")
         # A nested list ends the search for a nested <li>.
         self.assertPretty(
             li(ul(li("a"))),
             "<li>\n  <ul>\n    <li>\n      a\n    </li>\n  </ul>\n</li>",
+        )
+
+    def test_option_and_ruby_bodies_render_flat(self):
+        # An <option> shows its label, which joins its text with one space per
+        # whitespace run, and <ruby> lays out everything in it inline (#94).
+        self.assertPretty(
+            div(option(dd(header("a"), "b"))),
+            "<div>\n  <option><dd><header>a</header>b</dd></option>\n</div>",
+        )
+        self.assertPretty(
+            div(ruby(div("a"), div("b"))),
+            "<div>\n  <ruby><div>a</div><div>b</div></ruby>\n</div>",
         )
 
     def test_layout_check_is_linear(self):

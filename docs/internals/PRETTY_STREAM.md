@@ -18,12 +18,18 @@ renders `<b>x</b>`.
 A newline next to a block-level element (`div`, `p`, `li`, table parts, …)
 sits at a line edge, where the browser drops it, so block children keep the
 indented layout, with text and inline children between them. Nothing in
-`<head>` is displayed, so it stays indented. An element the HTML parser moves
-renders flat and counts as inline: `<li>` holding an `<li>`, `<p>` holding a
-block, a table part outside its table, inline content directly in a table.
+`<head>` is displayed, so it stays indented. `<dialog>` counts as inline: it is
+hidden until open, then positioned out of the flow. An element the HTML parser
+moves renders flat and counts as inline: `<li>` holding an `<li>`, `<p>`
+holding a block (`<dialog>` included), a table part outside its table or inside
+a cell, inline content directly in a table, `<html>` / `<head>` / `<body>`
+below the top of the document, and a void element (`<hr>`) given children.
+An `<option>` shows its label, which joins its text with one space per
+whitespace run, and `<ruby>` lays out everything in it inline, so both render
+their whole body flat.
 
 Pretty and flat renders show the same `innerText` in Chromium for a fixed
-corpus and 1,200 random trees
+corpus and 3 × 1,800 random trees
 (`tests/06_browser/test_pretty_inner_text_browser.py`). A `lazy` child counts
 as inline, since its result is unknown until it renders. The whole subtree
 under a flat parent is flat. CSS can change `display` (a `class="block"` span,

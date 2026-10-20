@@ -24,7 +24,9 @@ try {
       const box = document.createElement("div");
       box.innerHTML = html;
       document.body.append(box);
-      return box.innerText;
+      const text = box.innerText;
+      box.remove(); // keeps each layout as small as one snippet
+      return text;
     });
   }, snippets);
   process.stdout.write(JSON.stringify(texts));
