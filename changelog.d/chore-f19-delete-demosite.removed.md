@@ -1,0 +1,1 @@
+- **F-19:** delete retired ``demosite/`` (broken leftover snapshot).
