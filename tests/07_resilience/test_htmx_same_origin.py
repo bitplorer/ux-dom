@@ -177,22 +177,19 @@ def test_connect_same_origin_kept(attr, url):
 
 
 @pytest.mark.parametrize("escape", [True, False])
-def test_string_to_html_gates_data_hx_sse_ws(escape):
-    foreign = StringToHTML(
+def test_string_to_html_drops_data_hx_sse_ws(escape):
+    # The string→HTML allowlist drops every hx-* / data-hx-* attribute, so a
+    # foreign connect: target cannot survive (stronger than the URL gate).
+    for markup in (
         '<div data-hx-sse="connect:http://evil" '
         'data-hx-ws="connect:wss://evil.com/s"></div>',
-        escape=escape,
-    ).parse()
-    rendered = foreign.__render__(pretty=False)
-    assert "evil" not in rendered
-    assert rendered.count(UNSAFE_URL) == 2
-    local = StringToHTML(
         '<div data-hx-sse="connect:/feed" data-hx-ws="connect:/ws"></div>',
-        escape=escape,
-    ).parse()
-    kept = local.__render__(pretty=False)
-    assert 'data-hx-sse="connect:/feed"' in kept
-    assert 'data-hx-ws="connect:/ws"' in kept
+    ):
+        node = StringToHTML(markup, escape=escape).parse()
+        rendered = node.__render__(pretty=False)
+        assert "evil" not in rendered
+        assert "data-hx-" not in rendered
+        assert "connect:" not in rendered
 
 
 @pytest.mark.parametrize(
