@@ -1,0 +1,72 @@
+{
+ "ux_dom.plugins.runtime": {
+  "consumers": [
+   "docs/INSTALL.md",
+   "docs/START_HERE.md",
+   "docs/guides/COOKBOOK.md",
+   "docs/guides/SNIPPETS.md",
+   "docs/guides/TUTORIAL.md",
+   "docs/internals/APP_COMPOSITION.md",
+   "docs/internals/MODULE_MAP.md",
+   "docs/reference/DOCUMENT.md",
+   "docs/reference/STACK.md",
+   "docs/reference/XELEMENT.md",
+   "docs/reference/XELEMENT_AUTO_DEFINITIONS.md",
+   "docs/security/ASSETS.md",
+   "docs/security/WHY_JS_URL.md",
+   "examples/xelement_kit/app/main.py",
+   "tests/01_core/test_host_path_coverage.py",
+   "tests/02_document_plugins/test_app_composition.py",
+   "tests/02_document_plugins/test_csp_nonce.py",
+   "tests/02_document_plugins/test_document_plugins.py",
+   "tests/02_document_plugins/test_document_runtimes_create.py",
+   "tests/02_document_plugins/test_document_two_stage.py",
+   "tests/02_document_plugins/test_document_using.py",
+   "tests/02_document_plugins/test_package_static.py",
+   "tests/02_document_plugins/test_plugin_assets.py",
+   "tests/02_document_plugins/test_safe_static.py",
+   "tests/02_document_plugins/test_script_dedupe.py",
+   "tests/03_routing_cli/test_build_package.py",
+   "tests/04_production/test_docs_integrity.py",
+   "tests/04_production/test_production_lock.py",
+   "tests/06_browser/test_custom_elements_auth_browser.py",
+   "tests/07_resilience/test_no_deprecations.py",
+   "tests/helpers.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.cli.build",
+    "ux_dom.cli.static_assets",
+    "ux_dom.plugins.hub"
+   ],
+   "module_level": [
+    "ux_dom.assets",
+    "ux_dom.plugins",
+    "ux_dom.runtime"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.dom",
+    "ux_dom.plugins.contribution",
+    "ux_dom.plugins.package_static",
+    "ux_dom.scripts"
+   ],
+   "module_level": [
+    "ux_dom.plugins.contribution",
+    "ux_dom.plugins.safe_static"
+   ],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/plugins/runtime.py",
+  "public": [
+   "ServeMode",
+   "UxChannelRuntime",
+   "XELEMENT_JS_URL",
+   "XELEMENT_STATIC_PREFIX",
+   "XElementRuntime"
+  ]
+ }
+}

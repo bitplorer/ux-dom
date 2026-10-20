@@ -1,0 +1,32 @@
+{
+ "ux_dom.cli.adders": {
+  "consumers": [
+   "docs/internals/ARCHITECTURE.md",
+   "tests/03_routing_cli/test_cli_route_maturity.py",
+   "tests/03_routing_cli/test_dx_cli.py",
+   "tests/03_routing_cli/test_dx_side_effects.py",
+   "tests/04_production/test_production_stability.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.cli.cli"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "cli",
+  "path": "src/ux_dom/cli/adders.py",
+  "public": [
+   "AddError",
+   "XKind",
+   "add_component",
+   "add_route",
+   "add_xelement"
+  ]
+ }
+}

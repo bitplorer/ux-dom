@@ -1,0 +1,21 @@
+{
+ "ux_dom.routing": {
+  "consumers": [
+   "tests/03_routing_cli/test_directory_router.py",
+   "tests/07_resilience/test_ownership_hard_cut.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "integrations",
+  "path": "src/ux_dom/routing/__init__.py",
+  "public": []
+ }
+}

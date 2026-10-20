@@ -1,0 +1,26 @@
+{
+ "ux_dom.ui.radio_group": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.ui"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom",
+    "ux_dom.dom",
+    "ux_dom.ui.tokens"
+   ],
+   "type_checking": []
+  },
+  "layer": "ui",
+  "path": "src/ux_dom/ui/radio_group.py",
+  "public": [
+   "RadioGroup"
+  ]
+ }
+}

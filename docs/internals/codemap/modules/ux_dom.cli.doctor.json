@@ -1,0 +1,35 @@
+{
+ "ux_dom.cli.doctor": {
+  "consumers": [
+   "tests/03_routing_cli/test_cli_output_and_doctor.py",
+   "tests/03_routing_cli/test_dx_cli.py",
+   "tests/03_routing_cli/test_dx_side_effects.py",
+   "tests/03_routing_cli/test_scaffold_check.py",
+   "tests/03_routing_cli/test_serve_dx.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.cli.build",
+    "ux_dom.cli.cli"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom",
+    "ux_dom.scripts"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "cli",
+  "path": "src/ux_dom/cli/doctor.py",
+  "public": [
+   "Check",
+   "DoctorReport",
+   "format_report",
+   "run_doctor"
+  ]
+ }
+}

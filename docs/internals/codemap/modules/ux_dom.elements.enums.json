@@ -1,0 +1,28 @@
+{
+ "ux_dom.elements.enums": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.elements"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.component",
+    "ux_dom.dom.src.htmltags"
+   ],
+   "type_checking": []
+  },
+  "layer": "components",
+  "path": "src/ux_dom/elements/enums.py",
+  "public": [
+   "CharEnumInput",
+   "EnumInput",
+   "EnumLabel",
+   "IntegerEnumInput"
+  ]
+ }
+}

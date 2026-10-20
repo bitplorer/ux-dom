@@ -1,0 +1,36 @@
+{
+ "ux_dom.plugins.shell": {
+  "consumers": [
+   "examples/xelement_kit/app/document.py",
+   "tests/02_document_plugins/test_csp_nonce.py",
+   "tests/02_document_plugins/test_plugin_assets.py",
+   "tests/02_document_plugins/test_script_dedupe.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.plugins.csp"
+   ],
+   "module_level": [
+    "ux_dom.assets",
+    "ux_dom.plugins"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.plugins.csp",
+    "ux_dom.plugins.dedupe"
+   ],
+   "module_level": [
+    "ux_dom.plugins.hub"
+   ],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/plugins/shell.py",
+  "public": [
+   "runtime_tags",
+   "shell_fragments"
+  ]
+ }
+}

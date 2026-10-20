@@ -1,0 +1,35 @@
+{
+ "ux_dom.slots": {
+  "consumers": [
+   "docs/reference/HYPERMEDIA.md",
+   "docs/ship/CAPABILITIES.md",
+   "examples/xelement_kit/README.md",
+   "examples/xelement_kit/app/routes/slots.py",
+   "tests/02_document_plugins/test_hypermedia_surface.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.slots.custom_element_slot",
+    "ux_dom.slots.slots",
+    "ux_dom.slots.web_component_slot"
+   ],
+   "type_checking": []
+  },
+  "layer": "components",
+  "path": "src/ux_dom/slots/__init__.py",
+  "public": [
+   "SlotElement",
+   "Slots",
+   "WebComponentSlot",
+   "x_slot"
+  ]
+ }
+}

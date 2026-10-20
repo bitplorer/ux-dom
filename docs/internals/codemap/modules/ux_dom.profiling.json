@@ -1,0 +1,29 @@
+{
+ "ux_dom.profiling": {
+  "consumers": [
+   "tests/04_production/test_p95_profiling.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.cli.profile"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "support",
+  "path": "src/ux_dom/profiling.py",
+  "public": [
+   "LatencyReport",
+   "cprofile_to_speedscope",
+   "measure_latency",
+   "profile_cprofile",
+   "run_suite",
+   "write_html_report"
+  ]
+ }
+}

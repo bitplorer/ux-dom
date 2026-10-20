@@ -1,0 +1,29 @@
+{
+ "ux_dom.dom.src.csstags": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom",
+    "ux_dom.dom.src.component"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.main"
+   ],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/src/csstags.py",
+  "public": [
+   "CSS",
+   "CSSClass",
+   "CSSId",
+   "CSSProperty",
+   "Keyframes"
+  ]
+ }
+}

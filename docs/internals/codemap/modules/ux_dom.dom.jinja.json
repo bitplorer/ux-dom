@@ -1,0 +1,26 @@
+{
+ "ux_dom.dom.jinja": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.dom"
+   ],
+   "module_level": [
+    "ux_dom.dom.src.component"
+   ],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/jinja.py",
+  "public": [
+   "JinjaComponent"
+  ]
+ }
+}

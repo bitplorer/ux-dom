@@ -1,0 +1,24 @@
+{
+ "ux_dom.settings.paths": {
+  "consumers": [
+   "tests/01_core/test_host_path_coverage.py",
+   "tests/04_production/test_production_hardening.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/settings/paths.py",
+  "public": [
+   "MakePath",
+   "make_paths"
+  ]
+ }
+}

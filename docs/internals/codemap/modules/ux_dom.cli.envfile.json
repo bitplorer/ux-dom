@@ -1,0 +1,24 @@
+{
+ "ux_dom.cli.envfile": {
+  "consumers": [
+   "tests/03_routing_cli/test_serve_dx.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "cli",
+  "path": "src/ux_dom/cli/envfile.py",
+  "public": [
+   "env_files_for",
+   "load_env_files",
+   "parse_env_text"
+  ]
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "ux_dom.cli": {
+  "consumers": [
+   "tests/01_core/test_builtin_mro_behaviour.py",
+   "tests/01_core/test_full_mro_behaviour_integration.py",
+   "tests/01_core/test_host_path_coverage.py",
+   "tests/01_core/test_mro_signatures.py",
+   "tests/03_routing_cli/test_dx_cli.py",
+   "tests/03_routing_cli/test_scaffold_check.py",
+   "tests/03_routing_cli/test_serve_dx.py",
+   "tests/03_routing_cli/test_tailwind_command.py",
+   "tests/07_resilience/test_ownership_hard_cut.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.__main__"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.cli.cli"
+   ],
+   "type_checking": []
+  },
+  "layer": "cli",
+  "path": "src/ux_dom/cli/__init__.py",
+  "public": [
+   "app",
+   "ux_dom"
+  ]
+ }
+}

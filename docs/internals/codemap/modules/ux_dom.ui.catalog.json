@@ -1,0 +1,33 @@
+{
+ "ux_dom.ui.catalog": {
+  "consumers": [
+   "tests/02_document_plugins/test_ui_battery.py",
+   "tests/02_document_plugins/test_ui_kit.py",
+   "tests/02_document_plugins/test_ui_kit_defects.py",
+   "tests/04_production/test_production_stability.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.cli.cli"
+   ],
+   "module_level": [
+    "ux_dom.ui.copy"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "ui",
+  "path": "src/ux_dom/ui/catalog.py",
+  "public": [
+   "CATALOG",
+   "RUNTIMES",
+   "UiEntry",
+   "list_components",
+   "runtime_for"
+  ]
+ }
+}

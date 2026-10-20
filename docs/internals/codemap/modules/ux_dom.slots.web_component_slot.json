@@ -1,0 +1,29 @@
+{
+ "ux_dom.slots.web_component_slot": {
+  "consumers": [
+   "docs/reference/HYPERMEDIA.md",
+   "tests/02_document_plugins/test_hypermedia_surface.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.slots"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.htmlelement",
+    "ux_dom.dom.src.htmltags",
+    "ux_dom.slots.custom_element_slot"
+   ],
+   "type_checking": []
+  },
+  "layer": "components",
+  "path": "src/ux_dom/slots/web_component_slot.py",
+  "public": [
+   "WebComponentSlot"
+  ]
+ }
+}

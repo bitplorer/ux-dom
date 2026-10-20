@@ -1,0 +1,35 @@
+{
+ "ux_dom.assets": {
+  "consumers": [
+   "tests/01_core/test_surface_coverage.py",
+   "tests/02_document_plugins/test_plugin_assets.py",
+   "tests/07_resilience/test_dead_surface_removed.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.plugins.contribution"
+   ],
+   "module_level": [
+    "ux_dom.plugins.hub",
+    "ux_dom.plugins.runtime",
+    "ux_dom.plugins.shell"
+   ],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/assets/__init__.py",
+  "public": [
+   "apply_to_document",
+   "compose_document_parts",
+   "ensure_default_contributions",
+   "register_css",
+   "register_js",
+   "sync_assets"
+  ]
+ }
+}

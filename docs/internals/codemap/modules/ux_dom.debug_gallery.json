@@ -1,0 +1,24 @@
+{
+ "ux_dom.debug_gallery": {
+  "consumers": [
+   "tests/03_routing_cli/test_dx_cli.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom"
+   ],
+   "type_checking": []
+  },
+  "layer": "examples",
+  "path": "src/ux_dom/debug_gallery.py",
+  "public": [
+   "gallery_page"
+  ]
+ }
+}

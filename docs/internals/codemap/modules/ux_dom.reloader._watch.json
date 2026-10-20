@@ -1,0 +1,26 @@
+{
+ "ux_dom.reloader._watch": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.reloader._app"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "integrations",
+  "path": "src/ux_dom/reloader/_watch.py",
+  "public": [
+   "CHANGE_EVENT_LABELS",
+   "ChangeSet",
+   "FileWatcher",
+   "logger",
+   "watchgod"
+  ]
+ }
+}

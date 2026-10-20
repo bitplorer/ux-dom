@@ -1,0 +1,39 @@
+{
+ "ux_dom.response.serialize": {
+  "consumers": [
+   "docs/plans/2026-09-12-extract-by-id.md",
+   "docs/plans/2026-09-12-tip-d107209-serialize-surface.md",
+   "docs/reference/API_SURFACE.md",
+   "docs/reference/COMPONENTS.md",
+   "tests/01_core/test_extract_by_id.py",
+   "tests/07_resilience/test_jinja_and_string_nonce.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.response",
+    "ux_dom.response.starlette"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.plugins.csp"
+   ],
+   "module_level": [
+    "ux_dom.dom.src.dom_tag"
+   ],
+   "type_checking": []
+  },
+  "layer": "integrations",
+  "path": "src/ux_dom/response/serialize.py",
+  "public": [
+   "extract_by_id",
+   "is_html_renderable",
+   "is_stream_renderable",
+   "prepare_html_body",
+   "prepare_html_stream",
+   "to_html_bytes"
+  ]
+ }
+}

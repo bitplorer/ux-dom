@@ -1,0 +1,28 @@
+{
+ "ux_dom.web_io._types": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.web_io",
+    "ux_dom.web_io._adapter",
+    "ux_dom.web_io._protocol"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "integrations",
+  "path": "src/ux_dom/web_io/_types.py",
+  "public": [
+   "MESSAGE",
+   "Message",
+   "Receive",
+   "Scope",
+   "Send"
+  ]
+ }
+}

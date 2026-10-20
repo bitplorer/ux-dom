@@ -1,0 +1,12 @@
+{
+ "ux_dom/reloader/script/reloader.js": {
+  "consumers": [
+   "tests/05_chaos/test_stress_races_js_pipeline.py"
+  ],
+  "layer": "integrations",
+  "path": "src/ux_dom/reloader/script/reloader.js",
+  "referenced_by": [
+   "ux_dom.reloader._app"
+  ]
+ }
+}

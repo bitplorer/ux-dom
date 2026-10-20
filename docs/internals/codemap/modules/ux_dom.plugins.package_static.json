@@ -1,0 +1,43 @@
+{
+ "ux_dom.plugins.package_static": {
+  "consumers": [
+   "docs/security/ASSETS.md",
+   "tests/01_core/test_host_path_coverage.py",
+   "tests/02_document_plugins/test_package_static.py",
+   "tests/02_document_plugins/test_safe_static.py",
+   "tests/07_resilience/test_no_deprecations.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.plugins.runtime"
+   ],
+   "module_level": [
+    "ux_dom.plugins"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.dom",
+    "ux_dom.plugins.safe_static"
+   ],
+   "module_level": [
+    "ux_dom.plugins.contribution"
+   ],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/plugins/package_static.py",
+  "public": [
+   "Inject",
+   "PackageStaticContribution",
+   "PackagedFile",
+   "ServeMode",
+   "loader_for",
+   "package_dir",
+   "resolve_package_resource",
+   "static_from_package",
+   "ux_channel_static"
+  ]
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "ux_dom.plugins.protocols": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.plugins",
+    "ux_dom.plugins.hub"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/plugins/protocols.py",
+  "public": [
+   "AssetsPlugin",
+   "ControlPlugin",
+   "HmrPlugin",
+   "HostPlugin",
+   "PartialPolicy",
+   "ResponsePlugin",
+   "RoutingPlugin",
+   "StylePlugin"
+  ]
+ }
+}

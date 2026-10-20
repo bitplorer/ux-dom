@@ -1,0 +1,51 @@
+{
+ "ux_dom.response.starlette": {
+  "consumers": [
+   "docs/guides/COOKBOOK.md",
+   "docs/plans/2026-09-12-tip-d107209-serialize-surface.md",
+   "docs/reference/DOCUMENT.md",
+   "examples/standalone_showcase/app/main.py",
+   "examples/ux_dom_only/realtime_kit/app.py",
+   "standalone/htmx_stream_app/app.py",
+   "standalone/mcp_app/app.py",
+   "standalone/sse_app/app.py",
+   "standalone/ws_app/app.py",
+   "tests/01_core/test_host_path_coverage.py",
+   "tests/01_core/test_streaming_and_attrs.py",
+   "tests/02_document_plugins/test_app_host_composition.py",
+   "tests/02_document_plugins/test_csp_nonce.py",
+   "tests/02_document_plugins/test_csp_policies.py",
+   "tests/02_document_plugins/test_htmx_ws_stream.py",
+   "tests/04_production/test_intent_battery.py",
+   "tests/04_production/test_production_hardening.py",
+   "tests/05_chaos/test_chaos_integration.py",
+   "tests/05_chaos/test_pentest_chaos.py",
+   "tests/05_chaos/test_stress_races_js_pipeline.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.plugins.response"
+   ],
+   "module_level": [
+    "ux_dom.response",
+    "ux_dom.routing._directory_router_impl"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.response.serialize"
+   ],
+   "type_checking": []
+  },
+  "layer": "integrations",
+  "path": "src/ux_dom/response/starlette.py",
+  "public": [
+   "HTMLResponse",
+   "StreamingResponse",
+   "html_response",
+   "streaming_response"
+  ]
+ }
+}

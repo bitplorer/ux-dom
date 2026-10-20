@@ -1,0 +1,32 @@
+{
+ "ux_dom.plugins.dedupe": {
+  "consumers": [
+   "docs/security/SCRIPT_INJECTION.md",
+   "tests/01_core/test_surface_coverage.py",
+   "tests/02_document_plugins/test_script_dedupe.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.plugins.hub",
+    "ux_dom.plugins.shell",
+    "ux_dom.settings.document"
+   ],
+   "module_level": [
+    "ux_dom.plugins"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/plugins/dedupe.py",
+  "public": [
+   "dedupe_dom_nodes",
+   "extract_script_srcs",
+   "resource_key"
+  ]
+ }
+}

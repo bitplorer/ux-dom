@@ -1,0 +1,29 @@
+{
+ "ux_dom.elements.dates": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.elements"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.component"
+   ],
+   "type_checking": []
+  },
+  "layer": "components",
+  "path": "src/ux_dom/elements/dates.py",
+  "public": [
+   "DateInput",
+   "DateLabel",
+   "DateTimeLocalInput",
+   "MonthInput",
+   "TimeInput",
+   "WeekInput"
+  ]
+ }
+}

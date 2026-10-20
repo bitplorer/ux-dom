@@ -1,0 +1,21 @@
+{
+ "ux_dom.dom.src": {
+  "consumers": [
+   "tests/01_core/test_streaming_and_attrs.py",
+   "tests/07_resilience/test_no_deprecations.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/src/__init__.py",
+  "public": []
+ }
+}

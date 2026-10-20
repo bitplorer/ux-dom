@@ -1,0 +1,69 @@
+{
+ "ux_dom.plugins.hub": {
+  "consumers": [
+   "examples/standalone_showcase/app/main.py",
+   "examples/ux_dom_only/hypermedia_shop/app.py",
+   "examples/ux_kit/app/main.py",
+   "examples/xelement_kit/app/document.py",
+   "examples/xelement_kit/app/main.py",
+   "tests/01_core/test_full_mro_behaviour_integration.py",
+   "tests/01_core/test_regression_guards.py",
+   "tests/02_document_plugins/test_app_composition.py",
+   "tests/02_document_plugins/test_app_host_composition.py",
+   "tests/02_document_plugins/test_csp_nonce.py",
+   "tests/02_document_plugins/test_csp_policies.py",
+   "tests/02_document_plugins/test_document_plugins.py",
+   "tests/02_document_plugins/test_package_static.py",
+   "tests/02_document_plugins/test_plugin_assets.py",
+   "tests/02_document_plugins/test_public_api_and_plugins.py",
+   "tests/02_document_plugins/test_safe_static.py",
+   "tests/02_document_plugins/test_script_dedupe.py",
+   "tests/03_routing_cli/test_build_package.py",
+   "tests/04_production/test_intent_battery.py",
+   "tests/04_production/test_production_readiness.py",
+   "tests/05_chaos/test_chaos_integration.py",
+   "tests/05_chaos/test_stress_races_js_pipeline.py",
+   "tests/07_resilience/test_dead_surface_removed.py",
+   "tests/07_resilience/test_ownership_hard_cut.py",
+   "tests/conftest.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.cli.static_assets",
+    "ux_dom.settings.document"
+   ],
+   "module_level": [
+    "ux_dom.assets",
+    "ux_dom.plugins",
+    "ux_dom.plugins.shell"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.plugins.control",
+    "ux_dom.plugins.csp",
+    "ux_dom.plugins.dedupe",
+    "ux_dom.plugins.routing",
+    "ux_dom.plugins.runtime",
+    "ux_dom.plugins.safe_static"
+   ],
+   "module_level": [
+    "ux_dom.plugins.contribution",
+    "ux_dom.plugins.protocols"
+   ],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/plugins/hub.py",
+  "public": [
+   "App",
+   "MaterializeReport",
+   "MaterializedFile",
+   "PluginHub",
+   "ProductHostMoved",
+   "get_hub",
+   "set_hub"
+  ]
+ }
+}

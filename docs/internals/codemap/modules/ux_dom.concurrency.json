@@ -1,0 +1,42 @@
+{
+ "ux_dom.concurrency": {
+  "consumers": [
+   "docs/internals/CONCURRENCY.md",
+   "tests/01_core/test_concurrency_policy_e2e.py",
+   "tests/01_core/test_parallel_first_class.py",
+   "tests/04_production/test_p95_profiling.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.cli.profile"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.concurrency"
+   ],
+   "type_checking": []
+  },
+  "layer": "support",
+  "path": "src/ux_dom/concurrency.py",
+  "public": [
+   "ConcurrencySettings",
+   "build_parallel",
+   "configure_concurrency",
+   "default_workers",
+   "get_concurrency_settings",
+   "locked_tree",
+   "map_parallel",
+   "multi_tree_lock",
+   "render_async_gather",
+   "render_parallel",
+   "reset_concurrency_settings",
+   "root_of",
+   "should_parallelize",
+   "tree_lock_for"
+  ]
+ }
+}

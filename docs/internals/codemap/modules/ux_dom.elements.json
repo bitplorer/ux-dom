@@ -1,0 +1,76 @@
+{
+ "ux_dom.elements": {
+  "consumers": [
+   "docs/ship/CAPABILITIES.md"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.elements.integers"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.elements.booleans",
+    "ux_dom.elements.buttons",
+    "ux_dom.elements.chars",
+    "ux_dom.elements.dates",
+    "ux_dom.elements.enums",
+    "ux_dom.elements.floats",
+    "ux_dom.elements.integers"
+   ],
+   "type_checking": []
+  },
+  "layer": "components",
+  "path": "src/ux_dom/elements/__init__.py",
+  "public": [
+   "BooleanField",
+   "BooleanInput",
+   "BooleanLabel",
+   "BooleanLegend",
+   "Button",
+   "ButtonInput",
+   "CharEnumInput",
+   "CharField",
+   "CharFieldSet",
+   "CharInput",
+   "CharLabel",
+   "CharLegend",
+   "CheckboxInput",
+   "DateInput",
+   "DateLabel",
+   "DateTimeLocalInput",
+   "EnumInput",
+   "EnumLabel",
+   "FileButtonInput",
+   "FloatInput",
+   "FloatLabel",
+   "FloatLegend",
+   "FloatNumberInput",
+   "FloatRangeInput",
+   "HiddenInput",
+   "ImageButtonInput",
+   "IntegerEnumInput",
+   "IntegerField",
+   "IntegerInput",
+   "IntegerLabel",
+   "IntegerLegend",
+   "IntegerNumberInput",
+   "IntegerRangeInput",
+   "MonthInput",
+   "PasswordInput",
+   "RadioInput",
+   "ResetButton",
+   "ResetButtonInput",
+   "SearchInput",
+   "SubmitButton",
+   "SubmitButtonInput",
+   "TelephoneInput",
+   "TextInput",
+   "TimeInput",
+   "WeekInput"
+  ]
+ }
+}

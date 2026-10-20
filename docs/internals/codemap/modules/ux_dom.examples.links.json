@@ -1,0 +1,24 @@
+{
+ "ux_dom.examples.links": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom",
+    "ux_dom.dom.htmlelement"
+   ],
+   "type_checking": []
+  },
+  "layer": "examples",
+  "path": "src/ux_dom/examples/links.py",
+  "public": [
+   "HtmxLink",
+   "Link"
+  ]
+ }
+}

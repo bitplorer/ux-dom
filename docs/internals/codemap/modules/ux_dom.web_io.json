@@ -1,0 +1,48 @@
+{
+ "ux_dom.web_io": {
+  "consumers": [
+   "examples/ux_dom_only/realtime_kit/app.py",
+   "standalone/ws_app/app.py",
+   "tests/01_core/test_concurrency_patterns.py",
+   "tests/01_core/test_full_mro_behaviour_integration.py",
+   "tests/01_core/test_regression_guards.py",
+   "tests/02_document_plugins/test_htmx_ws_stream.py",
+   "tests/04_production/test_intent_battery.py",
+   "tests/05_chaos/test_chaos_integration.py",
+   "tests/05_chaos/test_parsing_chaos.py",
+   "tests/05_chaos/test_stress_races_js_pipeline.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.htmx",
+    "ux_dom.reloader._app"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.web_io._adapter",
+    "ux_dom.web_io._events",
+    "ux_dom.web_io._protocol",
+    "ux_dom.web_io._types"
+   ],
+   "type_checking": []
+  },
+  "layer": "integrations",
+  "path": "src/ux_dom/web_io/__init__.py",
+  "public": [
+   "DataFetcher",
+   "HtmxEvents",
+   "MESSAGE",
+   "Receive",
+   "Scope",
+   "Send",
+   "WebSocketAdapter",
+   "WebSocketClientHandler",
+   "WebSocketEvents",
+   "WebSocketProtocol"
+  ]
+ }
+}

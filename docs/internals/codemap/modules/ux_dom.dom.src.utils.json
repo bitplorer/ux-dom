@@ -1,0 +1,47 @@
+{
+ "ux_dom.dom.src.utils": {
+  "consumers": [
+   "tests/07_resilience/test_htmx_same_origin.py",
+   "tests/07_resilience/test_jinja_and_string_nonce.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom",
+    "ux_dom.dom.icons",
+    "ux_dom.dom.src.html_string",
+    "ux_dom.dom.src.jinjatags"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.utils.dom_util"
+   ],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/src/utils/__init__.py",
+  "public": [
+   "CrossOriginURL",
+   "InvalidAttributeName",
+   "SAME_ORIGIN_URL_ATTRIBUTES",
+   "UNSAFE_URL",
+   "URL_ATTRIBUTES",
+   "checked_attr_name",
+   "cross_origin",
+   "dom_text",
+   "escape",
+   "escape_attr_minimal",
+   "include",
+   "lazy",
+   "raw",
+   "safe_attr_value",
+   "system",
+   "unescape",
+   "url_escape",
+   "url_unescape"
+  ]
+ }
+}

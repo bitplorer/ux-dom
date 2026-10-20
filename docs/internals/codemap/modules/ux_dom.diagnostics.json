@@ -1,0 +1,29 @@
+{
+ "ux_dom.diagnostics": {
+  "consumers": [
+   "docs/internals/MODULE_MAP.md"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.htmlelement",
+    "ux_dom.routing._directory_router_impl"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "support",
+  "path": "src/ux_dom/diagnostics.py",
+  "public": [
+   "directory_router_missing_base",
+   "directory_router_no_package_dir",
+   "xelement_light_with_shadow",
+   "xelement_missing_tagname",
+   "xelement_shadow_missing"
+  ]
+ }
+}
