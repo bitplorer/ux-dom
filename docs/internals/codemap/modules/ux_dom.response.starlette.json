@@ -1,6 +1,7 @@
 {
  "ux_dom.response.starlette": {
   "consumers": [
+   "docs/adr/0003-layer-boundary.md",
    "docs/guides/COOKBOOK.md",
    "docs/plans/2026-09-12-tip-d107209-serialize-surface.md",
    "docs/reference/DOCUMENT.md",

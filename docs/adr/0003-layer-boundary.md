@@ -14,7 +14,8 @@
 ## Context
 
 HMR, the Tailwind compiler, scaffolding, file routing and deploy moved to ux-compose in
-the hard-cut PRs. The owner restated the split on 2026-10-20:
+the hard-cut PRs. The owner restated the split on 2026-10-20, in the audit session recorded in
+[#59](https://github.com/bitplorer/ux-dom/issues/59):
 
 > "ux-compose handles HMR/hot-reload, Tailwind CSS, scaffolding, file-based routing
 > (DirectoryRouter) etc. — these features migrated from ux-dom to ux-compose; ux-dom
@@ -39,8 +40,13 @@ Leftovers of the migration remain in ux-dom. Evidence (audit
   this repo or in any sibling implements them.
 - `pyproject.toml` ships `pytailwindcss`, `uvicorn` and `python-multipart` extras that no
   module imports (#59 row C8).
-- `uxdom build --package/--archive` writes a runnable deploy bundle (`run.sh` →
-  `uvicorn`, Dockerfile/fly/render/railway copied, tar.gz). #59 row S4 left its owner open.
+- `uxdom build --package/--archive` writes a runnable deploy bundle. Verified by a real run on
+  `3a95deb`: it generates `run.sh` (`exec uvicorn app.main:app`), `requirements.txt`,
+  `MANIFEST.json` and `README.RUN.txt`, copies the app's `app/` and `assets/`, and copies
+  `Dockerfile`, `fly.toml`, `render.yaml`, `railway.json`, `.dockerignore` and `deploy/`
+  **only if they already exist** in the app; it generates none of them. `--archive` adds a
+  `.tar.gz`. The bundle served `GET /` and `/ux-dom/static/x_element.js` with 200. #59 row S4
+  left its owner open.
 - `uxdom doctor` checks a free port, `DEBUG` in `app/settings.py`, `.env`, and a
   `.ux_dom-scaffold.json` marker that nothing writes (#59 rows C7/C12).
 - Docs cited `uxcompose serve` with an app but no mode, and a `--hmr` flag. ux-compose
@@ -75,8 +81,8 @@ Rules:
 
 1. ux-dom declares no extension point for a ux-compose feature: no protocol, hub slot or
    `App.use_*` for HMR, style compile, asset layout or host.
-2. ux-dom extras contain only packages that `src/ux_dom` imports. `fastapi` stays because
-   it carries starlette for `ux_dom.response.starlette`.
+2. ux-dom extras contain only packages that `src/ux_dom` imports. The `fastapi` extra
+   (`ux-dom[fastapi]`) stays because it carries starlette for `ux_dom.response.starlette`.
 3. `uxdom` checks and writes nothing a product scaffold owns: no port, `DEBUG`, `.env`,
    scaffold marker or deploy bundle.
 4. **Remove from ux-dom only after ux-compose ships the equivalent or the owner records a
