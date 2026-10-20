@@ -1,0 +1,1 @@
+- **Component `markdown=` reaches `render`** (F-23): when `render` declares a `markdown` parameter, `markdown=` is passed through to it unchanged (string, callable or anything else) instead of being consumed as the Markdown converter.

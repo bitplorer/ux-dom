@@ -122,6 +122,7 @@
    "tests/07_resilience/test_htmx_same_origin.py",
    "tests/07_resilience/test_jinja_and_string_nonce.py",
    "tests/07_resilience/test_jinja_in_event_loop.py",
+   "tests/07_resilience/test_markdown_render_kwarg.py",
    "tests/07_resilience/test_no_deprecations.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/07_resilience/test_unsafe_url_attrs.py",

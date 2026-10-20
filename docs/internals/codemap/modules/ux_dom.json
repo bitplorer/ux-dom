@@ -83,6 +83,7 @@
    "tests/05_chaos/test_production_trust.py",
    "tests/05_chaos/test_stress_races_js_pipeline.py",
    "tests/06_browser/test_custom_elements_auth_browser.py",
+   "tests/07_resilience/test_markdown_render_kwarg.py",
    "tests/07_resilience/test_ownership_hard_cut.py",
    "tests/helpers.py"
   ],
