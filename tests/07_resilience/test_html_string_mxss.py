@@ -473,3 +473,69 @@ def test_document_style_from_parser_keeps_the_render_time_raw_text_guard():
     # The breakout is neutralized, so the <img> stays raw text inside <style>.
     assert out.index("<img") < out.index("</style>"), out
     assert "a > b{c:d}" in out
+
+
+# --- unfinished character references --------------------------------------
+#
+# CPython 3.14.1+ ``HTMLParser.close`` hands everything after an unfinished
+# ``&#62b`` to ``handle_charref``. Markup after the reference must still go
+# through the sanitizer, never out as part of a ``&#...;``.
+
+UNFINISHED_REFERENCES = (
+    "a&#62b<img src=x onerror=alert(1)>",
+    '<p>x</p>&#1e"><svg onload=alert(1)>',
+    "a&#62abc<img src=x onerror=alert(1)>",
+    "a&#X3Cz<img src=x onerror=alert(1)>",
+    "a&#x3cg<img src=x onerror=alert(1)>",
+    "a&#99999999999999999999b<img src=x onerror=alert(1)>",
+    'a&#6f"><img src=x onerror=alert(1)>',
+    "a&copyx<img src=x onerror=alert(1)>",
+    "a&#<img src=x onerror=alert(1)>",
+    "<b>x</b><img src=x onerror=alert(1)>&#62b",
+    "<textarea>&#62b</textarea><img src=x onerror=alert(1)>",
+    '<p title="&#62b">x</p>&#6a<img src=x onerror=alert(1)>',
+)
+
+
+@pytest.mark.parametrize("entry", sorted(ENTRY_POINTS))
+@pytest.mark.parametrize("src", UNFINISHED_REFERENCES)
+def test_unfinished_reference_cannot_smuggle_markup(entry, src):
+    out = ENTRY_POINTS[entry](src)
+    assert not _LIVE_HANDLER.search(out), out
+    assert "onerror" not in out.lower().replace("onerror=alert(1)&gt;", ""), out
+
+
+@pytest.mark.parametrize(
+    "src,expected",
+    [
+        ("a&#62b", "a&#62;b"),
+        ("a&#62b<b>c</b>", "a&#62;b<b>c</b>"),
+        ("a&#x3Eg", "a&#x3E;g"),
+        ("a&#62b<img src=x onerror=alert(1)>", 'a&#62;b<img src="x">'),
+        ("<textarea>&#62b</textarea>c", "<textarea>&#62;b</textarea>c"),
+        ("&#<b>c</b>", "&amp;#<b>c</b>"),
+        ("&#x<b>c</b>", "&amp;#x<b>c</b>"),
+        ("&#X<b>c</b>", "&amp;#X<b>c</b>"),
+        ("&#xg<b>c</b>", "&amp;#xg<b>c</b>"),
+        ("a&#62b&lt;c", "a&#62;b&lt;c"),
+        ("a&#62b&lt;<b>c</b>", "a&#62;b&lt;<b>c</b>"),
+        ('<p title="&#62b&#x">x</p>', '<p title="&gt;b&amp;#x">x</p>'),
+    ],
+)
+def test_unfinished_reference_ends_where_a_browser_ends_it(src, expected):
+    """``&#62b`` is ``>`` then ``b``, the rest parsed as HTML (no stray ``;``)."""
+    assert _sanitized_html(src) == expected
+
+
+def test_charref_handler_never_emits_markup():
+    from ux_dom.dom.src.parse_html import Char, HtmlToAst
+
+    parser = HtmlToAst()
+    parser.handle_charref("62b<img src=x onerror=alert(1)>")
+    parser.handle_charref("<svg onload=alert(1)>")
+    kids = list(parser.struct.outmost.children)
+    assert [type(k).__name__ for k in kids] == ["Char", "Data", "Data"], kids
+    assert kids[0].render() == "&#62;"
+    out = _render(StringToHTML(kids).parse() for _ in [0])
+    assert "<img" not in out and "<svg" not in out, out
+    assert "<" not in Char("x<img>").render(), Char("x<img>").render()

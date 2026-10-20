@@ -22,7 +22,9 @@ from __future__ import annotations
 
 import inspect
 import itertools
+import re
 from collections import abc, deque
+from html import escape
 from html.parser import HTMLParser
 from typing import Any, Callable, Iterable, Iterator
 
@@ -304,14 +306,18 @@ class Char(TerminalElement):
     """Represent character codes like: `&#0`"""
 
     def render(self, **kwargs) -> str:  # type: ignore[override]
-        return f"&#{self.data};"
+        if _CHARREF_NAME.fullmatch(self.data):
+            return f"&#{self.data};"
+        return "&amp;#" + escape(self.data, quote=False)
 
 
 class Entity(TerminalElement):
     """Represent entities like `&amp`"""
 
     def render(self, **kwargs) -> str:  # type: ignore[override]
-        return f"&{self.data};"
+        if _ENTITYREF_NAME.fullmatch(self.data):
+            return f"&{self.data};"
+        return "&amp;" + escape(self.data, quote=False)
 
 
 def _normalize_attrs(attrs) -> dict:
@@ -425,7 +431,7 @@ class HtmlToAst(HTMLParser):
     def feed(self, data: str) -> Root:  # type: ignore[override]
         """Parse the source string (param name matches ``HTMLParser.feed``)."""
         self.struct.clear()
-        super().feed(data)
+        super().feed(_finish_numeric_references(data, keep_style=True))
         return self.struct.outmost
 
     def handle_starttag(self, tag: str, attrs):  # type: ignore[override]
@@ -455,16 +461,88 @@ class HtmlToAst(HTMLParser):
         self.struct.nest_terminal(Declaration, data)
 
     def handle_charref(self, name: str):  # type: ignore[override]
-        self.struct.nest_terminal(Char, name)
+        self._reference(Char, _CHARREF_NAME, "&#", name)
 
     def handle_entityref(self, name: str):  # type: ignore[override]
-        self.struct.nest_terminal(Entity, name)
+        self._reference(Entity, _ENTITYREF_NAME, "&", name)
+
+    def _reference(self, kind, valid: re.Pattern[str], lead: str, name: str):
+        """Keep only a well-formed reference name; the rest is plain text.
+
+        CPython 3.14.1+ ``close`` passes the whole unparsed tail after an
+        unfinished ``&#62b`` as the name, markup included. Plain text is
+        escaped by the sanitizer, so that tail can never become markup.
+        """
+        match = valid.match(name)
+        if match is None:
+            self.struct.nest_terminal(Data, lead + name)
+            return
+        self.struct.nest_terminal(kind, match.group())
+        if match.end() < len(name):
+            self.struct.nest_terminal(Data, name[match.end() :])
 
     def handle_pi(self, data: str):  # type: ignore[override]
         self.struct.nest_terminal(Pi, data)
 
     def handle_comment(self, data: str):  # type: ignore[override]
         self.struct.nest_terminal(Comment, data)
+
+    def close(self) -> None:
+        """Finish the input, keeping a reference that ends it (``AT&T``).
+
+        A tail held at ``&#`` (only possible when a ``<style`` lookalike
+        hid it from ``feed``) is finished in one more linear pass. A named
+        reference at the very end is reported here because Python 3.14.0's
+        ``close`` drops its ``&`` (3.14.1+ reports it).
+        """
+        if self.rawdata.startswith("&#"):
+            rest, self.rawdata = self.rawdata, ""
+            HTMLParser.feed(self, _finish_numeric_references(rest, keep_style=False))
+        match = _TRAILING_ENTITY.fullmatch(self.rawdata)
+        if match:
+            self.rawdata = ""
+            self.handle_entityref(match.group(1))
+        super().close()
+
+
+_CHARREF = r"[0-9]+|[xX][0-9a-fA-F]+"
+_ENTITYREF = r"[a-zA-Z][-.a-zA-Z0-9]*"
+_CHARREF_NAME = re.compile(_CHARREF)
+_ENTITYREF_NAME = re.compile(_ENTITYREF)
+_TRAILING_ENTITY = re.compile(f"&({_ENTITYREF})")
+
+# A browser ends a numeric reference at the first character that cannot
+# continue it (``&#62b`` is ``>`` then ``b``) and shows a bare ``&#`` as
+# text. The stdlib parser instead holds the rest of the input at such a
+# reference (3.14.1+) or emits ``&#`` as text and carries on (3.14.0). So
+# they are finished before parsing, in one linear pass, and every version
+# sees only finished references. ``<style>`` text is raw and stays verbatim.
+_NUMERIC_REFERENCE = (
+    r"|&#(?P<dec>[0-9]+)(?![0-9;])"
+    r"|&#(?P<hex>[xX][0-9a-fA-F]+)(?![0-9a-fA-F;])"
+    r"|&#(?![0-9]|[xX][0-9a-fA-F])"
+)
+_UNFINISHED_NUMERIC = {
+    True: re.compile(
+        r"(?P<style><style\b[^>]*(?:>|\Z)(?:[^<]+|<(?!/style))*)"
+        + _NUMERIC_REFERENCE,
+        re.IGNORECASE,
+    ),
+    False: re.compile(r"(?P<style>(?!))" + _NUMERIC_REFERENCE),
+}
+
+
+def _finish_numeric_reference(match: re.Match[str]) -> str:
+    if match.group("style") is not None:
+        return match.group()
+    name = match.group("dec") or match.group("hex")
+    return f"&#{name};" if name else "&amp;#"
+
+
+def _finish_numeric_references(text: str, *, keep_style: bool) -> str:
+    if "&#" not in text:
+        return text
+    return _UNFINISHED_NUMERIC[keep_style].sub(_finish_numeric_reference, text)
 
 
 def tokenize_html(text: str, name: str = "", convert_charrefs: bool = False) -> Root:
@@ -473,4 +551,6 @@ def tokenize_html(text: str, name: str = "", convert_charrefs: bool = False) -> 
     elif not isinstance(text, str):
         text = str(text)
     parser = HtmlToAst(name, convert_charrefs=convert_charrefs)
-    return parser.feed(text)
+    parser.feed(text)
+    parser.close()
+    return parser.struct.outmost
