@@ -13,9 +13,22 @@ XElement is served from the installed package at ``/ux-dom/static/x_element.js``
 """
 from pathlib import Path
 
-from typer import Option, Typer
+from typer import Option, Typer, echo
 
-from ux_dom.utils.logger import ux_dom_logger
+
+class _Messages:
+    """User-facing CLI messages: info to stdout, errors to stderr."""
+
+    @staticmethod
+    def info(msg: str) -> None:
+        echo(msg)
+
+    @staticmethod
+    def error(msg: str) -> None:
+        echo(msg, err=True)
+
+
+ux_dom_logger = _Messages()
 
 app = Typer(
     help=(
@@ -36,11 +49,10 @@ def doctor_cmd(
 ):
     """Document / package / env health (pure-dom)."""
     import json as _json
-    from pathlib import Path as P
 
     from ux_dom.cli.doctor import format_report, run_doctor
 
-    report = run_doctor(cwd=P(path) if path else None, port=port, prod=prod)
+    report = run_doctor(cwd=Path(path) if path else None, port=port, prod=prod)
     if json_out:
         print(_json.dumps(report.to_dict(), indent=2))
     else:
@@ -62,10 +74,9 @@ def info_cmd(
 @app.command("lint")
 def lint_cmd(path: str = Option(None, "--path")):
     """Document convention checks."""
-    from pathlib import Path as P
     from ux_dom.cli.lint import lint_project
 
-    issues = lint_project(P(path) if path else None)
+    issues = lint_project(Path(path) if path else None)
     errors = [i for i in issues if i.level == "error"]
     if not issues:
         ux_dom_logger.info("lint: clean")
@@ -103,9 +114,8 @@ def build_cmd(
     ``/ux-dom/static/x_element.js`` (no app copy).
     """
     import json as _json
-    from pathlib import Path as _P
 
-    cwd = _P.cwd()
+    cwd = Path.cwd()
     if (cwd / "app.py").is_file() and not (cwd / "app" / "main.py").is_file():
         print(_PRODUCT_BUILD, flush=True)
         ux_dom_logger.error(_PRODUCT_BUILD)
@@ -119,7 +129,7 @@ def build_cmd(
             skip_static_sync=skip_static_sync,
             package=package or archive,
             archive=archive,
-            out_dir=_P(out_dir) if out_dir else None,
+            out_dir=Path(out_dir) if out_dir else None,
             package_name=name,
         )
     except FileNotFoundError as e:
@@ -198,10 +208,9 @@ def add_cmd(
                 raise SystemExit(2)
             path = add_xelement(name, kind=xkind, force=force)  # type: ignore[arg-type]
         elif kind == "ui":
-            from pathlib import Path as P
             from ux_dom.ui.copy import UiCopyError, copy_component
 
-            dest = P.cwd() / "app" / "components" / "ui"
+            dest = Path.cwd() / "app" / "components" / "ui"
             try:
                 path = copy_component(name, dest_dir=dest, force=force)
             except UiCopyError as e:
@@ -218,7 +227,6 @@ def add_cmd(
 
 @app.command("ui")
 def ui_cmd(
-    action: str = Option("list"),
     channel: bool = Option(False, "--channel"),
 ):
     """List UI kit components."""

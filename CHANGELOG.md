@@ -47,6 +47,11 @@
   ``connect:/f&#32;connect:wss:evil.com`` is refused on those attributes and
   the ``data-hx-*`` spellings. A character reference cannot glue a same-origin
   token to a foreign ``connect:``.
+- **Fix: ``uxdom lint`` / ``add`` / ``ui`` print their messages again.** Output
+  goes through ``typer.echo`` (errors to stderr); the swallowing
+  ``ux_dom.utils.logger`` module is removed. ``uxdom doctor`` reports a
+  ``ux_channel`` that fails to import as not ok (warn) with the error. The
+  unused ``uxdom ui --action`` option is removed.
 
 ## 0.2.0 — remove deprecations
 
