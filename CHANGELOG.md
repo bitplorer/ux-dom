@@ -7,6 +7,11 @@
   ``dataclasses.replace(c, ...)`` reach ``to_policy()``. Preset headers are unchanged.
 - **Fix: ``stamp_nonce(tags=)`` is honoured in nested trees.** ``stamp_tree`` takes
   an optional ``tags=``; ``tags=("script",)`` no longer stamps ``<style>``.
+- **Fix: ``@htmx.get("name")`` routes the decorated function** (it routed the
+  inner decorator, so requests got 422); same for post/put/patch/delete.
+  ``HtmxControl.partial_policy`` now uses ``HtmxDetails.partial``:
+  only an exact lowercase ``HX-Request: true`` (as htmx sends it) is partial, so
+  ``HX-Request: false`` and history-restore requests get the full page.
 - **Security (breaking default): bare ``Csp()`` is tightened to ``Csp.prod()`` on script inline and connect-src.**
   ``Csp()``, ``CspPolicy``, ``CspMiddleware``, and ``build_csp_header`` no longer
   ship script ``'unsafe-inline'`` or bare ``ws:``/``wss:``. Apps that need inline
