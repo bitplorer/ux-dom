@@ -11,6 +11,7 @@
    "standalone/sse_app/app.py",
    "standalone/ws_app/app.py",
    "tests/01_core/test_host_path_coverage.py",
+   "tests/01_core/test_response_decorators.py",
    "tests/01_core/test_streaming_and_attrs.py",
    "tests/02_document_plugins/test_app_host_composition.py",
    "tests/02_document_plugins/test_csp_nonce.py",

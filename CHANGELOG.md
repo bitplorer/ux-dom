@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- **Fix: ``@html_response()`` / ``@streaming_response()`` (with parentheses) work.**
+  They wrapped ``None``, so calling the endpoint raised ``TypeError``. Both
+  decorators now share one private factory; the bare ``@deco`` form is unchanged.
 - **Fix: ``Csp`` presets honour later field edits.** ``Csp.dev()`` / ``prod()`` /
   ``report_only()`` no longer cache a ``policy``, so ``c.debug_header = True`` or
   ``dataclasses.replace(c, ...)`` reach ``to_policy()``. Preset headers are unchanged.
