@@ -122,14 +122,12 @@ Fragment is a transparent group. Unique attrs (id) apply only to the first child
 
 ```python
 from ux_dom import Fragment
-from ux_dom.dom import div, span
+from ux_dom.dom import span
 
-tree = Fragment(className="row")(
-    span("A"),
-    span("B"),
-)
+tree = Fragment(span("A"), span("B"), className="row")
 print(tree.__render__())
 # class="row" is applied to each child. id= would apply only to the first child.
+# Pass children in the constructor (Fragment(...)(a, b) is not supported).
 ```
 
 ### ReactiveComponent re-renders on field change
