@@ -513,6 +513,13 @@ def test_unfinished_reference_cannot_smuggle_markup(entry, src):
         ("a&#x3Eg", "a&#x3E;g"),
         ("a&#62b<img src=x onerror=alert(1)>", 'a&#62;b<img src="x">'),
         ("<textarea>&#62b</textarea>c", "<textarea>&#62;b</textarea>c"),
+        ("&#<b>c</b>", "&amp;#<b>c</b>"),
+        ("&#x<b>c</b>", "&amp;#x<b>c</b>"),
+        ("&#X<b>c</b>", "&amp;#X<b>c</b>"),
+        ("&#xg<b>c</b>", "&amp;#xg<b>c</b>"),
+        ("a&#62b&lt;c", "a&#62;b&lt;c"),
+        ("a&#62b&lt;<b>c</b>", "a&#62;b&lt;<b>c</b>"),
+        ('<p title="&#62b&#x">x</p>', '<p title="&gt;b&amp;#x">x</p>'),
     ],
 )
 def test_unfinished_reference_ends_where_a_browser_ends_it(src, expected):

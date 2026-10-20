@@ -96,3 +96,25 @@ def test_reference_at_end_of_input_is_kept(src: str, expected: str):
     ``close`` also drops the ``&`` itself; the result must not depend on it.
     """
     assert _flat(src) == expected
+
+
+def test_unfinished_references_tokenize_in_linear_time():
+    """Untrusted input full of ``&#1a`` must not cost O(n²).
+
+    The stdlib parser holds the rest of the input at every unfinished
+    numeric reference; finishing them one at a time re-read that tail each
+    time (1 MB took ~15 s). Finished references are the yardstick.
+    """
+    import time
+
+    from ux_dom.dom.src.parse_html import tokenize_html
+
+    def seconds(src: str) -> float:
+        start = time.perf_counter()
+        tokenize_html(src)
+        return time.perf_counter() - start
+
+    n = 200_000
+    finished = seconds("&#1;a" * n)
+    unfinished = seconds("&#1a" * n)
+    assert unfinished < 2 * finished + 0.5, (unfinished, finished)
