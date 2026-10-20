@@ -74,6 +74,7 @@
    "tests/05_chaos/test_production_trust.py",
    "tests/05_chaos/test_stress_races_js_pipeline.py",
    "tests/06_browser/test_custom_elements_auth_browser.py",
+   "tests/07_resilience/test_add_raw_string_absent.py",
    "tests/07_resilience/test_dom_method_shadowing.py",
    "tests/07_resilience/test_f18_directory_router_absent.py",
    "tests/07_resilience/test_markdown_render_kwarg.py",
