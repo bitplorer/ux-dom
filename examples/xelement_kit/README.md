@@ -25,6 +25,8 @@ PYTHONPATH=../..:. uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 
 ## Routes
 
+Explicit FastAPI routes in `app/main.py` (`PAGES` table); ux-dom has no file router.
+
 | Path | Content |
 |------|---------|
 | `/lightdom` | **Full** Light DOM gallery + explanation |

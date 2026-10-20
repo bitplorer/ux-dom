@@ -15,7 +15,6 @@ _N = {"v": 0}
 class Htmx(Component):
     """GET /htmx (page) and GET /htmx/partial (HTMX fragment)."""
 
-    routes = ["get", "partial"]
 
     def render(self):
         return div(
@@ -45,7 +44,7 @@ class Htmx(Component):
         )
 
     @classmethod
-    def get(cls):
+    def page_view(cls):
         return page(cls(), page_title="HTMX · Kit")
 
     @classmethod

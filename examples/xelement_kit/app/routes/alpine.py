@@ -11,7 +11,6 @@ __all__ = ["Alpine"]
 
 
 class Alpine(Component):
-    routes = ["get"]
 
     def render(self):
         return div(
@@ -30,5 +29,5 @@ class Alpine(Component):
         )
 
     @classmethod
-    def get(cls):
+    def page_view(cls):
         return page(cls(), page_title="Alpine · Kit")

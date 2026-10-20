@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import ast
-import os
 import re
 import sys
 import tempfile
@@ -13,7 +12,6 @@ from pathlib import Path
 from fastapi.testclient import TestClient
 
 from helpers import ScaffoldOptions, available_templates, create_app
-from ux_dom.cli.adders import add_route
 from ux_dom.dom import div, template
 from ux_dom.dom.htmlelement import CustomElement, WebComponent, XElement
 from ux_dom.ui import Button, Card, CardContent, Dialog, Select, Tabs
@@ -115,38 +113,6 @@ class TestScaffoldMatrix(unittest.TestCase):
                                 del sys.modules[k]
                         if str(root) in sys.path:
                             sys.path.remove(str(root))
-
-
-class TestDynamicRoutes(unittest.TestCase):
-    def test_multi_segment_params(self):
-        with tempfile.TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "dyn", dest=Path(td) / "dyn", force=True, with_tailwind=False
-                )
-            )
-            old = Path.cwd()
-            try:
-                os.chdir(root)
-                add_route("orgs/[org]/teams/[team]", force=True)
-                sys.path.insert(0, str(root))
-                for k in list(sys.modules):
-                    if k == "app" or k.startswith("app."):
-                        del sys.modules[k]
-                from app.main import app
-
-                c = TestClient(app)
-                r = c.get("/orgs/acme/teams/core")
-                self.assertEqual(r.status_code, 200, r.text)
-                self.assertIn("acme", r.text)
-                self.assertIn("core", r.text)
-            finally:
-                os.chdir(old)
-                for k in list(sys.modules):
-                    if k == "app" or k.startswith("app."):
-                        del sys.modules[k]
-                if str(root) in sys.path:
-                    sys.path.remove(str(root))
 
 
 class TestXElementContract(unittest.TestCase):

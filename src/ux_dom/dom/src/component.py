@@ -97,50 +97,6 @@ class Component(extension.Tags):
     escape_string: bool = field(init=False, default=True)
     string_is_markdown: bool = field(init=False, default=False)
 
-    # Route classmethods often use HTTP verb names (get/add/clear/...). Those
-    # must remain on the *class* for DirectoryRouter, but must NOT shadow the
-    # DOM tree API on *instances*. Instance lookup skips subclass classmethods
-    # for this reserved set and binds the Component/dom implementation.
-    _DOM_INSTANCE_API = frozenset(
-        {
-            "add",
-            "get",
-            "clear",
-            "remove",
-            "matches",
-            "set_attribute",
-            "delete_attribute",
-            "setdocument",
-            "add_raw_string",
-        }
-    )
-
-    def __getattribute__(self, name: str):
-        if name == "_DOM_INSTANCE_API" or name.startswith("__"):
-            return object.__getattribute__(self, name)
-        try:
-            reserved = object.__getattribute__(self, "_DOM_INSTANCE_API")
-        except AttributeError:
-            reserved = ()
-        if name in reserved:
-            # Prefer the first non-classmethod implementation in the MRO
-            # starting from Component (this class) so route @classmethods on
-            # subclasses cannot shadow tree operations.
-            cls = object.__getattribute__(self, "__class__")
-            for base in cls.__mro__:
-                if name not in base.__dict__:
-                    continue
-                attr = base.__dict__[name]
-                if isinstance(attr, classmethod):
-                    continue
-                if isinstance(attr, staticmethod):
-                    return attr.__get__(self, cls)
-                if isinstance(attr, property):
-                    return attr.__get__(self, cls)
-                if callable(attr):
-                    return attr.__get__(self, cls)
-        return object.__getattribute__(self, name)
-
     # NOTE: do not key off id(cls) — CPython reuses ids after GC and would
     # skip wrapping a new dataclass Component (empty render under long suites).
 
@@ -251,7 +207,7 @@ class Component(extension.Tags):
         # super(Component, self).__init__()
 
         if child is not self:
-            # Prefer DOM add even if subclass defines route classmethod ``add``
+            # Base-class call: a subclass override of ``add`` must not intercept init.
             Component.add(self, child)
 
         self._entry = self if isinstance(child, (list, tuple)) else child

@@ -79,8 +79,7 @@ Product HTTP delivery / host strategy: **ux-compose**, not Document.use.
 ## Discovery
 
 Product page routing is **ux-compose** (`ux_compose.routing.DirectoryRoutes`).
-This package does not export `DirectoryRoutes`. The leftover that still
-runs is `ux_dom.routing.fastapi.DirectoryRouter`.
+This package ships no file router: `ux_dom.routing` was removed (F-18).
 
 ---
 
@@ -103,4 +102,4 @@ runs is `ux_dom.routing.fastapi.DirectoryRouter`.
 * Underscored render internals
 * `docs/archive/*`
 * Deleted product shells (`WebAssets`, `TailwindCommand`, `CreateProject`, host / HMR plugins) are absent — not fail-closed classes
-* Leftover that still runs: `ux_dom.routing.fastapi.DirectoryRouter`
+* `ux_dom.routing`, `DirectoryRouting`, `App.routes()`, `uxdom add route` — removed (F-18)

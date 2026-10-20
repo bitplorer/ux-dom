@@ -10,7 +10,6 @@ ux_dom/
   dom/          Tags, Component, serialize, XElement types
   runtime/      Document-facing XElement / Htmx / Csp / Channel facades
   plugins/      Document contributions (CSP, SafeStatic, hub)
-  routing/      leftover DirectoryRouter (product routes are ux-compose)
   response/     HTML / streaming adapters
   scripts/      x_element.js (package-mounted)
   cli/          doctor, lint, profile, add, dashboard (pure-dom)
@@ -19,7 +18,7 @@ ux_dom/
 
 Product scaffold + DirectoryRoutes is **uxcompose** ([DX.md](../guides/DX.md)).
 This package does not ship `CreateProject`, `DirectoryRoutes`, `WebAssets`, or `TailwindCommand`.
-`DirectoryRouter` remains as a leftover discovery helper.
+ux-dom ships no file router (`ux_dom.routing` removed, F-18).
 
 | Path | Role | Public? |
 |------|------|---------|
@@ -43,7 +42,6 @@ This package does not ship `CreateProject`, `DirectoryRoutes`, `WebAssets`, or `
 | **`ux_dom/plugins/`** | Hub, contributions, CSP, control, package static | Semi / **Public** facades |
 | `ux_dom/plugins/runtime.py` | XElementRuntime, UxChannelRuntime — package static | Semi |
 | `ux_dom/plugins/safe_static.py` | Allowlisted file mounts | Semi |
-| **`ux_dom/routing/`** | Leftover `DirectoryRouter`; product routes are `ux_compose.routing` | Leftover |
 | **`ux_dom/response/`** | HTMLResponse, StreamingResponse | **Public** |
 | **`ux_dom/scripts/`** | `x_element.js` + `x_element_js` embed helper | **Public** helper |
 | **`ux_dom/cli/`** | Typer DX: doctor, lint, profile, add (not product scaffold) | CLI |

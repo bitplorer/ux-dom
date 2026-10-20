@@ -13,7 +13,6 @@ __all__ = ["LightDom"]
 class LightDom(Component):
     """Hosts only — definitions come from the class registry automatically."""
 
-    routes = ["get"]
 
     def render(self):
         return div(
@@ -49,5 +48,5 @@ class LightDom(Component):
         )
 
     @classmethod
-    def get(cls):
+    def page_view(cls):
         return page(cls(), page_title="Light DOM · XElement Kit")

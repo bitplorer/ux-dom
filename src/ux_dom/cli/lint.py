@@ -1,5 +1,5 @@
 # Copyright (c) 2026 ux-dom
-"""``uxdom lint`` — static checks for XElement / route conventions (dev)."""
+"""``uxdom lint`` — static checks for XElement conventions (dev)."""
 
 from __future__ import annotations
 
@@ -91,34 +91,5 @@ def lint_project(root: Optional[Path] = None) -> list[LintIssue]:
                     "error",
                 )
             )
-
-    # Routes: py files without Component-ish get
-    routes = app_root / "app" / "routes"
-    if routes.is_dir():
-        for py in routes.rglob("*.py"):
-            if py.name == "__init__.py":
-                continue
-            src = py.read_text(encoding="utf-8", errors="ignore")
-            if "class " in src and "Component" in src:
-                if (
-                    "def get" not in src
-                    and "routes =" not in src
-                    and "routes=" not in src
-                ):
-                    issues.append(
-                        LintIssue(
-                            str(py.relative_to(app_root)),
-                            "Component route without routes= or get() — DirectoryRouter may skip it",
-                            "warn",
-                        )
-                    )
-            elif "class " not in src:
-                issues.append(
-                    LintIssue(
-                        str(py.relative_to(app_root)),
-                        "route file has no class — expected a Component",
-                        "warn",
-                    )
-                )
 
     return issues

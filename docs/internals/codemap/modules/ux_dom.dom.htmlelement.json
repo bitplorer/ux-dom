@@ -17,7 +17,6 @@
    "tests/02_document_plugins/test_auto_xelement_definitions.py",
    "tests/02_document_plugins/test_hypermedia_surface.py",
    "tests/02_document_plugins/test_xelement_runtime.py",
-   "tests/03_routing_cli/test_cli_route_maturity.py",
    "tests/03_routing_cli/test_dx_cli.py",
    "tests/04_production/test_production_readiness.py",
    "tests/04_production/test_production_stability.py",

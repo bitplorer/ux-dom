@@ -3,13 +3,13 @@
   "consumers": [
    "tests/01_core/test_extract_by_id.py",
    "tests/03_routing_cli/test_cli_output_and_doctor.py",
-   "tests/03_routing_cli/test_cli_route_maturity.py",
    "tests/03_routing_cli/test_create_app_scaffold.py",
    "tests/03_routing_cli/test_dashboard_dx.py",
    "tests/03_routing_cli/test_dx_cli.py",
    "tests/03_routing_cli/test_profile_dx.py",
    "tests/03_routing_cli/test_run_build_signature.py",
    "tests/03_routing_cli/test_serve_dx.py",
+   "tests/07_resilience/test_f18_directory_router_absent.py",
    "tests/07_resilience/test_ownership_hard_cut.py"
   ],
   "imported_by": {

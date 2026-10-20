@@ -5,7 +5,6 @@
    "docs/internals/CORE.md",
    "docs/plans/2026-09-12-extract-by-id.md",
    "docs/plans/2026-09-12-tip-d107209-serialize-surface.md",
-   "examples/standalone_showcase/app/main.py",
    "tests/01_core/test_extract_by_id.py",
    "tests/05_chaos/test_enterprise_full_battery.py",
    "tests/05_chaos/test_production_trust.py"

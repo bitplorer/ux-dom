@@ -75,18 +75,23 @@ from fastapi import FastAPI
 from fastapi.responses import JSONResponse
 
 from app.document import document
-from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
+from app.routes.about import About
+from app.routes.index import Index
+from ux_dom.response.starlette import HTMLResponse
 
 PACKAGE = Path(__file__).resolve().parent
 app = FastAPI(title="{title}")
 document.mount(app)
-app.include_router(
-    DirectoryRouter(
-        base_directory="routes",
-        package_dir=PACKAGE,
-        route_class=StreamingRoute,
-    )
-)
+
+
+@app.get("/")
+def index():
+    return HTMLResponse(Index.page_view())
+
+
+@app.get("/about")
+def about():
+    return HTMLResponse(About.page_view())
 
 
 @app.get("/health")
@@ -113,13 +118,11 @@ from app.document import page
 
 
 class Index(Component):
-    routes = ["get"]
-
     def render(self, *args, **kwargs):
         return div("index", id="index-root")
 
     @classmethod
-    def get(cls):
+    def page_view(cls):
         return page(cls().render(), page_title="Index")
 '''
 
@@ -133,13 +136,11 @@ from app.document import page
 
 
 class About(Component):
-    routes = ["get"]
-
     def render(self, *args, **kwargs):
         return div("about", id="about-root")
 
     @classmethod
-    def get(cls):
+    def page_view(cls):
         return page(cls().render(), page_title="About")
 '''
 
