@@ -69,6 +69,40 @@ pretty and compact), so a hazard split across children (`"</scr"`, `"ipt>"`),
 appended later with `.add()`, or set by index is still caught. `raw(...)`
 children skip HTML escaping but are part of that joined body.
 
+### Inside `<svg>` / `<math>` (foreign content)
+
+There `style` and `script` are SVG / MathML elements, not raw text: the HTML
+parser reads their body as markup (HTML spec §13.2.6.5). So the body, after
+the rewrite above, is emitted as one CDATA section, which the parser keeps
+verbatim. A `]]>` in the body is split across two sections:
+
+```python
+svg(style("svg > rect { fill: red }"))
+# <svg><style><![CDATA[svg > rect { fill: red }]]></style></svg>
+```
+
+An author's own outer `<![CDATA[ … ]]>` (the usual SVG idiom) is unwrapped
+first, and the commented forms (`/*<![CDATA[*/ … /*]]>*/`,
+`//<![CDATA[ … //]]>`) stay comments, so CDATA-wrapped SVG CSS and JS keep
+working.
+
+The renderer follows the parser's namespace rules down the parent chain. Raw
+text resumes below an HTML integration point (SVG `foreignObject`, `desc`,
+`title`; MathML `annotation-xml` whose `encoding` is `text/html` or
+`application/xhtml+xml`) and a MathML text integration point (`mi`, `mo`,
+`mn`, `ms`, `mtext`). Tag-less wrappers (`Component`, `PlaceholderTag`) and
+`lazy` do not change the context. A breakout tag such as
+`svg(div(style(...)))` puts the browser back in HTML, where `<![CDATA[` is
+plain text: the CSS breaks, but the rewrite still stops the body from closing
+the element. Nest HTML under `foreignObject`.
+
+**A `raw()` / `Markup` string that opens `<svg>` or `<math>` is author trust
+(ADR 0002).** The tree does not model a context opened by a string, so
+`div(raw("<svg>"), style(data), raw("</svg>"))`, or a tag whose `open_tag` is
+`Markup("<svg>")`, renders `style` as HTML raw text, and the browser parses its
+body as SVG markup. If a `style` / `script` inside may carry data, build
+`svg` / `math` as tags, not as `raw()` / `Markup`.
+
 Embedding untrusted data in JS is still a JS-context problem: serialize it
 with `json.dumps` (or a `data-*` attribute) rather than string concatenation.
 
