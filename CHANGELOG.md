@@ -11,6 +11,9 @@
 - **Security: ``Csp.auto()`` defaults to prod when DEBUG is unset.** Prod drops
   script ``'unsafe-inline'`` and bare ``ws:``/``wss:`` (name hosts in overrides).
 - unset DEBUG now means prod; set DEBUG=1 for dev
+- **Fix: Jinja export works inside a running event loop.** `render_jinja`,
+  Jinja tag calls and `JinjaElement` no longer raise `RuntimeError` from async
+  handlers (the sandboxed environment is now sync).
 - **Security (BREAKING): Jinja export is sandboxed and autoescaped.**
   `render_jinja` / Jinja tag calls use `jinja2.sandbox.SandboxedEnvironment(autoescape=True)`.
   Context values are escaped, and `{{ }}` / `{% %}` in tree text or string
