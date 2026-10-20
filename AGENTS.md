@@ -19,6 +19,8 @@ The UX stack is a **layered system of specialists**, not a monolith.
 | **ux-motion** | Presence / transition plans as data (IR v1) | Product behavior, DOM construction |
 | **ux-compose** | Author composition + product CLI (`uxcompose`) | Re-implementing any specialist |
 
+Boundary with ux-compose (what stays, what moves, removal rule): [ADR 0003](docs/adr/0003-layer-boundary.md).
+
 Do not invent a sixth product (`ux-app` is retired; see ux-behavior `KILL_UX_APP.md`).
 Do not analogize this layer to React / Next / htmx as its identity.
 

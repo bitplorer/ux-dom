@@ -31,7 +31,7 @@ pip install 'ux-dom[fastapi]'
 | **`dev`** | pytailwindcss, uvicorn |
 
 There is no `tailwind` or `hmr` extra. Product CSS compile is
-`uxcompose build`. Product HMR is `uxcompose serve --hmr`.
+`uxcompose build`. Product HMR is `uxcompose serve dev`.
 
 ## CLI
 
@@ -39,7 +39,7 @@ There is no `tailwind` or `hmr` extra. Product CSS compile is
 # Product apps (composition + delivery):
 uxcompose create-app myapp
 uxcompose build
-uxcompose serve app:asgi --port 8080
+uxcompose serve dev app:asgi --port 8080
 
 # Pure Document tooling:
 uxdom --help

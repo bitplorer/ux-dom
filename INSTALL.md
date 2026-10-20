@@ -37,7 +37,7 @@ pip install ux-compose ux-dom
 uxcompose create-app myapp
 cd myapp
 uxcompose build
-uxcompose serve app:asgi --host 0.0.0.0 --port 8080
+uxcompose serve dev app:asgi --host 0.0.0.0 --port 8080
 ```
 
 Pure-dom health: `uxdom doctor`.

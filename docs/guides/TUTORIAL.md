@@ -12,7 +12,7 @@ pip install ux-compose ux-dom
 uxcompose create-app hello --host auto --level auto
 cd hello
 uxcompose build
-uxcompose serve app:asgi --port 8080
+uxcompose serve dev app:asgi --port 8080
 ```
 
 Page units live in `routes/`. `render()` returns ux-dom tag trees.

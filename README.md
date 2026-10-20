@@ -56,7 +56,7 @@ python -c "from ux_dom import Document; print(Document)"
 ```bash
 uxcompose create-app myapp && cd myapp
 uxcompose build
-uxcompose serve app:asgi --port 8080
+uxcompose serve dev app:asgi --port 8080
 ```
 
 See [INSTALL.md](INSTALL.md) and [docs/INSTALL.md](docs/INSTALL.md).

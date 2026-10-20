@@ -74,7 +74,6 @@ How-to stays in `guides/`. API/facts moved to `reference/` (stubs remain in `gui
 | [API_SURFACE.md](reference/API_SURFACE.md) | Public vs private APIs |
 | [APP_COMPOSITION.md](internals/APP_COMPOSITION.md) | App composition |
 | [DOCUMENT_AND_APP.md](internals/DOCUMENT_AND_APP.md) | Document ↔ App |
-| [TUNNEL.md](guides/TUNNEL.md) | Tunnel is uxcompose, not ux-dom |
 
 ## Security & assets (`security/`)
 

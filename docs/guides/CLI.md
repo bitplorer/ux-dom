@@ -9,7 +9,7 @@
 uxcompose create-app myapp --host auto --level auto
 cd myapp
 uxcompose build
-uxcompose serve app:asgi --port 8080
+uxcompose serve dev app:asgi --port 8080
 uxcompose deploy --provider docker
 uxcompose doctor .
 ```
