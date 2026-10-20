@@ -379,3 +379,107 @@ def test_builtin_and_css_tags_still_render():
 
     assert _render(div(For("x in xs", Var("x")))).startswith("<div>{% for")
     assert _render(type("MyCard", (div,), {})("x")) == "<MyCard>x</MyCard>"
+
+
+# ── custom element names: the spec's PCENChar grammar ───────────────────
+
+
+@pytest.mark.parametrize("name", ["x-ñ", "math-α", "my-el.v2_x", "font-face"])
+def test_custom_element_names_with_pcen_chars_render(name):
+    out = _render(_named("kwarg", name))
+    assert out.startswith(f"<{name} ") and out.endswith(f"</{name}>")
+
+
+@pytest.mark.parametrize(
+    "name", ["X-Upper", "x-a b", "x-<", "x-a/b", 'x-a"b', "-x", "x-a:b"]
+)
+def test_bad_custom_element_names_raise(name):
+    with pytest.raises(ValueError):
+        _render(_named("kwarg", name))
+
+
+def test_builtin_names_still_valid():
+    import inspect
+
+    from ux_dom.dom.src import htmltags, svgtags
+    from ux_dom.dom.src.dom_tag import dom_tag
+    from ux_dom.dom.src.utils.dom_util import checked_tag_name
+
+    for module in (htmltags, svgtags):
+        for obj in vars(module).values():
+            if inspect.isclass(obj) and issubclass(obj, dom_tag):
+                name = (getattr(obj, "tagname", None) or obj.__name__).strip("_")
+                if name:
+                    checked_tag_name(name)
+
+
+# ── comment() / DocType(): spec grammar, ValueError otherwise ───────────
+
+BAD_COMMENTS = [
+    "--><img src=x onerror=alert(1)>",
+    "a --!><img src=x onerror=alert(1)>",
+    ">x",
+    "->x",
+    "a <!-- b",
+    "ends <!-",
+]
+
+
+@pytest.mark.parametrize("text", BAD_COMMENTS)
+def test_bad_comment_text_raises(text):
+    from ux_dom.dom import comment
+
+    with pytest.raises(ValueError):
+        comment(text)
+
+
+@pytest.mark.parametrize(
+    "text", ["note", "a - b", "a -> b", "x- ->y", "[if IE]>x<![endif]"]
+)
+def test_good_comment_text_renders(text):
+    from ux_dom.dom import comment
+
+    assert _render(comment(text)) == f"<!-- {text} -->"
+
+
+BAD_DOCTYPES = [
+    "html><img src=x onerror=alert(1)>",
+    'html PUBLIC "a"><img src=x onerror=alert(1)>',
+    "html SYSTEM 'x'><img src=x onerror=alert(1)>",
+    'html SYSTEM "a" "b"',
+    "",
+    "h tml",
+]
+
+
+@pytest.mark.parametrize("text", BAD_DOCTYPES)
+def test_bad_doctype_raises(text):
+    from ux_dom.dom.src.htmltags import DocType
+
+    with pytest.raises(ValueError):
+        DocType(text)
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "html",
+        'html SYSTEM "about:legacy-compat"',
+        'html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" '
+        '"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"',
+        "html public '-//W3C//DTD HTML 4.01//EN'",
+    ],
+)
+def test_good_doctype_renders(text):
+    from ux_dom.dom.src.htmltags import DocType
+
+    assert _render(DocType(text)) == f"<!DOCTYPE {text}>"
+
+
+def test_document_mode_drops_bad_doctype():
+    from ux_dom.dom.src.html_string import _sanitized_html
+
+    out = _sanitized_html('<!DOCTYPE html "x"><p>a</p>', document=True)
+    assert _runnable(out) == [] and "<p>a</p>" in out
+    good = _sanitized_html("<!DOCTYPE html><p>a</p>", document=True)
+    assert good.startswith("<!DOCTYPE html>")

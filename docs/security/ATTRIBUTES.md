@@ -164,7 +164,12 @@ verbatim, so they accept only `Markup`; a plain string raises `TypeError`. A
 `lazy()` result is escaped as text unless it is a tag, `raw()`, or `Markup`.
 `raw()` is the explicit verbatim opt-out. Tag names are checked at render
 (`checked_tag_name`, `[A-Za-z][A-Za-z0-9._:-]*`) wherever they come from;
-a bad name raises `InvalidTagName` (`ValueError`). Policy:
+a bad name raises `InvalidTagName` (`ValueError`). A name containing `-`
+must instead be a valid custom element name (`[a-z] PCENChar* - PCENChar*`,
+non-ASCII allowed). `comment()` text and `DocType()` text are checked
+against the HTML spec's comment and doctype grammar; a breakout raises
+`InvalidMarkupToken` (`ValueError`). Jinja DSL arguments (`Var`, `For`, …)
+are template source, trusted like `raw()`. Policy:
 [ADR 0002](../adr/0002-html-string-sanitizer-policy.md).
 
 **Tags.** A fragment may contain the known-safe set (the usual content tags,

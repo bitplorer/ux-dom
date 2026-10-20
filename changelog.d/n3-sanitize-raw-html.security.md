@@ -27,3 +27,10 @@
   elements); otherwise rendering (or creating the dynamic element) raises
   `InvalidTagName` (a `ValueError`). `div(tagname="img src=x onerror=…")`
   used to inject an element.
+- **Security: `comment()` and `DocType()` text follows the HTML spec.**
+  Comment text that starts with `>` / `->`, contains `-->`, `--!>` or `<!--`,
+  or ends with `<!-` raises `InvalidMarkupToken` (a `ValueError`). A doctype
+  must be `name [PUBLIC "id" ["id"] | SYSTEM "id"]` (ASCII name, quoted ids
+  with no `>`), else the same error; document-mode parsing drops such a
+  doctype instead. Tag names containing `-` follow the spec's custom element
+  grammar (PCENChar, so `x-ñ` is valid; uppercase is not).

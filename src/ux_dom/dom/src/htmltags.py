@@ -9,7 +9,11 @@
 Imported via ux_dom.dom. Attribute cleaning: Tags.clean_attribute.
 """
 from ux_dom.dom.src.main import extension
-from ux_dom.dom.src.utils.dom_util import neutralize_raw_text
+from ux_dom.dom.src.utils.dom_util import (
+    checked_comment_text,
+    checked_doctype,
+    neutralize_raw_text,
+)
 
 try:
     basestring = basestring
@@ -240,7 +244,9 @@ class DocType(extension.SingleTemplates):
         :param dom_elements: [optional] template
         """
 
-        super(DocType, self).__init__("DOCTYPE", template_text, *dom_elements)
+        super(DocType, self).__init__(
+            "DOCTYPE", checked_doctype(template_text), *dom_elements
+        )
 
 
 class html_tag(extension.Tags):
@@ -1431,7 +1437,7 @@ class comment(extension.SingleTemplates):
     """
 
     def __init__(self, comments):
-        super().__init__("", comments)
+        super().__init__("", checked_comment_text(comments))
 
 
 class template(html_tag):

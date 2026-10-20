@@ -44,7 +44,11 @@ from ux_dom.dom.src.parse_html import (
     tokenize_html,
 )
 from ux_dom.dom.src.utils import dom_text, escape
-from ux_dom.dom.src.utils.dom_util import checked_tag_name
+from ux_dom.dom.src.utils.dom_util import (
+    InvalidMarkupToken,
+    checked_doctype,
+    checked_tag_name,
+)
 
 __all__ = ["StringToHTML", "defHTML"]
 
@@ -832,7 +836,12 @@ class StringToHTML(object):
                     # A fragment has no doctype; do not leak it as text.
                     continue
                 rest = str(token.data).split(None, 1)
-                label = rest[1] if len(rest) > 1 else "html"
+                label = rest[1].strip() if len(rest) > 1 else "html"
+                try:
+                    checked_doctype(label)
+                except InvalidMarkupToken:
+                    # Untrusted input: drop a doctype that does not parse.
+                    continue
                 if tag is not None:
                     with tag:
                         htmltags.DocType(label)
