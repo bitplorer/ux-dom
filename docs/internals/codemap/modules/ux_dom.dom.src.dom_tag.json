@@ -22,6 +22,7 @@
   ],
   "imported_by": {
    "function_level": [
+    "ux_dom.dom.src.concurrency",
     "ux_dom.settings.document"
    ],
    "module_level": [

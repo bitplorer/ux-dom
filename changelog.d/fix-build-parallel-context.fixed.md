@@ -1,0 +1,1 @@
+- **Bug: ``build_parallel`` inside ``with tag:`` stays sequential** so children attach (ContextVar stack is not shared with worker threads).
