@@ -76,6 +76,12 @@
   item's focusable element (``li`` is ``role="none"``). ``Tabs`` buttons have
   ``role="tab"`` and a roving ``tabindex``, plus ``aria-controls`` when ``id=``
   is given. ``Progress`` clamps ``aria-valuenow`` into ``[0, max]``.
+- **Fix: ``textarea`` contents are no longer pretty-indented**, so the form value
+  equals the text given. **Fix: script/link dedupe keys on (tag, rel, url)** of the
+  ``script[src]`` / ``link[href]`` node itself; wrappers pass through and a
+  ``preconnect``/``preload`` link no longer drops the matching stylesheet or script.
+  **Fix: ``uxdom add xelement`` stubs** use ``CustomElement`` / ``WebComponent`` /
+  ``AlpineComponent`` with ``tag_name`` and an ``x-tagname`` template, so they construct.
 
 ## 0.2.0 — remove deprecations
 
