@@ -232,7 +232,7 @@ def _mount_package_static(app: Any, hub: PluginHub) -> None:
     from ux_dom.plugins.safe_static import (
         UnsafeStaticError,
         collect_served_files,
-        install_safe_static,
+        require_safe_static,
     )
 
     try:
@@ -240,7 +240,7 @@ def _mount_package_static(app: Any, hub: PluginHub) -> None:
     except UnsafeStaticError:
         # fail closed — do not mount anything unsafe
         return
-    install_safe_static(app, files)
+    require_safe_static(app, files, caller="App.build")
 
 
 class ProductHostMoved(RuntimeError):

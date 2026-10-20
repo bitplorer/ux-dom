@@ -34,7 +34,8 @@
    "UnsafeStaticError",
    "allowlist_summary",
    "collect_served_files",
-   "install_safe_static"
+   "install_safe_static",
+   "require_safe_static"
   ]
  }
 }

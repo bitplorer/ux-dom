@@ -25,6 +25,7 @@
    "tests/05_chaos/test_chaos_integration.py",
    "tests/05_chaos/test_stress_races_js_pipeline.py",
    "tests/07_resilience/test_dead_surface_removed.py",
+   "tests/07_resilience/test_mount_fail_loud.py",
    "tests/07_resilience/test_ownership_hard_cut.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/conftest.py"

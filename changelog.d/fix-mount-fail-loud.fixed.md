@@ -1,1 +1,3 @@
-- **Bug: Document.mount fails loud** when static cannot be installed (was swallowed).
+- **Bug: Document.mount fails loud** when static cannot be installed (was swallowed): it raises `RuntimeError` when 0 of N package-static routes install (also on the `App.build` hub path).
+- `install_safe_static` now raises `RuntimeError` (was: silently skipped / returned 0) when starlette is missing, and on the first route that fails to register (earlier routes stay registered; the original error is `__cause__`).
+- Plain Starlette `add_route` static routes now serve (the handler accepts `request`; every GET used to fail with `TypeError`).
