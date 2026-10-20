@@ -36,4 +36,3 @@ from .uniqueid import *  # isort: skip
 from .src.component import Component as Component
 from .src.dom_tag import dom_tag as dom_tag
 from .src.utils.dom_util import escape as escape, raw as raw
-

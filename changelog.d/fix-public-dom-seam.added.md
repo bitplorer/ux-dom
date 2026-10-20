@@ -1,1 +1,1 @@
-- **Public seam:** ``Component``, ``dom_tag``, ``escape``, and ``raw`` are explicit exports on ``ux_dom.dom`` (prefer over ``ux_dom.dom.src.*``).
+- **Public seam:** ``Component``, ``dom_tag``, ``escape``, and ``raw`` on ``ux_dom.dom`` are documented (``docs/reference/API_SURFACE.md``) and test-pinned as the stable import path for sibling packages, instead of ``ux_dom.dom.src.*``. They were already importable; no runtime change.

@@ -4,6 +4,7 @@
    "docs/internals/CONTEXT_SYNC_ASYNC.md",
    "docs/internals/CORE.md",
    "docs/internals/MODULE_MAP.md",
+   "docs/reference/API_SURFACE.md",
    "tests/01_core/test_alpine_dataset_merge.py",
    "tests/01_core/test_attr_dialects.py",
    "tests/01_core/test_builtin_mro_behaviour.py",

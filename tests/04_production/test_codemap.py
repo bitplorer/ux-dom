@@ -141,6 +141,53 @@ class TestCodeMap(unittest.TestCase):
         self.assertEqual(info.imports["type_checking"], {"ux_dom.a", "ux_dom.d"})
         self.assertEqual(info.imports["module_level"], {"ux_dom.b", "ux_dom.c"})
 
+    def _info(self, src: str):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "m.py"
+            path.write_text(textwrap.dedent(src), encoding="utf-8")
+            return self.codemap.ModuleInfo("ux_dom.m", path, {"ux_dom.m": path})
+
+    def test_literal_all_is_read(self):
+        info = self._info("""
+            __all__ = ["a", "b"]
+            __all__ += ("c",)
+            """)
+        self.assertEqual(info.all, ["a", "b", "c"])
+
+    def test_non_literal_all_fails_loudly(self):
+        bad = {
+            "comprehension": "__all__ = [n for n in globals() if n[0] != '_']",
+            "concatenation": "__all__ = ['a'] + other.__all__",
+            "name": "__all__ = NAMES",
+            "non-string": "__all__ = ['a', 1]",
+            "append": "__all__ = ['a']\n__all__.append('b')",
+            "extend": "__all__ = ['a']\n__all__.extend(['b'])",
+            "augassign-first": "__all__ += ['a']",
+        }
+        for label, src in bad.items():
+            with self.subTest(label), self.assertRaises(SystemExit) as ctx:
+                self._info(src)
+            msg = str(ctx.exception.code)
+            self.assertIn("m.py:", msg)
+            self.assertIn("must be a literal list/tuple of strings", msg)
+
+    def test_non_literal_all_exits_nonzero(self):
+        # Same path main() takes: the SystemExit escapes to the interpreter.
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "m.py"
+            path.write_text("__all__ = [n for n in dir()]\n", encoding="utf-8")
+            code = (
+                "import importlib.util, sys; from pathlib import Path\n"
+                f"spec = importlib.util.spec_from_file_location('c', {str(SCRIPT)!r})\n"
+                "m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)\n"
+                f"p = Path({str(path)!r}); m.ModuleInfo('ux_dom.m', p, {{'ux_dom.m': p}})\n"
+            )
+            proc = subprocess.run(
+                [sys.executable, "-c", code], capture_output=True, text=True
+            )
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertIn("m.py:1: non-literal", proc.stderr)
+
     def test_write_changed_is_surgical_and_removes_orphans(self):
         cm = self.codemap
         expected = cm.shards(self.data)

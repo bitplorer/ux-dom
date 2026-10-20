@@ -293,6 +293,14 @@ class ModuleInfo:
                     self.aliases[st.targets[0].id] = st.value.id
                 if any(isinstance(t, ast.Name) and t.id == "__all__" for t in targets):
                     self._read_all(st)
+            elif (
+                isinstance(st, ast.Expr)
+                and isinstance(st.value, ast.Call)
+                and isinstance(st.value.func, ast.Attribute)
+                and isinstance(st.value.func.value, ast.Name)
+                and st.value.func.value.id == "__all__"
+            ):
+                raise self._bad_all(st, f"``__all__.{st.value.func.attr}(...)``")
             elif isinstance(st, ast.Import):
                 for a in st.names:
                     if a.asname and a.asname == a.name.rpartition(".")[2]:
@@ -314,15 +322,34 @@ class ModuleInfo:
                     if a.asname == a.name:
                         self.reexports.add(local)
 
-    def _read_all(self, st: ast.stmt) -> None:
-        value = getattr(st, "value", None)
-        names: list[str] = (
-            [] if self.all is None or not isinstance(st, ast.AugAssign) else self.all
+    def _bad_all(self, st: ast.stmt, why: str) -> SystemExit:
+        where = _rel(self.path) if self.path.is_relative_to(ROOT) else self.path
+        return SystemExit(
+            f"codemap: {where}:{st.lineno}: {why}; ``__all__`` must be "
+            "a literal list/tuple of strings (or drop it to use the derived "
+            "public set)"
         )
-        if value is not None:
-            for n in ast.walk(value):
-                if isinstance(n, ast.Constant) and isinstance(n.value, str):
-                    names.append(n.value)
+
+    def _read_all(self, st: ast.stmt) -> None:
+        """Read a literal ``__all__``; fail loudly on anything else.
+
+        A computed ``__all__`` cannot be read statically, and silently guessing
+        would record a wrong public surface in the shards.
+        """
+        value = getattr(st, "value", None)
+        if not (
+            isinstance(value, (ast.List, ast.Tuple))
+            and all(
+                isinstance(e, ast.Constant) and isinstance(e.value, str)
+                for e in value.elts
+            )
+        ):
+            raise self._bad_all(st, "non-literal ``__all__``")
+        names = [e.value for e in value.elts]  # type: ignore[attr-defined]
+        if isinstance(st, ast.AugAssign):
+            if self.all is None:
+                raise self._bad_all(st, "``__all__ +=`` before ``__all__ =``")
+            names = self.all + names
         self.all = names
 
 

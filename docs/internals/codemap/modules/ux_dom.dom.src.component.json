@@ -8,6 +8,7 @@
    "docs/internals/ARCHITECTURE.md",
    "docs/internals/CORE.md",
    "docs/internals/MODULE_MAP.md",
+   "docs/reference/API_SURFACE.md",
    "docs/reference/COMPONENTS.md",
    "docs/reference/REACTIVE.md",
    "docs/ship/CAPABILITIES.md",

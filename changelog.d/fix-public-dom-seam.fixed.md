@@ -1,0 +1,1 @@
+- **Code map:** ``scripts/codemap.py`` now exits non-zero with a ``file:line`` message when a module's ``__all__`` is not a literal list/tuple of strings (comprehensions, concatenation, ``__all__.append``/``.extend``). Before, it silently recorded a wrong public surface.

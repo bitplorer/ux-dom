@@ -1,6 +1,7 @@
 {
  "ux_dom.dom.src.utils.dom_util": {
   "consumers": [
+   "docs/reference/API_SURFACE.md",
    "docs/security/ATTRIBUTES.md",
    "examples/with_ux_channel/live_cart/app.py",
    "examples/with_ux_channel/market_board/app.py",

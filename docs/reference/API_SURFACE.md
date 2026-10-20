@@ -32,6 +32,28 @@ Product lifecycle CLI: **`uxcompose`** (`create-app` · `build` · `serve` · `d
 
 HTML tags, parse helpers, serialize via `node.__render__` / `__async_render__`.
 
+### Stable seam for sibling packages
+
+| Symbol | Kind | Defined in (private) |
+|--------|------|----------------------|
+| `Component` | class | `ux_dom.dom.src.component` |
+| `dom_tag` | class | `ux_dom.dom.src.dom_tag` |
+| `escape` | fn | `ux_dom.dom.src.utils.dom_util` |
+| `raw` | fn | `ux_dom.dom.src.utils.dom_util` |
+
+Import these from `ux_dom.dom`, not from `ux_dom.dom.src.*`. The `src` layout
+is internal and may move; these four names are the supported path.
+
+- **Why:** the siblings reach these four through private paths today:
+  ux-compose (`Component`, `dom_tag`, `raw`), ux-channel (`escape`), and
+  ux-motion (`Component`). They cover every private `ux_dom.dom.src.*` import
+  in the siblings.
+- **Status:** the names were already importable from `ux_dom.dom` through the
+  star imports. They are now listed here, re-exported explicitly, and pinned by
+  `tests/01_core/test_public_dom_seam.py`.
+- `ux_dom.dom` has no `__all__` on purpose. A literal list would freeze every
+  star-exported name (311 of them, including undecided ones) as public API.
+
 ## Serialize (`from ux_dom.response.serialize import …`)
 
 | Symbol | Kind | Notes |

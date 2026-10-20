@@ -1,6 +1,8 @@
 {
  "ux_dom.dom.src": {
   "consumers": [
+   "docs/reference/API_SURFACE.md",
+   "tests/01_core/test_public_dom_seam.py",
    "tests/01_core/test_streaming_and_attrs.py",
    "tests/07_resilience/test_no_deprecations.py"
   ],
