@@ -187,8 +187,9 @@ def stamp_tree(
     *,
     scope: Optional[dict] = None,
     request: Any = None,
+    tags: Sequence[str] = ("script", "style"),
 ) -> Any:
-    """Bake nonce into every ``script`` / ``style`` (in place).
+    """Bake nonce into every ``script`` / ``style`` (or ``tags``), in place.
 
     Prefer an explicit ``nonce`` (or ``resolve_nonce`` sources). After this,
     serialize does not need ContextVar — attributes are already on the nodes.
@@ -198,7 +199,7 @@ def stamp_tree(
         return node
     if isinstance(node, (list, tuple)):
         for child in node:
-            stamp_tree(child, n)
+            stamp_tree(child, n, tags=tags)
         return node
     if isinstance(node, str):
         # String HTML is never stamped: a nonce on a string would also bless
@@ -211,13 +212,13 @@ def stamp_tree(
         or type(node).__name__
         or ""
     ).lower()
-    if tag in {"script", "style"}:
+    if tag in {t.lower() for t in tags}:
         _set_attr(node, "nonce", n)
 
     children = getattr(node, "children", None)
     if children:
         for child in list(children):
-            stamp_tree(child, n)
+            stamp_tree(child, n, tags=tags)
     return node
 
 
@@ -251,7 +252,7 @@ def stamp_nonce(
         if tag in tagset:
             out.append(_set_attr(node, "nonce", n))
         else:
-            stamp_tree(node, n)
+            stamp_tree(node, n, tags=tags)
             out.append(node)
     return out
 
@@ -612,7 +613,8 @@ class Csp:
     enabled: bool = True
     debug_header: bool = False
     nonce_bytes: int = _NONCE_BYTES
-    # optional prebuilt policy wins over flat fields when set
+    # optional prebuilt policy wins over flat fields when set; presets
+    # leave it unset so later field edits reach to_policy()
     policy: Optional[CspPolicy] = None
 
     # ── presets ──────────────────────────────────────────────────────────
@@ -678,7 +680,6 @@ class Csp:
             is_report_only=policy.report_only,
             debug_header=policy.debug_header,
             nonce_bytes=policy.nonce_bytes,
-            policy=policy,
         )
 
     def to_policy(self) -> CspPolicy:
