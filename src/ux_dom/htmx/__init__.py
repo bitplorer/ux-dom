@@ -42,22 +42,25 @@ class Htmx(HtmxEvents):
             return event
         return getattr(event, "__name__", str(event))
 
+    def _route(self, verb: str, event):
+        registered = getattr(super(Htmx, self), verb)(event)
+        route = getattr(self.api, verb)(self._path(self._event_name(event)))
+        if isinstance(event, str):
+            # ``@htmx.get("name")``: route the decorated function, not the decorator.
+            return lambda fn: route(registered(fn))
+        return route(registered)
+
     def get(self, event):
-        wrapper = super(Htmx, self).get(event)
-        return self.api.get(self._path(self._event_name(event)))(wrapper)
+        return self._route("get", event)
 
     def post(self, event):
-        wrapper = super(Htmx, self).post(event)
-        return self.api.post(self._path(self._event_name(event)))(wrapper)
+        return self._route("post", event)
 
     def put(self, event):
-        wrapper = super(Htmx, self).put(event)
-        return self.api.put(self._path(self._event_name(event)))(wrapper)
+        return self._route("put", event)
 
     def patch(self, event):
-        wrapper = super(Htmx, self).patch(event)
-        return self.api.patch(self._path(self._event_name(event)))(wrapper)
+        return self._route("patch", event)
 
     def delete(self, event):
-        wrapper = super(Htmx, self).delete(event)
-        return self.api.delete(self._path(self._event_name(event)))(wrapper)
+        return self._route("delete", event)

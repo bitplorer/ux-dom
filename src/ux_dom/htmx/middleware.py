@@ -77,6 +77,14 @@ class HtmxDetails:
         return self._get_header_value("HX-History-Restore-Request") == "true"
 
     @cached_property
+    def partial(self) -> bool:
+        """True when the response should be a fragment, not a full page.
+
+        History-restore requests carry ``HX-Request: true`` but need the full page.
+        """
+        return bool(self) and not self.history_restore_request
+
+    @cached_property
     def prompt(self) -> Optional[str]:
         return self._get_header_value("HX-Prompt")
 

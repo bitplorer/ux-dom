@@ -1,9 +1,11 @@
 """HtmxControl — HTMX script tags and optional middleware (optional SSE ext)."""
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import Any, Sequence
 
 from ux_dom.dom import script
+from ux_dom.htmx.middleware import HtmxDetails
 
 
 class HtmxControl:
@@ -64,10 +66,10 @@ class HtmxControl:
 
     def partial_policy(self, request: Any) -> str:
         headers = getattr(request, "headers", None) or {}
-        get = headers.get if hasattr(headers, "get") else lambda k, d=None: d
-        if get("hx-request") or get("HX-Request"):
-            return "partial"
-        return "full"
+        if not hasattr(headers, "get"):
+            headers = {}
+        details = HtmxDetails(SimpleNamespace(headers=headers))
+        return "partial" if details.partial else "full"
 
     def mount(self, app: Any, **kwargs: Any) -> None:
         if not self.middleware:
