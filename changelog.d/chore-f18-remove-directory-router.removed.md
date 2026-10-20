@@ -3,7 +3,7 @@
   (``DirectoryRouting``), ``RoutingPlugin``, ``App.routes()`` / ``use_routing`` /
   ``add_routing``, and the ``directory_router_*`` diagnostics. Product page routes
   are ``ux_compose.routing.DirectoryRoutes``.
-- **BREAKING: ``uxdom add route`` removed** (exits 2 with a pointer to ux-compose);
+- **BREAKING: ``uxdom add route`` removed** (it now exits 2 like any unknown kind);
   ``add --methods`` removed; the router lint rule removed.
 - **BREAKING: ``Component.__getattribute__`` hook removed** (``_DOM_INSTANCE_API``).
   It only existed so route-verb classmethods (``get``, ``add``, ``clear``, …) did not

@@ -199,13 +199,7 @@ def add_cmd(
                 ux_dom_logger.error(str(e))
                 raise SystemExit(1) from e
         else:
-            if kind == "route":
-                ux_dom_logger.error(
-                    "uxdom add route was removed: page routes are ux-compose "
-                    "(uxcompose create-app; app/routes/<page>.py)"
-                )
-            else:
-                ux_dom_logger.error("kind must be component|xelement|ui")
+            ux_dom_logger.error("kind must be component|xelement|ui")
             raise SystemExit(2)
     except AddError as e:
         ux_dom_logger.error(str(e))
