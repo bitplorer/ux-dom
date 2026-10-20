@@ -1,1 +1,1 @@
-- **Docs:** fix Fragment SNIPPETS example; SYSTEM CLI lists ``build``/``info``; ADR title ux-dom.
+- **Docs:** fix the Fragment example in ``SNIPPETS.md`` (children go in the constructor; a test now runs the doc block as written). ``SYSTEM.md`` lists ``uxdom build`` (pure-dom verify) and ``info`` (alias of ``doctor``); product build stays ``uxcompose`` only, and ownership of ``uxdom build --package/--archive`` stays open (S4). The design-system ADR now names ux-behavior (formerly ux-app) as the author layer.

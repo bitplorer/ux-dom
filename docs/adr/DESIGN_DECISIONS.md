@@ -5,6 +5,7 @@
 
 **Status:** Authoritative decision record  
 **Date:** 2026-08-17  
+**Note (2026-10-20):** ux-app is retired (see ux-behavior `KILL_UX_APP.md`). Its author-layer seat (Op / chrome verbs, ports, adapters, overlay macros) is now **ux-behavior** (formerly ux-app), and this record names it so. Code paths (`ux_app.*`, `src/ux_app/...`) and cited sources ("inherited from ux-app") are kept as recorded at decision time.  
 **Scope:** Every architectural, API, naming, visual, and process choice made while building this system, with the reason it was chosen and the alternatives rejected.
 
 **Rule for readers:** If a decision is not listed here, it was either not intentional or must be treated as unset. Do not invent implicit intent.
@@ -22,9 +23,9 @@
 ## 1. Product identity and north star
 
 ### D1.1 — What this is
-**Choice:** A **channel-native design system layer** for Host-authored apps on ux-app / ux-dom — not a website, not a second kernel, not a React/TypeScript library, not a fork of ux-surface / uxkit / cek-surface.
+**Choice:** A **channel-native design system layer** for Host-authored apps on ux-behavior / ux-dom — not a website, not a second kernel, not a React/TypeScript library, not a fork of ux-surface / uxkit / cek-surface.
 
-**Why:** ux-app is already defined as an L7 author layer on ux-dom + ux-channel. A design system that forked those cores would violate isolation law and create two sources of truth. Product engineers need drop-in UI vocabulary (shadcn-like) that still obeys Cap / Op / stamp / two-clock rules.
+**Why:** ux-behavior is already defined as an L7 author layer on ux-dom + ux-channel. A design system that forked those cores would violate isolation law and create two sources of truth. Product engineers need drop-in UI vocabulary (shadcn-like) that still obeys Cap / Op / stamp / two-clock rules.
 
 **Rejected:** Building a standalone “ux-design-system” package that reimplements Document or Channel.
 
@@ -47,11 +48,11 @@
 ### D2.1 — Split ownership
 | Concern | Owner | Why |
 |---------|--------|-----|
-| Markup, tokens, pure components | **ux-dom** | Document / className / `<link>` / package static already live there; moving markup to ux-app would create a second design system |
-| Author macros for chrome (open/close/select) | **ux-app** | Expands to `Op`; author layer owns Actions → list[Op] |
+| Markup, tokens, pure components | **ux-dom** | Document / className / `<link>` / package static already live there; moving markup to ux-behavior would create a second design system |
+| Author macros for chrome (open/close/select) | **ux-behavior** | Expands to `Op`; author layer owns Actions → list[Op] |
 | Cap mint, Peer apply, stamp | **Channel / CEK via adapter/** only | Isolation law: only `src/ux_app/adapter/**` may import `ux_channel` / `cek_*` |
 
-**Rejected:** Putting tokens inside ux-app; putting Channel imports in overlay macros; a third package that owns both markup and Ops.
+**Rejected:** Putting tokens inside ux-behavior; putting Channel imports in overlay macros; a third package that owns both markup and Ops.
 
 ### D2.2 — ux_app.ui remains a re-export
 **Choice:** `ux_app.ui` continues to re-export `ux_dom.ui` when ux-dom is installed; ownership of markup does not move.
@@ -59,7 +60,7 @@
 **Why:** Existing COMPONENTS.md and cold-import story already define this. Changing it would break day-1 DX and isolation docs.
 
 ### D2.3 — Artifact package vs live repos
-**Choice:** Work delivered first as a complete package under `design_system/`, then promoted by copy into live ux-dom / ux-app trees.
+**Choice:** Work delivered first as a complete package under `design_system/`, then promoted by copy into live ux-dom / ux-behavior trees.
 
 **Why:** Sandbox had no durable `/workspace/host_ui` and incomplete clones; promoting without a coherent package would scatter half-finished files. Explicit promote path is documented in IMPLEMENTATION_STATUS.
 
@@ -315,7 +316,7 @@ Plus `_light` variants for light products.
 |-------------|------------------|
 | Alpine-default Dialog/Tabs | Violates minimal client surface; user required Channel chrome |
 | Raw Op batches in every product Action | Not intent-level; duplicates design patterns |
-| Tokens owned by ux-app | Second design system; Document ownership is ux-dom |
+| Tokens owned by ux-behavior | Second design system; Document ownership is ux-dom |
 | Public module/API named `chrome` | Banned in isolation.py |
 | Multi-overlay cells as default | Breaks one-cell Host law; harder focus/morph identity |
 | CSS-in-JS or React design system | Outside stack law (Python + Tailwind + Channel) |
@@ -377,5 +378,5 @@ To change any decision above:
 
 #### S2 — 2026-08-17 — Ownership council
 **Adds:** Binding placement matrix in `OWNERSHIP_COUNCIL.md`.
-**Choice:** Markup/tokens → ux-dom only; Op chrome macros/ports → ux-app only; Cap/wire → Channel via adapter; product flows → Host.
+**Choice:** Markup/tokens → ux-dom only; Op chrome macros/ports → ux-behavior only; Cap/wire → Channel via adapter; product flows → Host.
 **Why:** Long-term stability requires one home per kind of truth; dual ownership was the top adversary failure mode.

@@ -15,7 +15,7 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 
 - Tag trees, `__render__` / `__async_render__`
 - Document shell: control, runtime tags, **CSP stamp**, style
-- Pure-dom CLI: `doctor` | `lint` | `profile` | `dashboard` | `add` | `ui` | `build` | `info`
+- Pure-dom CLI: `doctor` | `lint` | `profile` | `dashboard` | `add` | `ui` | `build` (pure-dom verify) | `info` (alias of `doctor`)
 - className, stylesheet `<link>`
 - Package static (`/ux-dom/static/x_element.js`)
 
@@ -23,8 +23,8 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 
 | Concern | Home |
 |---------|------|
-| create-app / serve / deploy | **uxcompose only** |
-| `uxdom build` / `uxdom info` | **ux-dom** (package/static inventory) |
+| create-app / product build / serve / deploy | **uxcompose only** |
+| `uxdom build` (pure-dom `app/main.py` verify) | ux-dom today; ownership of `--package`/`--archive` bundling is open (S4, #59) |
 | Product page routes (`DirectoryRoutes`) | **ux-compose** |
 | Tailwind compiler / app asset layout (`WebAssets`) | **ux-compose** |
 | Host strategy / product App | ux-compose |

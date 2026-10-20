@@ -52,7 +52,6 @@
    "tests/01_core/test_regression_guards.py",
    "tests/01_core/test_render_phases.py",
    "tests/01_core/test_silent_failure_guards.py",
-   "tests/01_core/test_snippets_fragment.py",
    "tests/01_core/test_streaming_and_attrs.py",
    "tests/02_document_plugins/test_app_host_composition.py",
    "tests/02_document_plugins/test_public_api_and_plugins.py",

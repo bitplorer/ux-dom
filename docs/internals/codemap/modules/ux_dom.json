@@ -56,7 +56,6 @@
    "tests/01_core/test_regression_guards.py",
    "tests/01_core/test_render_phases.py",
    "tests/01_core/test_silent_failure_guards.py",
-   "tests/01_core/test_snippets_fragment.py",
    "tests/01_core/test_ux_dom.py",
    "tests/02_document_plugins/test_app_host_composition.py",
    "tests/02_document_plugins/test_auto_xelement_definitions.py",
