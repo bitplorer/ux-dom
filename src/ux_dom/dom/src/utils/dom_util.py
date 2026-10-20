@@ -146,6 +146,39 @@ def neutralize_raw_text(data, tagname):
     return pattern.sub(_sub, data)
 
 
+# Elements whose body the HTML tokenizer reads as text up to their own end tag.
+# RCDATA (§13.2.5.2) decodes character references; RAWTEXT (§13.2.5.3) does
+# not. ``noscript`` is RAWTEXT when scripting is on. ``script`` / ``style`` are
+# ``_RAW_TEXT_HAZARDS``; ``plaintext`` has no end tag, so nothing ends it.
+_RCDATA_ELEMENTS = frozenset({"textarea", "title"})
+TEXT_STATE_ELEMENTS = _RCDATA_ELEMENTS | {
+    "xmp", "iframe", "noembed", "noframes", "noscript",
+}
+# The tokenizer folds ASCII case only, so ``re.A``.
+_TEXT_STATE_END = {
+    name: re.compile("</" + name, re.I | re.A) for name in TEXT_STATE_ELEMENTS
+}
+
+
+def checked_text_state_body(body, name):
+    """The body of RCDATA / RAWTEXT element ``name`` with no ``</name`` in it.
+
+    Text children are escaped already; this catches the rest (``style`` /
+    ``script`` bodies, comments, ``raw()``) at any depth, over the joined body.
+    RCDATA decodes ``&lt;``, so ``</name`` becomes ``&lt;/name``: the same
+    value. RAWTEXT has no other spelling for it, so it raises
+    ``InvalidNodeContext``.
+    """
+    end = _TEXT_STATE_END[name]
+    if name in _RCDATA_ELEMENTS:
+        return end.sub(lambda m: "&lt;" + m.group()[1:], body)
+    if end.search(body):
+        raise InvalidNodeContext(
+            "<%s> is RAWTEXT: its content would end it early (</%s)" % (name, name)
+        )
+    return body
+
+
 # URL-bearing attributes. A script-capable scheme here is an XSS sink, so the
 # renderer fails closed: the value becomes UNSAFE_URL (inert, like Closure's
 # "about:invalid#zClosurez"). Applies to every render path, including

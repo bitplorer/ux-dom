@@ -25,6 +25,7 @@
     "ux_dom.dom.htmldocument",
     "ux_dom.dom.htmlelement",
     "ux_dom.dom.src.html_string",
+    "ux_dom.dom.src.htmltags",
     "ux_dom.dom.src.main",
     "ux_dom.settings.document"
    ],
