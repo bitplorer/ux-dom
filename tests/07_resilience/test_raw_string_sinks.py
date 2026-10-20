@@ -140,3 +140,95 @@ def test_to_fragment_unchanged_cases():
     assert to_fragment(Markup(IMG)) == IMG
     assert to_fragment(IMG) == '<img src="x">'
     assert to_fragment(div("hi")) == div("hi").__render__()
+
+
+# ── tag[i] = value: same path as add() ───────────────────────────────────
+
+
+def _async_render(node) -> str:
+    import asyncio
+
+    async def go():
+        return "".join([t async for t in node.__async_render__(pretty=False)])
+
+    return asyncio.run(go())
+
+
+def test_setitem_str_is_escaped():
+    node = div("a", "b")
+    node[0] = IMG
+    assert _render(node) == "<div>&lt;img src=x onerror=alert(1)&gt;b</div>"
+    assert _async_render(node) == _render(node)
+
+
+@pytest.mark.parametrize("payload", PAYLOADS)
+def test_setitem_unescaped_is_sanitized(payload):
+    node = div("a", "b", __escape_string=False)
+    node[-2] = payload
+    out = _render(node)
+    assert _runnable(out) == [], out
+    assert out.endswith("b</div>")
+
+
+def test_setitem_bytes_and_types():
+    node = div("a")
+    node[0] = IMG.encode()
+    assert _render(node) == "<div>&lt;img src=x onerror=alert(1)&gt;</div>"
+    with pytest.raises(TypeError):
+        node[0] = bytearray(b"x")
+    assert _render(node) == "<div>&lt;img src=x onerror=alert(1)&gt;</div>"
+    with pytest.raises(IndexError):
+        node[5] = "x"
+
+
+def test_setitem_raw_and_script_unchanged():
+    node = div("a")
+    node[0] = raw(IMG)
+    assert _render(node) == f"<div>{IMG}</div>"
+    s = script("x")
+    s[0] = "if (a<b) go()"
+    assert "if (a<b) go()" in _render(s)
+
+
+# ── lazy(): str results are text ─────────────────────────────────────────
+
+
+def test_lazy_str_result_is_escaped():
+    from ux_dom.dom.src.utils import lazy
+
+    node = div(lazy(lambda: IMG))
+    assert _render(node) == "<div>&lt;img src=x onerror=alert(1)&gt;</div>"
+    assert _async_render(node) == _render(node)
+
+
+def test_lazy_other_object_str_is_escaped():
+    from ux_dom.dom.src.utils import lazy
+
+    assert _render(div(lazy(_Evil))) == "<div>&lt;img src=x onerror=alert(1)&gt;</div>"
+    assert _render(div(lazy(lambda: 5))) == "<div>5</div>"
+
+
+def test_lazy_markup_raw_tag_unchanged():
+    from ux_dom.dom import b
+    from ux_dom.dom.src.utils import lazy
+
+    assert _render(div(lazy(lambda: Markup(IMG)))) == f"<div>{IMG}</div>"
+    assert _render(div(lazy(lambda: raw(IMG)))) == f"<div>{IMG}</div>"
+    assert _render(div(lazy(lambda: b("x")))) == f"<div>{b('x')}</div>"
+
+
+def test_lazy_in_script_is_raw_text():
+    from ux_dom.dom.src.utils import lazy
+
+    assert "if (a<b) go()" in _render(script(lazy(lambda: "if (a<b) go()")))
+
+
+# ── to_fragment: render protocol ─────────────────────────────────────────
+
+
+def test_to_fragment_duck_typed_render():
+    class Card:
+        def __render__(self, *a, **kw):
+            return "<b>ok</b>"
+
+    assert to_fragment(Card()) == "<b>ok</b>"

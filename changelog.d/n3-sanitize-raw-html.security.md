@@ -7,3 +7,9 @@
   then sanitized, and any other non-str, non-Markup, non-tag object raises
   `TypeError`. `bytes` children decode as strict UTF-8 (they used to render as
   digits); `bytearray` / `memoryview` children raise `TypeError`.
+- **Security: `tag[i] = value` and `lazy()` no longer emit raw strings.**
+  Setting a child by index takes the same path as `add()` (escaped, or
+  sanitized under a falsy `escape_string`; `raw()` / tags unchanged). A
+  `lazy()` result that is not a tag, `raw()` or `Markup` is escaped as text
+  (verbatim inside `script` / `style`). `to_fragment` accepts any object with
+  `__render__`.

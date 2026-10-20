@@ -454,7 +454,14 @@ class lazy(dom_tag):
 
     def _render(self, sb, *a, **kw):
         r = self.func(*self.args, **self.kwargs)
-        sb.append(str(r))
+        text = str(r)
+        # A str result is text, like a str child. Tags, raw() and Markup
+        # (``__html__``) are HTML already. Inside script / style the parent
+        # neutralizes breakouts over the joined body at render time.
+        trusted = isinstance(r, dom_tag) or callable(getattr(r, "__html__", None))
+        if not trusted and not getattr(type(self.parent), "raw_text", None):
+            text = str_escape(text)
+        sb.append(text)
         return sb
 
 

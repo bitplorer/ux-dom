@@ -39,7 +39,6 @@
     "ux_dom.dom.src.utils.dom_util",
     "ux_dom.elements.buttons",
     "ux_dom.response.serialize",
-    "ux_dom.ui.channel_bridge",
     "ux_dom.ui.dropdown_menu"
    ],
    "type_checking": []

@@ -9,7 +9,8 @@
    "tests/02_document_plugins/test_ui_kit_defects.py",
    "tests/04_production/test_production_stability.py",
    "tests/07_resilience/test_html_allowlist.py",
-   "tests/07_resilience/test_html_string_mxss.py"
+   "tests/07_resilience/test_html_string_mxss.py",
+   "tests/07_resilience/test_raw_string_sinks.py"
   ],
   "imported_by": {
    "function_level": [],
@@ -23,7 +24,6 @@
     "ux_dom.ui.tokens"
    ],
    "module_level": [
-    "ux_dom.dom.src.dom_tag",
     "ux_dom.dom.src.html_string"
    ],
    "type_checking": []

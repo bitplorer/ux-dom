@@ -26,7 +26,6 @@ from __future__ import annotations
 
 from typing import Any, Mapping, Optional
 
-from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.html_string import _sanitized_html
 
 __all__ = [
@@ -54,7 +53,8 @@ def to_fragment(node: Any) -> str:
     A ``__html__`` value (``Markup``) is trusted and returned verbatim. A
     plain string is HTML and goes through the same allowlist sanitizer as
     ``defHTML``, in fragment mode; ``bytes`` are strict UTF-8 first. Tag
-    trees render as built. Anything else raises ``TypeError``.
+    trees and other ``__render__`` objects render as built. Anything else
+    raises ``TypeError``.
     """
     if node is None:
         return ""
@@ -66,7 +66,9 @@ def to_fragment(node: Any) -> str:
         node = node.decode("utf-8")
     if isinstance(node, str):
         return _sanitized_html(node)
-    if isinstance(node, dom_tag):
+    # Render protocol (any ``__render__``, not only ux-dom tags): the result
+    # is serialized output, as it is for a tag tree.
+    if callable(getattr(node, "__render__", None)):
         return str(node.__render__())
     # No ``str(node)`` fallback: an arbitrary ``__str__`` would be live HTML.
     raise TypeError(

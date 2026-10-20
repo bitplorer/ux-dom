@@ -117,6 +117,7 @@
    "tests/07_resilience/test_markdown_render_kwarg.py",
    "tests/07_resilience/test_no_deprecations.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
+   "tests/07_resilience/test_raw_string_sinks.py",
    "tests/07_resilience/test_unsafe_url_attrs.py",
    "tests/fixtures/auth_xelements.py",
    "tests/helpers.py"

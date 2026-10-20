@@ -156,7 +156,10 @@ subclass) passed to `to_fragment`, `srcdoc`, `Fragment`, or returned from
 HTML and goes through the same allowlist; a `Markup` child stays verbatim.
 `bytes` (a child or `to_fragment(bytes)`) are strict UTF-8 first, then the
 `str` path; `bytearray` / `memoryview` children and `to_fragment` of any
-other object raise `TypeError` (no `str(obj)` fallback). Policy:
+other object without `__render__` raise `TypeError` (no `str(obj)`
+fallback). `tag[i] = value` follows the same rules as `add()`, and a
+`lazy()` result is escaped as text unless it is a tag, `raw()`, or `Markup`.
+`raw()` and `add_raw_string()` are the explicit verbatim opt-outs. Policy:
 [ADR 0002](../adr/0002-html-string-sanitizer-policy.md).
 
 **Tags.** A fragment may contain the known-safe set (the usual content tags,

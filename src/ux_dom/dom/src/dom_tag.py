@@ -124,6 +124,16 @@ class dom_string(basestring):
     pass
 
 
+def _is_text_child(value) -> bool:
+    """A value add() turns into text: str, bytes-like, or a number.
+
+    ``dom_string`` is already a processed child and keeps its identity.
+    """
+    if isinstance(value, dom_string) or isinstance(value, bool):
+        return False
+    return isinstance(value, (basestring, bytes, bytearray, memoryview, numbers.Number))
+
+
 class dom_tag(object):
     is_single = False  # Tag does not require matching end tag (ex. <hr/>)
     is_pretty = True  # Text inside the tag should be left as-is (ex. <pre>)
@@ -311,6 +321,25 @@ class dom_tag(object):
             self._set_attribute_unlocked(key, value)
 
     def _set_attribute_unlocked(self, key, value):
+        if isinstance(key, int) and _is_text_child(value):
+            # Same escape / sanitize / bytes rules as add(): splice the
+            # child out and add() the value in its place.
+            index = range(len(self.children))[key]
+            old = self.children[index]
+            tail = self.children[index + 1 :]
+            del self.children[index:]
+            try:
+                self._add_unlocked(value)
+            except BaseException:
+                del self.children[index:]
+                self.children.append(old)
+                raise
+            finally:
+                self.children.extend(tail)
+            if isinstance(old, dom_tag) and getattr(old, "parent", None) is self:
+                if old not in self.children:
+                    old.parent = None
+            return
         if isinstance(key, int):
             old = self.children[key]
             if isinstance(old, dom_tag) and getattr(old, "parent", None) is self:

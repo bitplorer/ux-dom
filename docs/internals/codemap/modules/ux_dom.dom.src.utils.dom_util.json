@@ -19,6 +19,7 @@
    "tests/07_resilience/test_html_string_mxss.py",
    "tests/07_resilience/test_htmx_same_origin.py",
    "tests/07_resilience/test_jinja_and_string_nonce.py",
+   "tests/07_resilience/test_raw_string_sinks.py",
    "tests/07_resilience/test_unsafe_url_attrs.py"
   ],
   "imported_by": {
