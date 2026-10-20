@@ -16,7 +16,8 @@
   `Document.mount` errors; runtime `mount` and stage hooks are called once (form
   chosen by signature) so an inner `TypeError` surfaces; a hub contribution that
   raises fails the render instead of silently dropping runtime tags; nonce
-  stamping no longer hides errors.
+  stamping no longer hides errors, and its walk only reads ``str`` tag names and
+  list/tuple ``children`` (a Component field ``name: int`` no longer breaks it).
 - **Security (breaking default): bare ``Csp()`` is tightened to ``Csp.prod()`` on script inline and connect-src.**
   ``Csp()``, ``CspPolicy``, ``CspMiddleware``, and ``build_csp_header`` no longer
   ship script ``'unsafe-inline'`` or bare ``ws:``/``wss:``. Apps that need inline

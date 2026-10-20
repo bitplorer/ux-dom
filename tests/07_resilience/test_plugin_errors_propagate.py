@@ -2,13 +2,16 @@
 
 # No ``from __future__ import annotations``: hooks below need real (eager-free,
 # 3.14 deferred) annotations so signature inspection is exercised for real.
+import enum
 import functools
 import typing as T
 
 import pytest
 
-from ux_dom.dom import div
+from ux_dom.dom import div, script
+from ux_dom.dom.src.component import Component
 from ux_dom.plugins import App, PluginHub, XElementRuntime
+from ux_dom.plugins.csp import stamp_nonce, stamp_tree
 from ux_dom.settings.document import Document
 
 
@@ -136,3 +139,59 @@ def test_hub_contribution_error_propagates_from_render():
     doc = Document(head=[], body=[], include_runtimes=True, hub=hub)
     with pytest.raises(KeyError, match="config missing"):
         str(doc(div("x")))
+
+
+# ── B10: with no blanket except, the nonce walk must be robust by construction ─
+
+
+class _Kind(enum.Enum):
+    A = "a"
+
+
+class _NamedInt(Component):
+    name: int = 3
+
+    def render(self):
+        return div(script("x"))
+
+
+class _NamedEnum(Component):
+    name: _Kind = _Kind.A
+
+    def render(self):
+        return div(script("x"))
+
+
+class _ChildrenMethod:
+    def children(self):
+        return [script("hidden")]
+
+
+class _ChildrenInt:
+    children = 5
+
+
+@pytest.mark.parametrize(
+    "node", [_NamedInt(), _NamedEnum(), _ChildrenMethod(), _ChildrenInt()]
+)
+@pytest.mark.parametrize("stamp", [stamp_tree, stamp_nonce])
+def test_nonce_walk_tolerates_non_tag_attributes(stamp, node):
+    s = script("ok")
+    stamp([node, div(s)], "N")
+    assert s.attributes.get("nonce") == "N"
+
+
+def test_nonce_walk_still_stamps_script_named_by_tagname():
+    s = script("x")
+    stamp_tree(div(div(s)), "N", tags=("script",))
+    assert s.attributes.get("nonce") == "N"
+
+
+def test_nonce_walk_propagates_genuine_errors():
+    class Exploding:
+        @property
+        def children(self):
+            raise RuntimeError("broken node")
+
+    with pytest.raises(RuntimeError, match="broken node"):
+        stamp_tree(Exploding(), "N")

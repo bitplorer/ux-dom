@@ -181,6 +181,15 @@ def _set_attr(node: Any, key: str, value: str) -> Any:
     return node
 
 
+def _tag_name(node: Any) -> str:
+    """Lower-cased tag name; only ``str`` values count (a Component field
+    ``name: int`` / Enum is data, not a tag)."""
+    for cand in (getattr(node, "tagname", None), getattr(node, "name", None)):
+        if isinstance(cand, str) and cand:
+            return cand.lower()
+    return type(node).__name__.lower()
+
+
 def stamp_tree(
     node: Any,
     nonce: Optional[str] = None,
@@ -206,17 +215,13 @@ def stamp_tree(
         # any <script> an attacker got into it. Use tree nodes (script(...)).
         return node
 
-    tag = (
-        getattr(node, "tagname", None)
-        or getattr(node, "name", None)
-        or type(node).__name__
-        or ""
-    ).lower()
-    if tag in {t.lower() for t in tags}:
+    if _tag_name(node) in {t.lower() for t in tags}:
         _set_attr(node, "nonce", n)
 
+    # Only real child lists are walked: a ``children`` method/number on some
+    # other object is not a tree.
     children = getattr(node, "children", None)
-    if children:
+    if isinstance(children, (list, tuple)):
         for child in list(children):
             stamp_tree(child, n, tags=tags)
     return node
@@ -243,13 +248,7 @@ def stamp_nonce(
         if isinstance(node, str):
             out.append(node)
             continue
-        tag = (
-            getattr(node, "tagname", None)
-            or getattr(node, "name", None)
-            or type(node).__name__
-            or ""
-        ).lower()
-        if tag in tagset:
+        if _tag_name(node) in tagset:
             out.append(_set_attr(node, "nonce", n))
         else:
             stamp_tree(node, n, tags=tags)
