@@ -28,6 +28,6 @@ class FormSection(Component):
         return div(
             div(*head, className="mb-3") if head else None,
             div(*children, className="space-y-3"),
-            className=cn(className) if className else None,
+            **({"className": cn(className)} if className else {}),
             **attrs,
         )

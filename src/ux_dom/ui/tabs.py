@@ -83,6 +83,7 @@ class Tabs(Component):
                         if is_active
                         else "text-stone-400 hover:text-stone-200",
                     ),
+                    role="tab",
                     **{"aria-selected": "true" if is_active else "false"},
                     **{"data-tab": key},
                     **btn_attrs,
@@ -105,6 +106,6 @@ class Tabs(Component):
                 role="tabpanel",
                 className="mt-4 text-sm text-stone-200",
             ),
-            className=cn(className) if className else None,
+            **({"className": cn(className)} if className else {}),
             **attrs,
         )

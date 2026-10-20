@@ -26,12 +26,16 @@ class DropdownMenu(Component):
         if not open:
             return div(**{"data-open": "0"}, className="contents", **attrs)
         kids = [
-            li(item, className=cn("rounded-md px-3 py-2 hover:bg-stone-800", type_scale["body"]))
+            li(
+                item,
+                role="menuitem",
+                className=cn("rounded-md px-3 py-2 hover:bg-stone-800", type_scale["body"]),
+            )
             for item in items
         ]
         return div(
             ul(*kids, role="menu", className="min-w-[10rem] py-1"),
-            **{"data-open": "1", "role": "menu"},
+            **{"data-open": "1"},
             className=cn(surface["l3"], "rounded-lg shadow-md", className),
             **attrs,
         )

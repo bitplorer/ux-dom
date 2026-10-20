@@ -23,6 +23,7 @@ class Progress(Component):
         pct = 0.0 if max <= 0 else __import__("builtins").max(
             0.0, min(100.0, (float(value) / float(max)) * 100.0)
         )
+        now = __import__("builtins").max(0, min(value, max))
         return div(
             div(
                 className="h-full rounded-full bg-emerald-500 transition-all",
@@ -32,7 +33,7 @@ class Progress(Component):
             **{
                 "aria-valuemin": "0",
                 "aria-valuemax": str(max),
-                "aria-valuenow": str(value),
+                "aria-valuenow": str(now),
             },
             className=cn("relative h-2 w-full overflow-hidden rounded-full bg-stone-800", className),
             **attrs,
