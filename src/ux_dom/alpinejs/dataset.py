@@ -3,19 +3,15 @@
 # This software is released under the MIT License.
 # https://opensource.org/licenses/MIT
 
-"""This module contains data_* event functions that can be passed via
-DataState to its childrens.
+"""Alpine ``dataset_*`` helpers that ``DataSet`` merges onto its children.
 
-
-eg: with DataState() as data_focused_pressed:
-        data_focused()
-        data_pressed()
-
-    now use
-    with data_focusd_pressed:
+eg: with DataSet() as focused_pressed:
+        dataset_focused()
+        dataset_pressed()
         div("a"), div("b")
 
-    both div's will receive attributes of data-focused and data-pressed.
+    both divs receive the merged focused/pressed ``x-data`` and
+    ``:data-focused`` / ``:data-pressed`` bindings.
 """
 
 import json

@@ -111,7 +111,6 @@ class Else(JinjaSingleTags):
 
     def __init__(self, *dom_elements):
         """
-        :param template_text:
         :param dom_elements: [optional] template
         """
 
@@ -181,7 +180,6 @@ class Load(JinjaSingleTags):
 class CSRFToken(JinjaSingleTags):
     def __init__(self, *dom_elements):
         """
-        :param template_text:
         :param dom_elements: [optional] template
         """
 

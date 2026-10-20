@@ -16,8 +16,8 @@ __all__ = ["Htmx", "HtmxMiddleware"]
 class Htmx(HtmxEvents):
     """Decorate Component handlers and mount them on an API router.
 
-    Breaking (0.5): routes default under ``prefix`` (default ``""`` for
-    Prefer an explicit namespace (``/{name}`` is allowed when unset)::
+    Routes mount at ``{prefix}/{name}``; with the default ``prefix=""`` they
+    mount at ``/{name}``. Prefer an explicit namespace::
 
         htmx = Htmx(api=api, prefix="/actions")
 

@@ -128,8 +128,6 @@ class UxChannelRuntime:
         self.serve = serve
         self.path = path
         self.mount_via_ux_dom = mount_via_ux_dom
-        if not mount_via_ux_dom and serve == "package_mount":
-            self._inner.mount_package = ""
 
     @classmethod
     def optional(cls, **kwargs: Any) -> Optional["UxChannelRuntime"]:

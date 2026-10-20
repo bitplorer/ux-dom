@@ -33,7 +33,7 @@ There is nothing to opt into for day-1 DX.
 Advanced knobs live under `ux_dom.concurrency` (`configure_concurrency`, env
 `UX_DOM_*`) and are **not** part of the product surface for apps.
 
-### Profiling (p95 + flamegraphs)
+### Profiling (p95 + self-time profiles)
 
 ```bash
 python scripts/profile_p95.py
