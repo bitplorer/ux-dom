@@ -139,7 +139,7 @@ def profile_cmd(
     profile_rounds: int = Option(30, "--profile-rounds"),
     json_out: bool = Option(False, "--json"),
 ):
-    """Render p95 / flamegraph (pure-dom)."""
+    """Render p95 / self-time profile (pure-dom)."""
     from ux_dom.cli.profile import format_profile_report, run_profile
 
     report = run_profile(

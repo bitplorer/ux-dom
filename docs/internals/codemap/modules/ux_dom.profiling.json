@@ -1,6 +1,7 @@
 {
  "ux_dom.profiling": {
   "consumers": [
+   "tests/03_routing_cli/test_speedscope_weights.py",
    "tests/04_production/test_p95_profiling.py"
   ],
   "imported_by": {

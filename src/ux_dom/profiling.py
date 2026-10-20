@@ -2,7 +2,7 @@
 """Internal / maintainer profiling helpers (not a day-1 user API).
 
 Users do **not** configure concurrency. Locks + parallel fallbacks are
-library-internal. This module exists for CI, benchmarks, and flamegraphs.
+library-internal. This module exists for CI, benchmarks, and self-time profiles.
 """
 
 from __future__ import annotations
@@ -199,7 +199,7 @@ pre {{ background: #0f172a; color: #e2e8f0; padding: 1rem; overflow: auto;
 <p class="note">Users do not configure concurrency — locks and parallel fallbacks are
 internal. This report is for maintainers / CI. Open the sibling
 <code>*.speedscope.json</code> in <a href="https://www.speedscope.app">speedscope.app</a>
-for a flamegraph.</p>
+for a per-function self-time breakdown (no call stacks).</p>
 <p class="note">{notes}</p>
 <h2>Latency (ms)</h2>
 <table>

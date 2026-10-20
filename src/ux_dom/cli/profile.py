@@ -1,5 +1,5 @@
 # Copyright (c) 2026 UX-DOM
-"""``uxdom profile`` — first-class DX: p95 latency + flamegraph artifacts.
+"""``uxdom profile`` — first-class DX: p95 latency + self-time profile artifacts.
 
 Writes under ``./reports/p95/`` (or ``--out``). Does not mutate app source.
 Concurrency stays library-internal; this command only *measures* render cost.
@@ -70,7 +70,7 @@ def run_profile(
     if open_hint:
         report["flamegraph_hint"] = (
             "Open profile.speedscope.json at https://www.speedscope.app "
-            "for an interactive flamegraph."
+            "for a per-function self-time breakdown (no call stacks)."
         )
     return report
 
