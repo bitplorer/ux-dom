@@ -180,6 +180,7 @@ _ALLOWED_TAGS = frozenset(
         "label",
         "legend",
         "li",
+        "listing",
         "main",
         "map",
         "mark",
@@ -736,19 +737,6 @@ def _link_attrs(attrs: dict) -> dict | None:
     return _filter_attrs("link", attrs)
 
 
-def _text_data(raw: str) -> str:
-    """Keep same-line spaces. Newlines are source indentation and drop.
-
-    Whitespace on one line between inline tags (``<b>a</b> <i>b</i>``) is
-    one space, so the words are not glued together.
-    """
-    if "\n" in raw:
-        return raw.strip("\n").strip(" ").strip("\n")
-    if raw.strip(" \t"):
-        return raw
-    return " " if raw else ""
-
-
 @dataclass
 class StringToHTML(object):
     # AST round-trip (HTML ↔ Python code object) is not implemented.
@@ -854,10 +842,11 @@ class StringToHTML(object):
                 # differently in Python and in a browser.
                 if isinstance(token, Comment):
                     continue
-                # Data. Newlines are source indentation. A space on the same
-                # line as the words belongs to the text.
+                # Data, kept as written: whitespace between inline tags
+                # separates words, and in ``pre`` / ``textarea`` / ``listing``
+                # it is the text. The renderer, not the parser, formats.
                 if hasattr(token, "data"):
-                    data = _text_data(token.data)
+                    data = token.data
                     if not data:
                         continue
                     with tag or ext.PlaceholderTag() as tag:  # type: ignore[assignment]

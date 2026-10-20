@@ -214,8 +214,10 @@ text node cannot be parsed again as a tag. Numeric references are re-emitted
 as written (`&#39;`, `&#x61;`). Named references are decoded with the HTML5
 table, case-sensitive like a browser (`&AMP;` and `&amp;` are `&`), then
 escaped. A name the table does not know is literal text, so `AT&T` stays
-`AT&T`. Same-line spaces stay, including a space between inline tags
-(`<b>a</b> <i>b</i>`). A newline is source indentation and is still removed.
+`AT&T`. Whitespace is kept as written, as a browser keeps it in the DOM:
+a space or newline between inline tags (`<b>a</b>\n<i>b</i>`) and the body
+of `pre`, `listing` and `textarea`. CRLF and a lone CR become LF, as the
+browser's input stream makes them.
 
 **Attribute names** that are not `[a-z][a-z0-9_.:-]*` after the leading `_`
 is stripped (`data-a"b`, `aria-a'b`, a control character) are dropped, so

@@ -405,7 +405,8 @@ class TestStates(unittest.TestCase):
   </head>
   <body>
     <div>
-      <p a="2">Hello Mom<p><em>Hello World</em></p></p>
+      <p a="2">Hello Mom<p><em>Hello World</em></p>
+</p>
     </div>
   </body>
 </html>"""
@@ -521,19 +522,33 @@ pip install ux-dom
 It was followed by a warm spring which caused
 flood conditions in many of the nearby rivers.
 """
+        # Code blocks keep their indent and newline; the newlines markdown
+        # puts between blocks are text too (#96).
         parsed_md_string = """\
 <h1>
   Last year’s snowfall
 </h1>
-<pre><code class="language-python">def main(): pass</code></pre>
-<pre><code class="language-shell">pip install ux-dom</code></pre>
+
+
+<pre><code class="language-python">    def main(): pass
+</code></pre>
+
+
+<pre><code class="language-shell">pip install ux-dom
+</code></pre>
+
+
 <h2>
   The snowfall was above average.
 </h2>
+
+
 <p>
   It was followed by a warm spring which caused
   flood conditions in many of the nearby rivers.
-</p>"""
+</p>
+
+"""
 
         class MarkdownCheck(MarkdownElement):
             def render(self):

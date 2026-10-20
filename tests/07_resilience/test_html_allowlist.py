@@ -16,7 +16,8 @@ from ux_dom.dom.src.html_string import defHTML
 from ux_dom.dom.src.utils.dom_util import safe_attr_value
 from ux_dom.ui.channel_bridge import to_fragment
 
-# One page. Exact output is the contract for document mode.
+# One page. Exact output is the contract for document mode. Whitespace
+# between tags is kept as written (#96); a dropped element leaves its line.
 PAGE = """\
 <!DOCTYPE html>
 <html lang="en">
@@ -42,22 +43,27 @@ PAGE = """\
 """
 
 EXPECTED = (
-    "<!DOCTYPE html>"
-    '<html lang="en">'
-    "<head>"
-    '<meta charset="utf-8">'
-    "<title>Tom &amp; Jerry</title>"
-    '<link href="/app.css" rel="stylesheet">'
-    '<link href="https://cdn.example/favicon.ico" rel="icon">'
-    "<style>p{color:red}</style>"
-    "</head>"
-    "<body>"
-    "<h1>Hi</h1>"
-    '<p class="ok">Yes</p>'
-    "<div>no</div>"
-    "z"
-    "</body>"
-    "</html>"
+    "<!DOCTYPE html>\n"
+    '<html lang="en">\n'
+    "<head>\n"
+    '<meta charset="utf-8">\n'
+    "<title>Tom &amp; Jerry</title>\n"
+    "\n"
+    '<link href="/app.css" rel="stylesheet">\n'
+    '<link href="https://cdn.example/favicon.ico" rel="icon">\n'
+    "\n"
+    "\n"
+    "<style>p{color:red}</style>\n"
+    "\n"
+    "</head>\n"
+    "<body>\n"
+    "<h1>Hi</h1>\n"
+    '<p class="ok">Yes</p>\n'
+    "\n"
+    "<div>no</div>\n"
+    "z\n"
+    "</body>\n"
+    "</html>\n"
 )
 
 # Every payload named in the #32 review. Rendered markup must not carry it.
@@ -225,7 +231,8 @@ def test_leading_whitespace_and_case_are_still_a_document():
         "<body><p>z</p></body></HTML>"
     )
     out = _render(src, document=True)
-    assert out.startswith("<!DOCTYPE html>")
+    # A browser ignores whitespace before the doctype; it is kept as written.
+    assert out.startswith(" \n<!DOCTYPE html>")
     assert "<title>T&amp;T</title>" in out
     assert "<html>" in out.lower()
     assert "<p>z</p>" in out
