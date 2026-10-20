@@ -44,6 +44,7 @@ Do not analogize this layer to React / Next / htmx as its identity.
 - Intent / Cap / Result types in this package
 - Motion IR or Channel codecs
 - Flat `docs/XELEMENT.md` (nested paths only; see `tests/04_production/test_docs_integrity.py`)
+- Compatibility shims / aliases / tombstones before the first release ([ADR 0004](docs/adr/0004-no-compat-shims-pre-release.md))
 
 ## Automation-first
 
