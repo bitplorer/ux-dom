@@ -5,8 +5,8 @@ from __future__ import annotations
 from typing import Any
 
 from ux_dom import Component
-from ux_dom.dom import button, div, span
-from ux_dom.ui.tokens import cn, focus_ring, target
+from ux_dom.dom import div, span
+from ux_dom.ui.tokens import cn, nav_button
 
 __all__ = ["Pagination"]
 
@@ -23,29 +23,20 @@ class Pagination(Component):
     ):
         page = max(1, min(page, max(1, total_pages)))
 
-        def page_btn(label: str, p: int, *, disabled: bool = False):
-            ba: dict[str, Any] = {"type": "button"}
-            if select_action and not disabled:
-                ba["data-channel-action"] = select_action
-                ba["data-args"] = f'{{"page":"{p}"}}'
-            if disabled:
-                ba["disabled"] = True
-            return button(
-                label,
-                className=cn(
-                    target["sm"],
-                    "rounded-md border border-stone-700 px-3",
-                    focus_ring,
-                    "disabled:opacity-40",
-                    "bg-stone-900 text-stone-100 hover:bg-stone-800",
-                ),
-                **ba,
-            )
-
         return div(
-            page_btn("Prev", page - 1, disabled=page <= 1),
+            nav_button(
+                "Prev",
+                action=select_action,
+                args={"page": page - 1},
+                disabled=page <= 1,
+            ),
             span(f"{page} / {total_pages}", className="px-3 text-sm text-stone-400 tabular-nums"),
-            page_btn("Next", page + 1, disabled=page >= total_pages),
+            nav_button(
+                "Next",
+                action=select_action,
+                args={"page": page + 1},
+                disabled=page >= total_pages,
+            ),
             className=cn("flex items-center gap-2", className),
             **attrs,
         )

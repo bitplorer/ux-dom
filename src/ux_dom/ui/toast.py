@@ -6,16 +6,16 @@ from typing import Any, Mapping, Sequence
 
 from ux_dom import Component
 from ux_dom.dom import div, li, ol, p, span
-from ux_dom.ui.tokens import cn
+from ux_dom.ui.tokens import cn, status
 
 __all__ = ["ToastHost", "ToastItem"]
 
 _LEVELS = {
-    "info": "border-stone-700 bg-stone-900 text-stone-100",
-    "success": "border-emerald-600/40 bg-emerald-950/40 text-emerald-100",
-    "warning": "border-amber-500/40 bg-amber-950/30 text-amber-100",
-    "error": "border-red-500/40 bg-red-950/40 text-red-100",
-    "destructive": "border-red-500/40 bg-red-950/40 text-red-100",
+    "info": status["neutral"],
+    "success": status["success"],
+    "warning": status["warning"],
+    "error": status["danger"],
+    "destructive": status["danger"],
 }
 
 

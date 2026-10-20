@@ -23,8 +23,8 @@ from __future__ import annotations
 from typing import Any
 
 from ux_dom import Component
-from ux_dom.dom import div, h2
-from ux_dom.ui.tokens import cn, overlay, surface, type_scale
+from ux_dom.dom import div
+from ux_dom.ui.tokens import cn, dialog_panel, overlay, overlay_root, surface
 
 __all__ = ["Dialog"]
 
@@ -44,51 +44,22 @@ class Dialog(Component):
     ):
         # Alpine ``trigger=`` is retired. Channel-first open is a render arg.
         attrs.pop("trigger", None)
-        data_open = "1" if open else "0"
-        title_id = "dialog-title"
-        panel_kids: list[Any] = []
-        if title:
-            panel_kids.append(
-                h2(title, id=title_id, className=cn(type_scale["title"]))
-            )
-        if body is not None:
-            panel_kids.append(
-                div(body, className=cn("mt-2", type_scale["body"], "text-stone-300"))
-            )
-        if footer is not None:
-            panel_kids.append(
-                div(footer, className="mt-4 flex justify-end gap-2")
-            )
+        if not open:
+            return overlay_root(attrs, open=False)
 
-        labelled = {"aria-labelledby": title_id} if title else {}
-        panel = div(
-            *panel_kids,
-            role="dialog",
-            **{"aria-modal": "true", "tabindex": "-1"},
-            **labelled,
+        panel = dialog_panel(
+            title=title,
+            body=body,
+            footer=footer,
             className=cn(
                 surface["l2"],
                 "relative z-50 w-full max-w-md rounded-xl p-6",
                 className,
             ),
         )
-
-        # Closed cell: empty morph target, no client open state
-        if not open:
-            return div(
-                id=attrs.pop("id", None) or "overlay",
-                **{"data-open": "0", "data-channel-id": attrs.pop("data-channel-id", "overlay")},
-                className="contents",
-                **attrs,
-            )
-
-        return div(
+        return overlay_root(
+            attrs,
             div(className=overlay["backdrop"], **{"data-overlay-backdrop": "1"}),
             div(panel, className=overlay["modal"]),
-            id=attrs.pop("id", None) or "overlay",
-            **{
-                "data-open": data_open,
-                "data-channel-id": attrs.pop("data-channel-id", "overlay"),
-            },
-            **attrs,
+            open=True,
         )

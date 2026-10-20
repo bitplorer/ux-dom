@@ -11,6 +11,14 @@
   `WebSocketAdapter`), and `WebComponentSlot.__checks__` (inherited). The
   `_adapter` usage note and `ux_dom.scripts` docstring now match the real API and
   the package URL `/ux-dom/static/x_element.js`.
+- **Refactor: UI kit duplication (D6, D7, D9).** Dialog / Sheet / Command share
+  one overlay root and panel, Carousel / Pagination / Tabs share Channel action
+  stamping and nav-button chrome, Textarea uses ``field_classes(height=)``, and
+  Alert / Toast read one ``status`` tone table. Drift settled: Sheet's panel gains
+  ``aria-labelledby`` / ``tabindex="-1"`` (body ``mt-3`` → ``mt-2``); Carousel nav
+  buttons take Pagination's ``target["sm"]`` chrome; Toast info/success and
+  Alert destructive tones align (``bg-stone-900/90``, ``emerald-500/40``,
+  ``red-500/40 text-red-100``).
 - **Fix: ``Csp`` presets honour later field edits.** ``Csp.dev()`` / ``prod()`` /
   ``report_only()`` no longer cache a ``policy``, so ``c.debug_header = True`` or
   ``dataclasses.replace(c, ...)`` reach ``to_policy()``. Preset headers are unchanged.

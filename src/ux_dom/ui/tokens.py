@@ -7,13 +7,17 @@ Elevated for Host desks and product surfaces:
 - 44px minimum targets (min-h-11)
 - Density + overlay grammar
 - Pure Tailwind; no second design system
+- Kit-internal markup shared by overlays and nav buttons (travels with ``uxdom add ui``)
 
 Public contract preserved: cn, variants, focus_ring, radius.
 """
 
 from __future__ import annotations
 
-from typing import Iterable, Optional
+import json
+from typing import Any, Iterable, Optional
+
+from ux_dom.dom import button, div, h2
 
 __all__ = [
     "cn",
@@ -105,6 +109,14 @@ overlay = {
     "popover": "absolute z-50 min-w-[12rem] rounded-xl",
 }
 
+# Status tones (one table; Alert and Toast map their own vocabulary onto it)
+status = {
+    "neutral": "border-stone-700 bg-stone-900/90 text-stone-100",
+    "success": "border-emerald-500/40 bg-emerald-950/30 text-emerald-100",
+    "warning": "border-amber-500/40 bg-amber-950/30 text-amber-100",
+    "danger": "border-red-500/40 bg-red-950/40 text-red-100",
+}
+
 # Semantic color roles (Material-inspired, Tailwind utility mapped)
 # Use these for brand/theme overrides without fighting surface levels.
 color = {
@@ -165,13 +177,87 @@ def variants(table: dict[str, dict[str, str]], **chosen: str) -> str:
             chunks.append(axis_map["default"])
     return cn(*chunks)
 
-def field_classes(*, className: str = "", invalid: bool = False) -> str:
-    """Shared control chrome for Input / Select / DatePicker alignment."""
+def field_classes(
+    *, className: str = "", invalid: bool = False, height: str = "min-h-11 h-11"
+) -> str:
+    """Shared control chrome for Input / Select / DatePicker / Textarea alignment."""
     return cn(
-        "flex min-h-11 h-11 w-full rounded-lg border bg-stone-950/60 px-3 py-2 text-sm text-stone-100",
+        "flex",
+        height,
+        "w-full rounded-lg border bg-stone-950/60 px-3 py-2 text-sm text-stone-100",
         "placeholder:text-stone-500 disabled:cursor-not-allowed disabled:opacity-50",
         focus_ring,
         "border-red-500/80" if invalid else "border-stone-700",
         className,
     )
 
+
+# ── Shared markup (kit-internal; copied with every component) ────────────────
+
+
+def channel_action(action: str | None, **args: Any) -> dict[str, str]:
+    """``data-channel-action`` / ``data-args`` for a server-side select; none without an action."""
+    if not action:
+        return {}
+    data = {k: str(v) for k, v in args.items()}
+    return {
+        "data-channel-action": action,
+        "data-args": json.dumps(data, separators=(",", ":")),
+    }
+
+
+def nav_button(
+    label: str,
+    *,
+    action: str | None,
+    args: dict[str, Any],
+    disabled: bool = False,
+    **attrs: Any,
+):
+    """Prev / Next control for Carousel and Pagination. A disabled button carries no action."""
+    state = {"disabled": True} if disabled else channel_action(action, **args)
+    return button(
+        label,
+        type="button",
+        className=cn(
+            target["sm"],
+            "rounded-md border border-stone-700",
+            focus_ring,
+            "disabled:opacity-40",
+            "bg-stone-900 text-stone-100 hover:bg-stone-800",
+        ),
+        **state,
+        **attrs,
+    )
+
+
+def overlay_root(attrs: dict[str, Any], *children: Any, open: bool):
+    """Morph target shared by Dialog / Sheet / Command (``id`` and channel id default to ``overlay``)."""
+    root = {
+        "id": attrs.pop("id", None) or "overlay",
+        "data-open": "1" if open else "0",
+        "data-channel-id": attrs.pop("data-channel-id", "overlay"),
+    }
+    if not open:
+        root["className"] = "contents"
+    return div(*children, **root, **attrs)
+
+
+def dialog_panel(*, title: str, body: Any, footer: Any, className: str):
+    """``role="dialog"`` panel with an optional labelled title, body and footer."""
+    title_id = "dialog-title"
+    kids: list[Any] = []
+    if title:
+        kids.append(h2(title, id=title_id, className=cn(type_scale["title"])))
+    if body is not None:
+        kids.append(div(body, className=cn("mt-2", type_scale["body"], "text-stone-300")))
+    if footer is not None:
+        kids.append(div(footer, className="mt-4 flex justify-end gap-2"))
+    labelled = {"aria-labelledby": title_id} if title else {}
+    return div(
+        *kids,
+        role="dialog",
+        **{"aria-modal": "true", "tabindex": "-1"},
+        **labelled,
+        className=className,
+    )

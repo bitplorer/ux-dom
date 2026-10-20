@@ -8,8 +8,8 @@ from __future__ import annotations
 from typing import Any, Sequence
 
 from ux_dom import Component
-from ux_dom.dom import button, div, span
-from ux_dom.ui.tokens import cn, focus_ring, surface, type_scale
+from ux_dom.dom import div, span
+from ux_dom.ui.tokens import cn, nav_button, surface, type_scale
 
 __all__ = ["Carousel"]
 
@@ -57,29 +57,24 @@ class Carousel(Component):
         idx = max(0, min(int(index), n - 1))
         body = items[idx]
 
-        def nav_btn(visible: str, aria: str, target_idx: int, *, disabled: bool):
-            ba: dict[str, Any] = {"type": "button", "aria-label": aria}
-            if select_action and not disabled:
-                ba["data-channel-action"] = select_action
-                ba["data-args"] = f'{{"index":"{target_idx}"}}'
-            if disabled:
-                ba["disabled"] = True
-            return button(
-                visible,
-                className=cn(
-                    "min-h-9 rounded-md border border-stone-700 px-3 text-sm",
-                    focus_ring,
-                    "disabled:opacity-40",
-                ),
-                **ba,
-            )
-
         return div(
             div(body, className="min-h-[8rem]"),
             div(
-                nav_btn("Prev", "Previous slide", idx - 1, disabled=idx <= 0),
+                nav_button(
+                    "Prev",
+                    action=select_action,
+                    args={"index": idx - 1},
+                    disabled=idx <= 0,
+                    **{"aria-label": "Previous slide"},
+                ),
                 div(f"{idx + 1} / {n}", className=cn("px-3", type_scale["caption"])),
-                nav_btn("Next", "Next slide", idx + 1, disabled=idx >= n - 1),
+                nav_button(
+                    "Next",
+                    action=select_action,
+                    args={"index": idx + 1},
+                    disabled=idx >= n - 1,
+                    **{"aria-label": "Next slide"},
+                ),
                 className="mt-3 flex items-center justify-center gap-2",
             ),
             role="region",
