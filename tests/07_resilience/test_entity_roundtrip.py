@@ -116,5 +116,10 @@ def test_unfinished_references_tokenize_in_linear_time():
 
     n = 200_000
     finished = seconds("&#1;a" * n)
-    unfinished = seconds("&#1a" * n)
-    assert unfinished < 2 * finished + 0.5, (unfinished, finished)
+    for src in (
+        "&#1a" * n,
+        '<p title="<style>">x</p>' + "&#1a" * n,
+        '<style a="' * n + "&#1a",
+    ):
+        unfinished = seconds(src)
+        assert unfinished < 2 * finished + 0.5, (src[:24], unfinished, finished)
