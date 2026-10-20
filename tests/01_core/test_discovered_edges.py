@@ -1,16 +1,10 @@
 """Edge cases found by exploratory discovery (kept as permanent guards)."""
 from __future__ import annotations
 
-import sys
-import tempfile
 import unittest
-from pathlib import Path
 
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
 
 from ux_dom.dom import div, span
-from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
 
 
 class TestRenderCycleGuard(unittest.TestCase):
@@ -44,38 +38,6 @@ class TestAttrDialectConventions(unittest.TestCase):
         h = div("<script>x</script>", title="a\x22b").__render__(pretty=False)
         self.assertIn("&" + "lt;script&" + "gt;", h)
         self.assertIn("&" + "quot;", h)
-
-
-class TestDirectoryRouterDottedFolder(unittest.TestCase):
-    def test_api_v1_folder(self):
-        with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
-            pkg = root / "dotapp"
-            (pkg / "app" / "api.v1").mkdir(parents=True)
-            for p in [pkg, pkg / "app", pkg / "app" / "api.v1"]:
-                (p / "__init__.py").write_text("")
-            (pkg / "app" / "api.v1" / "route.py").write_text(
-                "def get():\n"
-                "    from ux_dom.dom import div\n"
-                "    return div('v1-ok')\n"
-            )
-            sys.path.insert(0, str(root))
-            try:
-                app = FastAPI()
-                app.include_router(
-                    DirectoryRouter(
-                        base_directory="app",
-                        package_dir=pkg,
-                        route_class=StreamingRoute,
-                    )
-                )
-                paths = list(app.openapi()["paths"])
-                self.assertTrue(any("api.v1" in p for p in paths), paths)
-                r = TestClient(app).get(paths[0])
-                self.assertEqual(r.status_code, 200)
-                self.assertIn("v1-ok", r.text)
-            finally:
-                sys.path.remove(str(root))
 
 
 class TestAddEdges(unittest.TestCase):

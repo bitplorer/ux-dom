@@ -11,7 +11,6 @@ __all__ = ["ShadowDom"]
 
 
 class ShadowDom(Component):
-    routes = ["get"]
 
     def render(self):
         shell_host = ShellShadow(
@@ -48,5 +47,5 @@ class ShadowDom(Component):
         )
 
     @classmethod
-    def get(cls):
+    def page_view(cls):
         return page(cls(), page_title="Shadow DOM · XElement Kit")

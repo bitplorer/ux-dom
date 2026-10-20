@@ -176,21 +176,14 @@ def add_cmd(
     name: str,
     xkind: str = Option("light", "--xe-kind"),
     force: bool = Option(False, "--force"),
-    methods: str = Option("get", "--methods"),
 ):
-    """Add component | xelement | ui. Product page units → ux-compose routes/."""
-    from ux_dom.cli.adders import AddError, add_component, add_route, add_xelement
+    """Add component | xelement | ui. Page routes live on ux-compose."""
+    from ux_dom.cli.adders import AddError, add_component, add_xelement
 
     kind = kind.lower().strip()
     try:
         if kind == "component":
             path = add_component(name, force=force)
-        elif kind == "route":
-            ux_dom_logger.info(
-                "product page units prefer ux-compose routes/; "
-                "writing a pure-dom DirectoryRoutes stub only"
-            )
-            path = add_route(name, force=force, methods=methods)
         elif kind in ("xelement", "xe", "x-element"):
             if xkind not in ("light", "shadow", "alpine"):
                 ux_dom_logger.error("--xe-kind must be light|shadow|alpine")
@@ -206,7 +199,7 @@ def add_cmd(
                 ux_dom_logger.error(str(e))
                 raise SystemExit(1) from e
         else:
-            ux_dom_logger.error("kind must be component|route|xelement|ui")
+            ux_dom_logger.error("kind must be component|xelement|ui")
             raise SystemExit(2)
     except AddError as e:
         ux_dom_logger.error(str(e))

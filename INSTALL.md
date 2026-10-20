@@ -43,10 +43,10 @@ uxcompose serve dev app:asgi --host 0.0.0.0 --port 8080
 Pure-dom health: `uxdom doctor`.
 
 
-## Showcase example
+## Example
 
 ```bash
-cd examples/standalone_showcase
+cd examples/xelement_kit
 PYTHONPATH=../../src:. poetry run uvicorn app.main:app --host 0.0.0.0 --port 8080 --reload
 ```
 

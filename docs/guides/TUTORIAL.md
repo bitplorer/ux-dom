@@ -69,18 +69,12 @@ app, asgi, bundle = build(
 
 ## 4. Add a page unit
 
-Product apps: add `routes/about.py` (stem matches class name).
-
-Pure-dom stub only:
-
-```bash
-uxdom add route about
-```
+Product apps: add `routes/about.py` (stem matches class name). ux-compose
+serves `GET /about` by instantiating the page unit and rendering it.
 
 ```python
 from ux_dom import Component
 from ux_dom.dom import div, h1, a
-from document import page
 
 class About(Component):
     def render(self):
@@ -88,10 +82,6 @@ class About(Component):
             a("Home", href="/"),
             h1("About"),
         )
-
-    @classmethod
-    def get(cls):
-        return page(cls().render())
 ```
 
 ## 5. Custom element

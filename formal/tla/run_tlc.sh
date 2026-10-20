@@ -4,7 +4,7 @@ DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
 cd "$DIR"
 JAR="$DIR/tla2tools.jar"
 [ -f "$JAR" ] || { echo "missing tla2tools.jar" >&2; exit 1; }
-DEFAULT="ContextStack UniqueId UniqueIdSafe WebSocketIsolation RouteVsDom RenderIdempotent"
+DEFAULT="ContextStack UniqueId UniqueIdSafe WebSocketIsolation RenderIdempotent"
 if [ "$#" -eq 0 ]; then
   # shellcheck disable=SC2086
   set -- $DEFAULT

@@ -6,7 +6,6 @@
    "tests/03_routing_cli/test_build_deploy.py",
    "tests/03_routing_cli/test_build_honest_steps.py",
    "tests/03_routing_cli/test_build_package.py",
-   "tests/03_routing_cli/test_cli_route_maturity.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
    "tests/03_routing_cli/test_run_build_signature.py"
   ],

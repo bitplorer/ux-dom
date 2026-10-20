@@ -7,14 +7,11 @@ import unittest
 import ux_dom
 from ux_dom import (
     Component,
-    Document,
     Fragment,
-    ReactiveComponent,
     __version__,
 )
 from ux_dom.plugins import App, PluginHub, get_hub, set_hub
 from ux_dom.plugins.control import HtmxControl, NullControl
-from ux_dom.plugins.routing import DirectoryRouting
 
 
 class TestPublicAPI(unittest.TestCase):
@@ -76,12 +73,6 @@ class TestPluginHub(unittest.TestCase):
     def test_app_use_null(self):
         app = App(debug=True).use(NullControl())
         self.assertEqual(list(app.plugin_summary()), ["control:null"])
-
-    def test_directory_routing_plugin_importable(self):
-        # Don't scan filesystem here — just construct
-        r = DirectoryRouting(base_directory="app", prefix="/v1")
-        self.assertEqual(r.name, "directory")
-        self.assertEqual(r.base_directory, "app")
 
     def test_get_set_hub(self):
         old = get_hub()

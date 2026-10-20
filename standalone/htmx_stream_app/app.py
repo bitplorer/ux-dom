@@ -1,4 +1,4 @@
-"""HTMX partials + streaming HTML + DirectoryRouter-style components."""
+"""HTMX partials + streaming HTML with explicit FastAPI routes."""
 from __future__ import annotations
 
 from fastapi import FastAPI, Request
@@ -10,8 +10,6 @@ from ux_dom.response.starlette import HTMLResponse, StreamingResponse
 
 
 class SearchBox(Component):
-    routes = ["get", "search"]  # shadow test under real app
-
     def render(self, q: str = ""):
         return div(
             form(
@@ -25,15 +23,6 @@ class SearchBox(Component):
             ),
             id="search-app",
         )
-
-    @classmethod
-    def get(cls):
-        return cls(q="")
-
-    @classmethod
-    def search(cls, q: str = ""):
-        return cls(q=q)
-
 
 class ResultList(Component):
     def render(self, q: str = "", n: int = 20):
@@ -50,7 +39,7 @@ def create_app() -> FastAPI:
 
     @app.get("/")
     def home():
-        return HTMLResponse(doc(SearchBox.get()))
+        return HTMLResponse(doc(SearchBox()))
 
     @app.get("/search")
     def search(request: Request, q: str = ""):

@@ -11,7 +11,6 @@ __all__ = ["Jinja"]
 
 
 class Jinja(Component):
-    routes = ["get"]
 
     def render(self):
         # Unexpanded Jinja source tree (for display)
@@ -63,5 +62,5 @@ class Jinja(Component):
         )
 
     @classmethod
-    def get(cls):
+    def page_view(cls):
         return page(cls(), page_title="Jinja · Kit")

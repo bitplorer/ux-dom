@@ -10,29 +10,25 @@ Runnable, production-shaped apps demonstrating **ux_dom alone** and **ux_dom + u
 
 | App | Path | Stack | Port |
 |-----|------|-------|------|
-| Hypermedia shop | [`ux_dom_only/hypermedia_shop`](ux_dom_only/hypermedia_shop/) | leftover standalone FastAPI demo + HTMX | 8091 |
 | Realtime kit | [`ux_dom_only/realtime_kit`](ux_dom_only/realtime_kit/) | SSE, WebSocketAdapter, streaming HTML | 8092 |
 | Live cart | [`with_ux_channel/live_cart`](with_ux_channel/live_cart/) | ux_dom markup + Channel regions/actions | 8093 |
-| **Standalone showcase** | [`standalone_showcase`](standalone_showcase/) | ux_dom-only full demo (shop, HTMX, SSE, stream) | 8080 |
 | Market board | [`with_ux_channel/market_board`](with_ux_channel/market_board/) | live.bind/publish + UxDom shell | 8094 |
 | XElement kit | [`xelement_kit`](xelement_kit/) | Light/Shadow DOM, HTMX, Alpine, slots | 8080 |
 | UI kit gallery | [`ux_kit`](ux_kit/) | `ux_dom.ui` components | 8080 |
 
 ## Capability matrix
 
-| Capability | hypermedia_shop | realtime_kit | live_cart | market_board |
-|------------|:---:|:---:|:---:|:---:|
-| Components / Document | ✓ | ✓ | ✓ | ✓ |
-| File routes (demo only) | ✓ | | | |
-| Route classmethods + DOM API | ✓ | | | |
-| HTMX partials / middleware | ✓ | ✓ | | |
-| SSE | | ✓ | | via channel push |
-| WebSocket (ux_dom adapter) | | ✓ | | |
-| StreamingResponse | | ✓ | | |
-| uxchannel Region | | | ✓ | ✓ |
-| `ch.control(...).as_ux_dom()` | | | ✓ | ✓ |
-| Trust caps / morph client | | | ✓ | ✓ |
-| `ch.live` topics | | | | ✓ |
+| Capability | realtime_kit | live_cart | market_board |
+|------------|:---:|:---:|:---:|
+| Components / Document | ✓ | ✓ | ✓ |
+| HTMX partials / middleware | ✓ | | |
+| SSE | ✓ | | via channel push |
+| WebSocket (ux_dom adapter) | ✓ | | |
+| StreamingResponse | ✓ | | |
+| uxchannel Region | | ✓ | ✓ |
+| `ch.control(...).as_ux_dom()` | | ✓ | ✓ |
+| Trust caps / morph client | | ✓ | ✓ |
+| `ch.live` topics | | | ✓ |
 
 ## Run
 
@@ -41,7 +37,6 @@ Runnable, production-shaped apps demonstrating **ux_dom alone** and **ux_dom + u
 export PYTHONPATH=.
 
 # ux_dom only
-uvicorn examples.ux_dom_only.hypermedia_shop.app:app --host 0.0.0.0 --port 8091
 uvicorn examples.ux_dom_only.realtime_kit.app:app --host 0.0.0.0 --port 8092
 
 # with uxchannel (install companion package first)

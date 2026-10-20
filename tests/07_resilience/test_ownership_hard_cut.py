@@ -91,12 +91,6 @@ class TestDirectoryRoutesTeaching(unittest.TestCase):
         with self.assertRaises(ImportError):
             import ux_dom.plugins.hmr  # noqa: F401
 
-    def test_leftover_directory_router_still_importable(self):
-        from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
-
-        self.assertTrue(callable(DirectoryRouter))
-        self.assertTrue(callable(StreamingRoute))
-
     def test_app_fastapi_still_refuses(self):
         from ux_dom.plugins.hub import App, ProductHostMoved
 

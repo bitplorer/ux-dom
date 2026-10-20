@@ -22,8 +22,6 @@ Version: **0.2.0** (ux-dom production line).
 
 ## Response
 
-- [x] `StreamingRoute` + `HTMLRoute` (response adapters)
-- [x] Component `routes = [...]` convention (when author wires explicitly)
 
 ## Control (CTRL)
 

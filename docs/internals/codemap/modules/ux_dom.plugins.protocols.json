@@ -1,6 +1,8 @@
 {
  "ux_dom.plugins.protocols": {
-  "consumers": [],
+  "consumers": [
+   "tests/07_resilience/test_f18_directory_router_absent.py"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -23,7 +25,6 @@
    "HostPlugin",
    "PartialPolicy",
    "ResponsePlugin",
-   "RoutingPlugin",
    "StylePlugin"
   ]
  }

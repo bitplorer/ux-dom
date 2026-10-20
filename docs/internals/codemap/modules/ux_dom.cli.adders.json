@@ -3,10 +3,9 @@
   "consumers": [
    "docs/internals/ARCHITECTURE.md",
    "tests/01_core/test_pass3_defects.py",
-   "tests/03_routing_cli/test_cli_route_maturity.py",
    "tests/03_routing_cli/test_dx_cli.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
-   "tests/04_production/test_production_stability.py"
+   "tests/07_resilience/test_f18_directory_router_absent.py"
   ],
   "imported_by": {
    "function_level": [
@@ -26,7 +25,6 @@
    "AddError",
    "XKind",
    "add_component",
-   "add_route",
    "add_xelement"
   ]
  }

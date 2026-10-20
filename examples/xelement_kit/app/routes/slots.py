@@ -31,7 +31,6 @@ class NamedPanel(WebComponent):
 
 
 class Slots(Component):
-    routes = ["get"]
 
     def render(self):
         panel_host = NamedPanel(
@@ -73,5 +72,5 @@ class Slots(Component):
         )
 
     @classmethod
-    def get(cls):
+    def page_view(cls):
         return page(cls(), page_title="Slots · Kit")

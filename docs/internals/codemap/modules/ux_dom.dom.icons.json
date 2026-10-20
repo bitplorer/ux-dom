@@ -3,14 +3,6 @@
   "consumers": [
    "docs/guides/SNIPPETS.md",
    "docs/reference/COMPONENTS.md",
-   "examples/standalone_showcase/app/components/layout.py",
-   "examples/standalone_showcase/app/routes/cart.py",
-   "examples/standalone_showcase/app/routes/index.py",
-   "examples/standalone_showcase/app/routes/shop.py",
-   "examples/standalone_showcase/app/routes/stream.py",
-   "examples/ux_dom_only/hypermedia_shop/shop_routes/cart/counter.py",
-   "examples/ux_dom_only/hypermedia_shop/shop_routes/products/[id]/route.py",
-   "examples/ux_dom_only/hypermedia_shop/shop_routes/products/list.py",
    "examples/ux_dom_only/realtime_kit/app.py",
    "examples/ux_kit/app/routes/index.py",
    "examples/with_ux_channel/live_cart/app.py",
@@ -64,6 +56,7 @@
    "tests/07_resilience/test_attr_escape_isolation.py",
    "tests/07_resilience/test_attr_name_validation.py",
    "tests/07_resilience/test_build_parallel_context.py",
+   "tests/07_resilience/test_f18_directory_router_absent.py",
    "tests/fixtures/auth_xelements.py"
   ],
   "imported_by": {

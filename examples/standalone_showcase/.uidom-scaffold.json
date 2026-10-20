@@ -1,8 +1,0 @@
-{
-  "app_name": "showcase",
-  "template": "shop",
-  "with_tailwind": true,
-  "with_channel": false,
-  "with_hmr": true,
-  "generator": "ux_dom create-app"
-}

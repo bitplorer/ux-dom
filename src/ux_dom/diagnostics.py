@@ -29,20 +29,3 @@ def xelement_shadow_missing(cls_name: str, element_qual: str) -> str:
         f"  Fix: template(..., **{{'x-tagname': tag_name, 'shadowroot': 'true'}})\n"
         f"  See docs/guides/XELEMENT.md"
     )
-
-
-def directory_router_missing_base(base: str) -> str:
-    return (
-        f"DirectoryRouter base_directory does not exist: {base}\n"
-        f"  Fix: create the folder or pass package_dir= to the app package root.\n"
-        f"  create-app layout: package_dir=Path(__file__).parent, base_directory='routes'"
-    )
-
-
-def directory_router_no_package_dir() -> str:
-    return (
-        "DirectoryRouter cannot resolve package root.\n"
-        "  Fix: DirectoryRouter(package_dir=Path(__file__).resolve().parent, "
-        "base_directory='routes')\n"
-        "  Prefer package_dir= over __main__.__file__ discovery."
-    )

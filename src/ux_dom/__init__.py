@@ -22,7 +22,6 @@ scaffold live in **ux-compose**.
 | **Shell** | ``Document`` | HTML head/body SSoT — ``.use`` (control, runtime tags, CSP stamp) |
 | **Core** | ``Component``, ``Fragment``, ``ReactiveComponent`` | Build trees |
 | **DOM** | ``ux_dom.dom`` | Tags, parse, ``__render__`` / ``__async_render__`` |
-| **Discovery** | leftover ``DirectoryRouter`` | Not product. Product ``routes/`` is ``ux_compose.routing`` |
 | **UI kit** | ``ux_dom.ui`` | Optional copy-in components |
 
 Serialize SSoT: ``tree.__render__()`` / ``tree.__async_render__()``.

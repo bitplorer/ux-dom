@@ -53,7 +53,6 @@ __all__ = ["Index"]
 
 
 class Index(Component):
-    routes = ["get"]
 
     def render(self):
         ch = channel_available()
@@ -182,7 +181,7 @@ class Index(Component):
         )
 
     @classmethod
-    def get(cls):
+    def page_view(cls):
         return page(cls(), page_title="UI Kit · UxDom")
 
 

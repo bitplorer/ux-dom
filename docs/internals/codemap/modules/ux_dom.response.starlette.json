@@ -5,8 +5,9 @@
    "docs/guides/COOKBOOK.md",
    "docs/plans/2026-09-12-tip-d107209-serialize-surface.md",
    "docs/reference/DOCUMENT.md",
-   "examples/standalone_showcase/app/main.py",
    "examples/ux_dom_only/realtime_kit/app.py",
+   "examples/ux_kit/app/main.py",
+   "examples/xelement_kit/app/main.py",
    "standalone/htmx_stream_app/app.py",
    "standalone/mcp_app/app.py",
    "standalone/sse_app/app.py",
@@ -22,13 +23,13 @@
    "tests/04_production/test_production_hardening.py",
    "tests/05_chaos/test_chaos_integration.py",
    "tests/05_chaos/test_pentest_chaos.py",
-   "tests/05_chaos/test_stress_races_js_pipeline.py"
+   "tests/05_chaos/test_stress_races_js_pipeline.py",
+   "tests/helpers.py"
   ],
   "imported_by": {
    "function_level": [],
    "module_level": [
-    "ux_dom.response",
-    "ux_dom.routing._directory_router_impl"
+    "ux_dom.response"
    ],
    "type_checking": []
   },

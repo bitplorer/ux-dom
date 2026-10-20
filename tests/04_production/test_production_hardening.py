@@ -4,24 +4,17 @@ from __future__ import annotations
 
 import asyncio
 import concurrent.futures
-import sys
-import tempfile
-import textwrap
 import threading
 import time
 import unittest
 from dataclasses import dataclass
-from pathlib import Path
 
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
 
 from ux_dom import Component, Document, Fragment, __version__
 from ux_dom.dom import div, span, button, template
 from ux_dom.dom.src.ext import Tags
 from ux_dom.dom.uniqueid import uniqueid
 from ux_dom.utils.parameters import Parameters
-from ux_dom.routing.fastapi import DirectoryRouter, StreamingRoute
 from ux_dom.response.starlette import StreamingResponse, HTMLResponse
 from ux_dom.dom.htmldocument import HtmlDocument
 
@@ -174,79 +167,6 @@ class TestHeadBodyInference(unittest.TestCase):
         html = str(doc(div("x"), head=["/css/app.css"]))
         self.assertIn("stylesheet", html)
         self.assertIn("app.css", html)
-
-
-class TestDirectoryRouterIntegration(unittest.TestCase):
-    def test_private_modules_skipped_and_routes_work(self):
-        with tempfile.TemporaryDirectory() as td:
-            root = Path(td)
-            pkg = root / "prodapp"
-            (pkg / "app").mkdir(parents=True)
-            (pkg / "__init__.py").write_text("")
-            (pkg / "app" / "__init__.py").write_text("")
-            (pkg / "app" / "counter.py").write_text(textwrap.dedent("""
-                from ux_dom.dom import Component, div
-                __all__ = ["Counter"]
-                class Counter(Component):
-                    routes = ["get", "increment"]
-                    def render(self, n=0):
-                        return div(f"n={n}", id="c")
-                    @classmethod
-                    def get(cls):
-                        return cls(n=0)
-                    @classmethod
-                    def increment(cls):
-                        return cls(n=1)
-                """))
-            (pkg / "app" / "_secret.py").write_text(textwrap.dedent("""
-                from ux_dom.dom import Component, div
-                __all__ = ["Secret"]
-                class Secret(Component):
-                    routes = ["get"]
-                    def render(self):
-                        return div("LEAK")
-                    @classmethod
-                    def get(cls):
-                        return cls()
-                """))
-            (pkg / "app" / "users" / "[id]").mkdir(parents=True)
-            (pkg / "app" / "users" / "__init__.py").write_text("")
-            (pkg / "app" / "users" / "[id]" / "__init__.py").write_text("")
-            (pkg / "app" / "users" / "[id]" / "route.py").write_text(
-                "def get(id: str):\n    from ux_dom.dom import div\n    return div(id)\n"
-            )
-            sys.path.insert(0, str(root))
-            try:
-                app = FastAPI()
-                app.include_router(
-                    DirectoryRouter(
-                        base_directory="app",
-                        package_dir=pkg,
-                        prefix="/api",
-                        route_class=StreamingRoute,
-                    )
-                )
-                client = TestClient(app)
-                paths = app.openapi()["paths"]
-                joined = " ".join(paths)
-                # Path law: URL = folder + file stem, never the class name.
-                self.assertEqual(
-                    sorted(paths),
-                    ["/api/counter", "/api/counter/increment", "/api/users/{id}/"],
-                )
-                self.assertNotIn("secret", joined.lower())
-                self.assertNotIn("LEAK", joined)
-                r = client.get("/api/counter")
-                self.assertEqual(r.status_code, 200)
-                self.assertIn("n=0", r.text)
-                r2 = client.get("/api/counter/increment")
-                self.assertEqual(r2.status_code, 200)
-                self.assertIn("n=1", r2.text)
-                r3 = client.get("/api/users/abc")
-                self.assertEqual(r3.status_code, 200)
-                self.assertIn("abc", r3.text)
-            finally:
-                sys.path.remove(str(root))
 
 
 class TestChaosConcurrentTrees(unittest.TestCase):
