@@ -140,18 +140,18 @@ def run_doctor(
             )
         )
 
-    # uxchannel soft
-    ch_spec = importlib.util.find_spec("ux_channel")
+    # uxchannel soft — report the real import result; a spec alone is not a
+    # working install.
     try:
         import ux_channel  # type: ignore
 
         ch_ok = True
         ch_detail = getattr(ux_channel, "__version__", "installed")
-    except Exception:
-        ch_ok = ch_spec is not None
+    except Exception as e:
+        ch_ok = False
         ch_detail = (
-            "installed"
-            if ch_ok
+            f"installed but import failed — {type(e).__name__}: {e}"
+            if importlib.util.find_spec("ux_channel") is not None
             else "not installed (optional) — pip install 'ux-channel>=0.1.0'"
         )
     report.checks.append(
@@ -210,6 +210,7 @@ def run_doctor(
 
         main = root / "app" / "main.py"
         doc = root / "app" / "document.py"
+        dtxt = doc.read_text(encoding="utf-8") if doc.is_file() else ""
         report.checks.append(
             Check(
                 "app/main.py",
@@ -235,10 +236,6 @@ def run_doctor(
                 or "document.mount" in mtxt
             )
             # document.py may own runtimes
-            dtxt = ""
-            docp = root / "app" / "document.py"
-            if docp.is_file():
-                dtxt = docp.read_text(encoding="utf-8")
             has_rt = has_rt or "XElement(" in dtxt or "XElementRuntime" in dtxt
             report.checks.append(
                 Check(
@@ -253,7 +250,6 @@ def run_doctor(
                 )
             )
         if doc.is_file():
-            dtxt = doc.read_text(encoding="utf-8")
             has_shell = (
                 "Document(" in dtxt or ".use(" in dtxt or "include_runtimes" in dtxt
             )
