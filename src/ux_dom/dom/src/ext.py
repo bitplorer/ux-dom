@@ -32,6 +32,7 @@ from ux_dom.dom.src.utils.dom_util import (
     dom_text,
     escape,
     checked_attr_name,
+    checked_tag_name,
     escape_attr_minimal,
     safe_attr_value,
 )
@@ -267,7 +268,7 @@ class Tags(dom_tag, dom1core):
             sb.append("%s" % open_tag)
         else:
             sb.append(self.left_delimiter)
-            sb.append(name)
+            sb.append(checked_tag_name(name))
             self._render_attribute(sb, indent_level, indent_str, pretty)
             sb.append(
                 "".join(["/", self.right_delimiter])
@@ -281,7 +282,7 @@ class Tags(dom_tag, dom1core):
             sb.append("%s" % close_tag)
         else:
             sb.append("".join([self.left_delimiter, "/"]))
-            sb.append(name)
+            sb.append(checked_tag_name(name))
             sb.append(self.right_delimiter)
         return sb
 
@@ -601,7 +602,7 @@ class Tags(dom_tag, dom1core):
                 yield str(open_tag)
             else:
                 yield self.left_delimiter
-                yield name
+                yield checked_tag_name(name)
                 yield from self._iter_html_attrs(indent_level, indent_str, pretty)
                 if self.is_single and xhtml:
                     yield "/"
@@ -624,7 +625,7 @@ class Tags(dom_tag, dom1core):
             else:
                 yield self.left_delimiter
                 yield "/"
-                yield name
+                yield checked_tag_name(name)
                 yield self.right_delimiter
 
     def __and__(self, other: dom_tag) -> "Tags":

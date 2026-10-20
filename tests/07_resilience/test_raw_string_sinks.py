@@ -306,3 +306,76 @@ def test_jinja_templates_still_render():
     out = _render(div(For("x in xs", If("x", Var("x")))))
     assert "{% for x in xs %}" in out and "{% endfor %}" in out
     assert "{% if x %}" in out and "{{ x }}" in out
+
+
+# ── tag names: validated where they are emitted ─────────────────────────
+
+BAD_NAMES = [
+    "img src=x onerror=alert(1)",
+    "img/onerror=alert(1)",
+    "b><img src=x onerror=alert(1)",
+    "1div",
+    "-x",
+    "",
+    "di\tv",
+    'a"b',
+]
+
+
+def _named(how, name):
+    if how == "kwarg":
+        return div("x", tagname=name)
+    if how == "dict":
+        return div({"tagname": name}, "x")
+    if how == "item":
+        node = div("x")
+        node["tagname"] = name
+        return node
+    if how == "instance":
+        node = div("x")
+        node.tagname = name
+        return node
+    return type("T", (div,), {"tagname": name})("x")
+
+
+@pytest.mark.parametrize("how", ["kwarg", "dict", "item", "instance", "class"])
+@pytest.mark.parametrize("name", BAD_NAMES)
+def test_bad_tag_name_raises(how, name):
+    node = _named(how, name)
+    with pytest.raises(ValueError):
+        node.__render__(pretty=False)
+    with pytest.raises(ValueError):
+        node.__render__()
+    with pytest.raises(ValueError):
+        _async_render(node)
+
+
+@pytest.mark.parametrize("name", BAD_NAMES)
+def test_bad_dynamic_element_name_raises(name):
+    from ux_dom.dom.src.html_string import create_dynamic_element
+
+    with pytest.raises(ValueError):
+        create_dynamic_element(name)
+
+
+GOOD_NAMES = [
+    "section",
+    "linearGradient",
+    "feGaussianBlur",
+    "x-counter",
+    "amp-img",
+    "my.el-x",
+    "svg:rect",
+]
+
+
+@pytest.mark.parametrize("name", GOOD_NAMES)
+def test_good_tag_names_render(name):
+    assert _render(_named("kwarg", name)).startswith(f"<{name}")
+
+
+def test_builtin_and_css_tags_still_render():
+    from ux_dom.dom import For, Var
+
+    assert _render(div(For("x in xs", Var("x")))).startswith("<div>{% for")
+    assert _render(type("MyCard", (div,), {})("x")) == "<MyCard>x</MyCard>"

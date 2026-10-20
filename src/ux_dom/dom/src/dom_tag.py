@@ -926,10 +926,11 @@ class dom_tag(object):
 
         # Workaround for python keywords and standard classes/methods
         # (del, object, input)
-        if name[-1] == "_":
+        if name and name[-1] == "_":
             name = name[:-1]
-        if name[0] == "_":
+        if name and name[0] == "_":
             name = name[1:]
+        name = checked_tag_name(name)
 
         # open tag
         sb.append("<")
@@ -1083,4 +1084,9 @@ def attr(*args, **kwargs):
 
 
 # escape() is used in render
-from ux_dom.dom.src.utils.dom_util import checked_attr_name, escape, safe_attr_value
+from ux_dom.dom.src.utils.dom_util import (
+    checked_attr_name,
+    checked_tag_name,
+    escape,
+    safe_attr_value,
+)

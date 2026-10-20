@@ -28,10 +28,12 @@
   "public": [
    "CrossOriginURL",
    "InvalidAttributeName",
+   "InvalidTagName",
    "SAME_ORIGIN_URL_ATTRIBUTES",
    "UNSAFE_URL",
    "URL_ATTRIBUTES",
    "checked_attr_name",
+   "checked_tag_name",
    "cross_origin",
    "dom_text",
    "escape",

@@ -20,3 +20,10 @@
   replace the tag verbatim, so they must be `markupsafe.Markup` (the Jinja
   template tags build theirs that way); a plain string raises `TypeError` at
   render.
+- **Security: tag names are validated where they are emitted.** A `tagname`
+  from a kwarg, a dict child, `tag["tagname"]`, an instance or class
+  attribute, or `create_dynamic_element` must match
+  `[A-Za-z][A-Za-z0-9._:-]*` (HTML, camelCase SVG, `svg:rect`, custom
+  elements); otherwise rendering (or creating the dynamic element) raises
+  `InvalidTagName` (a `ValueError`). `div(tagname="img src=x onerror=…")`
+  used to inject an element.

@@ -44,6 +44,8 @@ __all__ = [
     "escape_attr_minimal",
     "InvalidAttributeName",
     "checked_attr_name",
+    "checked_tag_name",
+    "InvalidTagName",
     "unescape",
     "url_escape",
     "url_unescape",
@@ -212,6 +214,24 @@ def checked_attr_name(name):
     text = str(name)
     if not text or _BAD_ATTR_NAME.search(text):
         raise InvalidAttributeName(f"invalid attribute name: {text!r}")
+    return text
+
+
+class InvalidTagName(ValueError):
+    """A tag name that could break out of the tag (fail closed)."""
+
+
+# HTML, camelCase SVG (``linearGradient``), namespaced (``svg:rect``) and
+# custom element names (``x-counter``, ``my.el-x``). No whitespace, quotes,
+# ``/``, ``=`` or ``>``, so a name cannot add attributes or close the tag.
+_TAG_NAME = re.compile(r"[A-Za-z][A-Za-z0-9._:-]*")
+
+
+def checked_tag_name(name):
+    """Return ``name`` as text, or raise InvalidTagName."""
+    text = str(name)
+    if not _TAG_NAME.fullmatch(text):
+        raise InvalidTagName(f"invalid tag name: {text!r}")
     return text
 
 
