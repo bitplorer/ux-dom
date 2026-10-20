@@ -14,7 +14,9 @@ __all__ = ["uniqueid"]
 
 def _uniqueid():
     """
-    generate unique id with length 17 to 21.
+    generate a decimal unique id of up to 25 digits: the 20-character timestamp
+    ``%f%S%M%H%d%m%Y`` followed by a 1-5 digit seed (int() drops leading zeros
+    of the microseconds, so a few ids are shorter; 200k ids measured 19-25).
     ensure uniqueness even with daylight savings events (clocks adjusted one-hour backward).
 
     if you generate 1 million ids per second during 100 years, you will generate

@@ -26,7 +26,7 @@ class Slots(WebComponent):
     css:
         Stylesheet hrefs injected into the shadow tree.
 
-    Uses ``x-tagname`` + ``shadowdom`` for ``x_element.js`` upgrade.
+    Uses ``x-tagname`` + ``shadowroot`` for ``x_element.js`` upgrade.
     Prefer plain ``WebComponent`` + ``slot()`` when you do not need this helper.
     """
 

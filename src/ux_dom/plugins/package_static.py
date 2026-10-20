@@ -97,15 +97,11 @@ class PackageStaticContribution:
     files: Sequence[PackagedFile]
     serve: ServeMode = "package_mount"
     public_url_prefix: str = ""
-    mount_package: str = ""
-    mount_subdir: str = "static"
     plugin_kind: str = "contribution"
 
     def __post_init__(self) -> None:
         if not self.public_url_prefix:
             self.public_url_prefix = f"/ux-pkg/{self.name}/static"
-        if not self.mount_package and self.files:
-            self.mount_package = self.files[0].package
         if self.serve not in ("package_mount", "dual_copy"):
             raise ValueError(
                 f"PackageStaticContribution({self.name!r}): serve={self.serve!r}; "
@@ -129,7 +125,6 @@ class PackageStaticContribution:
         out = []
         prefix = self.public_url_prefix.rstrip("/")
         for f in self.files:
-            # resource may be static/foo.js — package is mount_package or f.package
             pkg = f.package
             url = f"{prefix}/{f.public_name}"
             out.append(
@@ -216,7 +211,6 @@ def static_from_package(
     public_url_prefix: str = "",
     inject_default: Inject = "head",
     resource_prefix: str = "static/",
-    mount_subdir: str = "static",
 ) -> PackageStaticContribution:
     files: list[PackagedFile] = []
     for item in resources:
@@ -247,8 +241,6 @@ def static_from_package(
         files=files,
         serve=serve,
         public_url_prefix=public_url_prefix,
-        mount_package=package,
-        mount_subdir=mount_subdir,
     )
 
 
@@ -271,5 +263,4 @@ def ux_channel_static(
         resources,
         serve=serve,
         public_url_prefix=f"{path.rstrip('/')}/static",
-        mount_subdir="static",
     )

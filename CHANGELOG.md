@@ -11,6 +11,12 @@
   `WebSocketAdapter`), and `WebComponentSlot.__checks__` (inherited). The
   `_adapter` usage note and `ux_dom.scripts` docstring now match the real API and
   the package URL `/ux-dom/static/x_element.js`.
+- **Fix: ``profile.speedscope.json`` weights frames by self time.** Cumulative
+  weights counted every callee again in each caller. Removed the never-read
+  ``PackageStaticContribution.mount_package`` / ``mount_subdir`` fields and the
+  unused ``static_from_package(mount_subdir=)`` keyword; corrected wrong
+  docstrings (``uniqueid`` length, ``Htmx`` prefix, ``Slots`` ``shadowroot``,
+  ``alpinejs.dataset`` example, ``Else`` / ``CSRFToken`` params).
 - **Fix: ``Csp`` presets honour later field edits.** ``Csp.dev()`` / ``prod()`` /
   ``report_only()`` no longer cache a ``policy``, so ``c.debug_header = True`` or
   ``dataclasses.replace(c, ...)`` reach ``to_policy()``. Preset headers are unchanged.
