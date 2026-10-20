@@ -455,3 +455,21 @@ def test_named_references_decode_like_a_browser(src, text):
 )
 def test_inline_whitespace_between_tags_is_kept(src, expected):
     assert _sanitized_html(src) == expected
+
+
+def test_document_style_from_parser_keeps_the_render_time_raw_text_guard():
+    """#32 x #53: a parsed document <style> is the raw-text element, so text
+    added to it later is still breakout-neutralized at render."""
+    from ux_dom.dom.src.htmltags import _RawTextElement
+
+    (root,) = defHTML(
+        "<html><head><style>a > b{c:d}</style></head></html>", document=True
+    )
+    styles = [e for e in _walk(root) if type(e).__name__ == "style"]
+    assert len(styles) == 1 and isinstance(styles[0], _RawTextElement)
+    styles[0].add("</style><img src=x onerror=alert(1)><!--")
+    out = root.__render__(pretty=False)
+    assert out.count("</style") == 1, out
+    # The breakout is neutralized, so the <img> stays raw text inside <style>.
+    assert out.index("<img") < out.index("</style>"), out
+    assert "a > b{c:d}" in out

@@ -76,6 +76,13 @@ behaviour. Each opt-in names exactly what it widens, at the call site.
 
 - An author who renders a custom element from a string adds
   `allow_custom_elements=[…]`, or builds a tag tree, or uses `raw()`.
+- A `Markup` returned from `MarkdownElement.render()` (or any
+  `string_is_markdown` component) is already HTML, so it is emitted verbatim
+  and the markdown conversion is skipped. Return a plain `str` to get
+  markdown conversion plus sanitizing.
+- A document-mode `<style>` is the same raw-text element as a hand-built
+  `style(...)`, so the render-time `</style` neutralization (#53) still
+  applies to it.
 - Comments, `noscript`, and `template` content in string HTML disappear from
   the output.
 - `to_fragment(str)` and `srcdoc` strings are always fragment mode: a whole
