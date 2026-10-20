@@ -72,8 +72,5 @@ class WebComponentSlot(XElement):
             },
         )
 
-    def __checks__(self, element):
-        return XElement.__checks__(self, element)
-
     def __call__(self, *args, **kwargs):
         return super(WebComponentSlot, self).__call__(*args, exportparts="*", **kwargs)
