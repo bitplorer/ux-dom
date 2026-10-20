@@ -491,7 +491,6 @@ class style(_RawTextElement):
     in the joined body is neutralized so text cannot close the element.
     """
 
-    is_pretty = False
     raw_text = "style"
 
 
@@ -506,7 +505,6 @@ class script(_RawTextElement):
     (``<\\/script``, ``\\u003C!--``), both valid in JS, JSON and u-flag regex.
     """
 
-    is_pretty = True
     raw_text = "script"
 
 
@@ -693,8 +691,6 @@ class pre(html_tag):
     The pre element represents a block of preformatted text, in which structure
     is represented by typographic conventions rather than by elements.
     """
-
-    is_pretty = False
 
 
 class blockquote(html_tag):
@@ -1416,9 +1412,6 @@ class textarea(html_tag):
     element's raw value. The contents of the control represent the control's
     default value.
     """
-
-    # Contents are the form value: indentation would change it (as for pre).
-    is_pretty = False
 
 
 class keygen(html_tag):

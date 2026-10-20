@@ -30,6 +30,16 @@ under a flat parent is flat. CSS can change `display` (a `class="block"` span,
 an `inline` div); the layout follows the browser's default stylesheet. The
 check is memoized per render, so it stays linear in the tree size.
 
+The body of a raw text or preformatted element (`script`, `style`,
+`textarea`, `title`, `xmp`, `iframe`, `noembed`, `noframes`, `noscript`,
+`plaintext`, `pre`, `listing`) is written exactly as the flat render writes
+it, with no added newline or indent: there whitespace is a JS template
+literal, a CSS string, a form value or preformatted text. The element is
+matched by the name its start tag writes, as the parser matches it, and the
+subtree below it is flat. Inside `<svg>` / `<math>` the CDATA body of
+`script` / `style` is the same as flat too. Only the layout around the
+element is pretty (`tests/06_browser/test_pretty_raw_text_browser.py`).
+
 ## Modes
 
 | Mode | How | CSP / ContextVar | Memory | When |
