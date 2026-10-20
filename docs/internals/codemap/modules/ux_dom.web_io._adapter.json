@@ -4,6 +4,7 @@
    "examples/ux_dom_only/realtime_kit/app.py",
    "standalone/ws_app/app.py",
    "tests/01_core/test_concurrency_patterns.py",
+   "tests/01_core/test_web_io_client_handler.py",
    "tests/02_document_plugins/test_htmx_ws_stream.py",
    "tests/04_production/test_intent_battery.py",
    "tests/05_chaos/test_chaos_integration.py",
