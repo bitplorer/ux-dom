@@ -23,4 +23,3 @@ webassets = SimpleNamespace(dir=ASSETS_DIR, static=SimpleNamespace(css=_css, js=
 APP_TITLE = "UxDom Showcase"
 WITH_TAILWIND = True
 WITH_CHANNEL = False
-WITH_HMR = True

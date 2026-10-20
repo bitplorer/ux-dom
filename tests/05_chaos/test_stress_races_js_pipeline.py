@@ -25,7 +25,6 @@ from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.plugins import App
 from ux_dom.plugins.control import HtmxControl
 from ux_dom.plugins.routing import DirectoryRouting
-from ux_dom.reloader._notify import Notify
 from ux_dom.response.starlette import StreamingResponse
 from ux_dom.web_io import WebSocketAdapter, WebSocketEvents
 
@@ -150,35 +149,6 @@ class TestDeadlockGuards(unittest.TestCase):
         for i, h in enumerate(outs):
             self.assertIn(f"root{i}", h)
 
-    def test_notify_publish_subscribe(self):
-        async def chaos():
-            n = Notify()
-            received = []
-
-            async def watcher():
-                count = 0
-                async for _ in n.watch():
-                    count += 1
-                    if count >= 3:
-                        break
-                received.append(count)
-
-            tasks = [asyncio.create_task(watcher()) for _ in range(6)]
-            await asyncio.sleep(0.01)
-            for _ in range(30):
-                await n.notify()
-                if all(t.done() for t in tasks):
-                    break
-                await asyncio.sleep(0.001)
-            for t in tasks:
-                if not t.done():
-                    t.cancel()
-            await asyncio.gather(*tasks, return_exceptions=True)
-            return received
-
-        rec = asyncio.run(asyncio.wait_for(chaos(), timeout=8))
-        self.assertTrue(all(c >= 3 for c in rec))
-
 
 class TestWsAndJsPipeline(unittest.TestCase):
     def test_ws_adapter_isolation(self):
@@ -251,7 +221,6 @@ class TestWsAndJsPipeline(unittest.TestCase):
         root = Path(__file__).resolve().parents[2]
         for rel in (
             "src/ux_dom/scripts/x_element.js",
-            "src/ux_dom/reloader/script/reloader.js",
         ):
             p = root / rel
             self.assertTrue(p.exists() and p.stat().st_size > 50, rel)

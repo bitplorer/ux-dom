@@ -52,7 +52,6 @@ This package does not ship `CreateProject`, `DirectoryRoutes`, `WebAssets`, or `
 | **`ux_dom/elements/`** | Typed form field components | Semi |
 | **`ux_dom/htmx/`** | HTMX-oriented helpers | Semi |
 | **`ux_dom/alpinejs/`** | Alpine sample widgets | Semi / demos |
-| **`ux_dom/reloader/`** | Dev hot-reload WebSocket server bits | Dev |
 | `ux_dom/web_io/` | Low-level web I/O helpers if present | Private |
 | `ux_dom/assets/` | Thin facade over plugin hub static | Semi |
 

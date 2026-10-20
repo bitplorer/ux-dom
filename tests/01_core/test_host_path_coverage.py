@@ -184,10 +184,9 @@ class TestCLIModulesImport(unittest.TestCase):
 
 
 class TestReloaderSmoke(unittest.TestCase):
-    def test_import_reloader(self):
-        import ux_dom.reloader as r
-
-        self.assertTrue(r is not None)
+    def test_reloader_is_absent(self):
+        with self.assertRaises(ImportError):
+            import ux_dom.reloader  # noqa: F401
 
 
 class TestContributionProtocol(unittest.TestCase):

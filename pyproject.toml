@@ -26,7 +26,6 @@ packages = [
 include = [
   "src/ux_dom/py.typed",
   "src/ux_dom/scripts/*.js",
-  "src/ux_dom/reloader/script/*.js",
   "src/ux_dom/**/*.js",
   "src/ux_dom/**/*.css",
   "src/ux_dom/**/*.html",
@@ -39,22 +38,20 @@ Jinja2 = ">=3.1.6,<4"
 # Prefer ≥0.1.0b7 once published (native PEP 649 fix in valio).
 valio = ">=0.1.0b6,<0.2"
 marko = ">=2.0,<3"
-anyio = ">=4.0,<5"
 typer = ">=0.12,<1"
 # Imported directly by ux_dom.compat.valio_pep649; declared, not borrowed from valio.
 typingx = ">=0.6.0,<0.7"
 
 # Optional runtime extras
 pytailwindcss = { version = ">=0.3.0", optional = true }
-watchfiles = { version = ">=1.0.0", optional = true }
 uvicorn = { extras = ["standard"], version = ">=0.30.0", optional = true }
 fastapi = { version = ">=0.115.0", optional = true }
 python-multipart = { version = ">=0.0.18", optional = true }
 
 [tool.poetry.extras]
-dev = ["pytailwindcss", "watchfiles", "uvicorn"]
+dev = ["pytailwindcss", "uvicorn"]
 fastapi = ["fastapi", "uvicorn", "python-multipart"]
-fastapidev = ["fastapi", "uvicorn", "python-multipart", "pytailwindcss", "watchfiles"]
+fastapidev = ["fastapi", "uvicorn", "python-multipart", "pytailwindcss"]
 
 [tool.poetry.group.dev.dependencies]
 black = ">=24.0.0"
@@ -63,7 +60,6 @@ ruff = ">=0.6.0"
 uvicorn = { extras = ["standard"], version = ">=0.30.0" }
 starlette = ">=0.46.0"
 fastapi = ">=0.115.0"
-watchfiles = ">=1.0.0"
 pytailwindcss = ">=0.3.0"
 deptry = ">=0.20.0"
 pipdeptree = ">=2.20.0"

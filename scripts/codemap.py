@@ -53,7 +53,6 @@ LAYERS: dict[str, str] = {
     "ux_dom.htmx": "integrations",
     "ux_dom.plugins": "document",
     "ux_dom.profiling": "support",
-    "ux_dom.reloader": "integrations",
     "ux_dom.response": "integrations",
     "ux_dom.routing": "integrations",
     "ux_dom.runtime": "document",

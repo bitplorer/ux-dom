@@ -30,8 +30,6 @@ hypermedia spine honest.
 
 1. `settings/commands.py` (Tailwind CLI)  
 2. `cli/cli.py` (Typer commands not all smoke-tested)  
-3. `reloader/*`, `assets/*`  
-4. `utils/functional.py`  
 
 ## Related bug fixed while covering
 
