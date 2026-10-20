@@ -21,11 +21,16 @@ UNRELEASED = "## Unreleased"
 VERSION = re.compile(r"^\d+\.\d+\.\d+$")
 
 
+def _natural(p: Path) -> list[tuple[int, int, str]]:
+    """Sort key that orders digit runs numerically, so ``71`` sorts before ``100``."""
+    return [(0, int(s), "") if s.isdigit() else (1, 0, s) for s in re.split(r"(\d+)", p.name)]
+
+
 def fragments(root: Path) -> list[Path]:
     d = root / "changelog.d"
     if not d.is_dir():
         return []
-    return sorted(p for p in d.iterdir() if p.name not in IGNORED)
+    return sorted((p for p in d.iterdir() if p.name not in IGNORED), key=_natural)
 
 
 def check(root: Path) -> list[str]:
@@ -44,6 +49,8 @@ def check(root: Path) -> list[str]:
             not (ln.startswith("- ") or ln[0].isspace()) for ln in lines
         ):
             errors.append(f"{rel}: every entry must be a '- ' bullet (continuation lines indented)")
+        elif any(ln.startswith("- ") and not ln[2:].strip() for ln in lines):
+            errors.append(f"{rel}: empty bullet")
     return errors
 
 
@@ -82,8 +89,11 @@ def release(root: Path, version: str) -> None:
     if not body:
         raise SystemExit("--release: nothing to release (Unreleased and changelog.d/ are empty)")
     path = root / "CHANGELOG.md"
-    head, _, rest = _split(path.read_text(encoding="utf-8"))
-    today = datetime.date.today().isoformat()
+    text = path.read_text(encoding="utf-8")
+    if re.search(rf"^## {re.escape(version)}(?!\S)", text, re.M):
+        raise SystemExit(f"--release: CHANGELOG.md already has a '## {version}' section")
+    head, _, rest = _split(text)
+    today = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
     section = f"{UNRELEASED}\n\n## {version} — {today}\n\n{body}\n\n"
     path.write_text(head + section + rest, encoding="utf-8")
     for p in fragments(root):

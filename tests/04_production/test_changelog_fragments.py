@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import datetime
+import os
 import shutil
 import subprocess
 import sys
@@ -64,6 +65,8 @@ def test_check_accepts_valid_fragments(repo: Path):
         ("71-csp.fixed.txt", "- wrong suffix\n"),
         ("71-empty.fixed.md", "  \n\n"),
         ("71-prose.fixed.md", "not a bullet\n"),
+        ("71-blank.fixed.md", "- \n"),  # empty bullet
+        ("71-blank2.fixed.md", "- ok\n-   \n"),
     ],
 )
 def test_check_rejects_bad_fragments(repo: Path, name: str, body: str):
@@ -89,7 +92,7 @@ def test_preview_keeps_existing_lines_then_typed_sections(repo: Path):
 def test_release_folds_fragments_and_deletes_them(repo: Path):
     r = _run(repo, "--release", "1.2.3")
     assert r.returncode == 0, r.stderr
-    today = datetime.date.today().isoformat()
+    today = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
     assert (repo / "CHANGELOG.md").read_text(encoding="utf-8") == (
         "# Changelog\n\n## Unreleased\n\n"
         f"## 1.2.3 — {today}\n\n- existing entry\n\n"
@@ -123,3 +126,35 @@ def test_repo_copy_release_round_trip(tmp_path: Path):
     assert after.count("## 9.9.9 — ") == 1
     missing = [ln for ln in before.splitlines() if ln.strip() and ln not in after]
     assert missing == []
+
+
+def test_release_refuses_existing_version(repo: Path):
+    r = _run(repo, "--release", "0.1.0")
+    assert r.returncode == 1
+    assert "already has a '## 0.1.0' section" in r.stderr
+    assert (repo / "CHANGELOG.md").read_text(encoding="utf-8") == CHANGELOG
+    assert len(list((repo / "changelog.d").iterdir())) == 3
+
+
+def test_fragments_sort_numerically(repo: Path):
+    d = repo / "changelog.d"
+    for n in ("100", "71", "9"):
+        (d / f"{n}.changed.md").write_text(f"- pr {n}\n", encoding="utf-8")
+    r = _run(repo, "--preview")
+    assert r.returncode == 0, r.stderr
+    assert "### Changed\n\n- pr 9\n- pr 71\n- pr 100\n" in r.stdout
+
+
+# UTC-12 lags UTC's date when the UTC hour is < 12; UTC+14 leads it when >= 10.
+# One of the two always differs from UTC, so the pair always discriminates.
+@pytest.mark.parametrize("tz", ["Etc/GMT+12", "Etc/GMT-14"])
+def test_release_heading_uses_utc_date(repo: Path, tz: str):
+    """The heading date is the UTC date, whatever the local timezone."""
+    env = {**os.environ, "TZ": tz}
+    r = subprocess.run(
+        [sys.executable, str(SCRIPT), "--root", str(repo), "--release", "1.2.3"],
+        capture_output=True, text=True, env=env,
+    )
+    assert r.returncode == 0, r.stderr
+    today = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
+    assert f"## 1.2.3 — {today}\n" in (repo / "CHANGELOG.md").read_text(encoding="utf-8")

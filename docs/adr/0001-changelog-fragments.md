@@ -13,11 +13,13 @@
 
 Every PR appended a bullet to the top of `## Unreleased` in `CHANGELOG.md`.
 Sequential merges therefore all edit the same few lines, and each merge left the
-next open PR in conflict. During the defect train of
-[#59](https://github.com/bitplorer/ux-dom/issues/59) (PRs #61 to #70) almost every
-merge forced a rebase whose only conflict was `CHANGELOG.md`; earlier trains left
-`Merge branch 'main' into …` commits and follow-up "move the CHANGELOG entry"
-commits for the same reason (`git log -- CHANGELOG.md`).
+next open PR in conflict. Evidence:
+
+- Merge commit `35ca9d6` ("Merge branch 'main' into chore/remove-deprecations")
+  carries a hand-resolved `CHANGELOG.md` conflict (`git show --cc 35ca9d6 -- CHANGELOG.md`).
+- The audit issue [#59](https://github.com/bitplorer/ux-dom/issues/59), section
+  "Lessons recorded", logs that every PR appends to Unreleased, so sequential
+  merges conflict every time.
 
 ## Decision
 
