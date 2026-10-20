@@ -202,10 +202,9 @@ class Var(JinjaSingleTags):
 
 
 # Sandboxed, autoescaped environment: context values are text, and template
-# code cannot reach Python internals.
-_ENV = SandboxedEnvironment(
-    autoescape=True, lstrip_blocks=True, trim_blocks=True, enable_async=True
-)
+# code cannot reach Python internals. Sync on purpose: an async env's
+# .render() calls asyncio.run() and fails inside a running event loop.
+_ENV = SandboxedEnvironment(autoescape=True, lstrip_blocks=True, trim_blocks=True)
 # Braces in tree text and attribute strings are user data, not template code.
 # They travel through Jinja as private-use characters and come back as entities.
 # U+E000/U+E001/U+E002 already in the data are escaped first: the final swap
