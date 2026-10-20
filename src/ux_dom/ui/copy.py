@@ -42,6 +42,9 @@ def copy_component(
     """
     Copy a ``ux_dom.ui`` module into ``dest_dir`` for local ownership.
 
+    Kit modules it imports travel with it. When ``force`` is off, a
+    dependency file that already exists in ``dest_dir`` is kept as is.
+
     ::
 
         copy_component("button", dest_dir=Path("app/components/ui"))
@@ -56,10 +59,14 @@ def copy_component(
         raise UiCopyError(
             f"unknown UI component {name!r}; choose from {sorted(CATALOG)}"
         )
+    return _copy(key, Path(dest_dir), force, set())
+
+
+def _copy(key: str, dest_dir: Path, force: bool, seen: set[str]) -> Path:
+    seen.add(key)  # cycle guard for the dependency walk
     meta = CATALOG[key]
     mod = import_module(meta["module"])
     src = Path(mod.__file__).resolve()  # type: ignore[arg-type]
-    dest_dir = Path(dest_dir)
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     # Always ensure tokens companion for style helpers
@@ -72,9 +79,9 @@ def copy_component(
     dest = dest_dir / src.name
     if dest.exists() and not force:
         raise UiCopyError(f"{dest} exists (use --force)")
-    for dep in sorted(_deps(src)):
+    for dep in sorted(_deps(src) - seen):
         if force or not (dest_dir / f"{dep}.py").exists():
-            copy_component(dep, dest_dir=dest_dir, force=force)
+            _copy(dep, dest_dir, force, seen)
     text = src.read_text(encoding="utf-8")
     for pat, repl in _IMPORT_REWRITES:
         text = pat.sub(repl, text)

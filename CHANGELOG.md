@@ -67,8 +67,10 @@
   dependencies from its imports, so ``status_strip`` brings ``badge``.
   ``Tabs``, ``Breadcrumb``, ``FormSection`` and ``public_form`` no longer emit a
   bare ``class`` attribute. An empty ``Chart`` accepts ``style=``.
-  ``DropdownMenu`` has one ``role="menu"`` and ``menuitem`` items, ``Tabs``
-  buttons have ``role="tab"``, and ``Progress`` clamps ``aria-valuenow``.
+  ``DropdownMenu`` has one ``role="menu"``, with ``role="menuitem"`` on each
+  item's focusable element (``li`` is ``role="none"``). ``Tabs`` buttons have
+  ``role="tab"`` and a roving ``tabindex``, plus ``aria-controls`` when ``id=``
+  is given. ``Progress`` clamps ``aria-valuenow`` into ``[0, max]``.
 
 ## 0.2.0 — remove deprecations
 

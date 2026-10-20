@@ -8,10 +8,20 @@ from __future__ import annotations
 from typing import Any, Sequence
 
 from ux_dom import Component
-from ux_dom.dom import div, li, ul
+from ux_dom.dom import div, li, span, ul
+from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.ui.tokens import cn, surface, type_scale
 
 __all__ = ["DropdownMenu"]
+
+
+def _menuitem(item: Any) -> Any:
+    """``role="menuitem"`` goes on the focusable element (WAI-ARIA menu pattern)."""
+    if isinstance(item, dom_tag):
+        if not item.attributes.get("role"):
+            item.set_attribute("role", "menuitem")
+        return item
+    return span(item, role="menuitem", tabindex="-1")
 
 
 class DropdownMenu(Component):
@@ -27,8 +37,8 @@ class DropdownMenu(Component):
             return div(**{"data-open": "0"}, className="contents", **attrs)
         kids = [
             li(
-                item,
-                role="menuitem",
+                _menuitem(item),
+                role="none",
                 className=cn("rounded-md px-3 py-2 hover:bg-stone-800", type_scale["body"]),
             )
             for item in items
