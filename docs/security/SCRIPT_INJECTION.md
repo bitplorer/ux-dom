@@ -75,12 +75,13 @@ with `json.dumps` (or a `data-*` attribute) rather than string concatenation.
 CSS rule nodes (`CSSClass`, `CSSId`, `CSS`, `Keyframes`, `CSSProperty` rules)
 write their selector and rule text raw, so they render only inside `style`
 (directly, nested in another rule, or through `rule & rule`) or standalone as
-CSS text. As the child of any other element they raise `TypeError` instead of
-writing CSS into HTML context:
+CSS text. As the child of any other element, including through `lazy` (a
+lazy result renders as a child at the lazy's position), they raise
+`InvalidNodeContext` (a `ValueError`) instead of writing CSS into HTML context:
 
 ```python
 style(btn(color="red"))  # <style>.btn{color:red;}</style>
-div(btn(color="red"))    # TypeError: btn is a CSS rule; render it inside <style>, not <div>
+div(btn(color="red"))    # InvalidNodeContext: btn is a CSS rule; render it inside <style>, not <div>
 ```
 
 ## What dedupe does *not* fix

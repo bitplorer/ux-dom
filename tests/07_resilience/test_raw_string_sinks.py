@@ -214,7 +214,7 @@ def test_lazy_markup_raw_tag_unchanged():
 
     assert _render(div(lazy(lambda: Markup(IMG)))) == f"<div>{IMG}</div>"
     assert _render(div(lazy(lambda: raw(IMG)))) == f"<div>{IMG}</div>"
-    assert _render(div(lazy(lambda: b("x")))) == f"<div>{b('x')}</div>"
+    assert _render(div(lazy(lambda: b("x")))) == _render(div(b("x")))
 
 
 def test_lazy_in_script_is_raw_text():

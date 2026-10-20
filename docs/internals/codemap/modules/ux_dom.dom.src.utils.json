@@ -29,6 +29,7 @@
    "CrossOriginURL",
    "InvalidAttributeName",
    "InvalidMarkupToken",
+   "InvalidNodeContext",
    "InvalidTagName",
    "SAME_ORIGIN_URL_ATTRIBUTES",
    "UNSAFE_URL",
