@@ -1303,7 +1303,8 @@ class textarea(html_tag):
     default value.
     """
 
-    pass
+    # Contents are the form value: indentation would change it (as for pre).
+    is_pretty = False
 
 
 class keygen(html_tag):

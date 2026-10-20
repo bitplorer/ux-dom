@@ -8,6 +8,39 @@ from typing import Any, Iterable, List
 
 # Match src= or href= in rendered HTML (attribute order varies)
 _SRC_HREF = re.compile(r"""(?i)\b(?:src|href)\s*=\s*["']([^"']+)["']""")
+# Raw HTML string that is itself a script/link tag (not a wrapper around one)
+_OPEN_TAG = re.compile(r"""(?is)^\s*<(script|link)\b([^>]*)>""")
+# Whole attribute names only: data-src / data-href / data-rel do not count
+_ATTR = re.compile(r"""(?i)(?<![\w-])(src|href|rel)\s*=\s*["']([^"']*)["']""")
+
+
+def _resource(node: Any) -> tuple[str, str, str] | None:
+    """``(tag, rel, url)`` when *node* is itself a ``script[src]`` / ``link[href]``."""
+    if node is None:
+        return None
+    attrs = getattr(node, "attributes", None) or getattr(node, "attrs", None)
+    if isinstance(attrs, dict):
+        tag = str(getattr(node, "tagname", None) or type(node).__name__).lower()
+        if tag not in ("script", "link"):
+            return None  # wrappers and other tags pass through
+        url = attrs.get("src" if tag == "script" else "href")
+        rel = attrs.get("rel") or ""
+    else:
+        # Raw strings / HtmlFragment: only when the string starts with the tag
+        m = _OPEN_TAG.match(str(node))
+        if not m:
+            return None
+        tag = m.group(1).lower()
+        found: dict[str, str] = {}
+        for name, value in _ATTR.findall(m.group(2)):
+            found.setdefault(name.lower(), value)
+        url = found.get("src" if tag == "script" else "href")
+        rel = found.get("rel", "")
+    if not url:
+        return None  # inline scripts are never deduped against each other
+    # rel is a token set: "preload stylesheet" == "stylesheet preload"
+    rel_key = " ".join(sorted(set(str(rel).lower().split())))
+    return tag, rel_key, _norm(str(url))
 
 
 def resource_key(node: Any) -> str | None:
@@ -17,44 +50,8 @@ def resource_key(node: Any) -> str | None:
     Returns normalized URL string, or None if node is not a script/link resource
     (inline scripts, plain divs, etc. are never deduped against each other).
     """
-    if node is None:
-        return None
-    # Prefer attribute access on ux_dom tags
-    attrs = getattr(node, "attributes", None) or getattr(node, "attrs", None)
-    tag = getattr(node, "tagname", None) or getattr(node, "name", None) or ""
-    tag = str(tag).lower()
-
-    if isinstance(attrs, dict):
-        src = attrs.get("src") or attrs.get("href")
-        if src:
-            return _norm(str(src))
-        # some trees store without namespace
-    # kwargs-style
-    for key in ("src", "href"):
-        if hasattr(node, key):
-            val = getattr(node, key)
-            if val:
-                return _norm(str(val))
-
-    # Fall back to rendered HTML (covers raw strings / HtmlFragment)
-    html = str(node)
-    if not html:
-        return None
-    # Only dedupe script/link-like strings
-    low = html.lower().lstrip()
-    if not (
-        low.startswith("<script")
-        or low.startswith("<link")
-        or "src=" in low
-        or "href=" in low
-    ):
-        # raw string of only a script tag from channel
-        if "<script" not in low and "<link" not in low:
-            return None
-    m = _SRC_HREF.search(html)
-    if m:
-        return _norm(m.group(1))
-    return None
+    res = _resource(node)
+    return res[2] if res else None
 
 
 def _norm(url: str) -> str:
@@ -66,11 +63,11 @@ def _norm(url: str) -> str:
 
 
 def dedupe_dom_nodes(nodes: Iterable[Any]) -> List[Any]:
-    """Keep first node per external resource URL; preserve relative order."""
-    seen: set[str] = set()
+    """Keep first node per (tag, rel, url) resource; preserve relative order."""
+    seen: set[tuple[str, str, str]] = set()
     out: list[Any] = []
     for n in nodes:
-        key = resource_key(n)
+        key = _resource(n)
         if key is None:
             out.append(n)
             continue

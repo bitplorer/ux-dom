@@ -28,9 +28,13 @@ One entry per `plugin.name` on the hub.
 
 `hub.shell_fragments()` and `shell_fragments()` run **`dedupe_dom_nodes`**:
 
-- First `script[src]` / `link[href]` for a given URL wins  
+- Key is **(tag, rel, url)** of the `script[src]` / `link[href]` node itself;
+  the first node per key wins (`rel` compares as a token set, case-insensitive)  
 - Later duplicates (same contribution emitting twice, or `extra_head` re-adding
   the runtime) are dropped  
+- Different tag or `rel` is a different resource: `link rel="preconnect"` does not
+  drop `link rel="stylesheet"`, and `link rel="preload"` does not drop the `script`  
+- Wrappers (e.g. `div(script(src=…))`) and other nodes pass through untouched  
 - Inline scripts (no src) are **not** collapsed  
 
 ### 3. Ownership rules (by design)
