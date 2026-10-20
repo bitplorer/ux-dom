@@ -17,8 +17,13 @@ twine check dist/*
 ## Extras consumers should install
 
 ```bash
-pip install "ux-dom[fastapi]"       # app server
-pip install "ux-dom[fastapidev]"    # + tailwind
+pip install "ux-dom[fastapi]"       # FastAPI + Starlette responses
+```
+
+Server, Tailwind and scaffold come from ux-compose, not from ux-dom extras:
+
+```bash
+pip install ux-compose
 ```
 
 ## Typed package

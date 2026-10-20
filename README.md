@@ -38,10 +38,8 @@ This layer **renders**. It does not own Intent, Caps, Result ops, product state 
 
 ```bash
 pip install ux-dom
-# extras:
-pip install "ux-dom[fastapi]"      # FastAPI + uvicorn + multipart
-pip install "ux-dom[dev]"          # tailwind, uvicorn
-pip install "ux-dom[fastapidev]"   # both
+# extra:
+pip install "ux-dom[fastapi]"      # FastAPI + Starlette (ux_dom.response.starlette, install_safe_static)
 ```
 
 From this tree:

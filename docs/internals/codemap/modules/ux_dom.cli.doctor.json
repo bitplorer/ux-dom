@@ -6,7 +6,8 @@
    "tests/03_routing_cli/test_dx_cli.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
    "tests/03_routing_cli/test_scaffold_check.py",
-   "tests/03_routing_cli/test_serve_dx.py"
+   "tests/03_routing_cli/test_serve_dx.py",
+   "tests/07_resilience/test_extras_match_imports.py"
   ],
   "imported_by": {
    "function_level": [

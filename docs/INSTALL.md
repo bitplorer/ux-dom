@@ -26,12 +26,12 @@ pip install 'ux-dom[fastapi]'
 
 | Extra | Provides |
 |-------|----------|
-| **`fastapi`** | fastapi, uvicorn, python-multipart |
-| **`fastapidev`** | Dev-oriented FastAPI stack + pytailwindcss |
-| **`dev`** | pytailwindcss, uvicorn |
+| **`fastapi`** | fastapi, which brings Starlette: imported by `ux_dom.response.starlette`, and by `install_safe_static` when called |
 
-There is no `tailwind` or `hmr` extra. Product CSS compile is
-`uxcompose build`. Product HMR is `uxcompose serve dev`.
+Extras carry only packages `src/ux_dom` imports
+([ADR 0003](adr/0003-layer-boundary.md) rule 2). There is no `dev`, `fastapidev`,
+`tailwind` or `hmr` extra. An ASGI server (uvicorn) comes with ux-compose. Product CSS
+compile is `uxcompose build`. Product HMR is `uxcompose serve dev`.
 
 ## CLI
 
