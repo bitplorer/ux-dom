@@ -44,12 +44,9 @@ def shell_fragments(
 
         head = dedupe_dom_nodes(head)
         body = dedupe_dom_nodes(body)
-    try:
-        from ux_dom.plugins.csp import get_nonce, stamp_nonce
+    from ux_dom.plugins.csp import get_nonce, stamp_nonce
 
-        if get_nonce():
-            head = stamp_nonce(head)
-            body = stamp_nonce(body)
-    except Exception:
-        pass
+    if get_nonce():
+        head = stamp_nonce(head)
+        body = stamp_nonce(body)
     return head, body

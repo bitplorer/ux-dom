@@ -27,6 +27,7 @@ Rules
 
 from __future__ import annotations
 
+import inspect
 import typing as T
 from dataclasses import dataclass, field
 
@@ -46,6 +47,17 @@ def _as_list(value: T.Any) -> list:
     if isinstance(value, tuple):
         return list(value)
     return [value]
+
+
+def _accepts(fn: T.Callable, *args: T.Any, **kwargs: T.Any) -> bool:
+    """True if ``fn``'s signature binds these arguments (decided before calling)."""
+    try:
+        inspect.signature(fn).bind(*args, **kwargs)
+    except TypeError:
+        return False
+    except ValueError:  # no introspectable signature (some builtins)
+        return True
+    return True
 
 
 @dataclass
@@ -222,15 +234,12 @@ class Document(object):
             if callable(getattr(rt, "document_body", None)):
                 body.extend(list(rt.document_body() or ()))
         if self.include_runtimes:
-            try:
-                from ux_dom.plugins.hub import get_hub
+            from ux_dom.plugins.hub import get_hub
 
-                hub = self.hub if self.hub is not None else get_hub()
-                hh, bb = hub.shell_fragments()
-                head.extend(hh)
-                body.extend(bb)
-            except Exception:
-                pass
+            hub = self.hub if self.hub is not None else get_hub()
+            hh, bb = hub.shell_fragments()
+            head.extend(hh)
+            body.extend(bb)
         try:
             from ux_dom.plugins.dedupe import dedupe_dom_nodes
 
@@ -249,15 +258,11 @@ class Document(object):
     # ── evaluate callables + CSP stamp at the right moment ────────────────
 
     def _call_ctx(self, **kwargs: T.Any) -> dict:
-        try:
-            from ux_dom.plugins.csp import get_nonce
+        from ux_dom.plugins.csp import get_nonce
 
-            nonce = get_nonce()
-        except Exception:
-            nonce = ""
         return {
             "document": self,
-            "nonce": nonce,
+            "nonce": get_nonce(),
             **kwargs,
         }
 
@@ -290,20 +295,14 @@ class Document(object):
         if items is None:
             return []
         if self._is_stage_hook(items):
-            try:
-                items = items(ctx)
-            except TypeError:
-                items = items()
+            items = items(ctx) if _accepts(items, ctx) else items()
         seq = items if isinstance(items, (list, tuple)) else [items]
         out: list = []
         for item in seq:
             if item is None:
                 continue
             if self._is_stage_hook(item):
-                try:
-                    item = item(ctx)
-                except TypeError:
-                    item = item()
+                item = item(ctx) if _accepts(item, ctx) else item()
                 if item is None:
                     continue
                 if isinstance(item, (list, tuple)):
@@ -313,13 +312,10 @@ class Document(object):
         return out
 
     def _stamp_if_nonce(self, nodes: list) -> list:
-        try:
-            from ux_dom.plugins.csp import get_nonce, stamp_nonce
+        from ux_dom.plugins.csp import get_nonce, stamp_nonce
 
-            if get_nonce():
-                return stamp_nonce(nodes)
-        except Exception:
-            pass
+        if get_nonce():
+            return stamp_nonce(nodes)
         return nodes
 
     def resolved_head(self) -> list:
@@ -351,9 +347,9 @@ class Document(object):
                 files.extend(list(fn() or ()))
             mount = getattr(rt, "mount", None)
             if callable(mount):
-                try:
+                if _accepts(mount, app):
                     mount(app)
-                except TypeError:
+                else:
                     mount(app, hub=None)
         if files:
             try:

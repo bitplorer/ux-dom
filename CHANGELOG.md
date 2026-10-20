@@ -12,6 +12,11 @@
   ``HtmxControl.partial_policy`` now uses ``HtmxDetails.partial``:
   only an exact lowercase ``HX-Request: true`` (as htmx sends it) is partial, so
   ``HX-Request: false`` and history-restore requests get the full page.
+- **Bug: plugin / Document errors propagate.** `App.build` no longer swallows
+  `Document.mount` errors; runtime `mount` and stage hooks are called once (form
+  chosen by signature) so an inner `TypeError` surfaces; a hub contribution that
+  raises fails the render instead of silently dropping runtime tags; nonce
+  stamping no longer hides errors.
 - **Security (breaking default): bare ``Csp()`` is tightened to ``Csp.prod()`` on script inline and connect-src.**
   ``Csp()``, ``CspPolicy``, ``CspMiddleware``, and ``build_csp_header`` no longer
   ship script ``'unsafe-inline'`` or bare ``ws:``/``wss:``. Apps that need inline
