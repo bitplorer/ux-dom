@@ -363,12 +363,9 @@ class Document(object):
                 else:
                     mount(app, hub=None)
         if files:
-            try:
-                from ux_dom.plugins.safe_static import install_safe_static
+            from ux_dom.plugins.safe_static import require_safe_static
 
-                install_safe_static(app, files)
-            except Exception:
-                pass
+            require_safe_static(app, files, caller="Document.mount")
         return app
 
     def __call__(self, *args, head=None, body=None, use=None, **kwargs) -> HtmlDocument:

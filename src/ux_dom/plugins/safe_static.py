@@ -227,7 +227,13 @@ def collect_served_files(hub: Any) -> list[SafeStaticFile]:
 
 
 def install_safe_static(app: Any, files: Sequence[SafeStaticFile]) -> int:
-    """Register exact-path GET/HEAD routes. Never directory StaticFiles."""
+    """Register exact-path GET/HEAD routes. Never directory StaticFiles.
+
+    Returns the number of routes installed (0 when ``app`` has neither
+    ``add_api_route`` nor ``add_route``). Raises ``RuntimeError`` when
+    starlette is not installed, or on the first route that fails to
+    register; routes registered before that failure stay on ``app``.
+    """
     if not files:
         return 0
 
@@ -236,8 +242,11 @@ def install_safe_static(app: Any, files: Sequence[SafeStaticFile]) -> int:
     except ImportError:
         try:
             from fastapi.responses import Response  # type: ignore
-        except ImportError:
-            return 0
+        except ImportError as exc:
+            raise RuntimeError(
+                "install_safe_static: starlette is required to serve "
+                "/ux-dom/static/… files (pip install starlette)"
+            ) from exc
 
     def _make_handler(entry: SafeStaticFile):
         async def _serve() -> Response:
@@ -256,6 +265,13 @@ def install_safe_static(app: Any, files: Sequence[SafeStaticFile]) -> int:
 
         return _serve
 
+    def _with_request(serve: Any) -> Any:
+        # Starlette calls a function endpoint as ``endpoint(request)``.
+        async def _serve_request(request: Any) -> Response:
+            return await serve()
+
+        return _serve_request
+
     installed = 0
     for f in files:
         handler = _make_handler(f)
@@ -269,13 +285,32 @@ def install_safe_static(app: Any, files: Sequence[SafeStaticFile]) -> int:
                     name=f"ux_dom_safe_static_{installed}",
                 )
             elif hasattr(app, "add_route"):
-                app.add_route(f.url, handler, methods=["GET", "HEAD"])
+                app.add_route(
+                    f.url, _with_request(handler), methods=["GET", "HEAD"]
+                )
             else:
                 continue
             installed += 1
-        except Exception:
-            pass
+        except Exception as exc:
+            raise RuntimeError(
+                f"install_safe_static failed for {f.url!r}: {exc}"
+            ) from exc
     return installed
+
+
+def require_safe_static(
+    app: Any, files: Sequence[SafeStaticFile], *, caller: str
+) -> int:
+    """``install_safe_static`` that also raises when 0 of N routes installed."""
+    n = install_safe_static(app, files)
+    if files and n == 0:
+        raise RuntimeError(
+            f"{caller}: install_safe_static installed 0 of {len(files)} "
+            "file(s); app has no add_api_route/add_route "
+            f"(got {type(app).__name__}). Static URLs like "
+            "/ux-dom/static/… will 404."
+        )
+    return n
 
 
 def allowlist_summary() -> dict[str, Any]:
