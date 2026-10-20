@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import asyncio
 
+import pytest
+
 from ux_dom.dom import li
 from ux_dom.dom.htmlelement import JinjaElement
 from ux_dom.dom.src.jinjatags import _ENV, For, Var, render_jinja
@@ -35,3 +37,14 @@ def test_jinja_env_stays_sandboxed_and_autoescaped():
     assert isinstance(_ENV, SandboxedEnvironment)
     assert _ENV.autoescape is True
     assert _ENV.is_async is False
+
+
+def test_async_iterable_context_is_rejected():
+    # Sync env contract: async iterables are not iterated; pass a list instead.
+    async def gen():
+        yield 1
+
+    agen = gen()
+    with pytest.raises(TypeError):
+        render_jinja("{% for i in g %}{{ i }}{% endfor %}", g=agen)
+    asyncio.run(agen.aclose())
