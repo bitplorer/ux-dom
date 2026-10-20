@@ -4,6 +4,7 @@
    "tests/01_core/test_host_path_coverage.py",
    "tests/02_document_plugins/test_package_static.py",
    "tests/03_routing_cli/test_build_deploy.py",
+   "tests/03_routing_cli/test_build_honest_steps.py",
    "tests/03_routing_cli/test_build_package.py",
    "tests/03_routing_cli/test_cli_route_maturity.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
@@ -25,7 +26,9 @@
     "ux_dom.scripts"
    ],
    "module_level": [],
-   "type_checking": []
+   "type_checking": [
+    "ux_dom.cli.static_assets"
+   ]
   },
   "layer": "cli",
   "path": "src/ux_dom/cli/build.py",

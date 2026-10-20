@@ -1,27 +1,15 @@
 # Copyright (c) 2026 UX-DOM
-"""Pluggable ``uxdom dashboard`` — no static path surface for extensions.
-
-Plugins / panels carry **inline** CSS/JS via :class:`Asset`. You never pass
-``/static/...`` URLs for day-1 DX.
-"""
+"""``uxdom dashboard`` — p95 latency report rendered as one self-contained page."""
 
 from __future__ import annotations
 
 import html
 import json
-import threading
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any
 
 __all__ = [
-    "Asset",
-    "Panel",
-    "register_panel",
-    "unregister_panel",
-    "clear_panels",
-    "register_assets",
-    "configure_dashboard",
     "run_dashboard",
     "write_dom_dashboard",
 ]
@@ -31,29 +19,8 @@ def _esc(s: Any) -> str:
     return html.escape(str(s if s is not None else ""), quote=True)
 
 
-@dataclass(frozen=True)
-class Asset:
-    """Inline CSS/JS — not a file path."""
-
-    kind: str
-    content: str
-    name: str = ""
-
-    @staticmethod
-    def css(content: str, *, name: str = "") -> "Asset":
-        return Asset(kind="css", content=content, name=name)
-
-    @staticmethod
-    def js(content: str, *, name: str = "") -> "Asset":
-        return Asset(kind="js", content=content, name=name)
-
-    @staticmethod
-    def ce(content: str, *, name: str = "") -> "Asset":
-        return Asset(kind="ce", content=content, name=name or "ce")
-
-
 @dataclass
-class Panel:
+class _Panel:
     id: str
     title: str
     kind: str = "html"
@@ -65,43 +32,6 @@ class Panel:
     attrs: dict[str, str] = field(default_factory=dict)
     props: dict[str, Any] = field(default_factory=dict)
     span: int = 1
-
-
-_PANELS: dict[str, Panel] = {}
-_ASSETS: list[Asset] = []
-_LOCK = threading.RLock()
-_BUILTINS = True
-
-
-def configure_dashboard(*, builtins: bool | None = None) -> None:
-    global _BUILTINS
-    with _LOCK:
-        if builtins is not None:
-            _BUILTINS = bool(builtins)
-
-
-def register_panel(panel: Panel, *, replace: bool = True) -> None:
-    with _LOCK:
-        if not replace and panel.id in _PANELS:
-            raise ValueError(panel.id)
-        _PANELS[panel.id] = panel
-
-
-def unregister_panel(panel_id: str) -> bool:
-    with _LOCK:
-        return _PANELS.pop(panel_id, None) is not None
-
-
-def clear_panels() -> None:
-    with _LOCK:
-        _PANELS.clear()
-        _ASSETS.clear()
-
-
-def register_assets(*assets: Asset) -> None:
-    """Attach inline CSS/JS/CE definitions (no paths)."""
-    with _LOCK:
-        _ASSETS.extend(assets)
 
 
 def _svg_bars(latencies: list[dict], *, width: int = 640, height: int = 220) -> str:
@@ -136,17 +66,10 @@ def _svg_bars(latencies: list[dict], *, width: int = 640, height: int = 220) -> 
     return "".join(parts)
 
 
-def _render_panel(p: Panel) -> str:
+def _render_panel(p: _Panel) -> str:
     span = " span-2" if p.span >= 2 else ""
     h = f'<section class="card{span}" data-panel-id="{_esc(p.id)}"><h2>{_esc(p.title)}</h2>'
-    if p.kind == "svg":
-        h += p.svg
-    elif p.kind == "table":
-        rows = "".join(
-            f"<tr><th>{_esc(a)}</th><td><code>{_esc(b)}</code></td></tr>" for a, b in p.rows
-        )
-        h += f"<table>{rows}</table>"
-    elif p.kind == "custom_element":
+    if p.kind == "custom_element":
         tag = "".join(c for c in (p.tag or "ux-dx-slot") if c.isalnum() or c in "-")
         attrs = " ".join(f'{_esc(k)}="{_esc(v)}"' for k, v in p.attrs.items())
         h += f'<{tag} data-dom-dx-panel="{_esc(p.id)}" {attrs}></{tag}>'
@@ -159,55 +82,37 @@ def write_dom_dashboard(out_dir: Path, report: dict[str, Any]) -> Path:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     lats = list(report.get("latencies") or [])
-    panels: list[Panel] = []
-    if _BUILTINS:
-        rows = "".join(
-            f"<tr><td>{_esc(x.get('name'))}</td><td>{_esc(x.get('p50_ms'))}</td>"
-            f"<td><b>{_esc(x.get('p95_ms'))}</b></td><td>{_esc(x.get('p99_ms'))}</td></tr>"
-            for x in lats
-        )
-        panels.append(
-            Panel(
-                id="builtin.latency",
-                title="Latency",
-                kind="html",
-                order=10,
-                span=2,
-                html=_svg_bars(lats)
-                + f"<table><tr><th>bench</th><th>p50</th><th>p95</th><th>p99</th></tr>{rows}</table>",
-            )
-        )
-        panels.append(
-            Panel(
-                id="builtin.slot",
-                title="Extension slot",
-                kind="custom_element",
-                order=900,
-                span=2,
-                tag="ux-dx-slot",
-                attrs={"name": "ux-dom-main"},
-            )
-        )
-    with _LOCK:
-        panels.extend(_PANELS.values())
-        assets = list(_ASSETS)
-    panels.sort(key=lambda p: (p.order, p.id))
+    rows = "".join(
+        f"<tr><td>{_esc(x.get('name'))}</td><td>{_esc(x.get('p50_ms'))}</td>"
+        f"<td><b>{_esc(x.get('p95_ms'))}</b></td><td>{_esc(x.get('p99_ms'))}</td></tr>"
+        for x in lats
+    )
+    panels = [
+        _Panel(
+            id="builtin.latency",
+            title="Latency",
+            kind="html",
+            order=10,
+            span=2,
+            html=_svg_bars(lats)
+            + f"<table><tr><th>bench</th><th>p50</th><th>p95</th><th>p99</th></tr>{rows}</table>",
+        ),
+        _Panel(
+            id="builtin.slot",
+            title="Extension slot",
+            kind="custom_element",
+            order=900,
+            span=2,
+            tag="ux-dx-slot",
+            attrs={"name": "ux-dom-main"},
+        ),
+    ]
     cards = "\n".join(_render_panel(p) for p in panels)
-    style_bits = []
-    script_bits = []
-    for a in assets:
-        kind = a.kind.lower()
-        if kind in ("css", "inline_css"):
-            style_bits.append(f"<style data-dom-dx-asset=\"{_esc(a.name)}\">{a.content}</style>")
-        else:
-            script_bits.append(
-                f"<script data-dom-dx-asset=\"{_esc(a.name)}\">\n{a.content}\n</script>"
-            )
     html_doc = f"""<!DOCTYPE html>
 <html lang="en"><head><meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>uxdom DX Dashboard</title>
-{''.join(style_bits)}
+
 <style>
 body{{margin:0;font-family:system-ui,sans-serif;background:#020617;color:#e2e8f0}}
 main{{max-width:960px;margin:0 auto;padding:1.5rem;display:grid;gap:1rem}}
@@ -229,7 +134,7 @@ td,th{{padding:.4rem;border-bottom:1px solid #1e293b;text-align:left}}
 {cards}
 <p class="muted">Companion: <code>uxchannel dashboard</code>.</p>
 </main>
-{''.join(script_bits)}
+
 </body></html>
 """
     path = out_dir / "dashboard.html"
@@ -241,7 +146,7 @@ td,th{{padding:.4rem;border-bottom:1px solid #1e293b;text-align:left}}
                 "brand": {"pypi": "ux-dom", "import": "ux_dom", "cli": "uxdom"},
                 "latencies": lats,
                 "panels": [asdict(p) for p in panels],
-                "assets": [asdict(a) for a in assets],
+                "assets": [],
             },
             indent=2,
             default=str,
