@@ -11,6 +11,7 @@
    "tests/01_core/test_public_dom_seam.py",
    "tests/01_core/test_raw_text_elements.py",
    "tests/04_production/test_intent_battery.py",
+   "tests/07_resilience/test_add_raw_string_absent.py",
    "tests/07_resilience/test_attr_escape_isolation.py",
    "tests/07_resilience/test_attr_name_validation.py",
    "tests/07_resilience/test_html_allowlist.py",

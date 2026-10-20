@@ -99,6 +99,7 @@
    "tests/05_chaos/test_stress_races_js_pipeline.py",
    "tests/05_chaos/test_tree_concurrency_safety.py",
    "tests/06_browser/test_custom_elements_auth_browser.py",
+   "tests/07_resilience/test_add_raw_string_absent.py",
    "tests/07_resilience/test_adversarial_render.py",
    "tests/07_resilience/test_attr_escape_isolation.py",
    "tests/07_resilience/test_attr_name_validation.py",

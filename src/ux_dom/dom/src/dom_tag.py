@@ -479,10 +479,6 @@ class dom_tag(object):
 
         return args
 
-    def add_raw_string(self, s):
-        with multi_tree_lock(self):
-            self.children.append(s)
-
     def _remove(self, obj):
         with multi_tree_lock(self):
             self.children.remove(obj)
