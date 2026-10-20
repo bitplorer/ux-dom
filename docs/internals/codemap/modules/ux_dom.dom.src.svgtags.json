@@ -10,7 +10,8 @@
    "tests/02_document_plugins/test_document_two_stage.py",
    "tests/02_document_plugins/test_document_using.py",
    "tests/07_resilience/test_foreign_content_raw_text.py",
-   "tests/07_resilience/test_raw_string_sinks.py"
+   "tests/07_resilience/test_raw_string_sinks.py",
+   "tests/07_resilience/test_text_state_parents.py"
   ],
   "imported_by": {
    "function_level": [],
