@@ -16,8 +16,7 @@
   "imported_by": {
    "function_level": [],
    "module_level": [
-    "ux_dom.htmx",
-    "ux_dom.reloader._app"
+    "ux_dom.htmx"
    ],
    "type_checking": []
   },

@@ -217,7 +217,6 @@ class TestWsAndJsPipeline(unittest.TestCase):
         ):
             self.assertIn(token, h)
 
-
     def test_static_js_assets_present(self):
         root = Path(__file__).resolve().parents[2]
         for rel in (

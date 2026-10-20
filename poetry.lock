@@ -36,6 +36,7 @@ files = [
     {file = "anyio-4.14.2-py3-none-any.whl", hash = "sha256:9f505dda5ac9f0c8309b5e8bd445a8c2bf7246f3ce950121e45ea15bc41d1494"},
     {file = "anyio-4.14.2.tar.gz", hash = "sha256:cfa139f3ed1a23ee8f88a145ddb5ac7605b8bbfd8592baacd7ce3d8bb4313c7f"},
 ]
+markers = {main = "extra == \"dev\" or extra == \"fastapi\" or extra == \"fastapidev\""}
 
 [package.dependencies]
 idna = ">=2.8"
@@ -523,6 +524,7 @@ files = [
     {file = "idna-3.18-py3-none-any.whl", hash = "sha256:7f952cbe720b688055e3f87de14f5c3e5fdaa8bc3928985c4077ca689de849a2"},
     {file = "idna-3.18.tar.gz", hash = "sha256:ffb385a7e039654cef1ab9ef32c6fafe283c0c0467bba1d9029738ce4a14a848"},
 ]
+markers = {main = "extra == \"dev\" or extra == \"fastapi\" or extra == \"fastapidev\""}
 
 [package.extras]
 all = ["mypy (>=1.11.2)", "pytest (>=8.3.2)", "ruff (>=0.6.2)"]
@@ -2050,7 +2052,7 @@ files = [
     {file = "watchfiles-1.2.0-pp311-pypy311_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a88fc94e647bc4eec523f1caa540258eb71d14278b9daf72fa1e2658a98df0f0"},
     {file = "watchfiles-1.2.0.tar.gz", hash = "sha256:c995fba777f1ea992f090f9236e9284cf7a5d1a0130dd5a3d82c598cacd76838"},
 ]
-markers = {main = "extra == \"dev\" or extra == \"fastapidev\" or extra == \"fastapi\""}
+markers = {main = "extra == \"dev\" or extra == \"fastapi\" or extra == \"fastapidev\""}
 
 [package.dependencies]
 anyio = ">=3.0.0"
@@ -2175,11 +2177,11 @@ files = [
 markers = {main = "extra == \"dev\" or extra == \"fastapi\" or extra == \"fastapidev\""}
 
 [extras]
-dev = ["pytailwindcss", "uvicorn", "watchfiles"]
+dev = ["pytailwindcss", "uvicorn"]
 fastapi = ["fastapi", "python-multipart", "uvicorn"]
-fastapidev = ["fastapi", "pytailwindcss", "python-multipart", "uvicorn", "watchfiles"]
+fastapidev = ["fastapi", "pytailwindcss", "python-multipart", "uvicorn"]
 
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.14,<3.15"
-content-hash = "c53740922675c0201ffbdcfc80e0588494f3d8db24b7abe2b4776e8f45a35a1c"
+content-hash = "4035d12b053f8e2579a52d1cbe7948dbbda08dc70cb2a19d53d5f928926cfab7"

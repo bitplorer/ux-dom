@@ -27,7 +27,7 @@ python -c "from ux_dom import __version__; print(__version__)"
 |------|---------|
 | Library only | `poetry install` / `pip install -e .` |
 | FastAPI apps | `poetry install --extras fastapi` / `pip install -e ".[fastapi]"` |
-| FastAPI + pytailwindcss + watchfiles (dev stack) | `poetry install --extras fastapidev` / `pip install -e ".[fastapidev]"` |
+| FastAPI + pytailwindcss (dev stack) | `poetry install --extras fastapidev` / `pip install -e ".[fastapidev]"` |
 | Live morph / regions | `pip install "ux-channel>=0.1.0"` (companion package) |
 
 ## Create an app

@@ -1,6 +1,5 @@
 {
  "assets": {
-  "ux_dom/reloader/script/reloader.js": "integrations",
   "ux_dom/scripts/x_element.js": "document"
  },
  "cycles_module_level": [
@@ -26,7 +25,6 @@
   "ux_dom.htmx": "integrations",
   "ux_dom.plugins": "document",
   "ux_dom.profiling": "support",
-  "ux_dom.reloader": "integrations",
   "ux_dom.response": "integrations",
   "ux_dom.routing": "integrations",
   "ux_dom.runtime": "document",
@@ -111,12 +109,6 @@
   "ux_dom.plugins.shell": "document",
   "ux_dom.plugins.style": "document",
   "ux_dom.profiling": "support",
-  "ux_dom.reloader": "integrations",
-  "ux_dom.reloader._app": "integrations",
-  "ux_dom.reloader._models": "integrations",
-  "ux_dom.reloader._notify": "integrations",
-  "ux_dom.reloader._types": "integrations",
-  "ux_dom.reloader._watch": "integrations",
   "ux_dom.response": "integrations",
   "ux_dom.response.serialize": "integrations",
   "ux_dom.response.starlette": "integrations",

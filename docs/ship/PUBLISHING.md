@@ -18,7 +18,7 @@ twine check dist/*
 
 ```bash
 pip install "ux-dom[fastapi]"       # app server
-pip install "ux-dom[fastapidev]"    # + tailwind + watchfiles
+pip install "ux-dom[fastapidev]"    # + tailwind
 ```
 
 ## Typed package
