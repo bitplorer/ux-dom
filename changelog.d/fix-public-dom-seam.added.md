@@ -1,0 +1,1 @@
+- **Public seam:** ``Component``, ``dom_tag``, ``escape``, and ``raw`` are explicit exports on ``ux_dom.dom`` (prefer over ``ux_dom.dom.src.*``).

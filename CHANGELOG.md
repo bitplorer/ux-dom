@@ -107,7 +107,6 @@
   one shard per module under ``docs/internals/codemap/``; CI fails when a
   shard is stale (``--write-changed`` rewrites only those). See
   ``docs/internals/CODEMAP.md``.
-- **Public seam:** ``Component``, ``dom_tag``, ``escape``, and ``raw`` are explicit exports on ``ux_dom.dom`` (prefer over ``ux_dom.dom.src.*``).
 
 ## 0.2.0 — remove deprecations
 
