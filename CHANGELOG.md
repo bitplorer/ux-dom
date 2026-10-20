@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- **Fix: ``Csp`` presets honour later field edits.** ``Csp.dev()`` / ``prod()`` /
+  ``report_only()`` no longer cache a ``policy``, so ``c.debug_header = True`` or
+  ``dataclasses.replace(c, ...)`` reach ``to_policy()``. Preset headers are unchanged.
+- **Fix: ``stamp_nonce(tags=)`` is honoured in nested trees.** ``stamp_tree`` takes
+  an optional ``tags=``; ``tags=("script",)`` no longer stamps ``<style>``.
 - **Security (breaking default): bare ``Csp()`` is tightened to ``Csp.prod()`` on script inline and connect-src.**
   ``Csp()``, ``CspPolicy``, ``CspMiddleware``, and ``build_csp_header`` no longer
   ship script ``'unsafe-inline'`` or bare ``ws:``/``wss:``. Apps that need inline
