@@ -1,6 +1,9 @@
 """Plugin / Document errors must surface, not vanish (audit #59: B2, B3, B10)."""
 
-from __future__ import annotations
+# No ``from __future__ import annotations``: hooks below need real (eager-free,
+# 3.14 deferred) annotations so signature inspection is exercised for real.
+import functools
+import typing as T
 
 import pytest
 
@@ -68,6 +71,46 @@ def test_stage_hook_inner_typeerror_surfaces_once():
 def test_stage_hook_without_ctx_still_called():
     html = str(Document(head=[lambda: div("no-ctx")], body=[])(div("x")))
     assert "no-ctx" in html
+
+
+def test_typing_only_annotations_do_not_break_dispatch():
+    if T.TYPE_CHECKING:  # pragma: no cover
+        from ux_dom.plugins.hub import PluginHub as _TypingOnly  # noqa: F401
+    calls = []
+
+    def hook(ctx: _TypingOnly) -> _TypingOnly:  # noqa: F821
+        calls.append("hook")
+        return div("typed-hook")
+
+    class RT:
+        def mount(self, app: _TypingOnly) -> _TypingOnly:  # noqa: F821
+            calls.append("mount")
+
+    doc = Document(head=[hook], body=[]).use(RT())
+    doc.mount(_Asgi())
+    assert "typed-hook" in str(doc(div("x")))
+    assert calls == ["mount", "hook"]
+
+
+def _forwarding(fn):
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        return fn(*args, **kwargs)
+
+    return wrapper
+
+
+def test_wraps_wrapped_hooks_use_wrapped_signature():
+    @_forwarding
+    def with_ctx(ctx):
+        return div("ctx-ok" if "document" in ctx else "ctx-missing")
+
+    @_forwarding
+    def no_ctx():
+        return div("no-ctx-ok")
+
+    html = str(Document(head=[with_ctx, no_ctx], body=[])(div("x")))
+    assert "ctx-ok" in html and "no-ctx-ok" in html
 
 
 # ── B10: hub contribution errors must not drop runtime tags silently ──────

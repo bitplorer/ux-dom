@@ -27,6 +27,7 @@ Rules
 
 from __future__ import annotations
 
+import annotationlib
 import inspect
 import typing as T
 from dataclasses import dataclass, field
@@ -50,9 +51,19 @@ def _as_list(value: T.Any) -> list:
 
 
 def _accepts(fn: T.Callable, *args: T.Any, **kwargs: T.Any) -> bool:
-    """True if ``fn``'s signature binds these arguments (decided before calling)."""
+    """True if ``fn``'s signature binds these arguments (decided before calling).
+
+    Annotations stay unevaluated (``TYPE_CHECKING``-only names must not raise).
+    ``functools.wraps`` wrappers are judged by the wrapped signature, which is
+    what such a wrapper forwards to.
+    """
     try:
-        inspect.signature(fn).bind(*args, **kwargs)
+        sig = inspect.signature(
+            fn,
+            follow_wrapped=True,
+            annotation_format=annotationlib.Format.FORWARDREF,
+        )
+        sig.bind(*args, **kwargs)
     except TypeError:
         return False
     except ValueError:  # no introspectable signature (some builtins)
