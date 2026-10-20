@@ -35,12 +35,16 @@ each shim is dead code that hides the real API and needs its own tests.
 
 Known examples in this repo, removed by the shim-purge train
 ([#59](https://github.com/bitplorer/ux-dom/issues/59)): the `App.fastapi` /
-`ProductHostMoved` tombstones, `uxdom info` (an alias of `uxdom doctor`), and the
-moved-doc stubs under `docs/` (including `docs/design/`).
+`ProductHostMoved` tombstones, `uxdom info` (an alias of `uxdom doctor`), the ignored
+`escape=` parameter on `defHTML` / `StringToHTML` / `to_fragment` (see
+[ADR 0002](0002-html-string-sanitizer-policy.md)), and the moved-doc stubs under `docs/`
+(including `docs/design/`).
 
 This overrides the `App.fastapi` / `ProductHostMoved` exception in
 [ADR 0003](0003-layer-boundary.md) (Alternatives table). Both are removed in a follow-up
-PR (a `removed` fragment, with their tests updated per the rule below).
+PR (a `removed` fragment, with their tests updated per the rule below). It likewise
+overrides the "Remove the `escape` parameter: Rejected" row in
+[ADR 0002](0002-html-string-sanitizer-policy.md).
 
 Instead:
 
