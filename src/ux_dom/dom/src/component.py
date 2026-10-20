@@ -14,9 +14,11 @@ See docs/guides/COMPONENTS.md and docs/guides/REACTIVE.md.
 """
 from __future__ import annotations
 
+import inspect
 import json
 import warnings
 from dataclasses import asdict, dataclass, field
+from functools import lru_cache
 from html import unescape
 from pathlib import Path
 from textwrap import dedent
@@ -32,6 +34,35 @@ from ux_dom.dom.src.main import extension
 from ux_dom.utils.parameters import Parameters
 
 __all__ = ["Component", "ReactiveComponent", "Fragment", "MergeClassAttribute"]
+
+
+@lru_cache(maxsize=None)
+def _render_declares_markdown(render) -> bool:
+    """True when ``render`` declares a keyword-passable ``markdown`` parameter."""
+    try:
+        param = inspect.signature(render).parameters.get("markdown")
+    except (TypeError, ValueError):
+        return False
+    return param is not None and param.kind in (
+        inspect.Parameter.POSITIONAL_OR_KEYWORD,
+        inspect.Parameter.KEYWORD_ONLY,
+    )
+
+
+def _markdown_converter(value, owner: str):
+    """Resolve ``markdown=`` (when ``render`` does not take it) to a converter."""
+    if value is None:
+        return markdown
+    convert = getattr(value, "convert", None)
+    if callable(convert):
+        return convert
+    if callable(value):
+        return value
+    raise TypeError(
+        f"{owner}(markdown=...) expects a Markdown converter (a callable or an "
+        f"object with .convert) or None, got {type(value).__name__}; "
+        f"{owner}.render() does not declare a `markdown` parameter to receive it"
+    )
 
 
 
@@ -169,15 +200,13 @@ class Component(extension.Tags):
         super(Component, self).__init__()
 
         # Local converter only — never mutate module-global markdown.
-        # Only steal markdown= when it is a callable converter; string/other
-        # values are render kwargs (F-23).
-        md_arg = kwargs.get("markdown", None)
-        if callable(md_arg):
-            kwargs.pop("markdown")
-            md_convert = md_arg
+        # markdown= goes to render() when render declares it; otherwise it is
+        # the converter (callable / .convert / None), anything else raises.
+        cls = type(self)
+        if "markdown" in kwargs and not _render_declares_markdown(cls.render):
+            md_convert = _markdown_converter(kwargs.pop("markdown"), cls.__name__)
         else:
             md_convert = markdown
-        md_convert = getattr(md_convert, "convert", md_convert)
         # first we get the child from the render method and sanitize it.
         child = self.render(*args, **kwargs)
 

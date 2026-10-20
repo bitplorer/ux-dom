@@ -24,6 +24,7 @@
    "tests/05_chaos/test_pentest_chaos.py",
    "tests/06_browser/test_custom_elements_auth_browser.py",
    "tests/07_resilience/test_jinja_in_event_loop.py",
+   "tests/07_resilience/test_markdown_render_kwarg.py",
    "tests/fixtures/auth_xelements.py"
   ],
   "imported_by": {
