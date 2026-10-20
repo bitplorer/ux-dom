@@ -22,6 +22,8 @@ from pathlib import Path
 
 import pytest
 
+from ux_dom.plugins import hub as plugin_hub
+
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -29,3 +31,15 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 def repo_root() -> Path:
     """Repository root (parent of ``tests/``)."""
     return REPO_ROOT
+
+
+@pytest.fixture(autouse=True)
+def _isolate_plugin_hub(monkeypatch: pytest.MonkeyPatch) -> None:
+    """Restore the process-global plugin hub after each test.
+
+    ``set_hub`` (and ``App.build`` / ``App.mount``) replace a module global;
+    without this, a hub registered by one test leaks into later ones.
+    Function scope only: hubs set in ``setUpClass`` or at import time are
+    not covered.
+    """
+    monkeypatch.setattr(plugin_hub, "_default_hub", plugin_hub._default_hub)
