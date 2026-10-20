@@ -14,4 +14,4 @@ Canonical decision pages:
 | [0003-layer-boundary.md](0003-layer-boundary.md) | Layer boundary: ux-dom vs ux-compose |
 | [0004-no-compat-shims-pre-release.md](0004-no-compat-shims-pre-release.md) | No compatibility shims before the first release |
 
-Historical folder `docs/design/` keeps stubs so existing links resolve.
+Historical folder `docs/design/` still holds moved-doc stubs; they are removed under [ADR 0004](0004-no-compat-shims-pre-release.md).

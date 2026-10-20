@@ -19,7 +19,7 @@ Specialized folders (`security/`, `ship/`, `design/`, `tutorial/`, `patterns/`, 
 `plans/` is projection, not law.
 `docs/INDEX.md` is the map. Do not add a second competing map.
 
-Old paths keep a 5-line stub. Do not cite stubs as canonical.
+Moved-doc stubs are shims and are being removed, with inbound links pointed at the new target ([ADR 0004](adr/0004-no-compat-shims-pre-release.md)). Until then, do not cite stubs as canonical.
 
 ### Brand lines
 

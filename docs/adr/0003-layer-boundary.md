@@ -4,6 +4,7 @@
 > Map: [INDEX.md](../INDEX.md).
 
 **Status:** Accepted  
+**Amended by:** [ADR 0004](0004-no-compat-shims-pre-release.md)  
 **Date:** 2026-10-20  
 **Scope:** Which product features ux-dom may ship. Applies to `src/ux_dom/`, the
 `pyproject.toml` extras, the `uxdom` CLI and the docs. Mirrors ux-compose
@@ -111,7 +112,7 @@ ADR 0001); this ADR records the same split from the ux-dom side.
 | Option | Verdict | Why |
 |--------|---------|-----|
 | Keep the empty protocols and slots "for advanced hubs" | Rejected | No implementer in any sibling repo. They tell authors HMR/style/host plug into ux-dom, which is the wrong layer. |
-| Fail-closed tombstones for every removed name | Rejected (except `App.fastapi` / `ProductHostMoved`, already shipped) | Tombstones are API to maintain. An `ImportError` / `TypeError` plus an absence lock gives the same signal. |
+| Fail-closed tombstones for every removed name | Rejected. (The earlier `App.fastapi` / `ProductHostMoved` exception is withdrawn by [ADR 0004](0004-no-compat-shims-pre-release.md).) | Tombstones are API to maintain. An `ImportError` / `TypeError` plus an absence lock gives the same signal. |
 | Move `uxdom build` entirely to ux-compose | Rejected | Verify checks package static and the Document import, which are ux-dom concerns. Only the deploy bundle is product. |
 | Delete residue now, before ux-compose has the equivalent | Rejected | Users of the extras, the bundle and the prod doctor would lose them with no replacement. |
 
