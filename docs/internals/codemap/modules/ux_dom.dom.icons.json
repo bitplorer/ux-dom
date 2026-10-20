@@ -27,6 +27,7 @@
    "standalone/mcp_app/app.py",
    "standalone/sse_app/app.py",
    "standalone/ws_app/app.py",
+   "tests/01_core/test_async_render_parity.py",
    "tests/01_core/test_builtin_mro_behaviour.py",
    "tests/01_core/test_concurrency_patterns.py",
    "tests/01_core/test_concurrency_policy_e2e.py",

@@ -4,6 +4,7 @@
    "docs/internals/ARCHITECTURE.md",
    "docs/internals/CORE.md",
    "docs/internals/MODULE_MAP.md",
+   "tests/01_core/test_async_render_parity.py",
    "tests/01_core/test_attr_dialects.py",
    "tests/01_core/test_full_mro_behaviour_integration.py",
    "tests/01_core/test_mro_signatures.py",
@@ -18,6 +19,7 @@
    "function_level": [],
    "module_level": [
     "ux_dom.dom",
+    "ux_dom.dom.htmldocument",
     "ux_dom.dom.htmlelement",
     "ux_dom.dom.src.html_string",
     "ux_dom.dom.src.main",

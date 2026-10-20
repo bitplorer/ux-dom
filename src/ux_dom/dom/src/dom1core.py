@@ -101,6 +101,8 @@ class dom1core(object):
     def previousSibling(self) -> Union[dom1core, None]:
         parentChildNodes = self.parentNode.childNodes
         prev_sib_idx = parentChildNodes.index(self) - 1
+        if prev_sib_idx < 0:  # a -1 index would wrap to the last sibling
+            return None
         try:
             return parentChildNodes[prev_sib_idx]
         except IndexError:

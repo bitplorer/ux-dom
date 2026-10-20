@@ -70,6 +70,32 @@ _SPECIAL_ATTR_PREFIXES = (
     "remove_me",
 )
 
+# Serialize hooks the compact token walker re-implements inline. A subclass that
+# overrides any of them must be serialized by its own ``_render`` instead.
+_WALKER_INLINED_HOOKS = (
+    "_render",
+    "_render_open_tag",
+    "_render_attribute",
+    "_render_close_tag",
+    "_render_children",
+)
+_walker_delegates: dict = {}  # type -> bool, filled once per class
+
+
+def _delegates_to_render(cls) -> bool:
+    """True when the compact walker must serialize ``cls`` via ``_render``."""
+    cached = _walker_delegates.get(cls)
+    if cached is not None:
+        return cached
+    # ``_walk_covers`` lists overrides the class's own walker already runs.
+    covered = getattr(cls, "_walk_covers", ())
+    found = any(
+        (fn := getattr(cls, h)) is not getattr(Tags, h) and fn not in covered
+        for h in _WALKER_INLINED_HOOKS
+    )
+    _walker_delegates[cls] = found
+    return found
+
 
 class Tags(dom_tag, dom1core):
     """HTML-oriented tag: control attrs, pretty layout, framework attr names."""
@@ -527,6 +553,18 @@ class Tags(dom_tag, dom1core):
             )
             return
 
+        # Overridden hooks (StyleTags dialects, ReactiveComponent's pre-serialize
+        # refresh) only run inside ``_render``.
+        cls = type(self)
+        delegate = _walker_delegates.get(cls)
+        if delegate is None:
+            delegate = _delegates_to_render(cls)
+        if delegate:
+            yield from self._render(
+                [], indent_level, indent_str, pretty, xhtml, _seen=_seen
+            )
+            return
+
         if _seen is None:
             _seen = set()
         sid = id(self)
@@ -555,8 +593,9 @@ class Tags(dom_tag, dom1core):
 
         for child in self.children:
             if isinstance(child, dom_tag):
+                # Children inherit the parent's effective (compact) layout, as in _render.
                 yield from child._walk_render_tokens(
-                    indent_level + 1, indent_str, pretty, xhtml, _seen=_seen
+                    indent_level + 1, indent_str, False, xhtml, _seen=_seen
                 )
             else:
                 if child or any(str(child)):
