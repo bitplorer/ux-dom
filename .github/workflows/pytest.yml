@@ -30,3 +30,22 @@ jobs:
           npx --prefix tests/browser playwright install --with-deps chromium
       - name: Run pytest
         run: poetry run pytest tests/ -q -rs
+
+  quality:
+    # Lint/type steps of scripts/quality.sh. black is deliberately left out:
+    # ~160 files of formatting drift, reformat deferred until the open PR
+    # train lands (see #59).
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install dependencies
+        run: poetry install --with dev,test --no-interaction --no-ansi
+      - name: Ruff
+        run: poetry run ruff check src/ux_dom --select F401,F841,F811,E9,F821
+      - name: Mypy
+        run: poetry run mypy src/ux_dom --ignore-missing-imports
