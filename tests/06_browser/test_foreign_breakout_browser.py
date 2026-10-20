@@ -26,6 +26,7 @@ from ux_dom.dom import a, br, div, img, p, script, span, style
 from ux_dom.dom.src.ext import PlaceholderTag, Tags, _element_name
 from ux_dom.dom.src.htmltags import _BREAKOUT_ELEMENTS, _parsed_namespace
 from ux_dom.dom.src.svgtags import circle, desc, g, rect, svg, svg_tag
+from ux_dom.dom.src.svgtags import title as svg_title
 
 from browser_gate import NODE, require_browser
 
@@ -176,6 +177,7 @@ CONTEXTS = {
     "math>mi>open mglyph": lambda el: math(mi(_tag("mglyph", is_single=True)(), el)),
     "svg>a>foreignObject>[a>a,el]": lambda el: svg(svg_a(foreignObject(a(a()), el))),
     "svg>font[color]>[svg>g,el]": lambda el: svg(font(svg(g()), el, color="red")),
+    "svg>[a>[title>title,p],el]": lambda el: svg(svg_a(svg_title(svg_title()), p()), el),
 }
 PAYLOADS = [
     PWN,

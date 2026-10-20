@@ -21,6 +21,7 @@ import typing
 
 from ux_dom.dom.src.concurrency import multi_tree_lock, tree_lock_for
 from collections import defaultdict, namedtuple
+from contextvars import ContextVar
 from functools import wraps
 
 try:
@@ -122,6 +123,11 @@ def context_stack():
 
 class dom_string(basestring):
     pass
+
+
+# Per-render memo for ``htmltags._parsed_namespace``: id -> record (which
+# holds the node, so its id cannot be reused while the render runs).
+_NAMESPACE_MEMO: ContextVar = ContextVar("ux_dom_namespace_memo", default=None)
 
 
 class dom_tag(object):
@@ -909,7 +915,11 @@ class dom_tag(object):
         import asyncio
 
         with multi_tree_lock(self):
-            tokens = list(self._walk_render_tokens(0, indent, pretty, xhtml))
+            token = _NAMESPACE_MEMO.set({})
+            try:
+                tokens = list(self._walk_render_tokens(0, indent, pretty, xhtml))
+            finally:
+                _NAMESPACE_MEMO.reset(token)
         n = 0
         for html_token in tokens:
             yield html_token

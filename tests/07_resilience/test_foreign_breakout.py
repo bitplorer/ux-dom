@@ -18,12 +18,15 @@ from __future__ import annotations
 
 import asyncio
 import re
+from unittest import mock
 
 import pytest
 
 from ux_dom.dom import a, div, img, p, script, span, style
+from ux_dom.dom.src import htmltags
 from ux_dom.dom.src.ext import Tags
 from ux_dom.dom.src.svgtags import desc, g, rect, svg, svg_tag
+from ux_dom.dom.src.svgtags import title as svg_title
 from ux_dom.dom.src.utils.dom_util import lazy, neutralize_raw_text
 
 CSS = 'a > b::after { content: "&<"; }'
@@ -96,6 +99,11 @@ FOREIGN = {
     "svg > a > foreignObject > [a > a, el]": lambda el: svg(
         svg_a(foreignObject(a(a()), el))
     ),
+    # #91 writes the inner title's end tag as ``&lt;/title``: its RCDATA
+    # runs on to the outer ``</title>``, which the parser does not see.
+    "svg > [a > [title > title, p], el]": lambda el: svg(
+        svg_a(svg_title(svg_title()), p()), el
+    ),
     # A breakout's children land in the integration point it popped to.
     "math > mi > mglyph > [img, mglyph > el]": lambda el: math(
         mi(mglyph(img(), mglyph(el)))
@@ -131,3 +139,49 @@ def test_outer_style_after_closed_svg_is_html():
     # The inner </svg> closes the outer <svg> too (foreign end tag rules).
     out = svg(desc(svg(g(p()))), rect(), style(CSS)).__render__(pretty=False)
     assert f"<style>{CSS}</style>" in out
+
+
+def _size(node):
+    return 1 + sum(_size(c) for c in getattr(node, "children", ()))
+
+
+def _count_start_tags(node, render):
+    real, calls = htmltags._start_tag, []
+
+    def counting(*args):
+        calls.append(1)
+        return real(*args)
+
+    with mock.patch.object(htmltags, "_start_tag", counting):
+        render(node)
+    return len(calls)
+
+
+@pytest.mark.parametrize("render", ["sync", "async"])
+def test_namespace_replay_is_linear(render):
+    # Replaying from the root for each style is n**2 start tags.
+    n = 300
+    deep = style(CSS)
+    for _ in range(n):
+        deep = g(rect(), deep, style(CSS))
+    shapes = {
+        "styles": svg(*[g(rect(), style(CSS)) for _ in range(n)]),
+        "deep": svg(deep),
+        "wide": svg(*[rect() for _ in range(10 * n)], style(CSS)),
+    }
+    go = (lambda x: x.__render__(pretty=False)) if render == "sync" else _async
+    for name, node in shapes.items():
+        elements = _size(node)
+        assert _count_start_tags(node, go) < 4 * elements, name
+
+
+def test_memo_does_not_outlive_a_render():
+    s = style(CSS)
+    root = svg(g(rect()), s)
+    assert f"<style><![CDATA[{CSS}]]></style>" in root.__render__(pretty=False)
+    root.children[0].add(p())  # now a breakout comes before the style
+    assert f"<style>{CSS}</style>" in root.__render__(pretty=False)
+    assert f"<style>{CSS}</style>" in _async(root, pretty=False)
+    root.children[0].children.pop()
+    assert f"<![CDATA[{CSS}]]>" in _async(root, pretty=False)
+    assert f"<![CDATA[{CSS}]]>" in root.__render__(pretty=True)

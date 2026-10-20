@@ -36,6 +36,7 @@
     "ux_dom.dom.htmldocument",
     "ux_dom.dom.src.component",
     "ux_dom.dom.src.ext",
+    "ux_dom.dom.src.htmltags",
     "ux_dom.dom.src.jinjatags",
     "ux_dom.dom.src.utils.dom_util",
     "ux_dom.elements.buttons",
