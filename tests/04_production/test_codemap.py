@@ -86,7 +86,7 @@ class TestCodeMap(unittest.TestCase):
 
     def test_consumers_follow_reexports_to_defining_module(self):
         mods = self.data["modules"]
-        # ``from ux_dom.runtime import Htmx`` -> plugins.control.htmx defines Htmx.
+        # ``from ux_dom import Htmx`` -> plugins.control.htmx defines Htmx.
         self.assertIn(
             "tests/02_document_plugins/test_document_runtimes_create.py",
             mods["ux_dom.plugins.control.htmx"]["consumers"],

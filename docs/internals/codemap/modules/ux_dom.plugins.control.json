@@ -12,14 +12,15 @@
    "tests/02_document_plugins/test_script_dedupe.py",
    "tests/04_production/test_intent_battery.py",
    "tests/05_chaos/test_enterprise_full_battery.py",
-   "tests/05_chaos/test_production_trust.py"
+   "tests/05_chaos/test_production_trust.py",
+   "tests/07_resilience/test_top_level_facades.py"
   ],
   "imported_by": {
    "function_level": [
     "ux_dom.plugins.hub"
    ],
    "module_level": [
-    "ux_dom.runtime"
+    "ux_dom"
    ],
    "type_checking": []
   },

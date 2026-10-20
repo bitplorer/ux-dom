@@ -63,11 +63,9 @@ from ux_dom.dom.src.component import (  # noqa: E402
 )
 # Document-facing facades: aliases over plugin implementations (no logic).
 # ``Channel`` is the Document plugin, NOT ``ux_channel.Channel`` (action plane).
-from ux_dom.plugins.control import HtmxControl as Htmx  # noqa: E402
+from ux_dom.plugins.control import HtmxControl as Htmx  # noqa: E402, F401
 from ux_dom.plugins.csp import Csp as Csp  # noqa: E402
-from ux_dom.plugins.runtime import (  # noqa: E402
-    UxChannelRuntime as Channel,
-    XElementRuntime as XElement,
-)
+from ux_dom.plugins.runtime import UxChannelRuntime as Channel  # noqa: E402, F401
+from ux_dom.plugins.runtime import XElementRuntime as XElement  # noqa: E402, F401
 
 __version__ = "0.2.0"

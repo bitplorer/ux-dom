@@ -23,7 +23,6 @@
   "ux_dom.plugins": "document",
   "ux_dom.profiling": "support",
   "ux_dom.response": "integrations",
-  "ux_dom.runtime": "document",
   "ux_dom.scripts": "document",
   "ux_dom.settings": "document",
   "ux_dom.slots": "components",
@@ -99,7 +98,6 @@
   "ux_dom.response": "integrations",
   "ux_dom.response.serialize": "integrations",
   "ux_dom.response.starlette": "integrations",
-  "ux_dom.runtime": "document",
   "ux_dom.scripts": "document",
   "ux_dom.settings": "document",
   "ux_dom.settings.document": "document",
@@ -155,18 +153,15 @@
   "ux_dom.web_io._types": "integrations"
  },
  "public_api": {
-  "Channel": "ux_dom.plugins.runtime",
   "Component": "ux_dom.dom.src.component",
   "Csp": "ux_dom.plugins.csp",
   "Document": "ux_dom.settings.document",
   "Fragment": "ux_dom.dom.src.component",
-  "Htmx": "ux_dom.plugins.control.htmx",
   "MergeClassAttribute": "ux_dom.dom.src.component",
   "ReactiveComponent": "ux_dom.dom.src.component",
   "SlotElement": "ux_dom.slots.custom_element_slot",
   "Slots": "ux_dom.slots.slots",
   "WebComponentSlot": "ux_dom.slots.web_component_slot",
-  "XElement": "ux_dom.plugins.runtime",
   "x_slot": "ux_dom.slots.custom_element_slot"
  },
  "schema": 1

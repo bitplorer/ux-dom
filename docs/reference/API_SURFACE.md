@@ -22,7 +22,7 @@ Product lifecycle CLI: **`uxcompose`** (`create-app` · `build` · `serve` · `d
 | `__version__` | str | e.g. `"0.2.0"` |
 | `Document` | class | HTML shell SSoT |
 | `Component` / `Fragment` / `ReactiveComponent` | class | Trees |
-| `XElement` / `Htmx` / `Csp` / `Channel` | facades | aliases of `ux_dom.plugins` (`XElementRuntime`, `HtmxControl`, `Csp`, `UxChannelRuntime`); `ux_dom.runtime` removed |
+| `XElement` / `Htmx` / `Csp` / `Channel` | facades | aliases of `ux_dom.plugins` (`XElementRuntime`, `HtmxControl`, `Csp`, `UxChannelRuntime`) |
 
 `WebAssets` and `TailwindCommand` are not on this package. App folders are `from ux_compose import WebAssets`. CSS minify is `uxcompose build`.
 
