@@ -37,7 +37,6 @@ from ux_dom.dom.src.utils.dom_util import (
     checked_text_state_body,
     escape_attr_minimal,
     InvalidNodeContext,
-    lazy,
     safe_attr_value,
     TEXT_STATE_ELEMENTS,
 )
@@ -104,36 +103,134 @@ def _delegates_to_render(cls) -> bool:
     return found
 
 
-# Per-render memo for ``_shows_text``: id -> (node, result). The node is kept
-# so its id cannot be reused by another object while the render runs.
-_TEXT_MEMO: ContextVar[dict | None] = ContextVar("ux_dom_text_memo", default=None)
+# Elements the UA stylesheet lays out as block-level boxes (block, list-item,
+# table parts). A newline next to one sits at a line edge, where a browser drops
+# it. Everything else is inline: the spec's phrasing content, elements that are
+# not displayed, ``legend`` (a fieldset lifts it out of the flow), and unknown or
+# custom elements (the safe default).
+_BLOCK_ELEMENTS = frozenset(
+    """address article aside blockquote body caption center col colgroup dd
+    details dir div dl dt fieldset figcaption figure footer form h1 h2 h3 h4 h5
+    h6 header hgroup hr html li listing main menu nav ol p plaintext pre search
+    section summary table tbody td tfoot th thead tr ul xmp""".split()
+)
+
+# How a node sits among its siblings. A wrapper takes its children's max.
+_EMPTY, _BLOCK, _INLINE = 0, 1, 2
+
+# The HTML parser closes some elements early when they hold certain descendants
+# (``<li><li>``, ``<p><div>``), and what follows lands in the parent. Each such
+# descendant is a bit. A node passes up the bits found inside it, minus the ones
+# it stops (a ``ul`` ends the search for a nested ``li``).
+_ANY_BLOCK, _LI, _DT_DD, _HEADING, _A, _BUTTON, _FORM = (1 << n for n in range(7))
+_ALL_BITS = (1 << 7) - 1
+_LIST = (_ANY_BLOCK, _ANY_BLOCK | _LI, 0)
+_HEADING_TAG = (_ANY_BLOCK | _HEADING, _ANY_BLOCK, _HEADING)
+# name -> (bits it is, bits it stops, bits that close it)
+_PARSER_CLOSE = {
+    "p": (_ANY_BLOCK, _ANY_BLOCK, _ANY_BLOCK),
+    "li": (_ANY_BLOCK | _LI, _ANY_BLOCK, _LI),
+    "ul": _LIST,
+    "ol": _LIST,
+    "menu": _LIST,
+    "dt": (_ANY_BLOCK | _DT_DD, _ANY_BLOCK, _DT_DD),
+    "dd": (_ANY_BLOCK | _DT_DD, _ANY_BLOCK, _DT_DD),
+    "dl": (_ANY_BLOCK, _ANY_BLOCK | _DT_DD, 0),
+    "a": (_A, 0, _A),
+    "button": (_BUTTON, 0, _BUTTON),
+    "form": (_ANY_BLOCK | _FORM, _ANY_BLOCK, _FORM),
+    **dict.fromkeys(("h1", "h2", "h3", "h4", "h5", "h6"), _HEADING_TAG),
+}
+# Table parts are dropped outside their parent; inline content in a table is
+# moved out in front of it.
+_TABLE_PARENTS = {
+    "caption": ("table",),
+    "colgroup": ("table",),
+    "col": ("colgroup", "table"),
+    "tbody": ("table",),
+    "thead": ("table",),
+    "tfoot": ("table",),
+    "tr": ("tbody", "thead", "tfoot", "table"),
+    "td": ("tr",),
+    "th": ("tr",),
+}
+_TABLE_ROWS = frozenset(("table", "tbody", "thead", "tfoot", "tr"))
+
+# Per-render memo for ``_scan``: id -> (node, result). The node is kept so its
+# id cannot be reused by another object while the render runs.
+_LAYOUT_MEMO: ContextVar[dict | None] = ContextVar("ux_dom_layout_memo", default=None)
 
 
-def _shows_text(node, memo: dict) -> bool:
-    """True when ``node`` is text, or a tagless wrapper that holds text.
+def _scan(node, memo: dict, context: str | None) -> tuple[int, int, bool]:
+    """``(layout, closer bits, moved)`` for ``node`` inside a ``context`` tag.
 
-    A ``lazy`` counts as text: its result is unknown until it renders.
+    ``layout`` is ``_EMPTY``, ``_BLOCK`` or ``_INLINE``: text is inline, and a
+    wrapper or a Jinja tag with children (``{% if %}``) takes their max.
+    ``moved`` means the parser takes the node's tail out of it, so the tail
+    lands next to its siblings: it renders flat and counts as inline. A
+    ``lazy`` is unknown until it renders, so it counts as inline and as any
+    descendant.
     """
-    if isinstance(node, (str, dom_text, lazy)):
-        return True
-    if not isinstance(node, Tags) or node._control(Tags.RENDER_TAG, True):
-        return False
+    if isinstance(node, str):
+        return (_INLINE if node else _EMPTY), 0, False
+    if isinstance(node, dom_text):
+        return (_INLINE if node.text else _EMPTY), 0, False
+    if not isinstance(node, Tags):
+        return _INLINE, _ALL_BITS, False
     hit = memo.get(id(node))
-    if hit is None:
-        memo[id(node)] = (node, False)  # a wrapper cycle holds no more text
-        hit = (node, any(_shows_text(child, memo) for child in node.children))
-        memo[id(node)] = hit
-    return hit[1]
+    if hit is not None:
+        return hit[1]
+    memo[id(node)] = (node, (_EMPTY, 0, False))  # a cycle holds no more content
+    name = _html_name(node)
+    kind = inside = 0
+    for child in node.children:
+        child_kind, bits, _ = _scan(child, memo, name or context)
+        kind, inside = max(kind, child_kind), inside | bits
+    moved = False
+    if name is None and not node.children and node._control(Tags.RENDER_TAG, True):
+        kind = _INLINE  # a comment or a Jinja ``{{ var }}``: prints in the line
+    elif name is not None:
+        own, stops, closers = _PARSER_CLOSE.get(
+            name, (_ANY_BLOCK if name in _BLOCK_ELEMENTS else 0, 0, 0)
+        )
+        moved = (
+            bool(inside & closers)
+            or (name in _TABLE_PARENTS and context not in _TABLE_PARENTS[name])
+            or (name in _TABLE_ROWS and kind == _INLINE)
+        )
+        block = name in _BLOCK_ELEMENTS and not moved
+        kind, inside = (_BLOCK if block else _INLINE), own | inside & ~stops
+    memo[id(node)] = (node, (kind, inside, moved))
+    return kind, inside, moved
 
 
-def _mixed_content(children) -> bool:
-    """Text next to another node. A pretty newline there shows as a space."""
-    if len(children) < 2:
-        return False
-    memo = _TEXT_MEMO.get()
+def _html_name(node) -> str | None:
+    """The lower-case tag name when ``node`` renders as an HTML element."""
+    if node.left_delimiter != "<" or not node._control(Tags.RENDER_TAG, True):
+        return None
+    return node._clean_name(node._tagname()).lower()
+
+
+def _inline_neighbours(node) -> bool:
+    """An inline child next to inline content: a sibling, or the inside edge of
+    an inline element. A pretty newline there shows as a space."""
+    memo = _LAYOUT_MEMO.get()
     if memo is None:
         memo = {}
-    return any(_shows_text(c, memo) for c in children)
+    name = _html_name(node)
+    if name == "head":
+        return False  # nothing in it is displayed
+    kind, _, moved = _scan(node, memo, None)
+    if moved:
+        return True
+    edge = _INLINE if name is not None and kind == _INLINE else _EMPTY
+    prev = edge
+    for child in node.children:
+        kind = _scan(child, memo, name)[0]
+        if kind == _INLINE and prev == _INLINE:
+            return True
+        prev = kind or prev
+    return prev == edge == _INLINE
 
 
 def _ascii_lower(text):
@@ -462,15 +559,15 @@ class Tags(dom_tag, dom1core):
     def _render(
         self, sb, indent_level=1, indent_str="  ", pretty=True, xhtml=False, _seen=None
     ):
-        if pretty and _TEXT_MEMO.get() is None:
-            # One memo per pretty render keeps the mixed-content check linear.
-            token = _TEXT_MEMO.set({})
+        if pretty and _LAYOUT_MEMO.get() is None:
+            # One memo per pretty render keeps the layout check linear.
+            token = _LAYOUT_MEMO.set({})
             try:
                 return Tags._render(
                     self, sb, indent_level, indent_str, pretty, xhtml, _seen=_seen
                 )
             finally:
-                _TEXT_MEMO.reset(token)
+                _LAYOUT_MEMO.reset(token)
         if _seen is None:
             _seen = set()
         sid = id(self)
@@ -482,8 +579,9 @@ class Tags(dom_tag, dom1core):
         self.open_tag = self._markup_control(Tags.OPEN_TAG)
         self.close_tag = self._markup_control(Tags.CLOSE_TAG)
         pretty = pretty and self.is_pretty and not self.is_inline
-        # Mixed content renders flat: ``a&#39;b`` must not show as ``a ' b``.
-        pretty = pretty and not _mixed_content(self.children)
+        # Inline neighbours render flat: ``<b>a</b><i>b</i>`` must not show as
+        # ``a b``, nor ``a&#39;b`` as ``a ' b``.
+        pretty = pretty and not _inline_neighbours(self)
 
         self_dedent = self._control(Tags.SELF_DEDENT, False)
         self.self_dedent = self_dedent

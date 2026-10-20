@@ -1,8 +1,9 @@
-"""Pretty render keeps the displayed text of mixed content (#79).
+"""Pretty render keeps the displayed text (#79, #89).
 
-A pretty newline next to text shows as a space in a browser, so an element
-whose children mix text with other nodes renders them flat. The browser check
-is ``tests/06_browser/test_pretty_inner_text_browser.py``.
+A pretty newline between two inline nodes (text, ``<b>``, unknown tags) shows
+as a space in a browser, so they render flat; a newline next to a block sits
+at a line edge, where the browser drops it. The browser check is
+``tests/06_browser/test_pretty_inner_text_browser.py``.
 """
 
 from __future__ import annotations
@@ -12,7 +13,32 @@ import unittest
 from unittest import mock
 
 from ux_dom import Fragment
-from ux_dom.dom import b, div, lazy, li, p, pre, script, span, style, textarea, ul
+from ux_dom.dom import (
+    Var,
+    a,
+    b,
+    body,
+    comment,
+    div,
+    head,
+    html,
+    i,
+    lazy,
+    li,
+    meta,
+    p,
+    pre,
+    q,
+    script,
+    span,
+    style,
+    table,
+    tbody,
+    td,
+    textarea,
+    tr,
+    ul,
+)
 from ux_dom.dom.src import ext
 
 
@@ -64,21 +90,94 @@ class TestPrettyInlineText(unittest.TestCase):
         )
         self.assertPretty(p("a", lazy(lambda: b("x")), "c"), "<p>a<b>x</b>c</p>")
 
-    def test_mixed_content_check_is_linear_in_wrapper_depth(self):
+    def test_adjacent_inline_elements_stay_inline(self):
+        self.assertPretty(div(b("a"), i("b")), "<div><b>a</b><i>b</i></div>")
+        self.assertPretty(Fragment("<b>a</b><i>b</i>"), "<b>a</b><i>b</i>")
+        self.assertPretty(
+            div(b("a"), comment("c"), i("b")), "<div><b>a</b><!-- c --><i>b</i></div>"
+        )
+        # An empty wrapper between them does not separate them.
+        self.assertPretty(
+            div(Fragment(b("a")), Fragment(), i("b")), "<div><b>a</b><i>b</i></div>"
+        )
+        self.assertPretty(p("a", Var("x")), "<p>a{{ x }}</p>")
+
+    def test_phrasing_content_is_inline(self):
+        # HTML spec, "Phrasing content". Unknown and custom tags too.
+        phrasing = """a abbr area audio b bdi bdo br button canvas cite code
+            data datalist del dfn em embed i iframe img input ins kbd label link
+            map mark math meta meter noscript object output picture progress q
+            ruby s samp script select slot small span strong sub sup svg
+            template textarea time u var video wbr my-widget x-y""".split()
+        for name in phrasing:
+            with self.subTest(name=name):
+                self.assertNotIn(name, ext._BLOCK_ELEMENTS)
+
+    def test_inline_element_edges_stay_inline(self):
+        # ``<q>`` draws quotes inside its edges: ``<q> x </q>`` shows the spaces.
+        self.assertPretty(q("x"), "<q>x</q>")
+        self.assertPretty(div(a()), "<div>\n  <a></a>\n</div>")
+        self.assertPretty(p(span(b("x"))), "<p>\n  <span><b>x</b></span>\n</p>")
+
+    def test_block_neighbours_keep_their_layout(self):
+        self.assertPretty(
+            div(b("a"), p("x"), i("b")),
+            "<div>\n  <b>a</b>\n  <p>\n    x\n  </p>\n  <i>b</i>\n</div>",
+        )
+        self.assertPretty(
+            div("text", p("x")), "<div>\n  text\n  <p>\n    x\n  </p>\n</div>"
+        )
+        self.assertPretty(
+            a(div("x"), div("y")),
+            "<a>\n  <div>\n    x\n  </div>\n  <div>\n    y\n  </div>\n</a>",
+        )
+        self.assertPretty(
+            table(tbody(tr(td("a"), td("b")))),
+            "<table>\n  <tbody>\n    <tr>\n      <td>\n        a\n      </td>"
+            "\n      <td>\n        b\n      </td>\n    </tr>\n  </tbody>\n</table>",
+        )
+        # Nothing in <head> is displayed.
+        self.assertPretty(
+            html(head(meta(charset="utf-8"), script("x")), body(p("y"))),
+            '<html>\n  <head>\n    <meta charset="utf-8">\n    <script>x</script>'
+            "\n  </head>\n  <body>\n    <p>\n      y\n    </p>\n  </body>\n</html>",
+        )
+
+    def test_elements_the_parser_moves_render_flat(self):
+        # The parser closes the outer <li> / <p> early, or drops a <td> outside
+        # a table, and the tail lands next to the siblings.
+        self.assertPretty(div(li(li(), "y"), "x"), "<div><li><li></li>y</li>x</div>")
+        self.assertPretty(div("x", p(div("y"))), "<div>x<p><div>y</div></p></div>")
+        self.assertPretty(div(td("1"), "w"), "<div><td>1</td>w</div>")
+        self.assertPretty(
+            table(tbody(tr(td("a"))), "x"),
+            "<table><tbody><tr><td>a</td></tr></tbody>x</table>",
+        )
+        # A nested list ends the search for a nested <li>.
+        self.assertPretty(
+            li(ul(li("a"))),
+            "<li>\n  <ul>\n    <li>\n      a\n    </li>\n  </ul>\n</li>",
+        )
+
+    def test_layout_check_is_linear(self):
         depth = 200
-        node = p("x")
+        wrappers, elements, lists = p("x"), "x", b("x")
         for _ in range(depth):
-            node = Fragment(p("x"), node)
-        real, calls = ext._shows_text, []
+            wrappers = Fragment(p("x"), wrappers)
+            elements = div(elements, p("z"))
+            lists = li(span("y"), lists)
+        for node in (wrappers, elements, lists):
+            real, calls = ext._scan, []
 
-        def counting(*args):
-            calls.append(1)
-            return real(*args)
+            def counting(*args):
+                calls.append(1)
+                return real(*args)
 
-        with mock.patch.object(ext, "_shows_text", counting):
-            str(node)
-        # About 4 per level; a re-walk of every subtree is about depth**2.
-        self.assertLess(len(calls), 8 * depth)
+            with self.subTest(node=type(node).__name__):
+                with mock.patch.object(ext, "_scan", counting):
+                    str(node)
+                # At most 8 per level; a re-walk of every subtree is depth**2.
+                self.assertLess(len(calls), 12 * depth)
 
     def test_async_pretty_matches_sync(self):
         node = Fragment("<div><p>a&#39;b <i>c</i>d</p><p>e</p></div>")

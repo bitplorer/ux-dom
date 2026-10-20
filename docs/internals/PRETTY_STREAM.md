@@ -7,16 +7,28 @@ Pretty is for debug/readability. When you do use pretty async stream, **default 
 
 ## Layout keeps the displayed text
 
-Pretty puts a newline and indent before each child. Next to text a browser
-shows that newline as a space, so an element whose children mix text with
-other nodes renders them flat: `<p>AT&amp;T <b>x</b>.</p>` stays on one line,
-and its pretty and flat renders show the same `innerText`
+Pretty puts a newline and indent before each child. A browser shows that
+newline as a space when it sits between two inline nodes, so those render flat:
+text, `<b>`, `<a>`, comments, `{{ var }}`, and every other element in the HTML
+spec's phrasing content, plus unknown and custom tags (the safe default).
+`<b>a</b><i>b</i>` and `<p>AT&amp;T <b>x</b>.</p>` stay on one line. The inside
+edge of an inline element counts too (`<q>` draws quotes there), so `b("x")`
+renders `<b>x</b>`.
+
+A newline next to a block-level element (`div`, `p`, `li`, table parts, …)
+sits at a line edge, where the browser drops it, so block children keep the
+indented layout, with text and inline children between them. Nothing in
+`<head>` is displayed, so it stays indented. An element the HTML parser moves
+renders flat and counts as inline: `<li>` holding an `<li>`, `<p>` holding a
+block, a table part outside its table, inline content directly in a table.
+
+Pretty and flat renders show the same `innerText` in Chromium for a fixed
+corpus and 1,200 random trees
 (`tests/06_browser/test_pretty_inner_text_browser.py`). A `lazy` child counts
-as text, since its result is unknown until it renders. The whole subtree under
-a flat parent is flat: a pretty `<b>` inside `p("a ", b("x"))` would show as
-`a  x`. Elements with only element children keep the indented layout. The check
-is memoized per render, so it stays linear in how deeply `Fragment`s and
-`Component`s nest.
+as inline, since its result is unknown until it renders. The whole subtree
+under a flat parent is flat. CSS can change `display` (a `class="block"` span,
+an `inline` div); the layout follows the browser's default stylesheet. The
+check is memoized per render, so it stays linear in the tree size.
 
 ## Modes
 
