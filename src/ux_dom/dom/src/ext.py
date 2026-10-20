@@ -100,6 +100,25 @@ def _delegates_to_render(cls) -> bool:
     return found
 
 
+def _shows_text(node, _seen: set) -> bool:
+    """True when ``node`` is text, or a tagless wrapper that holds text."""
+    if isinstance(node, (str, dom_text)):
+        return True
+    if (
+        not isinstance(node, Tags)
+        or node._control(Tags.RENDER_TAG, True)
+        or id(node) in _seen
+    ):
+        return False
+    _seen.add(id(node))
+    return any(_shows_text(child, _seen) for child in node.children)
+
+
+def _mixed_content(children) -> bool:
+    """Text next to another node. A pretty newline there shows as a space."""
+    return len(children) > 1 and any(_shows_text(c, set()) for c in children)
+
+
 class Tags(dom_tag, dom1core):
     """HTML-oriented tag: control attrs, pretty layout, framework attr names."""
 
@@ -404,6 +423,8 @@ class Tags(dom_tag, dom1core):
         self.open_tag = self._markup_control(Tags.OPEN_TAG)
         self.close_tag = self._markup_control(Tags.CLOSE_TAG)
         pretty = pretty and self.is_pretty and not self.is_inline
+        # Mixed content renders flat: ``a&#39;b`` must not show as ``a ' b``.
+        pretty = pretty and not _mixed_content(self.children)
 
         self_dedent = self._control(Tags.SELF_DEDENT, False)
         self.self_dedent = self_dedent

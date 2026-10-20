@@ -36,16 +36,7 @@ class TestContext(unittest.TestCase):
 
         self.assertEqual(
             context.__render__(),
-            dedent("""\
-                <div>
-                  context
-                  <div>
-                    sub context
-                    <div>
-                      inside subcontext
-                    </div>
-                  </div>
-                </div>"""),
+            "<div>context<div>sub context<div>inside subcontext</div></div></div>",
         )
 
 
@@ -406,14 +397,7 @@ class TestStates(unittest.TestCase):
   </head>
   <body>
     <div>
-      <p a="2">
-        Hello Mom
-        <p>
-          <em>
-            Hello World
-          </em>
-        </p>
-      </p>
+      <p a="2">Hello Mom<p><em>Hello World</em></p></p>
     </div>
   </body>
 </html>"""
@@ -432,14 +416,7 @@ class TestStates(unittest.TestCase):
         self.assertEqual(
             parent.__render__(),
             """\
-<div>
-  state parent
-  <p a="2">
-    <div>
-      state child
-    </div>
-  </p>
-</div>""",
+<div>state parent<p a="2"><div>state child</div></p></div>""",
         )
 
         self.assertEqual(
@@ -462,14 +439,7 @@ class TestStates(unittest.TestCase):
         self.assertEqual(
             parent.__render__(),
             """\
-<div>
-  state parent
-  <p a="3">
-    <div>
-      state child
-    </div>
-  </p>
-</div>""",
+<div>state parent<p a="3"><div>state child</div></p></div>""",
         )
 
         self.assertEqual(
@@ -630,10 +600,7 @@ class TestJinja(unittest.TestCase):
     </p>
   {% else %}
     <section>
-      <p>
-        ok
-        {{ name }}
-      </p>
+      <p>ok{{ name }}</p>
     </section>
   {% endif %}
 {% endfor %}"""

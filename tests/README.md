@@ -19,7 +19,7 @@ tests/
   03_routing_cli/          scaffold · CLI · build · deploy
   04_production/           Hardening · readiness · examples · **production lock**
   05_chaos/                Pentest · stress · races · parsing
-  06_browser/              Live Chromium (kit, xelement, auth)
+  06_browser/              Live Chromium (kit, xelement, auth, pretty text)
 ```
 
 ## Run
