@@ -233,7 +233,11 @@ class Component(extension.Tags):
                     if self.escape_string
                     else unescape(md_convert(child))
                 )
-            child = defHTML(child, escape=self.escape_string)
+            # An author's HTML file may be a whole page, so it is the one
+            # caller that opts into document mode. Strings never do.
+            child = defHTML(
+                child, escape=self.escape_string, document=not string_is_markdown
+            )
 
         if isinstance(child, (list, tuple)) and len(child) == 1:
             child = child[0]

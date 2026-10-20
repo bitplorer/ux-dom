@@ -51,7 +51,7 @@ def to_fragment(node: Any) -> str:
     """Coerce ux-dom / str / ``__html__`` to an HTML string.
 
     A plain string is HTML and goes through the same allowlist sanitizer as
-    ``defHTML`` (including document mode). Tag trees render as built.
+    ``defHTML``, in fragment mode. Tag trees render as built.
     """
     if node is None:
         return ""

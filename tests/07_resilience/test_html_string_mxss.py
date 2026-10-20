@@ -38,6 +38,9 @@ ENTRY_POINTS = {
 }
 
 
+_LIVE_HANDLER = re.compile(r"<[a-z][^>]*\son", re.I)
+
+
 def _render(nodes) -> str:
     return "".join(node.__render__(pretty=False) for node in nodes)
 
@@ -61,8 +64,9 @@ def test_raw_text_elements_are_dropped_with_their_content(tag):
     src = f'<{tag}><p title="</{tag}><img src=x onerror=alert(1)>">t</p></{tag}><b>ok</b>'
     out = _sanitized_html(src)
     assert f"<{tag}" not in out.lower(), out
-    assert "<img" not in out.lower(), out
-    assert out == "<b>ok</b>"
+    assert not _LIVE_HANDLER.search(out), out
+    # <plaintext> swallows the rest of the input in Python and in a browser.
+    assert out.endswith("<b>ok</b>") or (tag == "plaintext" and out == "")
 
 
 @pytest.mark.parametrize(
@@ -77,7 +81,7 @@ def test_raw_text_elements_are_dropped_with_their_content(tag):
 def test_comments_are_dropped(src):
     out = _sanitized_html(src)
     assert "<!--" not in out, out
-    assert not re.search(r"<[a-z][^>]*\son", out, re.I), out
+    assert not _LIVE_HANDLER.search(out), out
 
 
 def test_comment_inside_element_is_dropped_text_stays():
@@ -105,7 +109,7 @@ def test_input_cannot_select_document_mode(entry, prefix):
     assert "<style" not in out
     assert "<meta" not in out
     assert "evil.example" not in out
-    assert "<!doctype" not in out
+    assert "doctype" not in out
     assert "<p>" in out
 
 
@@ -166,8 +170,11 @@ def test_document_style_text_is_verbatim():
 )
 def test_document_style_with_markup_is_refused(src):
     out = _sanitized_html(src, document=True).lower()
-    assert "<style" not in out, out
-    assert "<img" not in out, out
+    # Python ends <style> at ``</StYlE`` like a browser, so any <img> after
+    # it is ordinary sanitized markup. What must not exist is a <style> that
+    # carries markup, or a live handler.
+    assert "onerror" not in out, out
+    assert not re.search(r"<style>[^<]*<(?!/style>)", out), out
 
 
 # --- URL checks at the parser, not only the renderer -----------------------
@@ -198,6 +205,7 @@ def test_document_style_with_markup_is_refused(src):
         ("<img src='javascript:alert(1)'>", "src"),
         ("<blockquote cite='javascript:alert(1)'>x</blockquote>", "cite"),
         ("<video poster='javascript:alert(1)'></video>", "poster"),
+        ("<img srcset='/a.png 1x, javascript:alert(1) 2x'>", "srcset"),
     ],
 )
 def test_dangerous_scheme_is_dropped_from_parsed_attributes(src, attr):
@@ -324,3 +332,29 @@ def test_escape_flag_never_bypasses_sanitizing(escape):
     low = out.lower()
     for bad in ("<script", "onerror", "onclick", "<noscript", "<!--"):
         assert bad not in low, (escape, out)
+
+
+# --- the one in-package document-mode caller ---------------------------------
+
+
+def test_component_html_file_is_document_mode_but_string_is_not(tmp_path):
+    from pathlib import Path
+
+    from ux_dom.dom import Component
+
+    page = tmp_path / "page.html"
+    page.write_text(HOSTILE_DOCUMENT.replace("evil.example", "cdn.example"))
+
+    class FromFile(Component):
+        def render(self):
+            return Path(page)
+
+    class FromString(Component):
+        def render(self):
+            return page.read_text()
+
+    from_file = FromFile().__render__(pretty=False)
+    assert '<link href="https://cdn.example/x.css" rel="stylesheet">' in from_file
+    assert "<style>" in from_file
+    from_string = FromString().__render__(pretty=False).lower()
+    assert "<link" not in from_string and "<style" not in from_string

@@ -8,7 +8,8 @@
    "tests/02_document_plugins/test_ui_kit.py",
    "tests/02_document_plugins/test_ui_kit_defects.py",
    "tests/04_production/test_production_stability.py",
-   "tests/07_resilience/test_html_allowlist.py"
+   "tests/07_resilience/test_html_allowlist.py",
+   "tests/07_resilience/test_html_string_mxss.py"
   ],
   "imported_by": {
    "function_level": [],

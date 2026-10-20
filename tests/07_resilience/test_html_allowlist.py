@@ -1,8 +1,8 @@
 """Allowlist sanitizer, including document mode.
 
 Strings stay HTML. The same sanitizer serves ``defHTML``, ``srcdoc``, and
-``to_fragment``. A string whose first non-whitespace starts with ``<!DOCTYPE``
-or ``<html`` is a document; anything else is a fragment.
+``to_fragment``. Fragment mode is the default; document mode is the caller's
+``document=True`` keyword and is never inferred from the input.
 """
 
 from __future__ import annotations
@@ -104,9 +104,10 @@ REVIEW_PAYLOADS = [
 ]
 
 
-def _render(src: str, escape: bool = True) -> str:
+def _render(src: str, escape: bool = True, document: bool = False) -> str:
     return "".join(
-        node.__render__(pretty=False) for node in defHTML(src, escape=escape)
+        node.__render__(pretty=False)
+        for node in defHTML(src, escape=escape, document=document)
     )
 
 
@@ -161,7 +162,7 @@ def _live_bits(html: str) -> list[str]:
 
 
 def test_document_round_trip_exact():
-    assert _render(PAGE) == EXPECTED
+    assert _render(PAGE, document=True) == EXPECTED
 
 
 def test_document_meta_refresh_dropped():
@@ -171,7 +172,7 @@ def test_document_meta_refresh_dropped():
         "<meta charset='utf-8'>"
         "</head><body></body></html>"
     )
-    out = _render(src)
+    out = _render(src, document=True)
     assert "refresh" not in out.lower()
     assert "evil.example" not in out
     assert 'charset="utf-8"' in out
@@ -186,7 +187,7 @@ def test_document_link_javascript_and_http_dropped():
         "<link rel='icon' href='https://cdn.example/favicon.ico'>"
         "</head><body></body></html>"
     )
-    out = _render(src)
+    out = _render(src, document=True)
     assert "javascript:" not in out.lower()
     assert "http://evil.example" not in out
     assert 'href="/app.css"' in out
@@ -212,7 +213,7 @@ def test_document_title_amp_kept_as_written():
         "</head><body></body></html>"
     )
     for escape in (True, False):
-        out = _render(src, escape=escape)
+        out = _render(src, escape=escape, document=True)
         assert "<title>Tom &amp; Jerry</title>" in out, (escape, out)
         assert "&amp;amp;" not in out
         assert "Tomamp" not in out
@@ -223,7 +224,7 @@ def test_leading_whitespace_and_case_are_still_a_document():
         " \n<!DoCtYpE html><HTML><head><title>T&amp;T</title></head>"
         "<body><p>z</p></body></HTML>"
     )
-    out = _render(src)
+    out = _render(src, document=True)
     assert out.startswith("<!DOCTYPE html>")
     assert "<title>T&amp;T</title>" in out
     assert "<html>" in out.lower()
@@ -281,8 +282,14 @@ def test_fully_stripped_input_renders_empty():
 
 
 def test_srcdoc_and_to_fragment_share_the_sanitizer():
-    assert to_fragment(PAGE) == EXPECTED
-    assert safe_attr_value("srcdoc", PAGE) == EXPECTED
+    # Both are fragment mode: a whole page loses its doctype, meta, link and
+    # style, because the input does not choose document mode.
+    fragment = _render(PAGE)
+    assert to_fragment(PAGE) == fragment
+    assert safe_attr_value("srcdoc", PAGE) == fragment
+    for gone in ("<!doctype", "<meta", "<link", "<style", "<script"):
+        assert gone not in fragment.lower()
+    assert "<h1>Hi</h1>" in fragment
     assert to_fragment("<p>harmless</p>") == "<p>harmless</p>"
     assert safe_attr_value("srcdoc", "<p>harmless</p>") == "<p>harmless</p>"
 

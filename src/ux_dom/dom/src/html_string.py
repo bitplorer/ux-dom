@@ -7,19 +7,27 @@
 """Parse HTML strings into ux-dom nodes (defHTML) and related helpers.
 
 One allowlist sanitizer. Safe tags and their attributes are kept; everything
-else is stripped. Text is escaped on both ``escape`` settings so a ``<`` in
-text cannot reopen a tag. Character references are re-emitted here
-(``&amp;``, ``&#39;``) and are not passed through ``escape()``. ``raw()`` is
-the verbatim opt-out.
+else is stripped. String HTML is always sanitized: ``escape`` is accepted for
+compatibility and never bypasses the allowlist. Text is escaped on both
+``escape`` settings so a ``<`` in text cannot reopen a tag. Character
+references are re-emitted here (``&amp;``, ``&#39;``) and are not passed
+through ``escape()``. Trusted markup uses ``raw()`` / ``Markup``.
 
-A string whose first non-whitespace starts with ``<!DOCTYPE`` or ``<html``
-is a document: the doctype, ``html``/``head``/``body``, ``title``, safe
-``meta``, stylesheet/icon ``link``, and ``style`` are kept. A fragment is not.
+Elements a browser parses as raw text (``noscript``, ``xmp``, ``template``
+content, …) and comments are dropped: the Python parser reads them as markup,
+so they are where the two parsers disagree (mutation XSS).
+
+Fragment mode is the default. Document mode (doctype, ``html``/``head``/
+``body``, safe ``meta``, stylesheet/icon ``link``, ``style``) is a keyword
+the caller passes (``document=True``); the input never selects it.
+Unknown elements are unwrapped; custom elements are kept only when named in
+``allow_custom_elements``. Policy: docs/adr/0002-html-string-sanitizer-policy.md.
 """
 
 import builtins
 import html
 import re
+from collections.abc import Iterable
 import types
 import typing as T
 from dataclasses import dataclass, field
@@ -29,6 +37,7 @@ from ux_dom.dom.src import ext, htmltags, jinjatags, svgtags
 from ux_dom.dom.src.htmltags import html_tag
 from ux_dom.dom.src.parse_html import (
     Char,
+    Comment,
     Declaration,
     Element,
     Entity,
@@ -73,9 +82,21 @@ def create_dynamic_element(tag_name: str) -> T.Type[ext.Tags]:
 # Tags dropped with their children. Unknown tags are unwrapped instead, so
 # their text stays and the tag does not. ``link`` / ``meta`` / ``style`` are
 # not in this set: a fragment drops them, a document keeps them under rules.
+#
+# The raw-text group is parsed as markup by Python but as text by a browser
+# (``noscript`` with scripting on, ``xmp``, ``noembed``, ``noframes``,
+# ``iframe``, ``plaintext``) or lives in an inert template document. Keeping
+# any of them lets a ``</noscript>`` inside a comment or attribute end the
+# element early in the browser and turn the rest into live markup.
 _DROP_TAGS = frozenset(
     {
         "script",
+        "noscript",
+        "noembed",
+        "noframes",
+        "xmp",
+        "plaintext",
+        "template",
         "iframe",
         "object",
         "embed",
@@ -159,7 +180,6 @@ _ALLOWED_TAGS = frozenset(
         "menu",
         "meter",
         "nav",
-        "noscript",
         "ol",
         "optgroup",
         "option",
@@ -187,7 +207,6 @@ _ALLOWED_TAGS = frozenset(
         "table",
         "tbody",
         "td",
-        "template",
         "textarea",
         "tfoot",
         "th",
@@ -525,15 +544,87 @@ def _link_href_ok(value: str) -> bool:
     return head.split(":", 1)[0] == "https"
 
 
-def _is_document(raw: str) -> bool:
-    head = raw.lstrip().lower()
-    return head.startswith("<!doctype") or head.startswith("<html")
+# https://html.spec.whatwg.org/#valid-custom-element-name (ASCII subset).
+_CUSTOM_ELEMENT_NAME = re.compile(r"[a-z][a-z0-9._-]*-[a-z0-9._-]*")
+_RESERVED_CUSTOM_NAMES = frozenset(
+    {
+        "annotation-xml",
+        "color-profile",
+        "font-face",
+        "font-face-src",
+        "font-face-uri",
+        "font-face-format",
+        "font-face-name",
+        "missing-glyph",
+    }
+)
 
 
-def _tag_allowed(name: str, document: bool) -> bool:
+def _custom_element_rules(
+    names: T.Optional[Iterable[str]],
+) -> frozenset[str]:
+    """Validate ``allow_custom_elements``: exact names or a ``prefix-*``.
+
+    Only valid custom element names (lowercase, with a hyphen, not reserved)
+    are accepted, so the opt-in cannot re-allow ``script`` or any other
+    built-in tag.
+    """
+    if names is None:
+        return frozenset()
+    if isinstance(names, str):
+        names = [names]
+    rules = set()
+    for name in names:
+        text = str(name)
+        stem = text[:-1] if text.endswith("*") else text
+        if (
+            not _CUSTOM_ELEMENT_NAME.fullmatch(stem)
+            or stem in _RESERVED_CUSTOM_NAMES
+            or "*" in stem
+        ):
+            raise ValueError(
+                f"allow_custom_elements: {text!r} is not a custom element "
+                "name (lowercase, contains '-') or a 'prefix-*' pattern"
+            )
+        rules.add(text)
+    return frozenset(rules)
+
+
+def _custom_allowed(name: str, rules: frozenset[str]) -> bool:
+    if not rules or name in _RESERVED_CUSTOM_NAMES:
+        return False
+    if not _CUSTOM_ELEMENT_NAME.fullmatch(name):
+        return False
+    return any(
+        name == rule or (rule.endswith("*") and name.startswith(rule[:-1]))
+        for rule in rules
+    )
+
+
+def _tag_allowed(name: str, document: bool, custom: frozenset[str]) -> bool:
     if name in _ALLOWED_TAGS:
         return True
-    return document and name in _DOCUMENT_ONLY_TAGS
+    if document and name in _DOCUMENT_ONLY_TAGS:
+        return True
+    return _custom_allowed(name, custom)
+
+
+def _style_text(token) -> T.Optional[str]:
+    """Document ``<style>`` text, verbatim, or ``None`` to drop the element.
+
+    CSS is raw text: escaping it breaks ``a > b``. Any ``<`` is refused, which
+    covers ``</style`` in every case and markup that a browser would parse in
+    foreign content (``<svg><style>`` children are elements there).
+    """
+    parts = []
+    for child in token.children:
+        if getattr(child, "name", "") or not isinstance(
+            getattr(child, "data", None), str
+        ):
+            return None
+        parts.append(child.data)
+    css = "".join(parts)
+    return None if "<" in css else css
 
 
 def _reference_text(token: Char | Entity) -> str:
@@ -579,6 +670,11 @@ def _attr_kept(tag: str, key: str, value) -> bool:
         return False
     if kl in _URL_ATTRS and _scheme_is_dangerous(value):
         return False
+    if kl == "srcset" and any(
+        _scheme_is_dangerous(candidate.strip())
+        for candidate in value.split(",")
+    ):
+        return False
     return True
 
 
@@ -592,11 +688,17 @@ def _filter_attrs(tag: str, attrs: dict) -> dict:
     }
 
 
+# ``http-equiv`` values that only describe the document. ``refresh``,
+# ``set-cookie``, ``content-security-policy``, ``default-style`` and the rest
+# change behaviour, so a meta that carries one is dropped.
+_META_HTTP_EQUIV = frozenset({"content-type", "content-language", "x-ua-compatible"})
+
+
 def _meta_attrs(attrs: dict) -> dict | None:
     for key, value in dict(attrs or {}).items():
         if (
             _norm_attr_name(key) == "http-equiv"
-            and str(value).strip().lower() == "refresh"
+            and str(value).strip().lower() not in _META_HTTP_EQUIV
         ):
             return None
     return _filter_attrs("meta", attrs)
@@ -638,18 +740,21 @@ class StringToHTML(object):
 
     html_string_or_token: T.Union[str, Element, list[Element], ext.Tags]
     modules: list[types.ModuleType] = field(default_factory=list)
+    # Accepted for compatibility. String HTML is always sanitized.
     escape: bool = field(default=True)
+    # Chosen by the caller, never inferred from the input.
     document: bool = field(default=False)
+    allow_custom_elements: T.Optional[Iterable[str]] = field(default=None)
 
     def __post_init__(self):
+        self._custom = _custom_element_rules(self.allow_custom_elements)
+        self.allow_custom_elements = self._custom
         if isinstance(self.html_string_or_token, (str, html_tag)):
             raw = (
                 self.html_string_or_token
                 if isinstance(self.html_string_or_token, str)
                 else str(self.html_string_or_token)
             )
-            if isinstance(self.html_string_or_token, str):
-                self.document = _is_document(raw)
             self.tokens = tokenize_html(raw).children
         else:
             self.tokens = self.html_string_or_token
@@ -664,12 +769,13 @@ class StringToHTML(object):
         if jinjatags not in self.modules:
             self.modules.append(jinjatags)
 
-    def _child_parser(self, token) -> "StringToHTML":
+    def _child_parser(self, tokens) -> "StringToHTML":
         return StringToHTML(
-            [token],
+            tokens,
             modules=self.modules,
             escape=self.escape,
             document=self.document,
+            allow_custom_elements=self._custom,
         )
 
     def _add_text(self, tag, text: str, *, already_escaped: bool):
@@ -686,11 +792,11 @@ class StringToHTML(object):
             return tag
         if tag is not None:
             for child in children:
-                self._child_parser(child).parse(tag=tag)
+                self._child_parser([child]).parse(tag=tag)
             return tag
         holder = ext.PlaceholderTag()
         for child in children:
-            self._child_parser(child).parse(tag=holder)
+            self._child_parser([child]).parse(tag=holder)
         return holder if holder.children else tag
 
     def parse(self, tag: T.Optional[ext.Tags] = None) -> T.Union[str, ext.Tags, None]:
@@ -701,11 +807,12 @@ class StringToHTML(object):
                     tag = self._add_text(tag, text, already_escaped=True)
                 continue
 
-            if (
-                self.document
-                and isinstance(token, Declaration)
-                and str(token.data).lower().startswith("doctype")
+            if isinstance(token, Declaration) and str(token.data).lower().startswith(
+                "doctype"
             ):
+                if not self.document:
+                    # A fragment has no doctype; do not leak it as text.
+                    continue
                 rest = str(token.data).split(None, 1)
                 label = rest[1] if len(rest) > 1 else "html"
                 if tag is not None:
@@ -716,38 +823,43 @@ class StringToHTML(object):
                 continue
 
             if not token.name:
-                # Data, comments. Newlines are source indentation. A space on
-                # the same line as the words belongs to the text.
+                # Comments are dropped: ``--!>`` and friends end a comment
+                # differently in Python and in a browser.
+                if isinstance(token, Comment):
+                    continue
+                # Data. Newlines are source indentation. A space on the same
+                # line as the words belongs to the text.
                 if hasattr(token, "data"):
                     data = _text_data(token.data)
                     if not data:
                         continue
                     with tag or ext.PlaceholderTag() as tag:  # type: ignore[assignment]
-                        if token.__class__.__name__ == "Comment":
-                            htmltags.comment(data)
-                        else:
-                            # Braced text is text. Jinja stays the tag DSL
-                            # or raw(), not a hole in this parser.
-                            dom_text(escape(data), escape=False)
+                        # Braced text is text. Jinja stays the tag DSL or
+                        # raw(), not a hole in this parser.
+                        dom_text(escape(data), escape=False)
                 continue
 
             name = str(token.name).lower()
             if name in _DROP_TAGS or (name in _DOCUMENT_ONLY_TAGS and not self.document):
                 continue
-            if not _tag_allowed(name, self.document):
+            if not _tag_allowed(name, self.document, self._custom):
                 tag = self._unwrap(token, tag)
                 continue
 
-            if name == "meta":
-                attrs = _meta_attrs(dict(token.attrs or {}))
-                if attrs is None:
-                    continue
+            css = None
+            kept: T.Optional[dict]
+            if name == "style":
+                css = _style_text(token)
+                kept = None if css is None else _filter_attrs(name, dict(token.attrs or {}))
+            elif name == "meta":
+                kept = _meta_attrs(dict(token.attrs or {}))
             elif name == "link":
-                attrs = _link_attrs(dict(token.attrs or {}))
-                if attrs is None:
-                    continue
+                kept = _link_attrs(dict(token.attrs or {}))
             else:
-                attrs = _filter_attrs(name, dict(token.attrs or {}))
+                kept = _filter_attrs(name, dict(token.attrs or {}))
+            if kept is None:
+                continue
+            attrs = kept
 
             element = None
             tag_name = token.name
@@ -768,21 +880,19 @@ class StringToHTML(object):
             if tag is not None:
                 with tag:
                     with element(**attrs) as child_tag:
-                        StringToHTML(
-                            token.children,
-                            modules=self.modules,
-                            escape=self.escape,
-                            document=self.document,
-                        ).parse(tag=child_tag)
+                        self._fill(child_tag, token, css)
             else:
                 with element(**attrs) as tag:
-                    StringToHTML(
-                        token.children,
-                        modules=self.modules,
-                        escape=self.escape,
-                        document=self.document,
-                    ).parse(tag=tag)
+                    self._fill(tag, token, css)
         return tag
+
+    def _fill(self, element, token, css: T.Optional[str]) -> None:
+        if css is not None:
+            # Raw text, checked by ``_style_text``: verbatim, never escaped.
+            if css:
+                dom_text(css, escape=False)
+            return
+        self._child_parser(token.children).parse(tag=element)
 
     def __repr__(self):
         return str(self.parse())
@@ -796,16 +906,36 @@ class StringToHTML(object):
 # with lru_cache decorated on defHTML the evaluation of child_element at run time will not happen twice
 # and thus parent_div will never add child_element in subsequest runs thus better way to cache defHTML
 # evaluation is to cache the method where it is used.
-def defHTML(raw_string, escape=True) -> T.List[ext.Tags]:  # noqa
+def defHTML(
+    raw_string,
+    escape=True,
+    *,
+    document: bool = False,
+    allow_custom_elements: T.Optional[Iterable[str]] = None,
+) -> T.List[ext.Tags]:  # noqa
+    """Parse an HTML string into sanitized ux-dom nodes.
+
+    String HTML is always sanitized. ``escape`` is accepted for compatibility
+    and does not bypass the allowlist; trusted markup uses ``raw()`` /
+    ``Markup``. ``document=True`` (caller's choice, never inferred) keeps the
+    doctype and safe ``meta`` / ``link`` / ``style``. ``allow_custom_elements``
+    names custom elements (``"x-counter"``) or a ``"prefix-*"`` pattern to
+    keep instead of unwrapping.
+    """
     if raw_string is None:
         return []
     if not isinstance(raw_string, str):
         raw_string = str(raw_string)
-    document = _is_document(raw_string)
+    custom = _custom_element_rules(allow_custom_elements)
     tokens = tokenize_html(raw_string).children
     elements = []
     for token in tokens:
-        element = StringToHTML([token], escape=escape, document=document).parse()
+        element = StringToHTML(
+            [token],
+            escape=escape,
+            document=document,
+            allow_custom_elements=custom,
+        ).parse()
         if element:
             assert isinstance(
                 element, ext.Tags
@@ -814,10 +944,22 @@ def defHTML(raw_string, escape=True) -> T.List[ext.Tags]:  # noqa
     return elements
 
 
-def _sanitized_html(raw_string, escape=True) -> str:
+def _sanitized_html(
+    raw_string,
+    escape=True,
+    *,
+    document: bool = False,
+    allow_custom_elements: T.Optional[Iterable[str]] = None,
+) -> str:
     """String form of ``defHTML``. Not a second sanitizer and not public."""
     return "".join(
-        element.__render__(pretty=False) for element in defHTML(raw_string, escape=escape)
+        element.__render__(pretty=False)
+        for element in defHTML(
+            raw_string,
+            escape=escape,
+            document=document,
+            allow_custom_elements=allow_custom_elements,
+        )
     )
 
 

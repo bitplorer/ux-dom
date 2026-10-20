@@ -11,9 +11,21 @@
   `<script>` becomes `""`. `<p>harmless</p>` stays. A non-string `__html__`
   value is still verbatim.
 - **Behaviour: `to_fragment(str)` sanitizes.** A plain string is HTML and uses
-  the same allowlist, including document mode. Tag trees still render as built.
-- **Document mode.** A string whose first non-whitespace starts with
-  `<!DOCTYPE` or `<html>` keeps the doctype, `html` / `head` / `body`, `title`,
-  `meta` (not `http-equiv=refresh`), `link rel=stylesheet|icon` only when
-  `href` is same-origin or `https`, and `style`. A fragment still drops
-  `style`, `meta`, and `link`. `javascript:` and `http://` links are dropped.
+  the same allowlist, in fragment mode. Tag trees still render as built.
+- **Document mode is a caller keyword.** `defHTML(s, document=True)` /
+  `StringToHTML(s, document=True)` keep the doctype, `html` / `head` / `body`,
+  `title`, `meta` (no `http-equiv`, or `content-type` / `content-language` /
+  `x-ua-compatible`), `link rel=stylesheet|icon` only when `href` is
+  same-origin or `https`, and `style` (text verbatim; dropped if it contains
+  `<`). The input never selects it: a string starting with `<!DOCTYPE` or
+  `<html>` is a fragment. Only an author's HTML file returned as a `Path`
+  from `Component.render()` opts in.
+- **Custom elements need an opt-in.** Unknown tags, custom elements included,
+  are unwrapped. `defHTML(s, allow_custom_elements=["x-counter"])` (or
+  `["x-*"]`) keeps them with global / `aria-*` / `data-*` attributes. Or use a
+  tag tree or `raw()`. See ADR 0002.
+- **`escape=False` does not bypass sanitizing.** The parameter is accepted for
+  compatibility; string HTML is always sanitized. Trusted HTML uses `raw()` /
+  `Markup`.
+- **Comments, `noscript`, and `template` content are dropped** from string
+  HTML.
