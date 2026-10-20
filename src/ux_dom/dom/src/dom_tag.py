@@ -137,23 +137,55 @@ class dom_tag(object):
     raw_text: typing.Optional[str] = None
 
     #: Public DOM query API. Library code calls ``_find`` / ``_matches``; a
-    #: subclass that redefines these names (instance method, classmethod,
-    #: staticmethod or plain attribute) is rejected at class creation so it
-    #: can never silently shadow tree queries.
+    #: subclass whose MRO resolves these names anywhere but ``dom_tag`` (own
+    #: method, classmethod, staticmethod, plain attribute, or a mixin earlier
+    #: in the MRO) is rejected at class creation so it can never silently
+    #: shadow tree queries. To customize queries, override ``_find`` /
+    #: ``_matches``.
     _SEALED_DOM_API = ("get", "matches")
+
+    #: Old public names of internal mutators (renamed with a leading ``_``).
+    #: Internals only call the ``_`` names, so an override of an old name
+    #: would be silently ignored. No compat dispatch: defining one (directly
+    #: or via a mixin) fails loud and names the hook to override instead.
+    _RENAMED_DOM_API = (
+        "clear",
+        "remove",
+        "set_attribute",
+        "delete_attribute",
+        "setdocument",
+        "replace_children",
+    )
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
+        where = f"{cls.__module__}.{cls.__qualname__}"
         for name in dom_tag._SEALED_DOM_API:
-            if name in cls.__dict__:
-                kind = type(cls.__dict__[name]).__name__
-                raise TypeError(
-                    f"{cls.__module__}.{cls.__qualname__} defines {name!r} "
-                    f"({kind}), which would shadow the DOM query method "
-                    f"dom_tag.{name}(). Rename it (e.g. '{name}_view' or "
-                    f"'on_{name}'); query trees with node.get(...), "
-                    "node.matches(...) or `x in node`."
-                )
+            owner = next(k for k in cls.__mro__ if name in vars(k))
+            if owner is dom_tag:
+                continue
+            kind = type(vars(owner)[name]).__name__
+            via = "" if owner is cls else f" (inherited from {owner.__qualname__})"
+            raise TypeError(
+                f"{where} defines {name!r} ({kind}){via}, which would shadow "
+                f"the DOM query method dom_tag.{name}(). Rename it (e.g. "
+                f"'{name}_view' or 'on_{name}'); to customize tree queries "
+                f"override '_find' / '_matches'."
+            )
+        for name in dom_tag._RENAMED_DOM_API:
+            owner = next(
+                (k for k in cls.__mro__ if k is not object and name in vars(k)),
+                None,
+            )
+            if owner is None:
+                continue
+            via = "" if owner is cls else f" (inherited from {owner.__qualname__})"
+            raise TypeError(
+                f"{where} defines {name!r}{via}, the old name of an internal "
+                f"DOM mutator; library code calls '_{name}' and would ignore "
+                f"it. To customize this behaviour override '_{name}' (the "
+                f"supported extension hook); otherwise rename the method."
+            )
 
     def __new__(_cls, *args, **kwargs):
         """
@@ -361,12 +393,13 @@ class dom_tag(object):
                 child._setdocument_unlocked(doc)
 
     def add(self, *args):
-        """Add child tags / strings / attr dicts. Public, overridable alias.
+        """Add child tags / strings / attr dicts. Public alias of :meth:`_add`.
 
         Library internals (constructor args, ``with`` exit, ``+=``, Component
         delegation, document assembly) call :meth:`_add` directly, so a
         subclass method named ``add`` (e.g. a channel ``@action``) never
-        hijacks child attachment.
+        hijacks child attachment. Overriding ``add`` therefore affects only
+        explicit ``.add()`` calls; override ``_add`` to customize attachment.
         """
         return self._add(*args)
 

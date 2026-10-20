@@ -121,6 +121,39 @@ class TestSealedQueryApi(unittest.TestCase):
                 def get(self):
                     return 1
 
+    def test_mixin_earlier_in_mro_rejected(self):
+        # Review lock (#51): the seal must resolve each name through the MRO,
+        # not only the class's own __dict__.
+        class RouteMixin:
+            @classmethod
+            def get(cls, *a, **k):
+                return "page"
+
+            def matches(self, *a, **k):
+                return "hijacked"
+
+        with self.assertRaisesRegex(TypeError, "RouteMixin.*'get'|'get'.*RouteMixin"):
+
+            class Page(RouteMixin, Component):
+                def render(self):
+                    return div(span("x", id="x"))
+
+        class OnlyMatches:
+            matches = 0
+
+        with self.assertRaisesRegex(TypeError, "'matches'"):
+            type("P2", (OnlyMatches, div), {})
+
+    def test_mixin_later_in_mro_is_harmless(self):
+        class Tail:
+            def get(self, *a, **k):
+                return "never reached"
+
+        class Ok(div, Tail):
+            pass
+
+        self.assertEqual(Ok(span(id="a")).get(id="a")[0].attributes["id"], "a")
+
     def test_queries_unchanged(self):
         class Card(Component):
             def render(self):
@@ -159,6 +192,46 @@ class TestOldInternalNamesAbsent(unittest.TestCase):
                         f"{cls.__name__}.{name} must not exist (use _{name})",
                     )
                     self.assertTrue(callable(getattr(cls, f"_{name}")))
+
+    def test_defining_old_name_fails_loud(self):
+        # Review lock (#51): an override of a renamed mutator would be silently
+        # ignored (internals call the ``_`` name). No compat dispatch (ADR 0004):
+        # defining the old name raises at class creation and names the hook.
+        for base in (div, Component, dom_tag):
+            for name in OLD_INTERNAL:
+                with self.subTest(base=base.__name__, name=name):
+                    with self.assertRaisesRegex(TypeError, f"override '_{name}'"):
+                        type("Bad", (base,), {name: lambda self, *a, **k: None})
+
+    def test_old_name_from_mixin_fails_loud(self):
+        class LegacyMixin:
+            def set_attribute(self, key, value):
+                pass
+
+        with self.assertRaisesRegex(TypeError, "override '_set_attribute'"):
+            type("Upper", (LegacyMixin, div), {})
+
+    def test_underscore_hooks_are_the_extension_point(self):
+        calls = []
+
+        class Upper(div):
+            def _set_attribute(self, key, value):
+                calls.append(key)
+                super()._set_attribute(key, str(value).upper())
+
+            def _add(self, *args):
+                calls.append("add")
+                return super()._add(*args)
+
+        u = Upper("a", title="x")
+        with u:
+            span("b")
+        u += span("c")
+        html = u.__render__(pretty=False)
+        self.assertIn('title="X"', html)
+        self.assertIn("a<span>b</span><span>c</span>", html)
+        self.assertIn("title", calls)
+        self.assertGreaterEqual(calls.count("add"), 3)
 
     def test_item_syntax_still_works(self):
         d = div(span("a"))

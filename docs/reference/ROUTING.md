@@ -72,11 +72,19 @@ Scaffold: `uxcompose create-app`.
 ux-dom ships no file router. `ux_dom.routing`, the `DirectoryRouting` plugin,
 `App.routes()` and `uxdom add route` were removed (F-18). Pure-dom demos wire
 explicit FastAPI routes (`app.get("/x")(lambda: HTMLResponse(Page()))`).
-Component method names are safe except the sealed query API: defining
-`get` or `matches` on a `Component` (instance method or classmethod) raises
-`TypeError` at class creation. Every other name, including `add` (e.g. a
-channel `@action def add`), is free: library internals attach children via
-`_add` and query via `_find` / `_matches`.
+Reserved method names on a `Component` (or any tag subclass; a mixin earlier
+in the MRO counts too) raise `TypeError` at class creation:
+
+- the sealed query API `get` / `matches` (customize queries by overriding
+  `_find` / `_matches`);
+- the old names of the renamed mutators `clear`, `remove`, `set_attribute`,
+  `delete_attribute`, `setdocument`, `replace_children` (override the `_`
+  name, e.g. `_set_attribute`, which is the supported hook).
+
+Every other name, including `add` (e.g. a channel `@action def add`), is free:
+library internals attach children via `_add`, so overriding `add` changes only
+explicit `.add()` calls. Override `_add` to customize attachment from
+constructor args, `with` blocks and `+=`.
 
 ## What ux-dom does **not** own
 
