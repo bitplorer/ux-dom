@@ -21,6 +21,7 @@ import re
 import textwrap
 import threading
 import typing
+from contextvars import ContextVar
 from pathlib import Path
 
 from jinja2.utils import htmlsafe_json_dumps
@@ -35,6 +36,7 @@ from ux_dom.dom.src.utils.dom_util import (
     checked_tag_name,
     escape_attr_minimal,
     InvalidNodeContext,
+    lazy,
     safe_attr_value,
 )
 
@@ -100,23 +102,36 @@ def _delegates_to_render(cls) -> bool:
     return found
 
 
-def _shows_text(node, _seen: set) -> bool:
-    """True when ``node`` is text, or a tagless wrapper that holds text."""
-    if isinstance(node, (str, dom_text)):
+# Per-render memo for ``_shows_text``: id -> (node, result). The node is kept
+# so its id cannot be reused by another object while the render runs.
+_TEXT_MEMO: ContextVar[dict | None] = ContextVar("ux_dom_text_memo", default=None)
+
+
+def _shows_text(node, memo: dict) -> bool:
+    """True when ``node`` is text, or a tagless wrapper that holds text.
+
+    A ``lazy`` counts as text: its result is unknown until it renders.
+    """
+    if isinstance(node, (str, dom_text, lazy)):
         return True
-    if (
-        not isinstance(node, Tags)
-        or node._control(Tags.RENDER_TAG, True)
-        or id(node) in _seen
-    ):
+    if not isinstance(node, Tags) or node._control(Tags.RENDER_TAG, True):
         return False
-    _seen.add(id(node))
-    return any(_shows_text(child, _seen) for child in node.children)
+    hit = memo.get(id(node))
+    if hit is None:
+        memo[id(node)] = (node, False)  # a wrapper cycle holds no more text
+        hit = (node, any(_shows_text(child, memo) for child in node.children))
+        memo[id(node)] = hit
+    return hit[1]
 
 
 def _mixed_content(children) -> bool:
     """Text next to another node. A pretty newline there shows as a space."""
-    return len(children) > 1 and any(_shows_text(c, set()) for c in children)
+    if len(children) < 2:
+        return False
+    memo = _TEXT_MEMO.get()
+    if memo is None:
+        memo = {}
+    return any(_shows_text(c, memo) for c in children)
 
 
 class Tags(dom_tag, dom1core):
@@ -412,6 +427,15 @@ class Tags(dom_tag, dom1core):
     def _render(
         self, sb, indent_level=1, indent_str="  ", pretty=True, xhtml=False, _seen=None
     ):
+        if pretty and _TEXT_MEMO.get() is None:
+            # One memo per pretty render keeps the mixed-content check linear.
+            token = _TEXT_MEMO.set({})
+            try:
+                return Tags._render(
+                    self, sb, indent_level, indent_str, pretty, xhtml, _seen=_seen
+                )
+            finally:
+                _TEXT_MEMO.reset(token)
         if _seen is None:
             _seen = set()
         sid = id(self)

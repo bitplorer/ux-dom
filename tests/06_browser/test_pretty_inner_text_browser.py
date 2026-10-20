@@ -8,7 +8,7 @@ import unittest
 from pathlib import Path
 
 from ux_dom import Fragment
-from ux_dom.dom import b, div, em, li, p, pre, ul
+from ux_dom.dom import b, div, em, i, lazy, li, p, pre, span, ul
 
 from browser_gate import NODE, require_browser
 
@@ -27,6 +27,10 @@ CORPUS = [
     p("a", b("x"), "y"),
     div(p("x", em("y"), "&"), ul(li("1 < 2"), li("a", b("b")))),
     pre("a\n  b", b("x"), "c"),
+    p(b("x"), lazy(lambda: "y")),
+    p("a", lazy(lambda: b("x")), "c"),
+    div(lazy(lambda: span("a")), lazy(lambda: "b&c")),
+    div(lazy(lambda: p("a", i("b"))), p("c")),
 ]
 
 

@@ -11,8 +11,12 @@ Pretty puts a newline and indent before each child. Next to text a browser
 shows that newline as a space, so an element whose children mix text with
 other nodes renders them flat: `<p>AT&amp;T <b>x</b>.</p>` stays on one line,
 and its pretty and flat renders show the same `innerText`
-(`tests/06_browser/test_pretty_inner_text_browser.py`). Elements with only
-element children keep the indented layout.
+(`tests/06_browser/test_pretty_inner_text_browser.py`). A `lazy` child counts
+as text, since its result is unknown until it renders. The whole subtree under
+a flat parent is flat: a pretty `<b>` inside `p("a ", b("x"))` would show as
+`a  x`. Elements with only element children keep the indented layout. The check
+is memoized per render, so it stays linear in how deeply `Fragment`s and
+`Component`s nest.
 
 ## Modes
 

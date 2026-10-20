@@ -9,9 +9,11 @@ from __future__ import annotations
 
 import asyncio
 import unittest
+from unittest import mock
 
 from ux_dom import Fragment
-from ux_dom.dom import b, div, li, p, pre, script, style, textarea, ul
+from ux_dom.dom import b, div, lazy, li, p, pre, script, span, style, textarea, ul
+from ux_dom.dom.src import ext
 
 
 class TestPrettyInlineText(unittest.TestCase):
@@ -52,6 +54,31 @@ class TestPrettyInlineText(unittest.TestCase):
         ):
             with self.subTest(node=node.__render__(pretty=False)):
                 self.assertEqual(str(node), node.__render__(pretty=False))
+
+    def test_lazy_counts_as_text(self):
+        # Its result is unknown until it renders, so its parent renders flat.
+        self.assertPretty(p(b("x"), lazy(lambda: "y")), "<p><b>x</b>y</p>")
+        self.assertPretty(
+            div(lazy(lambda: span("a")), lazy(lambda: "b&c")),
+            "<div><span>a</span>b&amp;c</div>",
+        )
+        self.assertPretty(p("a", lazy(lambda: b("x")), "c"), "<p>a<b>x</b>c</p>")
+
+    def test_mixed_content_check_is_linear_in_wrapper_depth(self):
+        depth = 200
+        node = p("x")
+        for _ in range(depth):
+            node = Fragment(p("x"), node)
+        real, calls = ext._shows_text, []
+
+        def counting(*args):
+            calls.append(1)
+            return real(*args)
+
+        with mock.patch.object(ext, "_shows_text", counting):
+            str(node)
+        # About 4 per level; a re-walk of every subtree is about depth**2.
+        self.assertLess(len(calls), 8 * depth)
 
     def test_async_pretty_matches_sync(self):
         node = Fragment("<div><p>a&#39;b <i>c</i>d</p><p>e</p></div>")

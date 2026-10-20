@@ -8,6 +8,7 @@
    "tests/01_core/test_attr_dialects.py",
    "tests/01_core/test_full_mro_behaviour_integration.py",
    "tests/01_core/test_mro_signatures.py",
+   "tests/01_core/test_pretty_inline_text.py",
    "tests/01_core/test_pretty_stream.py",
    "tests/01_core/test_streaming_and_attrs.py",
    "tests/04_production/test_intent_battery.py",
