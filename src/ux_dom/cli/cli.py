@@ -12,23 +12,13 @@ XElement is served from the installed package at ``/ux-dom/static/x_element.js``
 (no app copy).
 """
 from pathlib import Path
+from types import SimpleNamespace
 
 from typer import Option, Typer, echo
 
-
-class _Messages:
-    """User-facing CLI messages: info to stdout, errors to stderr."""
-
-    @staticmethod
-    def info(msg: str) -> None:
-        echo(msg)
-
-    @staticmethod
-    def error(msg: str) -> None:
-        echo(msg, err=True)
-
-
-ux_dom_logger = _Messages()
+# User messages: info to stdout, errors to stderr. Name kept for the call sites
+# open PR #49 also edits.
+ux_dom_logger = SimpleNamespace(info=echo, error=lambda msg: echo(msg, err=True))
 
 app = Typer(
     help=(
@@ -117,7 +107,6 @@ def build_cmd(
 
     cwd = Path.cwd()
     if (cwd / "app.py").is_file() and not (cwd / "app" / "main.py").is_file():
-        print(_PRODUCT_BUILD, flush=True)
         ux_dom_logger.error(_PRODUCT_BUILD)
         raise SystemExit(2)
 
