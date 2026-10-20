@@ -61,6 +61,33 @@ class TestDedupeKey(unittest.TestCase):
         ]
         self.assertEqual(len(dedupe_dom_nodes(nodes)), 1)
 
+    def test_rel_token_order_ignored(self):
+        nodes = [
+            link(rel="stylesheet preload", href="/s.css"),
+            link(rel="preload  stylesheet", href="/s.css"),
+        ]
+        self.assertEqual(len(dedupe_dom_nodes(nodes)), 1)
+        raw = [
+            '<link rel="stylesheet preload" href="/s.css">',
+            '<link href="/s.css" rel="Preload Stylesheet">',
+        ]
+        self.assertEqual(len(dedupe_dom_nodes(raw)), 1)
+
+    def test_preload_link_keeps_script(self):
+        nodes = [link(rel="preload", href="/x.js", _as="script"), script(src="/x.js")]
+        self.assertEqual(len(dedupe_dom_nodes(nodes)), 2)
+
+    def test_raw_string_ignores_data_attrs(self):
+        # data-src is not a resource URL: the two scripts load different files
+        raw = [
+            '<script data-src="/a.js" src="/b.js"></script>',
+            '<script src="/a.js"></script>',
+        ]
+        self.assertEqual(len(dedupe_dom_nodes(raw)), 2)
+        # a data-href-only link loads nothing, so it is never keyed
+        lazy = ['<link data-href="/s.css">', '<link data-href="/s.css">']
+        self.assertEqual(len(dedupe_dom_nodes(lazy)), 2)
+
 
 class TestAddXElementStubs(unittest.TestCase):
     """G4: every ``uxdom add xelement`` variant constructs and renders."""

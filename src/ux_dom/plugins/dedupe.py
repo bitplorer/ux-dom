@@ -10,7 +10,8 @@ from typing import Any, Iterable, List
 _SRC_HREF = re.compile(r"""(?i)\b(?:src|href)\s*=\s*["']([^"']+)["']""")
 # Raw HTML string that is itself a script/link tag (not a wrapper around one)
 _OPEN_TAG = re.compile(r"""(?is)^\s*<(script|link)\b([^>]*)>""")
-_REL = re.compile(r"""(?i)\brel\s*=\s*["']([^"']*)["']""")
+# Whole attribute names only: data-src / data-href / data-rel do not count
+_ATTR = re.compile(r"""(?i)(?<![\w-])(src|href|rel)\s*=\s*["']([^"']*)["']""")
 
 
 def _resource(node: Any) -> tuple[str, str, str] | None:
@@ -29,14 +30,17 @@ def _resource(node: Any) -> tuple[str, str, str] | None:
         m = _OPEN_TAG.match(str(node))
         if not m:
             return None
-        tag, opening = m.group(1).lower(), m.group(2)
-        found = _SRC_HREF.search(opening)
-        url = found.group(1) if found else None
-        rel_m = _REL.search(opening)
-        rel = rel_m.group(1) if rel_m else ""
+        tag = m.group(1).lower()
+        found: dict[str, str] = {}
+        for name, value in _ATTR.findall(m.group(2)):
+            found.setdefault(name.lower(), value)
+        url = found.get("src" if tag == "script" else "href")
+        rel = found.get("rel", "")
     if not url:
         return None  # inline scripts are never deduped against each other
-    return tag, " ".join(str(rel).lower().split()), _norm(str(url))
+    # rel is a token set: "preload stylesheet" == "stylesheet preload"
+    rel_key = " ".join(sorted(set(str(rel).lower().split())))
+    return tag, rel_key, _norm(str(url))
 
 
 def resource_key(node: Any) -> str | None:
