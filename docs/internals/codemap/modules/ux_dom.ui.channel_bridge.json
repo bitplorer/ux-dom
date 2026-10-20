@@ -23,6 +23,7 @@
     "ux_dom.ui.tokens"
    ],
    "module_level": [
+    "ux_dom.dom.src.dom_tag",
     "ux_dom.dom.src.html_string"
    ],
    "type_checking": []

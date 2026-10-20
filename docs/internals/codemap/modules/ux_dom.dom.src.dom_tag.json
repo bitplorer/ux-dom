@@ -39,12 +39,15 @@
     "ux_dom.dom.src.utils.dom_util",
     "ux_dom.elements.buttons",
     "ux_dom.response.serialize",
+    "ux_dom.ui.channel_bridge",
     "ux_dom.ui.dropdown_menu"
    ],
    "type_checking": []
   },
   "imports_internal": {
-   "function_level": [],
+   "function_level": [
+    "ux_dom.dom.src.html_string"
+   ],
    "module_level": [
     "ux_dom.dom.src.concurrency",
     "ux_dom.dom.src.utils.dom_util"

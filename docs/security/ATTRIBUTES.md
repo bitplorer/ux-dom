@@ -151,7 +151,12 @@ sanitized: `escape=False` does not bypass the allowlist; the ignored parameter i
 pending removal ([ADR 0004](../adr/0004-no-compat-shims-pre-release.md)). Trusted markup uses `raw()` / `Markup` (verbatim). A
 `__html__` value is checked before the `str` check, so a `Markup` (a `str`
 subclass) passed to `to_fragment`, `srcdoc`, `Fragment`, or returned from
-`Component.render()` stays verbatim. Policy:
+`Component.render()` stays verbatim. A string child added to a tag whose
+`escape_string` is falsy (`__escape_string=False`, as on `HTMLElement`) is
+HTML and goes through the same allowlist; a `Markup` child stays verbatim.
+`bytes` (a child or `to_fragment(bytes)`) are strict UTF-8 first, then the
+`str` path; `bytearray` / `memoryview` children and `to_fragment` of any
+other object raise `TypeError` (no `str(obj)` fallback). Policy:
 [ADR 0002](../adr/0002-html-string-sanitizer-policy.md).
 
 **Tags.** A fragment may contain the known-safe set (the usual content tags,

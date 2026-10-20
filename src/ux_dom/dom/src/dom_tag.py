@@ -418,6 +418,15 @@ class dom_tag(object):
             if obj is True:
                 # Bare True is never meaningful DOM content
                 continue
+            if isinstance(obj, bytes):
+                # Strict UTF-8, then the str path. Invalid UTF-8 raises.
+                obj = obj.decode("utf-8")
+            elif isinstance(obj, (bytearray, memoryview)):
+                # Iterable: falling through would spell them out as integers.
+                raise TypeError(
+                    "cannot add %s as a child; expected str, Markup, or a tag"
+                    % type(obj).__name__
+                )
             if isinstance(obj, numbers.Number):
                 # Convert to string so we fall into next if block
                 obj = str(obj)
@@ -426,9 +435,19 @@ class dom_tag(object):
                 # Raw text elements (<script>, <style>): the browser never
                 # entity-decodes their content, so escaping would corrupt JS/CSS.
                 # Breakouts are neutralized at render time, over the joined body.
-                # Other elements escape unless ``escape_string`` is explicitly False.
-                if not type(self).raw_text and getattr(self, "escape_string", True):
-                    obj = escape(obj)
+                if not type(self).raw_text:
+                    if getattr(self, "escape_string", True):
+                        obj = escape(obj)
+                    elif not callable(getattr(obj, "__html__", None)):
+                        # escape_string falsy: the string is HTML, so it goes
+                        # through the defHTML allowlist (ADR 0002). Markup is
+                        # the verbatim opt-out. Local import: html_string
+                        # imports Tags, which subclasses dom_tag.
+                        from ux_dom.dom.src.html_string import defHTML
+
+                        for node in defHTML(obj):
+                            self._add_unlocked(node)
+                        continue
 
                 # we are wrapping str into dom_string because when we use .get method we may
                 # for some reason want to get the parent of the string values in children,

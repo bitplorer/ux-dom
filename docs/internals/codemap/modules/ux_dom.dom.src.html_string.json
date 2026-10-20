@@ -17,6 +17,7 @@
   ],
   "imported_by": {
    "function_level": [
+    "ux_dom.dom.src.dom_tag",
     "ux_dom.dom.src.utils.dom_util"
    ],
    "module_level": [
