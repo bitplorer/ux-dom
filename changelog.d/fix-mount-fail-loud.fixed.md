@@ -1,0 +1,1 @@
+- **Bug: Document.mount fails loud** when static cannot be installed (was swallowed).

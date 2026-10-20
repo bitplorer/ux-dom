@@ -46,6 +46,7 @@
    "tests/05_chaos/test_stress_races_js_pipeline.py",
    "tests/06_browser/test_custom_elements_auth_browser.py",
    "tests/06_browser/test_xelement_browser.py",
+   "tests/07_resilience/test_mount_fail_loud.py",
    "tests/browser/auth_xelement_harness.mjs",
    "tests/browser/kit_browser_suite.mjs",
    "tests/browser/x_element_harness.mjs"

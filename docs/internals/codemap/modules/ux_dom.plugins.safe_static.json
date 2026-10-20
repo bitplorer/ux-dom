@@ -7,7 +7,8 @@
    "docs/security/SAFE_STATIC.md",
    "docs/security/WHY_JS_URL.md",
    "tests/02_document_plugins/test_safe_static.py",
-   "tests/05_chaos/test_pentest_chaos.py"
+   "tests/05_chaos/test_pentest_chaos.py",
+   "tests/07_resilience/test_mount_fail_loud.py"
   ],
   "imported_by": {
    "function_level": [
