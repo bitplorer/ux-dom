@@ -358,3 +358,100 @@ def test_component_html_file_is_document_mode_but_string_is_not(tmp_path):
     assert "<style>" in from_file
     from_string = FromString().__render__(pretty=False).lower()
     assert "<link" not in from_string and "<style" not in from_string
+
+
+# --- round 2 review ---------------------------------------------------------
+
+TRUSTED = "<div><script>ok()</script><b>t</b></div>"
+
+
+def test_markup_is_trusted_verbatim_on_every_entry_point():
+    """ADR 0002 §2: a ``__html__`` value (MarkupSafe ``Markup``, a ``str``
+    subclass) never enters the parser, so the ``str`` check must come after it."""
+    from markupsafe import Markup
+
+    from ux_dom.dom import Component
+
+    trusted = Markup(TRUSTED)
+    assert to_fragment(trusted) == TRUSTED
+    assert safe_attr_value("srcdoc", trusted) == TRUSTED
+    assert "<script>ok()</script>" in HTMLElement(trusted).__render__(pretty=False)
+    assert "<script>ok()</script>" in str(Fragment(trusted))
+
+    class Trusted(Component):
+        def render(self):
+            return trusted
+
+    assert "<script>ok()</script>" in Trusted().__render__(pretty=False)
+
+    # The same text as a plain str is still sanitized everywhere.
+    for entry in ENTRY_POINTS.values():
+        assert "<script" not in entry(TRUSTED)
+
+
+@pytest.mark.parametrize(
+    "src",
+    [
+        '<p data-a"b=1>x</p>',
+        "<p aria-a'b=1>x</p>",
+        "<p data-\x01=1>x</p>",
+        "<p data-a\x7fb=1>x</p>",
+        "<p data-a<b=1>x</p>",
+    ],
+)
+def test_unrenderable_attribute_names_are_dropped_not_raised(src):
+    assert _sanitized_html(src) == "<p>x</p>"
+    assert "<p>" in str(Fragment(src))
+
+
+@pytest.mark.parametrize(
+    "src",
+    [
+        "<html><body><svg><style>a{fill:red}</style></svg></body></html>",
+        "<html><body><svg><g><style>a{}</style></g></svg></body></html>",
+        "<html><body><math><style>a{}</style></math></body></html>",
+        "<html><body><svg><style>&lt;img src=x onerror=alert(1)&gt;</style></svg></body></html>",
+    ],
+)
+def test_document_style_in_foreign_content_is_dropped(src):
+    out = _sanitized_html(src, document=True).lower()
+    assert "<style" not in out, out
+
+
+def test_document_style_outside_foreign_content_is_kept():
+    out = _sanitized_html(
+        "<html><head><style>a{}</style></head><body><svg></svg></body></html>",
+        document=True,
+    )
+    assert "<style>a{}</style>" in out
+
+
+@pytest.mark.parametrize(
+    ("src", "text"),
+    [
+        ("<p>&AMP; &LT; &GT; &QUOT;</p>", '& < > "'),
+        ("<p>&amp; &lt; &gt; &quot;</p>", '& < > "'),
+        ("<p>AT&T</p>", "AT&T"),
+        ("<p>&notanentity;</p>", "&notanentity"),
+    ],
+)
+def test_named_references_decode_like_a_browser(src, text):
+    import html as _html
+
+    out = _sanitized_html(src)
+    assert out.startswith("<p>") and out.endswith("</p>")
+    inner = out[3:-4]
+    assert "<" not in inner
+    assert _html.unescape(inner).rstrip(";") == text
+
+
+@pytest.mark.parametrize(
+    ("src", "expected"),
+    [
+        ("a <b>x</b> <i>y</i>", "a <b>x</b> <i>y</i>"),
+        ("<p><b>Hello</b> <i>world</i></p>", "<p><b>Hello</b> <i>world</i></p>"),
+        ("<p>&lt; &gt;</p>", "<p>&lt; &gt;</p>"),
+    ],
+)
+def test_inline_whitespace_between_tags_is_kept(src, expected):
+    assert _sanitized_html(src) == expected
