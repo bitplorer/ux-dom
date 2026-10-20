@@ -1,0 +1,1 @@
+- **Tests/doctor:** remove green-forever ``if False`` asserts; doctor Tailwind check reports not-checked (``??``) instead of fake OK.
