@@ -215,7 +215,7 @@ Prefer that over wide `StaticFiles` directory mounts for library JS.
 # document.py
 from ux_dom import Document
 from ux_dom.dom import meta, title
-from ux_dom.runtime import Htmx, XElement
+from ux_dom import Htmx, XElement
 
 document = Document(
     head=[meta(charset="utf-8")],

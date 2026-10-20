@@ -1,6 +1,7 @@
 {
  "ux_dom.plugins": {
   "consumers": [
+   "docs/reference/API_SURFACE.md",
    "docs/security/ASSETS.md",
    "docs/security/CSP.md",
    "examples/ux_kit/app/main.py",
@@ -28,6 +29,7 @@
    "tests/07_resilience/test_no_deprecations.py",
    "tests/07_resilience/test_ownership_hard_cut.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
+   "tests/07_resilience/test_top_level_facades.py",
    "tests/conftest.py"
   ],
   "imported_by": {

@@ -49,7 +49,7 @@ site-packages/ux_channel/static/ux-channel.js
 
 ```python
 from ux_dom import Document
-from ux_dom.runtime import XElement
+from ux_dom import XElement
 
 document = Document(head=[], body=[]).use(XElement())
 ```

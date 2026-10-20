@@ -65,7 +65,6 @@
    "ux_dom.dom.src.ws_rpc",
    "ux_dom.plugins.contribution",
    "ux_dom.plugins.runtime",
-   "ux_dom.runtime",
    "ux_dom.scripts",
    "ux_dom.slots",
    "ux_dom.slots.slots"

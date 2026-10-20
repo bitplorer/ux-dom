@@ -8,7 +8,6 @@ Purpose of each tree under `ux_dom/`. Prefer this over guessing from file names.
 ux_dom/
   settings/     Document factory
   dom/          Tags, Component, serialize, XElement types
-  runtime/      Document-facing XElement / Htmx / Csp / Channel facades
   plugins/      Document contributions (CSP, SafeStatic, hub)
   response/     HTML / streaming adapters
   scripts/      x_element.js (package-mounted)
@@ -23,7 +22,6 @@ ux-dom ships no file router (`ux_dom.routing` removed, F-18).
 | Path | Role | Public? |
 |------|------|---------|
 | `ux_dom/__init__.py` | Version + re-exports Document, Component, runtime facades | **Public** |
-| `ux_dom/runtime/` | Stable aliases: `XElement`, `Htmx`, `Csp`, `Channel` | **Public** |
 | `ux_dom/compat/` | Runtime compat (e.g. valio PEP 649) | Private |
 | `ux_dom/diagnostics.py` | Error message builders for XElement checks | Private |
 | **`ux_dom/dom/`** | Tag constructors, Document HTML helpers, parse | **Public** |

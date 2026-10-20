@@ -11,6 +11,7 @@
    "docs/reference/COMPONENTS.md",
    "docs/reference/DOCUMENT.md",
    "docs/reference/REACTIVE.md",
+   "docs/reference/XELEMENT.md",
    "docs/security/ASSETS.md",
    "docs/security/WHY_JS_URL.md",
    "examples/ux_dom_only/realtime_kit/app.py",
@@ -79,6 +80,7 @@
    "tests/07_resilience/test_f18_directory_router_absent.py",
    "tests/07_resilience/test_markdown_render_kwarg.py",
    "tests/07_resilience/test_ownership_hard_cut.py",
+   "tests/07_resilience/test_top_level_facades.py",
    "tests/helpers.py"
   ],
   "imported_by": {
@@ -129,7 +131,9 @@
    "module_level": [
     "ux_dom.compat.valio_pep649",
     "ux_dom.dom.src.component",
-    "ux_dom.runtime",
+    "ux_dom.plugins.control",
+    "ux_dom.plugins.csp",
+    "ux_dom.plugins.runtime",
     "ux_dom.settings",
     "ux_dom.slots"
    ],
@@ -138,18 +142,15 @@
   "layer": "root",
   "path": "src/ux_dom/__init__.py",
   "public": [
-   "Channel",
    "Component",
    "Csp",
    "Document",
    "Fragment",
-   "Htmx",
    "MergeClassAttribute",
    "ReactiveComponent",
    "SlotElement",
    "Slots",
    "WebComponentSlot",
-   "XElement",
    "x_slot"
   ]
  }

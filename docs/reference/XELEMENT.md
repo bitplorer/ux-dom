@@ -94,7 +94,7 @@ Requires **both** `x-tagname` and `x-data`. After upgrade, `x_element.js` calls 
 `/ux-dom/static/x_element.js` (single copy from the installed package).
 
 ```python
-from ux_dom.runtime import XElement
+from ux_dom import XElement
 from ux_dom.dom import script
 from ux_dom.scripts import x_element_js
 

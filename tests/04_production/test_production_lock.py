@@ -14,7 +14,7 @@ from __future__ import annotations
 import unittest
 import ux_dom
 from ux_dom import Document
-from ux_dom.runtime import XElement, Htmx, Csp
+from ux_dom import XElement, Htmx, Csp
 from ux_dom.plugins.runtime import UxChannelRuntime, XELEMENT_JS_URL
 from ux_dom.scripts import x_element_js_text
 
@@ -57,7 +57,7 @@ class TestUxChannelRuntimeOptional(unittest.TestCase):
             self.assertEqual(list(rt.served_files()), [])
 
     def test_channel_alias_is_runtime_not_action_plane(self):
-        from ux_dom.runtime import Channel
+        from ux_dom import Channel
 
         self.assertIs(Channel, UxChannelRuntime)
 

@@ -51,7 +51,6 @@ LAYERS: dict[str, str] = {
     "ux_dom.plugins": "document",
     "ux_dom.profiling": "support",
     "ux_dom.response": "integrations",
-    "ux_dom.runtime": "document",
     "ux_dom.scripts": "document",
     "ux_dom.settings": "document",
     "ux_dom.slots": "components",

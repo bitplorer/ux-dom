@@ -55,7 +55,7 @@ _DOCUMENT_PY = '''\
 from __future__ import annotations
 
 from ux_dom import Document
-from ux_dom.runtime import XElement, Csp
+from ux_dom import XElement, Csp
 
 document = Document(head=[], body=[], ensure_csrf_token=False).use(
     XElement(),

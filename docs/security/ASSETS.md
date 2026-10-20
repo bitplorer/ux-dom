@@ -108,7 +108,7 @@ uxchannel **already** packages and serves its JS. Do not invent a second alias.
 
 ```python
 from ux_dom import Document
-from ux_dom.runtime import XElement, Csp
+from ux_dom import XElement, Csp
 
 document = Document(head=[], body=[]).use(
     XElement(),   # <script src="/ux-dom/static/x_element.js">

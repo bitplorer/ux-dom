@@ -125,7 +125,7 @@ class TestStyleTokensFunctional(unittest.TestCase):
 class TestDocumentAndPaths(unittest.TestCase):
     def test_using_and_mount(self):
         from ux_dom import Document
-        from ux_dom.runtime import Htmx
+        from ux_dom import Htmx
 
         d = Document(ensure_csrf_token=False).using(Htmx(cdn=True))
         self.assertTrue(d.runtimes())
@@ -165,7 +165,7 @@ class TestReloaderSmoke(unittest.TestCase):
 
 class TestContributionProtocol(unittest.TestCase):
     def test_xelement_artifacts(self):
-        from ux_dom.runtime import XElement
+        from ux_dom import XElement
 
         xe = XElement()
         if hasattr(xe, "artifacts"):

@@ -39,7 +39,7 @@ pip install ux-dom
 
 ```python
 from ux_dom import Document
-from ux_dom.runtime import XElement, Htmx, Csp
+from ux_dom import XElement, Htmx, Csp
 from ux_dom.dom import div, h1
 
 document = Document(head=[], body=[]).use(

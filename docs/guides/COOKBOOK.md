@@ -8,7 +8,7 @@
 ```python
 from fastapi import FastAPI
 from ux_dom import Document
-from ux_dom.runtime import XElement, Htmx, Csp
+from ux_dom import XElement, Htmx, Csp
 from ux_dom.dom import div, h1
 
 document = Document(ensure_csrf_token=False).use(
@@ -55,7 +55,7 @@ See [XELEMENT.md](../reference/XELEMENT.md).
 ## CSP
 
 ```python
-from ux_dom.runtime import Csp
+from ux_dom import Csp
 document.use(Csp.auto())   # DEBUG → dev, else prod
 # or Csp.prod() / Csp.dev() / Csp.report_only()
 ```
@@ -63,7 +63,7 @@ document.use(Csp.auto())   # DEBUG → dev, else prod
 [CSP.md](../security/CSP.md)
 
 ## uxchannel ```python
-from ux_dom.runtime import Channel
+from ux_dom import Channel
 ch = Channel.optional(mount_via_ux_dom=False)
 if ch:
     document.use(ch)

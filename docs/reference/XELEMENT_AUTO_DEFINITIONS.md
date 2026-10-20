@@ -56,9 +56,9 @@ div(d, host, className="hidden")  # unnecessary
 
 ```python
 document = Document(...).use(XElementRuntime(), ...)  # x_element.js
-# from ux_dom.runtime import XElement as XElementRuntime alias
+# from ux_dom import XElement  (alias of XElementRuntime)
 document.mount(app)
 ```
 
-Note: `ux_dom.runtime.XElement` is the **runtime plugin** (JS file).  
+Note: `ux_dom.XElement` is the **runtime plugin** (JS file).  
 `ux_dom.dom.htmlelement.CustomElement` is the **component base**.
