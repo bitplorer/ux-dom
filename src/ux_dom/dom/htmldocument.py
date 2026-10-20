@@ -226,6 +226,35 @@ class HtmlDocument(component.Component):
                 )
         return element
 
+    def _asset_tag(self, item, default):
+        """Tag for a ``head=`` / ``body=`` asset (str path or attr dict).
+
+        ``default`` ("link" in head, "script" in body) only decides items that
+        name no tag, extension or tell-tale attribute.
+        """
+        tags = self.html_tags
+        if isinstance(item, str):
+            path = item.rstrip("/")
+            if path.endswith((".js", ".mjs")):
+                return tags.script(src=item)
+            if default == "link" or path.lower().endswith(".css"):
+                return tags.link(href=item, rel="stylesheet")
+            return tags.script(src=item)
+        d = dict(item)
+        tag = d.pop("tag", None)
+        if tag in ("script", "js") or ("src" in d and "href" not in d):
+            return tags.script(**d)
+        if tag == "meta" or ("charset" in d or "name" in d or "http_equiv" in d):
+            return tags.meta(**d)
+        if (
+            default == "link"
+            or tag in ("link", "css")
+            or ("href" in d and "src" not in d)
+        ):
+            d.setdefault("rel", "stylesheet")
+            return tags.link(**d)
+        return tags.script(**d)
+
     def render(
         self, *args, head=None, body=None, common_head=None, common_body=None, **kwargs
     ):
@@ -246,29 +275,8 @@ class HtmlDocument(component.Component):
                     for _head_file in head:
                         if isinstance(_head_file, dom_tag):
                             self.head.add(_head_file)
-                        elif isinstance(_head_file, str):
-                            if str(_head_file).rstrip("/").endswith((".js", ".mjs")):
-                                self.head.add(self.html_tags.script(src=_head_file))
-                            else:
-                                self.head.add(
-                                    self.html_tags.link(
-                                        href=_head_file, rel="stylesheet"
-                                    )
-                                )
-                        elif isinstance(_head_file, dict):
-                            d = dict(_head_file)
-                            tag = d.pop("tag", None)
-                            if tag in ("script", "js") or (
-                                "src" in d and "href" not in d
-                            ):
-                                self.head.add(self.html_tags.script(**d))
-                            elif tag == "meta" or (
-                                "charset" in d or "name" in d or "http_equiv" in d
-                            ):
-                                self.head.add(self.html_tags.meta(**d))
-                            else:
-                                d.setdefault("rel", "stylesheet")
-                                self.head.add(self.html_tags.link(**d))
+                        elif isinstance(_head_file, (str, dict)):
+                            self.head.add(self._asset_tag(_head_file, "link"))
 
                 if any(common_head):
                     for _hd in common_head:
@@ -286,25 +294,8 @@ class HtmlDocument(component.Component):
                     for _body_file in body:
                         if isinstance(_body_file, dom_tag):
                             self.body.add(_body_file)
-                        elif isinstance(_body_file, str):
-                            if str(_body_file).rstrip("/").endswith(".css"):
-                                self.body.add(
-                                    self.html_tags.link(
-                                        href=_body_file, rel="stylesheet"
-                                    )
-                                )
-                            else:
-                                self.body.add(self.html_tags.script(src=_body_file))
-                        elif isinstance(_body_file, dict):
-                            d = dict(_body_file)
-                            tag = d.pop("tag", None)
-                            if tag in ("link", "css") or (
-                                "href" in d and "src" not in d
-                            ):
-                                d.setdefault("rel", "stylesheet")
-                                self.body.add(self.html_tags.link(**d))
-                            else:
-                                self.body.add(self.html_tags.script(**d))
+                        elif isinstance(_body_file, (str, dict)):
+                            self.body.add(self._asset_tag(_body_file, "script"))
 
                 self.body.add(self._Body_placeholder)
                 # Definitions slot: auto-filled at pre_render from hosts
@@ -317,20 +308,8 @@ class HtmlDocument(component.Component):
 
         return doc, self.html
 
-    def _walk_render_tokens(self, indent_level, indent_str, pretty, xhtml, _seen=None):
-        """Token walk with pre_render once — pretty path must not double-run it.
-
-        Compact (pretty=False) runs ``__pre_render__`` here then streams tokens.
-        Pretty delegates to ``_render`` which also calls ``__pre_render__`` —
-        so we skip the extra call when pretty is active.
-        """
-        pretty_flag = pretty and self.is_pretty and not self.is_inline
-        if not pretty_flag:
-            self.__pre_render__()
-        return super()._walk_render_tokens(
-            indent_level, indent_str, pretty, xhtml, _seen=_seen
-        )
-
+    # No _walk_render_tokens override: Tags' walker delegates any class that
+    # overrides _render to it, so both stream modes pre_render exactly once here.
     def _render(
         self, sb, indent_level=1, indent_str="  ", pretty=True, xhtml=False, _seen=None
     ):

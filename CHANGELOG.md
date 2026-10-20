@@ -33,6 +33,11 @@
   classes, or a bare `x-transition` when both are bare; two class strings are space-joined.
   A repeated `x-bind` with an identical expression is deduped; a conflicting one raises
   `ValueError` naming both expressions (`:class` still joins).
+- **Fix: ``__async_render__`` matches ``__render__``.** CSS tags (``CSSClass``,
+  ``CSSId``, ``Keyframes``) and a ``ReactiveComponent`` changed after construction
+  now stream the same HTML as sync render. ``previousSibling`` of a first child
+  is ``None``. ``body=`` assets follow the head rules: a ``name``/``content``
+  dict is a ``<meta>`` and ``.CSS`` is a stylesheet.
 - **Security (breaking default): bare ``Csp()`` is tightened to ``Csp.prod()`` on script inline and connect-src.**
   ``Csp()``, ``CspPolicy``, ``CspMiddleware``, and ``build_csp_header`` no longer
   ship script ``'unsafe-inline'`` or bare ``ws:``/``wss:``. Apps that need inline
