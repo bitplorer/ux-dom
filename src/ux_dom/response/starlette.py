@@ -30,12 +30,34 @@ __all__ = ["HTMLResponse", "html_response", "StreamingResponse", "streaming_resp
 CallableType = T.TypeVar("CallableType", bound=T.Callable[..., T.Any])
 
 
-def _is_html_renderable(content: T.Any) -> bool:
-    return is_html_renderable(content)
+def _response_decorator(
+    endpoint: T.Optional[T.Callable[..., T.Any]],
+    is_renderable: T.Callable[[T.Any], bool],
+    response_cls: T.Callable[[T.Any], T.Any],
+) -> T.Callable[..., T.Any]:
+    """Wrap ``endpoint`` so renderable results become ``response_cls``.
 
+    Called with ``endpoint=None`` (``@deco()``), return the bare decorator.
+    Other results (e.g. a ready ``Response``) pass through unchanged.
+    """
+    if endpoint is None:
+        return lambda fn: _response_decorator(fn, is_renderable, response_cls)
 
-def _is_stream_renderable(content: T.Any) -> bool:
-    return is_stream_renderable(content)
+    if inspect.iscoroutinefunction(endpoint):
+
+        @wraps(endpoint)
+        async def decorated(*args, **kwargs):
+            content = await endpoint(*args, **kwargs)
+            return response_cls(content) if is_renderable(content) else content
+
+    else:
+
+        @wraps(endpoint)
+        def decorated(*args, **kwargs):
+            content = endpoint(*args, **kwargs)
+            return response_cls(content) if is_renderable(content) else content
+
+    return decorated
 
 
 class HTMLResponse(StarletteHTMLResponse):
@@ -59,30 +81,12 @@ class HTMLResponse(StarletteHTMLResponse):
 
 def html_response(
     endpoint: T.Optional[CallableType] = None,
-) -> T.Callable[..., HTMLResponse]:
-    def decorate_sync_async(endpoint):
-        if inspect.iscoroutinefunction(endpoint):
+) -> T.Callable[..., T.Any]:
+    """Decorator: renderable endpoint results become :class:`HTMLResponse`.
 
-            @wraps(endpoint)
-            async def decorated(*args, **kwargs) -> HTMLResponse:
-                content = await endpoint(*args, **kwargs)
-                if _is_html_renderable(content):
-                    return HTMLResponse(content)
-                return content
-
-        else:
-
-            @wraps(endpoint)
-            def decorated(*args, **kwargs) -> HTMLResponse:
-                content = endpoint(*args, **kwargs)
-                if _is_html_renderable(content):
-                    return HTMLResponse(content)
-                return content
-
-        decorated.__doc__ = endpoint.__doc__
-        return decorated
-
-    return decorate_sync_async(endpoint)
+    Use as ``@html_response`` or ``@html_response()``; sync and async endpoints.
+    """
+    return _response_decorator(endpoint, is_html_renderable, HTMLResponse)
 
 
 class StreamingResponse(StarletteStreamingResponse):
@@ -105,9 +109,8 @@ class StreamingResponse(StarletteStreamingResponse):
         media_type: T.Optional[str] = None,
         background: T.Optional[BackgroundTask] = None,
     ) -> None:
-        body = _coerce_streaming_body(html_content)
         super().__init__(
-            body,
+            prepare_html_stream(html_content),
             status_code,
             headers,
             media_type,
@@ -115,34 +118,11 @@ class StreamingResponse(StarletteStreamingResponse):
         )
 
 
-def _coerce_streaming_body(html_content):
-    """Adapter thin wrap — domain prepare lives in serialize.prepare_html_stream."""
-    return prepare_html_stream(html_content)
-
-
 def streaming_response(
     endpoint: T.Optional[CallableType] = None,
-) -> T.Callable[..., StreamingResponse]:
-    def decorate_sync_async(endpoint):
-        if inspect.iscoroutinefunction(endpoint):
+) -> T.Callable[..., T.Any]:
+    """Decorator: stream-renderable endpoint results become :class:`StreamingResponse`.
 
-            @wraps(endpoint)
-            async def decorated(*args, **kwargs) -> StreamingResponse:
-                content = await endpoint(*args, **kwargs)
-                if _is_stream_renderable(content):
-                    return StreamingResponse(content)
-                return content
-
-        else:
-
-            @wraps(endpoint)
-            def decorated(*args, **kwargs) -> StreamingResponse:
-                content = endpoint(*args, **kwargs)
-                if _is_stream_renderable(content):
-                    return StreamingResponse(content)
-                return content
-
-        decorated.__doc__ = endpoint.__doc__
-        return decorated
-
-    return decorate_sync_async(endpoint)
+    Use as ``@streaming_response`` or ``@streaming_response()``; sync and async endpoints.
+    """
+    return _response_decorator(endpoint, is_stream_renderable, StreamingResponse)
