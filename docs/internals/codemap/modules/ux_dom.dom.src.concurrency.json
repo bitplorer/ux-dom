@@ -16,7 +16,8 @@
    "module_level": [
     "ux_dom.concurrency",
     "ux_dom.dom.src.component",
-    "ux_dom.dom.src.dom_tag"
+    "ux_dom.dom.src.dom_tag",
+    "ux_dom.dom.src.utils.dom_util"
    ],
    "type_checking": []
   },

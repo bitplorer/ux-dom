@@ -29,6 +29,7 @@ Public License along with Dominate.  If not, see
 import html
 import re
 
+from ux_dom.dom.src.concurrency import multi_tree_lock
 from ux_dom.dom.src.dom_tag import dom_tag
 
 try:
@@ -48,6 +49,7 @@ __all__ = [
     "checked_comment_text",
     "checked_doctype",
     "InvalidMarkupToken",
+    "InvalidNodeContext",
     "InvalidTagName",
     "unescape",
     "url_escape",
@@ -250,6 +252,10 @@ def checked_tag_name(name):
 
 class InvalidMarkupToken(ValueError):
     """Comment or doctype text that would end the token early (fail closed)."""
+
+
+class InvalidNodeContext(ValueError):
+    """A node rendered where its raw output would change context (fail closed)."""
 
 
 def checked_comment_text(text):
@@ -530,7 +536,24 @@ class lazy(dom_tag):
 
     def _render(self, sb, *a, **kw):
         r = self.func(*self.args, **self.kwargs)
-        text = str(r)
+        if isinstance(r, dom_tag):
+            # A tag renders as a child at this position: same layout arguments,
+            # and its context checks (a CSS rule outside <style>, #81) see
+            # this node's parent. The cycle guard gets this node's ancestors
+            # only: a node rendered elsewhere in the tree is reuse, not a cycle.
+            ancestors: set = set()
+            node = self
+            while node is not None and id(node) not in ancestors:
+                ancestors.add(id(node))
+                node = node.parent
+            with multi_tree_lock(r):
+                parent, r.parent = r.parent, self.parent
+                try:
+                    text = "".join(r._render([], *a, **{**kw, "_seen": ancestors}))
+                finally:
+                    r.parent = parent
+        else:
+            text = str(r)
         # A str result is text, like a str child. Tags, raw() and Markup
         # (``__html__``) are HTML already. Inside script / style the parent
         # neutralizes breakouts over the joined body at render time.

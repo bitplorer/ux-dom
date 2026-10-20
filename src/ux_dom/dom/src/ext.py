@@ -34,6 +34,7 @@ from ux_dom.dom.src.utils.dom_util import (
     checked_attr_name,
     checked_tag_name,
     escape_attr_minimal,
+    InvalidNodeContext,
     safe_attr_value,
 )
 
@@ -826,6 +827,31 @@ class StyleTags(Tags):
     self_dedent = False
     tagname_prefix = ""
     attribute_joiner = "%s: %s;"
+
+    def _render(self, sb, *args, **kwargs):
+        """A CSS rule renders inside ``<style>`` or standalone, never as HTML.
+
+        Its selector and rule text are emitted raw. ``<style>`` neutralizes
+        ``</style`` over its joined body; as the child of any other element the
+        text would land in HTML context (#81), so that raises
+        ``InvalidNodeContext``. Other CSS rules and tag-less wrappers
+        (``rule & rule``) pass the context through.
+        """
+        node, seen = self.parent, {id(self)}
+        while node is not None and getattr(type(node), "raw_text", None) != "style":
+            transparent = isinstance(node, StyleTags) or (
+                isinstance(node, Tags) and not node._control(Tags.RENDER_TAG, True)
+            )
+            if not transparent:
+                raise InvalidNodeContext(
+                    "%s is a CSS rule; render it inside <style>, not <%s>"
+                    % (type(self).__name__, node._tagname())
+                )
+            if id(node) in seen:  # parent cycle: no HTML ancestor
+                break
+            seen.add(id(node))
+            node = node.parent
+        return super()._render(sb, *args, **kwargs)
 
     def _render_open_tag(
         self,

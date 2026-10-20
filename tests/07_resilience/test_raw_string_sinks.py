@@ -214,7 +214,7 @@ def test_lazy_markup_raw_tag_unchanged():
 
     assert _render(div(lazy(lambda: Markup(IMG)))) == f"<div>{IMG}</div>"
     assert _render(div(lazy(lambda: raw(IMG)))) == f"<div>{IMG}</div>"
-    assert _render(div(lazy(lambda: b("x")))) == f"<div>{b('x')}</div>"
+    assert _render(div(lazy(lambda: b("x")))) == _render(div(b("x")))
 
 
 def test_lazy_in_script_is_raw_text():
@@ -498,14 +498,15 @@ def test_tagname_attribute_does_not_rename(how, name):
 
 
 def test_css_tagname_attribute_does_not_rename():
+    from ux_dom.dom import style
     from ux_dom.dom.src.csstags import CSSClass
 
     class btn(CSSClass):
         pass
 
     payload = "<img src=x onerror=alert(1)>"
-    out = _render(div(btn(color="red", tagname=payload)))
-    assert out.startswith("<div>.btn{"), out
+    out = _render(style(btn(color="red", tagname=payload)))
+    assert out.startswith("<style>.btn{"), out
     assert "<img" not in out, out
 
 

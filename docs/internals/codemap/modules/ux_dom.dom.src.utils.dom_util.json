@@ -14,6 +14,7 @@
    "tests/07_resilience/test_add_raw_string_absent.py",
    "tests/07_resilience/test_attr_escape_isolation.py",
    "tests/07_resilience/test_attr_name_validation.py",
+   "tests/07_resilience/test_css_node_context.py",
    "tests/07_resilience/test_html_allowlist.py",
    "tests/07_resilience/test_html_parse_sanitizer.py",
    "tests/07_resilience/test_html_string_mxss.py",
@@ -43,6 +44,7 @@
     "ux_dom.dom.src.html_string"
    ],
    "module_level": [
+    "ux_dom.dom.src.concurrency",
     "ux_dom.dom.src.dom_tag"
    ],
    "type_checking": []
@@ -53,6 +55,7 @@
    "CrossOriginURL",
    "InvalidAttributeName",
    "InvalidMarkupToken",
+   "InvalidNodeContext",
    "InvalidTagName",
    "SAME_ORIGIN_URL_ATTRIBUTES",
    "UNSAFE_URL",
