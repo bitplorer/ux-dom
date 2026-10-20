@@ -429,8 +429,13 @@ class HtmlToAst(HTMLParser):
         self.struct = Tree(name)
 
     def feed(self, data: str) -> Root:  # type: ignore[override]
-        """Parse the source string (param name matches ``HTMLParser.feed``)."""
+        """Parse the source string (param name matches ``HTMLParser.feed``).
+
+        Newlines are normalized first, as a browser does before it parses:
+        CRLF and a lone CR are LF, in text, raw text and attributes.
+        """
         self.struct.clear()
+        data = data.replace("\r\n", "\n").replace("\r", "\n")
         super().feed(_finish_numeric_references(data, keep_style=True))
         return self.struct.outmost
 
