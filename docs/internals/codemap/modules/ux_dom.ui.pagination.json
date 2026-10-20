@@ -1,6 +1,8 @@
 {
  "ux_dom.ui.pagination": {
-  "consumers": [],
+  "consumers": [
+   "tests/02_document_plugins/test_ui_kit_dedupe.py"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [

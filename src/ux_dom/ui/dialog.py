@@ -24,7 +24,7 @@ from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import div
-from ux_dom.ui.tokens import cn, dialog_panel, overlay, overlay_root, surface
+from ux_dom.ui.tokens import cn, dialog_panel, overlay, overlay_id, overlay_root, surface
 
 __all__ = ["Dialog"]
 
@@ -48,6 +48,7 @@ class Dialog(Component):
             return overlay_root(attrs, open=False)
 
         panel = dialog_panel(
+            root_id=overlay_id(attrs),
             title=title,
             body=body,
             footer=footer,

@@ -9,7 +9,7 @@ from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import div
-from ux_dom.ui.tokens import cn, dialog_panel, overlay, overlay_root, surface
+from ux_dom.ui.tokens import cn, dialog_panel, overlay, overlay_id, overlay_root, surface
 
 __all__ = ["Sheet"]
 
@@ -35,6 +35,7 @@ class Sheet(Component):
             else "fixed inset-y-0 right-0 z-50 w-full max-w-md"
         )
         panel = dialog_panel(
+            root_id=overlay_id(attrs),
             title=title,
             body=body,
             footer=footer,

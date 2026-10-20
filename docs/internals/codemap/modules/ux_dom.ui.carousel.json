@@ -3,6 +3,7 @@
   "consumers": [
    "examples/ux_kit/app/routes/index.py",
    "tests/02_document_plugins/test_ui_battery.py",
+   "tests/02_document_plugins/test_ui_kit_dedupe.py",
    "tests/07_resilience/test_no_deprecations.py"
   ],
   "imported_by": {

@@ -231,21 +231,27 @@ def nav_button(
     )
 
 
+def overlay_id(attrs: dict[str, Any]) -> str:
+    """Root id of an overlay: the caller's ``id=`` or ``overlay``."""
+    return attrs.get("id") or "overlay"
+
+
 def overlay_root(attrs: dict[str, Any], *children: Any, open: bool):
     """Morph target shared by Dialog / Sheet / Command (``id`` and channel id default to ``overlay``)."""
     root = {
-        "id": attrs.pop("id", None) or "overlay",
+        "id": overlay_id(attrs),
         "data-open": "1" if open else "0",
         "data-channel-id": attrs.pop("data-channel-id", "overlay"),
     }
+    attrs.pop("id", None)
     if not open:
         root["className"] = "contents"
     return div(*children, **root, **attrs)
 
 
-def dialog_panel(*, title: str, body: Any, footer: Any, className: str):
-    """``role="dialog"`` panel with an optional labelled title, body and footer."""
-    title_id = "dialog-title"
+def dialog_panel(*, root_id: str, title: str, body: Any, footer: Any, className: str):
+    """``role="dialog"`` panel with an optional title (``<root_id>-title``), body and footer."""
+    title_id = f"{root_id}-title"
     kids: list[Any] = []
     if title:
         kids.append(h2(title, id=title_id, className=cn(type_scale["title"])))
