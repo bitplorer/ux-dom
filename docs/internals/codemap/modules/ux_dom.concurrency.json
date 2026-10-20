@@ -4,7 +4,8 @@
    "docs/internals/CONCURRENCY.md",
    "tests/01_core/test_concurrency_policy_e2e.py",
    "tests/01_core/test_parallel_first_class.py",
-   "tests/04_production/test_p95_profiling.py"
+   "tests/04_production/test_p95_profiling.py",
+   "tests/07_resilience/test_build_parallel_context.py"
   ],
   "imported_by": {
    "function_level": [

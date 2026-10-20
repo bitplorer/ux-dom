@@ -107,7 +107,6 @@
   one shard per module under ``docs/internals/codemap/``; CI fails when a
   shard is stale (``--write-changed`` rewrites only those). See
   ``docs/internals/CODEMAP.md``.
-- **Bug: ``build_parallel`` inside ``with tag:`` stays sequential** so children attach (ContextVar stack is not shared with worker threads).
 
 ## 0.2.0 — remove deprecations
 

@@ -62,6 +62,7 @@
    "tests/06_browser/test_custom_elements_auth_browser.py",
    "tests/07_resilience/test_attr_escape_isolation.py",
    "tests/07_resilience/test_attr_name_validation.py",
+   "tests/07_resilience/test_build_parallel_context.py",
    "tests/fixtures/auth_xelements.py"
   ],
   "imported_by": {
