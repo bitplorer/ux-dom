@@ -30,6 +30,7 @@ from ux_dom.dom.src import csstags, htmltags, jinjatags, svgtags
 from ux_dom.dom.src.concurrency import multi_tree_lock
 from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.html_string import defHTML
+from ux_dom.dom.src.utils.dom_util import raw
 from ux_dom.dom.src.main import extension
 from ux_dom.utils.parameters import Parameters
 
@@ -215,7 +216,11 @@ class Component(extension.Tags):
                 f"{self.__class__.__name__} `render` method must return a value."
             )
 
-        if isinstance(child, str):
+        if isinstance(child, str) and callable(getattr(child, "__html__", None)):
+            # Trusted ``Markup``: verbatim, never parsed (ADR 0002).
+            child = _string_child(child)
+
+        elif isinstance(child, str):
             if self.string_is_markdown:
                 child = (
                     md_convert(child)
@@ -233,7 +238,11 @@ class Component(extension.Tags):
                     if self.escape_string
                     else unescape(md_convert(child))
                 )
-            child = defHTML(child, escape=self.escape_string)
+            # An author's HTML file may be a whole page, so it is the one
+            # caller that opts into document mode. Strings never do.
+            child = defHTML(
+                child, escape=self.escape_string, document=not string_is_markdown
+            )
 
         if isinstance(child, (list, tuple)) and len(child) == 1:
             child = child[0]
@@ -455,6 +464,14 @@ class Component(extension.Tags):
         return sorted(iter(self.__dict__), key=lambda k: k)
 
 
+def _string_child(arg: str):
+    """A ``Markup`` (``__html__``) string is trusted; any other is sanitized."""
+    html_method = getattr(arg, "__html__", None)
+    if callable(html_method):
+        return raw(str(html_method()))
+    return defHTML(arg)
+
+
 class Fragment(Component):
     """Transparent group: renders children only, fans attributes onto them.
 
@@ -594,7 +611,7 @@ class Fragment(Component):
     def render(self, *args, **kwargs):
         self.add(kwargs)
         [
-            self.add(defHTML(arg)) if isinstance(arg, str) else self.add(arg)
+            self.add(_string_child(arg)) if isinstance(arg, str) else self.add(arg)
             for arg in args
         ]
 

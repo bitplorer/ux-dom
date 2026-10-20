@@ -26,6 +26,8 @@ from __future__ import annotations
 
 from typing import Any, Mapping, Optional
 
+from ux_dom.dom.src.html_string import _sanitized_html
+
 __all__ = [
     "channel_available",
     "stamp_region",
@@ -46,13 +48,19 @@ def channel_available() -> bool:
 
 
 def to_fragment(node: Any) -> str:
-    """Coerce ux-dom / str / ``__html__`` to an HTML string."""
+    """Coerce ux-dom / str / ``__html__`` to an HTML string.
+
+    A ``__html__`` value (``Markup``) is trusted and returned verbatim. A
+    plain string is HTML and goes through the same allowlist sanitizer as
+    ``defHTML``, in fragment mode. Tag trees render as built.
+    """
     if node is None:
         return ""
-    if isinstance(node, str):
-        return node
-    if hasattr(node, "__html__"):
+    # ``__html__`` first: MarkupSafe ``Markup`` is a ``str`` and is trusted.
+    if callable(getattr(node, "__html__", None)):
         return str(node.__html__())  # type: ignore[misc]
+    if isinstance(node, str):
+        return _sanitized_html(node)
     # ux-dom render path
     if hasattr(node, "__render__"):
         try:

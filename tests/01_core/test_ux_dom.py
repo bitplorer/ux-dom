@@ -334,12 +334,12 @@ class TestComponentRenderReturns(unittest.TestCase):
         self_entry_with_render_tag_returns_one_element.add(div())
         self_entry_with_render_tag_returns_one_element["class"] = "xyz"
         self_entry_with_render_tag_returns_one_element["id"] = "#some_id"
+        # ``<zzz>`` is not an allowlisted tag, so the string→HTML path drops it.
+        # self-entry still owns the attributes and the div added afterwards.
         self.assertEqual(
             self_entry_with_render_tag_returns_one_element.__render__(),
             """\
 <self-entry class="xyz" id="#some_id">
-  <zzz>
-  </zzz>
   <div>
   </div>
 </self-entry>""",

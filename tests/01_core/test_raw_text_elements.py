@@ -237,26 +237,46 @@ class TestCspNonce(unittest.TestCase):
 
 
 class TestParseConsistency(unittest.TestCase):
-    def test_defhtml_style_verbatim_both_modes(self):
+    # String HTML is sanitized (ADR 0002): a fragment drops <style> and every
+    # mode drops <script>, whatever ``escape`` says. Document mode is the
+    # caller's keyword and keeps <style> text verbatim; the render-time
+    # raw-text guard still applies to that element.
+
+    def test_defhtml_style_verbatim_in_document_mode(self):
         for esc in (True, False):
             with self.subTest(escape=esc):
                 html = "".join(
-                    e.__render__(pretty=False) for e in defHTML("<style>a > b{c:d}</style>", escape=esc)
+                    e.__render__(pretty=False)
+                    for e in defHTML(
+                        "<html><head><style>a > b{c:d}</style></head></html>",
+                        escape=esc,
+                        document=True,
+                    )
                 )
-                self.assertEqual(html, "<style>a > b{c:d}</style>")
+                self.assertIn("<style>a > b{c:d}</style>", html)
+                fragment = "".join(
+                    e.__render__(pretty=False)
+                    for e in defHTML("<style>a > b{c:d}</style>", escape=esc)
+                )
+                self.assertEqual(fragment, "")
 
-    def test_defhtml_trusted_script_verbatim_and_guarded(self):
+    def test_defhtml_drops_script_in_every_mode(self):
         src = '<script>if (a < b && c) { s = "<!--"; }</script>'
-        html = "".join(e.__render__(pretty=False) for e in defHTML(src, escape=False))
-        self.assertEqual(html, '<script>if (a < b && c) { s = "\\u003C!--"; }</script>')
+        for kw in ({"escape": False}, {"escape": True}, {"document": True}):
+            with self.subTest(**kw):
+                html = "".join(e.__render__(pretty=False) for e in defHTML(src, **kw))
+                self.assertNotIn("script", html)
 
     def test_defhtml_untrusted_still_drops_script(self):
         html = "".join(e.__render__(pretty=False) for e in defHTML("<p>x</p><script>a<b</script>"))
         self.assertNotIn("script", html)
 
     def test_round_trip_stable(self):
-        first = script(JS).__render__(pretty=False)
-        again = "".join(e.__render__(pretty=False) for e in defHTML(first, escape=False))
+        css = "a > b{c:d} p ~ q{color:red}"
+        first = style(css).__render__(pretty=False)
+        again = "".join(
+            e.__render__(pretty=False) for e in defHTML(first, document=True)
+        )
         self.assertEqual(again, first)
 
 

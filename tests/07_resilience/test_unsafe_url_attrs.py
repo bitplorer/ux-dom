@@ -134,11 +134,14 @@ def test_unicode_space_prefix_is_not_executable(value):
     assert out == UNSAFE_URL or not out.lstrip().lower().startswith("javascript:")
 
 
-def test_srcdoc_refused_by_default():
-    assert safe_attr_value("srcdoc", "<script>alert(1)</script>") == UNSAFE_URL
-    assert safe_attr_value("srcdoc", "<p>harmless</p>") == UNSAFE_URL
+def test_srcdoc_string_is_sanitized():
+    # Same sanitizer as defHTML / to_fragment. A string is no longer refused
+    # outright: runnable markup becomes "", safe markup is kept.
+    assert safe_attr_value("srcdoc", "<script>alert(1)</script>") == ""
+    assert safe_attr_value("srcdoc", "<p>harmless</p>") == "<p>harmless</p>"
     html = iframe(srcdoc="<script>alert(1)</script>").__render__(pretty=False)
     assert "script" not in html.lower()
+    assert "alert" not in html.lower()
 
 
 def test_srcdoc_allowed_with_explicit_html_opt_in():

@@ -69,6 +69,8 @@
    "tests/05_chaos/test_production_trust.py",
    "tests/05_chaos/test_stress_races_js_pipeline.py",
    "tests/05_chaos/test_tree_concurrency_safety.py",
+   "tests/07_resilience/test_html_parse_sanitizer.py",
+   "tests/07_resilience/test_html_string_mxss.py",
    "tests/07_resilience/test_markdown_render_kwarg.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/helpers.py"
@@ -105,6 +107,7 @@
     "ux_dom.dom.src.jinjatags",
     "ux_dom.dom.src.main",
     "ux_dom.dom.src.svgtags",
+    "ux_dom.dom.src.utils.dom_util",
     "ux_dom.utils.parameters"
    ],
    "type_checking": []

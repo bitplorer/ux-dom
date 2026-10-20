@@ -1,4 +1,5 @@
 """Fail-closed behaviour: sanitize, Fragment JSON, multi-root, XSS guards."""
+
 from __future__ import annotations
 
 import unittest
@@ -36,16 +37,19 @@ class TestFragmentXDataFailClosed(unittest.TestCase):
 
 class TestDefHTMLEscapeSanitizes(unittest.TestCase):
     def test_script_stripped_when_escape_true(self):
-        nodes = defHTML('<script>alert(1)</script><p>ok</p>', escape=True)
+        nodes = defHTML("<script>alert(1)</script><p>ok</p>", escape=True)
         html = "".join(n.__render__(pretty=False) for n in nodes)
         self.assertNotIn("<script>", html)
         self.assertIn("<p>", html)
         self.assertIn("ok", html)
 
-    def test_script_kept_when_escape_false(self):
-        nodes = defHTML("<script>alert(1)</script>", escape=False)
+    def test_script_stripped_even_when_escape_false(self):
+        # Text is escaped on this path too, so a raw ``<`` cannot reopen a tag.
+        # Verbatim opt-out is raw(), which never enters defHTML.
+        nodes = defHTML("<script>alert(1)</script><p>ok</p>", escape=False)
         html = "".join(n.__render__(pretty=False) for n in nodes)
-        self.assertIn("<script>", html)
+        self.assertNotIn("<script>", html)
+        self.assertIn("<p>", html)
 
     def test_onclick_stripped_when_escape_true(self):
         nodes = defHTML('<div onclick="alert(1)">x</div>', escape=True)
