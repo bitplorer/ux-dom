@@ -24,6 +24,7 @@ from ux_dom.dom import (
     li,
     p,
     pre,
+    script,
     span,
     style,
     ul,
@@ -31,6 +32,7 @@ from ux_dom.dom import (
 )
 from ux_dom.dom.htmldocument import HtmlDocument
 from ux_dom.dom.src.ext import StyleTags, Tags
+from ux_dom.dom.src.htmltags import _RawTextElement
 
 
 def _arender(node, **kw) -> str:
@@ -85,6 +87,10 @@ PARITY_CASES = {
     CSSId: [lambda: style(main(color="red"))],
     Keyframes: [lambda: style(fade(from_={"opacity": 0}, to={"opacity": 1}))],
     ReactiveComponent: [_mutated_counter, _mutated_counter_child],
+    _RawTextElement: [
+        lambda: script("x='</scr", "ipt><b>' && a < b; s='<!--'"),
+        lambda: div(style("p{}</st", "yle><b>x</b>"), span("ok")),
+    ],
     HtmlDocument: [
         lambda: Document(ensure_csrf_token=False)(
             div("a"), style(btn(color="red")), _mutated_counter()

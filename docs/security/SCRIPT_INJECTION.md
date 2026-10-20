@@ -59,10 +59,15 @@ style("p > a { content: '&'; }")  # <style>p > a { content: '&'; }</style>
 ```
 
 Only sequences that could end the element early are rewritten (any case):
-`</script` → `<\/script` and `<!--` → `<\!--` in scripts, `</style` →
-`<\/style` in styles. These forms mean the same thing inside JS and CSS
-strings, so user data embedded in an inline script cannot close the tag.
-`raw(...)` children are still emitted untouched (explicit opt-out).
+`</script` → `<\/script` and `<!--` → `\u003C!--` in scripts, `</style` →
+`<\/style` in styles. These forms mean the same thing inside JS strings, JSON
+(`type="application/json"`, `importmap`), u-flag regexes and CSS strings, so
+user data embedded in an inline script cannot close the tag.
+
+The rewrite runs at **render time over the joined body** (sync and async,
+pretty and compact), so a hazard split across children (`"</scr"`, `"ipt>"`),
+appended later with `.add()`, or set by index is still caught. `raw(...)`
+children skip HTML escaping but are part of that joined body.
 
 Embedding untrusted data in JS is still a JS-context problem: serialize it
 with `json.dumps` (or a `data-*` attribute) rather than string concatenation.

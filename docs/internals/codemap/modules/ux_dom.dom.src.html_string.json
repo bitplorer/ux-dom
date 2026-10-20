@@ -3,6 +3,7 @@
   "consumers": [
    "docs/internals/MODULE_MAP.md",
    "tests/01_core/test_input_value_regressions.py",
+   "tests/01_core/test_raw_text_elements.py",
    "tests/01_core/test_silent_failure_guards.py",
    "tests/01_core/test_tree_ownership.py",
    "tests/05_chaos/test_enterprise_full_battery.py",

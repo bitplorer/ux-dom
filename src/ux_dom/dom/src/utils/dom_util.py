@@ -118,9 +118,12 @@ def neutralize_raw_text(data, tagname):
 
     ``</script`` / ``</style`` (any case) become ``<\\/script`` / ``<\\/style`` —
     identical meaning inside JS and CSS strings, but no longer an end tag.
-    In ``<script>``, ``<!--`` becomes ``<\\!--`` so the parser never enters the
-    script-data-escaped states (spec "restrictions for contents of script
-    elements"). Everything else (``<``, ``&``, quotes) is emitted verbatim.
+    In ``<script>``, ``<!--`` becomes ``\\u003C!--`` so the parser never enters
+    the script-data-escaped states (spec "restrictions for contents of script
+    elements"). Both forms are valid in JS strings, JSON (``application/json``,
+    ``importmap``) and u-flag regexes (unlike ``\\!``). Everything else (``<``,
+    ``&``, quotes) is emitted verbatim. Callers pass the element's whole joined
+    body: neutralizing children one by one misses hazards split across them.
     """
     if not isinstance(data, str):
         data = str(data)
@@ -131,7 +134,7 @@ def neutralize_raw_text(data, tagname):
     def _sub(m):
         if m.group(1) is not None:
             return "<\\/" + m.group(1)
-        return "<\\!--"
+        return "\\u003C!--"
 
     return pattern.sub(_sub, data)
 

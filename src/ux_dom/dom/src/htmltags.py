@@ -9,6 +9,7 @@
 Imported via ux_dom.dom. Attribute cleaning: Tags.clean_attribute.
 """
 from ux_dom.dom.src.main import extension
+from ux_dom.dom.src.utils.dom_util import neutralize_raw_text
 
 try:
     basestring = basestring
@@ -376,14 +377,33 @@ class meta(html_tag):
     is_single = True
 
 
-class style(html_tag):
+class _RawTextElement(html_tag):
+    """Raw text element (``script`` / ``style``, HTML spec §13.1.2).
+
+    Children render verbatim, then end-tag / ``<!--`` breakouts are neutralized
+    over the **joined** body, so a hazard split across children (``"</scr"``,
+    ``"ipt>"``), added later, or set by index cannot close the element. Overriding
+    ``_render_children`` also routes the async compact walker through ``_render``
+    (``ext._delegates_to_render``), so sync and async output are identical.
+    """
+
+    def _render_children(self, sb, indent_level, indent_str, pretty, xhtml, _seen=None):
+        body: list = []
+        inline = super()._render_children(
+            body, indent_level, indent_str, pretty, xhtml, _seen=_seen
+        )
+        sb.append(neutralize_raw_text("".join(map(str, body)), self.raw_text))
+        return inline
+
+
+class style(_RawTextElement):
     """
     The style element allows authors to embed style information in their
     documents. The style element is one of several inputs to the styling
     processing model. The element does not represent content for the user.
 
-    Raw text element: string children render verbatim (no HTML escaping);
-    ``</style`` is neutralized so text cannot close the element.
+    Raw text element: children render verbatim (no HTML escaping); ``</style``
+    in the joined body is neutralized so text cannot close the element.
     """
 
     is_pretty = False
@@ -391,13 +411,14 @@ class style(html_tag):
 
 
 # Scripting
-class script(html_tag):
+class script(_RawTextElement):
     """
     The script element allows authors to include dynamic script and data blocks
     in their documents. The element does not represent content for the user.
 
-    Raw text element: string children render verbatim (``a < b && c``); only
-    ``</script`` and ``<!--`` are neutralized (``<\\/script``, ``<\\!--``).
+    Raw text element: children render verbatim (``a < b && c``); only
+    ``</script`` and ``<!--`` in the joined body are neutralized
+    (``<\\/script``, ``\\u003C!--``), both valid in JS, JSON and u-flag regex.
     """
 
     is_pretty = True

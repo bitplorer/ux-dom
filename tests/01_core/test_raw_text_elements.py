@@ -7,6 +7,7 @@ and only sequences that could end the element early are neutralized:
 from __future__ import annotations
 
 import asyncio
+import json
 import re
 import unittest
 
@@ -78,7 +79,7 @@ class TestBreakout(unittest.TestCase):
 
     def test_neutralized_forms(self):
         self.assertEqual(neutralize_raw_text("</ScRiPt>", "script"), "<\\/ScRiPt>")
-        self.assertEqual(neutralize_raw_text("a<!--b", "script"), "a<\\!--b")
+        self.assertEqual(neutralize_raw_text("a<!--b", "script"), "a\\u003C!--b")
         self.assertEqual(neutralize_raw_text("</STYLE>", "style"), "<\\/STYLE>")
         # style has no escaped states: <!-- and </script are left alone
         self.assertEqual(neutralize_raw_text("<!--</script>", "style"), "<!--</script>")
@@ -102,13 +103,99 @@ class TestBreakout(unittest.TestCase):
         self.assertEqual(s.__render__(pretty=False), "<script><\\/script></script>")
 
 
+def _all_modes(node):
+    """(label, html) for sync/async x pretty/compact."""
+    out = []
+    for pretty in (False, True):
+        out.append((f"sync pretty={pretty}", node.__render__(pretty=pretty)))
+        out.append((f"async pretty={pretty}", _async(node, pretty=pretty)))
+    return out
+
+
+class TestSplitChildBreakout(unittest.TestCase):
+    """Neutralization must see the joined body, not each child in isolation."""
+
+    def _assert_single_end(self, node, name):
+        for label, html in _all_modes(node):
+            with self.subTest(mode=label):
+                ends = _end_tags(html, name)
+                self.assertEqual(len(ends), 1, html)
+                self.assertTrue(html.rstrip().endswith("</%s>" % name), html)
+                if name == "script":
+                    self.assertNotIn("<!--", html)
+
+    def test_style_split_children(self):
+        self._assert_single_end(
+            style("a{content:'</sty", "le><img src=x onerror=alert(1)>'}"), "style"
+        )
+
+    def test_script_split_children(self):
+        self._assert_single_end(script("x='</scr", "ipt><img src=x onerror=alert(1)>'"), "script")
+
+    def test_script_split_comment_open(self):
+        self._assert_single_end(script("x='<!", "--<script>'"), "script")
+
+    def test_successive_add(self):
+        s = script("x='<")
+        s.add("/script")
+        s.add("><img src=x onerror=alert(1)>'")
+        self._assert_single_end(s, "script")
+
+    def test_index_assignment(self):
+        s = script("ok")
+        s[0] = "</script><b>x</b>"
+        self._assert_single_end(s, "script")
+
+    def test_split_inside_nested_tree(self):
+        page = div(style("p{}</st", "yle><b>x</b>"), span("ok"))
+        for label, html in _all_modes(page):
+            with self.subTest(mode=label):
+                self.assertEqual(len(_end_tags(html, "style")), 1, html)
+
+
+class TestDataScripts(unittest.TestCase):
+    """Neutralized forms must stay valid JSON (and JS / u-flag regex)."""
+
+    def test_json_round_trip(self):
+        data = {"a": "</script><b>", "b": "<!--<script>", "c": "</SCRIPT x", "d": "a<b&c"}
+        body = json.dumps(data)
+        for label, html in _all_modes(script(body, type="application/json")):
+            with self.subTest(mode=label):
+                inner = re.match(r"<script[^>]*>(.*)</script>\s*$", html.strip(), re.S).group(1)
+                self.assertEqual(json.loads(inner), data)
+
+    def test_importmap_round_trip(self):
+        imap = {"imports": {"x": "/js/x.js?q=</script>&r=<!--"}}
+        html = script(json.dumps(imap), type="importmap").__render__(pretty=False)
+        inner = html[len('<script type="importmap">') : -len("</script>")]
+        self.assertEqual(json.loads(inner), imap)
+
+    def test_no_bang_escape(self):
+        # ``\!`` is not a JSON escape and is a SyntaxError in u-flag regexes.
+        html = script("s = '<!--';").__render__(pretty=False)
+        self.assertNotIn("\\!", html)
+        self.assertIn("\\u003C!--", html)
+
+
+class TestEscapableRawTextUnchanged(unittest.TestCase):
+    def test_title_textarea_escape_fully(self):
+        for tag in (title, textarea):
+            with self.subTest(tag=tag.__name__):
+                html = tag("a</%s><b>&" % tag.__name__).__render__(pretty=False)
+                self.assertIn("&lt;/%s&gt;&lt;b&gt;&amp;" % tag.__name__, html)
+                self.assertEqual(len(_end_tags(html, tag.__name__)), 1)
+
+
 class TestRawStillWorks(unittest.TestCase):
-    def test_raw_child_is_verbatim_and_unguarded(self):
-        # raw() is the explicit unsafe escape hatch: untouched, as before.
+    def test_raw_child_unescaped_but_guarded_inside_raw_text(self):
+        # raw() skips HTML escaping; inside script/style the joined body is still
+        # breakout-guarded, else raw("x='</scr") + user "ipt>..." closes the tag.
         self.assertEqual(
             script(raw("a < b && '<!--'")).__render__(pretty=False),
-            "<script>a < b && '<!--'</script>",
+            "<script>a < b && '\\u003C!--'</script>",
         )
+        html = script(raw("x='</scr"), "ipt><b>'").__render__(pretty=False)
+        self.assertEqual(html, "<script>x='<\\/script><b>'</script>")
         self.assertEqual(div(raw("<b>x</b>")).__render__(pretty=False), "<div><b>x</b></div>")
 
 
@@ -161,7 +248,7 @@ class TestParseConsistency(unittest.TestCase):
     def test_defhtml_trusted_script_verbatim_and_guarded(self):
         src = '<script>if (a < b && c) { s = "<!--"; }</script>'
         html = "".join(e.__render__(pretty=False) for e in defHTML(src, escape=False))
-        self.assertEqual(html, '<script>if (a < b && c) { s = "<\\!--"; }</script>')
+        self.assertEqual(html, '<script>if (a < b && c) { s = "\\u003C!--"; }</script>')
 
     def test_defhtml_untrusted_still_drops_script(self):
         html = "".join(e.__render__(pretty=False) for e in defHTML("<p>x</p><script>a<b</script>"))
