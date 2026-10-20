@@ -58,9 +58,6 @@ reports/
 /site
 docs/_build/
 
-# Local demo static materializations
-demosite/assets/static/
-
 # Test / harness outputs
 screenshots/
 reports/

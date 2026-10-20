@@ -15,10 +15,6 @@ class TestF19DemositeAbsent(unittest.TestCase):
             "demosite/ must remain deleted (F-19)",
         )
 
-    def test_no_demosite_python_modules(self):
-        hits = list(ROOT.glob("demosite/**/*.py"))
-        self.assertEqual(hits, [])
-
 
 if __name__ == "__main__":
     unittest.main()
