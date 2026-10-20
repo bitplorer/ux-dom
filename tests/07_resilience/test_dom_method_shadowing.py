@@ -72,6 +72,27 @@ class TestCartAddRegression(unittest.TestCase):
             span("tail")
         self.assertIn("<span>tail</span>", k.__render__(pretty=False))
 
+    def test_classmethod_add_does_not_swallow_with_children(self):
+        # #49 review lock: once Component.__getattribute__ was removed, a
+        # ``@classmethod add`` shadowed the instance API and ``with Hello():
+        # span()`` silently dropped the span. Internals must call ``_add``.
+        class Hello(Component):
+            def render(self):
+                return div(id="hello")
+
+            @classmethod
+            def add(cls, *a, **k):
+                return "classmethod-ran"
+
+        with Hello() as h:
+            span("child")
+        self.assertEqual(
+            h.__render__(pretty=False), '<div id="hello"><span>child</span></div>'
+        )
+        h += span("iadd")
+        self.assertIn("<span>child</span><span>iadd</span>", h.__render__(pretty=False))
+        self.assertEqual(Hello.add(), "classmethod-ran")
+
     def test_public_add_still_attaches_by_default(self):
         d = div()
         d.add(span("z"))

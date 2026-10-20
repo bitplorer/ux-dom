@@ -19,7 +19,7 @@ def _menuitem(item: Any) -> Any:
     """``role="menuitem"`` goes on the focusable element (WAI-ARIA menu pattern)."""
     if isinstance(item, dom_tag):
         if not item.attributes.get("role"):
-            item.set_attribute("role", "menuitem")
+            item._set_attribute("role", "menuitem")
         return item
     return span(item, role="menuitem", tabindex="-1")
 
