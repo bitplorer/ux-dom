@@ -7,7 +7,13 @@ import unittest
 
 from ux_dom.dom import div, script, style
 from ux_dom.plugins import Csp
-from ux_dom.plugins.csp import policy_dev, policy_prod, policy_report_only, stamp_nonce
+from ux_dom.plugins.csp import (
+    CspPolicy,
+    policy_dev,
+    policy_prod,
+    policy_report_only,
+    stamp_nonce,
+)
 
 
 class TestCspFieldsAfterPreset(unittest.TestCase):
@@ -35,6 +41,33 @@ class TestCspFieldsAfterPreset(unittest.TestCase):
             self.assertEqual(got.report_only, policy.report_only)
             self.assertEqual(got.debug_header, policy.debug_header)
             self.assertEqual(got.nonce_bytes, policy.nonce_bytes)
+
+    def test_from_policy_round_trips_every_field(self):
+        # Every CspPolicy field set off-default: a field dropped by
+        # from_policy or to_policy breaks the round trip.
+        values = {
+            "strict_dynamic": False,
+            "script_hosts": ("https://s.example",),
+            "style_hosts": ("https://c.example",),
+            "style_unsafe_inline": True,
+            "script_unsafe_inline_legacy": True,
+            "img_src": ("'self'",),
+            "connect_src": ("wss://w.example",),
+            "font_src": ("https://f.example",),
+            "frame_ancestors": "'self'",
+            "base_uri": "'none'",
+            "object_src": "'self'",
+            "form_action": "'none'",
+            "upgrade_insecure": True,
+            "report_uri": "/csp-report",
+            "extra_directives": {"worker-src": "'none'"},
+            "report_only": True,
+            "debug_header": True,
+            "nonce_bytes": 48,
+        }
+        self.assertEqual(set(values), {f.name for f in dataclasses.fields(CspPolicy)})
+        pol = CspPolicy(**values)
+        self.assertEqual(Csp.from_policy(pol).to_policy(), pol)
 
     def test_explicit_policy_still_wins(self):
         pol = policy_prod(debug_header=True)
