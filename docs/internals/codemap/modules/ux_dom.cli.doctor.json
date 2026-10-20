@@ -2,6 +2,7 @@
  "ux_dom.cli.doctor": {
   "consumers": [
    "tests/03_routing_cli/test_cli_output_and_doctor.py",
+   "tests/03_routing_cli/test_doctor_tailwind_honest.py",
    "tests/03_routing_cli/test_dx_cli.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
    "tests/03_routing_cli/test_scaffold_check.py",
@@ -26,6 +27,7 @@
   "layer": "cli",
   "path": "src/ux_dom/cli/doctor.py",
   "public": [
+   "CSS_NOTE",
    "Check",
    "DoctorReport",
    "format_report",

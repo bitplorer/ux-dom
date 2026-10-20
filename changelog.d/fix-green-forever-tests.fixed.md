@@ -1,0 +1,1 @@
+- **Tests/doctor:** remove unreachable `if False` branches from two scaffold asserts, keeping the live check (`"XElement" in main or "document.mount" in main`), which fails against a scaffold that does not mount the document; `uxdom doctor` no longer reports a constant `tailwind` check row (it never probed CSS) and prints a `CSS: … uxcompose build` footer note instead.

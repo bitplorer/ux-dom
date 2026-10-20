@@ -16,6 +16,11 @@ from pathlib import Path
 from typing import Any, Optional
 
 
+# CSS compile is product DX: this CLI neither probes nor runs Tailwind, so it
+# is a footer note, not a check (reports show only checks that can fail, #73).
+CSS_NOTE = "CSS: product CSS is `uxcompose build` (uxdom doctor does not check CSS)"
+
+
 @dataclass
 class Check:
     name: str
@@ -156,16 +161,6 @@ def run_doctor(
         )
     report.checks.append(
         Check("ux-channel", ch_ok, str(ch_detail), "info" if ch_ok else "warn")
-    )
-
-    # CSS compile is product DX. This CLI does not probe or run Tailwind.
-    report.checks.append(
-        Check(
-            "tailwind",
-            True,
-            "product CSS is uxcompose build (this CLI does not compile CSS)",
-            "info",
-        )
     )
 
     # Port
@@ -338,4 +333,5 @@ def format_report(report: DoctorReport) -> str:
         lines.append(f"  [{mark.strip():2}] {c.name}: {c.detail}")
     lines.append("=" * 40)
     lines.append("PASS" if report.ok else "FAIL (see errors above)")
+    lines.append(CSS_NOTE)
     return "\n".join(lines)

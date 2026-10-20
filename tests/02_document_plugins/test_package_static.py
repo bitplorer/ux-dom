@@ -68,15 +68,7 @@ class TestScaffoldSingleCopy(unittest.TestCase):
             )
             main = (root / "app/main.py").read_text()
             self.assertTrue(
-                "XElement" in main
-                or "document.mount" in main
-                or "xelement=True" in main
-                or "XElement"
-                in Path(str(root if "root" in dir() else "."))
-                .joinpath("app/document.py")
-                .read_text()
-                if False
-                else ("XElement" in main or "document.mount" in main)
+                "XElement" in main or "document.mount" in main
             )
             sys.path.insert(0, str(root))
             for k in list(sys.modules):
