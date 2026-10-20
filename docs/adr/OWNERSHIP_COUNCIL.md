@@ -112,7 +112,7 @@
 4. **ux_app.ui is always a re-export façade**, not a fork of components.  
 5. **Channel/CEK imports only under `ux_app/adapter/**`.**  
 6. **Generic vs product:** If a composite encodes one product’s domain (checkout, lots desk), it stays in the Host. Upstream only when three+ independent hosts need the same shape.  
-7. **Alpine is not a design-system default** for open/selected; Channel-first components are the elevated path. Historical Alpine Dialog/Tabs in ux-dom may remain for backward compatibility until deprecated by version policy — new design-system docs must not recommend Alpine as the primary path.  
+7. **Alpine is not a design-system default** for open/selected; Channel-first components are the elevated path. Historical Alpine Dialog/Tabs are either kept as a current, supported runtime option behind `declare_runtime` or removed. Pre-release they are not kept 'for backward compatibility' ([ADR 0004](0004-no-compat-shims-pre-release.md)) — new design-system docs must not recommend Alpine as the primary path.  
 8. **Ownable copy** is the extension mechanism for product branding; forking tokens in the Host without a brand package is discouraged.  
 9. **Promote path:** elevated tokens/components → ux-dom; ports/adapters/overlay → ux-app; never a third core package.  
 10. **Supersession:** Changing this matrix requires a new council note in this file + MASTER + DESIGN_DECISIONS in the same change.
@@ -155,7 +155,7 @@ app.use("…") registrations for product domains
 
 ## 7. Migration / coexistence note
 
-- **Live** COMPONENTS.md still documents Alpine Tabs/Dialog. Council decision: elevated design system treats Channel-first as the **stable long-term** path; Alpine remains a compatibility/runtime option behind `declare_runtime`, not the ownership home of open/selected truth.
+- **Live** COMPONENTS.md still documents Alpine Tabs/Dialog. Council decision: elevated design system treats Channel-first as the **stable long-term** path; Alpine remains a runtime option behind `declare_runtime`, not the ownership home of open/selected truth.
 - **Badge** currently appears in both `ux_app.html` and `ux_dom.ui` in live trees — Adversary flags dual Badge. Long-term: single Badge in ux-dom; ux-app re-exports or deletes duplicate.
 - **design_system/** artifact package is a **staging** tree for promote, not a third runtime package in production installs.
 

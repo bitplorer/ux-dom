@@ -147,8 +147,8 @@ One allowlist. `defHTML`, `Fragment(str)`, `Component.render()->str`,
 `HTMLElement`, `JinjaElement`, `MarkdownElement`, `to_fragment(str)`, and
 `srcdoc` all use it. Strings stay HTML: known-safe tags are kept and
 sanitized, they are not turned into plain text. String HTML is always
-sanitized: `escape=False` is accepted for compatibility and does not bypass
-the allowlist. Trusted markup uses `raw()` / `Markup` (verbatim). A
+sanitized: `escape=False` does not bypass the allowlist; the ignored parameter is
+pending removal ([ADR 0004](../adr/0004-no-compat-shims-pre-release.md)). Trusted markup uses `raw()` / `Markup` (verbatim). A
 `__html__` value is checked before the `str` check, so a `Markup` (a `str`
 subclass) passed to `to_fragment`, `srcdoc`, `Fragment`, or returned from
 `Component.render()` stays verbatim. Policy:

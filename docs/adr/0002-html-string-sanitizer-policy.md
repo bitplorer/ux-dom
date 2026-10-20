@@ -4,6 +4,7 @@
 > Map: [INDEX.md](../INDEX.md).
 
 **Status:** Accepted  
+**Amended by:** [ADR 0004](0004-no-compat-shims-pre-release.md)  
 **Date:** 2026-10-20  
 **Scope:** Every path that parses a markup string into ux-dom nodes: `defHTML`,
 `StringToHTML`, `Fragment(str)`, `Component.render()->str`, `HTMLElement`,
@@ -41,8 +42,10 @@ their `Component.render()` methods return tag trees.
    `annotation-xml`), so the opt-in cannot re-allow `script` or any built-in
    tag. A kept custom element carries global, `aria-*`, and `data-*`
    attributes only; `on*`, `hx-*`, and Alpine attributes are still dropped.
-2. **`escape=False` does not bypass sanitizing.** The parameter still accepts
-   values so existing calls keep working. String HTML is always sanitized.
+2. **`escape=False` does not bypass sanitizing.** There is no verbatim mode for
+   strings; the ignored `escape` parameter is pending removal under
+   [ADR 0004](0004-no-compat-shims-pre-release.md)
+   ([#59](https://github.com/bitplorer/ux-dom/issues/59)). String HTML is always sanitized.
    Trusted HTML uses `raw()` or a `Markup` (`__html__`) value, which never
    enters the parser. Because `Markup` is a `str` subclass, every entry point
    checks `__html__` before `str` (`to_fragment`, `srcdoc`, `Fragment`,
@@ -69,7 +72,7 @@ behaviour. Each opt-in names exactly what it widens, at the call site.
 |--------|---------|-----|
 | Keep every `x-*` / hyphenated tag by default | Rejected | A third-party custom element can run author JS on upgrade; untrusted input should not choose which ones appear |
 | Make `escape=False` mean "verbatim" again | Rejected | Recreates the F-03 bypass; `raw()` already is the verbatim path |
-| Remove the `escape` parameter | Rejected | Breaks callers for no safety gain; documenting it is enough |
+| Remove the `escape` parameter | Rejected at the time. (Withdrawn by [ADR 0004](0004-no-compat-shims-pre-release.md): the ignored `escape` parameter is removed in the shim-purge train.) | Breaks callers for no safety gain; documenting it is enough |
 | Infer document mode from `<!DOCTYPE` / `<html>` | Rejected | Lets attacker input load stylesheets, inject CSS, and set `http-equiv` |
 
 ## Consequences
