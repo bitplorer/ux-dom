@@ -6,15 +6,15 @@ from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import div, h5, p
-from ux_dom.ui.tokens import cn, type_scale
+from ux_dom.ui.tokens import cn, status, type_scale
 
 __all__ = ["Alert", "AlertTitle", "AlertDescription"]
 
 _VARIANTS = {
-    "default": "border-stone-700 bg-stone-900/90 text-stone-100",
-    "destructive": "border-red-500/50 bg-red-950/40 text-red-200",
-    "warning": "border-amber-500/40 bg-amber-950/30 text-amber-100",
-    "success": "border-emerald-500/40 bg-emerald-950/30 text-emerald-100",
+    "default": status["neutral"],
+    "destructive": status["danger"],
+    "warning": status["warning"],
+    "success": status["success"],
 }
 
 

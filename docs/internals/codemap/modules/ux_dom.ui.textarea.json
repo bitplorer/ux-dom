@@ -2,7 +2,8 @@
  "ux_dom.ui.textarea": {
   "consumers": [
    "examples/ux_kit/app/routes/index.py",
-   "tests/01_core/test_pass3_defects.py"
+   "tests/01_core/test_pass3_defects.py",
+   "tests/02_document_plugins/test_ui_kit_dedupe.py"
   ],
   "imported_by": {
    "function_level": [],

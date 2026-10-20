@@ -6,19 +6,13 @@ from typing import Any
 
 from ux_dom import Component
 from ux_dom.dom import textarea as html_textarea
-from ux_dom.ui.tokens import cn, focus_ring
+from ux_dom.ui.tokens import field_classes
 
 __all__ = ["Textarea", "textarea_classes"]
 
 
 def textarea_classes(*, className: str = "", invalid: bool = False) -> str:
-    return cn(
-        "flex min-h-[5rem] w-full rounded-lg border bg-stone-950/60 px-3 py-2 text-sm text-stone-100",
-        "placeholder:text-stone-500 disabled:cursor-not-allowed disabled:opacity-50",
-        focus_ring,
-        "border-red-500/80" if invalid else "border-stone-700",
-        className,
-    )
+    return field_classes(className=className, invalid=invalid, height="min-h-[5rem]")
 
 
 class Textarea(Component):

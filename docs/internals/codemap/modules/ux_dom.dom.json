@@ -175,7 +175,8 @@
     "ux_dom.ui.table",
     "ux_dom.ui.tabs",
     "ux_dom.ui.textarea",
-    "ux_dom.ui.toast"
+    "ux_dom.ui.toast",
+    "ux_dom.ui.tokens"
    ],
    "type_checking": []
   },

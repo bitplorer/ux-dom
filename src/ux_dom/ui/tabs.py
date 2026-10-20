@@ -23,7 +23,7 @@ from typing import Any, Sequence
 
 from ux_dom import Component
 from ux_dom.dom import button, div
-from ux_dom.ui.tokens import cn, focus_ring, surface
+from ux_dom.ui.tokens import channel_action, cn, focus_ring, surface
 
 __all__ = ["Tabs"]
 
@@ -80,9 +80,7 @@ class Tabs(Component):
             if is_active and panel_id:
                 btn_attrs["id"] = tab_id
                 btn_attrs["aria-controls"] = panel_id
-            if select_action:
-                btn_attrs["data-channel-action"] = select_action
-                btn_attrs["data-args"] = f'{{"tab":"{key}"}}'
+            btn_attrs.update(channel_action(select_action, tab=key))
             tab_btns.append(
                 button(
                     label,

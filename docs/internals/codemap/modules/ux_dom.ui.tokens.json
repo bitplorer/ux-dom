@@ -6,6 +6,7 @@
    "tests/01_core/test_surface_coverage.py",
    "tests/02_document_plugins/test_ui_battery.py",
    "tests/02_document_plugins/test_ui_kit.py",
+   "tests/02_document_plugins/test_ui_kit_dedupe.py",
    "tests/04_production/test_production_stability.py",
    "tests/05_chaos/test_enterprise_full_battery.py"
   ],
@@ -54,7 +55,9 @@
   },
   "imports_internal": {
    "function_level": [],
-   "module_level": [],
+   "module_level": [
+    "ux_dom.dom"
+   ],
    "type_checking": []
   },
   "layer": "ui",

@@ -9,7 +9,14 @@ from typing import Any, Sequence
 
 from ux_dom import Component
 from ux_dom.dom import div, input_, li, ol, p, span
-from ux_dom.ui.tokens import cn, field_classes, overlay, surface, type_scale
+from ux_dom.ui.tokens import (
+    cn,
+    field_classes,
+    overlay,
+    overlay_root,
+    surface,
+    type_scale,
+)
 
 __all__ = ["Command"]
 
@@ -27,15 +34,7 @@ class Command(Component):
     ):
         """items: (id, label) pairs already filtered by Host/preview."""
         if not open:
-            return div(
-                id=attrs.pop("id", None) or "overlay",
-                **{
-                    "data-open": "0",
-                    "data-channel-id": attrs.pop("data-channel-id", "overlay"),
-                },
-                className="contents",
-                **attrs,
-            )
+            return overlay_root(attrs, open=False)
 
         rows = [
             li(
@@ -62,13 +61,4 @@ class Command(Component):
             ),
             className=cn(surface["l2"], overlay["command"], "rounded-xl p-2", className),
         )
-        return div(
-            div(className=overlay["backdrop"]),
-            panel,
-            id=attrs.pop("id", None) or "overlay",
-            **{
-                "data-open": "1",
-                "data-channel-id": attrs.pop("data-channel-id", "overlay"),
-            },
-            **attrs,
-        )
+        return overlay_root(attrs, div(className=overlay["backdrop"]), panel, open=True)
