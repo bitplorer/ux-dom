@@ -33,8 +33,6 @@ app = Typer(
 @app.command("doctor")
 def doctor_cmd(
     path: str = Option(None, "--path"),
-    port: int = Option(8080, "--port"),
-    prod: bool = Option(False, "--prod"),
     json_out: bool = Option(False, "--json"),
 ):
     """Document / package / env health (pure-dom)."""
@@ -42,7 +40,7 @@ def doctor_cmd(
 
     from ux_dom.cli.doctor import format_report, run_doctor
 
-    report = run_doctor(cwd=Path(path) if path else None, port=port, prod=prod)
+    report = run_doctor(cwd=Path(path) if path else None)
     if json_out:
         print(_json.dumps(report.to_dict(), indent=2))
     else:
@@ -53,12 +51,10 @@ def doctor_cmd(
 @app.command("info")
 def info_cmd(
     path: str = Option(None, "--path"),
-    port: int = Option(8080, "--port"),
-    prod: bool = Option(False, "--prod"),
     json_out: bool = Option(False, "--json"),
 ):
     """Alias of doctor."""
-    doctor_cmd(path=path, port=port, prod=prod, json_out=json_out)
+    doctor_cmd(path=path, json_out=json_out)
 
 
 @app.command("lint")

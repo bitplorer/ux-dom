@@ -25,6 +25,6 @@ def test_product_packages_not_optional_runtime_deps():
 def test_doctor_does_not_send_users_to_an_extra_for_uvicorn(tmp_path):
     from ux_dom.cli.doctor import run_doctor
 
-    names = {c.name for c in run_doctor(cwd=tmp_path, port=59993).checks}
+    names = {c.name for c in run_doctor(cwd=tmp_path).checks}
     assert "dep:fastapi" in names
     assert "dep:uvicorn" not in names

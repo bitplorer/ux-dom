@@ -56,7 +56,7 @@ def test_doctor_broken_ux_channel_is_not_ok(tmp_path: Path, monkeypatch):
     monkeypatch.delitem(sys.modules, "ux_channel", raising=False)
     importlib.invalidate_caches()
 
-    report = run_doctor(cwd=tmp_path, port=59992)
+    report = run_doctor(cwd=tmp_path)
     check = next(c for c in report.checks if c.name == "ux-channel")
     assert check.ok is False
     assert check.level == "warn"

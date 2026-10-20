@@ -6,13 +6,13 @@ from ux_dom.cli.doctor import CSS_NOTE, format_report, run_doctor
 
 
 def test_tailwind_is_not_a_check():
-    report = run_doctor(port=59988)
+    report = run_doctor()
     assert "tailwind" not in {c.name for c in report.checks}
     assert "tailwind" not in {c["name"] for c in report.to_dict()["checks"]}
 
 
 def test_css_note_is_a_footer_not_a_check_row():
-    text = format_report(run_doctor(port=59988))
+    text = format_report(run_doctor())
     assert text.splitlines()[-1] == CSS_NOTE
     assert "uxcompose build" in CSS_NOTE
     rows = [ln for ln in text.splitlines() if ln.lstrip().startswith("[")]

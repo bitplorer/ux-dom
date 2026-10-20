@@ -90,15 +90,13 @@ class TestDoctorReportsProductCss(unittest.TestCase):
     def test_doctor_path_on_repo(self):
         from ux_dom.cli.doctor import run_doctor
 
-        rep = run_doctor(cwd=ROOT, port=59990)
+        rep = run_doctor(cwd=ROOT)
         names = {c.name for c in rep.checks}
         self.assertIn("python", names)
 
     def test_doctor_cli_path_flag(self):
         runner = CliRunner()
-        result = runner.invoke(
-            cli_app, ["doctor", "--path", str(ROOT), "--port", "59989"]
-        )
+        result = runner.invoke(cli_app, ["doctor", "--path", str(ROOT)])
         self.assertIn("uxdom doctor", result.output)
         self.assertIn("uxcompose build", result.output)
 

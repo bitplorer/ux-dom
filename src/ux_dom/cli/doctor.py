@@ -9,7 +9,6 @@ from __future__ import annotations
 import importlib.util
 import json
 import platform
-import socket
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -54,12 +53,6 @@ class DoctorReport:
         }
 
 
-def _port_free(host: str, port: int) -> bool:
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.settimeout(0.3)
-        return s.connect_ex((host, port)) != 0
-
-
 def _find_project(start: Path) -> Optional[Path]:
     cur = start.resolve()
     for p in [cur, *cur.parents]:
@@ -72,12 +65,7 @@ def _find_project(start: Path) -> Optional[Path]:
     return None
 
 
-def run_doctor(
-    *,
-    cwd: Optional[Path] = None,
-    port: int = 8080,
-    prod: bool = False,
-) -> DoctorReport:
+def run_doctor(*, cwd: Optional[Path] = None) -> DoctorReport:
     """Collect environment + optional project checks."""
     report = DoctorReport()
     cwd = (cwd or Path.cwd()).resolve()
@@ -159,17 +147,6 @@ def run_doctor(
         )
     report.checks.append(
         Check("ux-channel", ch_ok, str(ch_detail), "info" if ch_ok else "warn")
-    )
-
-    # Port
-    free = _port_free("127.0.0.1", port)
-    report.checks.append(
-        Check(
-            f"port:{port}",
-            free,
-            "available" if free else f"in use on 127.0.0.1:{port}",
-            "warn" if not free else "info",
-        )
     )
 
     # Project
@@ -277,37 +254,6 @@ def run_doctor(
                     True,
                     "present (app dual-copy; package mount is preferred)",
                     "info",
-                )
-            )
-
-        if prod:
-            settings = root / "app" / "settings.py"
-            if settings.is_file():
-                st = settings.read_text(encoding="utf-8")
-                debug_on = "DEBUG = True" in st or "DEBUG=True" in st
-                report.checks.append(
-                    Check(
-                        "prod:DEBUG",
-                        not debug_on,
-                        (
-                            "DEBUG appears True — set False for production"
-                            if debug_on
-                            else "DEBUG not hard-coded True"
-                        ),
-                        "error" if debug_on else "info",
-                    )
-                )
-            env = root / ".env"
-            report.checks.append(
-                Check(
-                    "prod:.env",
-                    env.is_file(),
-                    (
-                        "present"
-                        if env.is_file()
-                        else "no .env (ensure secrets via environment)"
-                    ),
-                    "warn" if not env.is_file() else "info",
                 )
             )
 
