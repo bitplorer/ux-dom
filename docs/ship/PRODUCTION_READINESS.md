@@ -16,6 +16,7 @@ Companion: [STACK.md](../STACK.md) · channel production: install `ux-channel` s
 
 - [ ] `DEBUG=0` in production env (`Csp.auto()` → prod policy)
 - [ ] `uxdom doctor` clean on the app tree
+- [ ] `uxcompose doctor --prod` passes on the product app
 - [ ] `GET /health` monitored
 - [ ] HTTPS terminated; CSP headers present on HTML responses
 - [ ] Static assets via package allowlist or your CDN — not open filesystem

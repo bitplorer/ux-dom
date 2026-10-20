@@ -3,7 +3,8 @@
 > **Diátaxis:** ADR · **Canonical:** `docs/adr/0003-layer-boundary.md` · **Layer:** ux-dom (ownership)  
 > Map: [INDEX.md](../INDEX.md).
 
-**Status:** Accepted  
+**Status:** Accepted. Prod and port pre-flight removed from `uxdom doctor` (rule 4 met by
+ux-compose [#128](https://github.com/bitplorer/ux-compose/pull/128)).  
 **Amended by:** [ADR 0004](0004-no-compat-shims-pre-release.md)  
 **Date:** 2026-10-20  
 **Scope:** Which product features ux-dom may ship. Applies to `src/ux_dom/`, the
@@ -94,13 +95,13 @@ Rules:
 
 ### Missing in ux-compose (blocks removal)
 
-Checked against ux-compose `04994da`:
+Checked against ux-compose `04994da`; the prod and port row re-checked at `830a6ab`:
 
 | Capability | ux-dom today | ux-compose today | Blocks |
 |------------|--------------|------------------|--------|
 | `pytailwindcss` extra | None: `ux-dom[dev]` / `ux-dom[fastapidev]` removed in [#80](https://github.com/bitplorer/ux-dom/pull/80) | `tailwind.py` imports it lazily; `pyproject.toml` declares only `serve` and `dev` extras, neither with `pytailwindcss` | Nothing: waived (see below) |
 | Runnable bundle | `uxdom build --package/--archive` (`dist/<name>/`, `run.sh`, `MANIFEST.json`, tar.gz) | `uxcompose deploy` writes Docker/fly/render/railway/systemd files; nothing writes a runnable dir or archive | Removing `--package/--archive` |
-| Prod and port pre-flight | `uxdom doctor --prod` (`DEBUG`, `.env`) and `--port` | `uxcompose doctor` has no `--prod`, `DEBUG`, `.env` or port check; `deploy` only prints "DEBUG=false" advice | Removing those doctor rows |
+| Prod and port pre-flight | None: `uxdom doctor --prod/--port` and the `port:`, `prod:DEBUG`, `prod:.env` rows removed; lock `tests/07_resilience/test_doctor_product_rows_absent.py` | `uxcompose doctor --prod` ([#128](https://github.com/bitplorer/ux-compose/pull/128)) checks `secret`, `DEBUG`, `.env`, `dep:uvicorn`/`dep:fastapi` and `requirements`; `--port N` adds a `port:N` row | Nothing: shipped |
 
 **Waivers recorded:** the owner records each waiver here ("dropped, not ported") before
 the matching removal PR merges.
@@ -110,6 +111,10 @@ the matching removal PR merges.
   ([ux-compose #116](https://github.com/bitplorer/ux-compose/issues/116) D3/UC5); no
   ux-compose `css` extra. Owner decision D3, 2026-10-20. UC5 (the SHA256 check) is a
   ux-compose ticket, not yet merged at ux-compose `04994da`.
+
+**Owner decision D4 (port check):** the free-port check lives in ux-compose
+`uxcompose doctor --prod --port N` and reports WARN, not FAIL. It binds the `--host` that
+`serve prod` uses (default `0.0.0.0`). `uxdom doctor` has no port check.
 
 **Why:** each concern has one home, so authors cannot pick the wrong layer and the ux-dom
 install stays small. ux-compose already calls `uxdom build` "Document/static verify" (its
@@ -128,8 +133,11 @@ ADR 0001); this ADR records the same split from the ux-dom side.
 
 - Breaking for users of `pip install ux-dom[dev|fastapidev]`, `App.use_hmr|use_style|use_host`,
   `uxdom doctor --port/--prod` and `uxdom build --package/--archive`, once each removal lands.
-- Prerequisite ux-compose work: `doctor --prod` (DEBUG and secrets) and a bundle
-  command, unless the owner waives one of them above. The `pytailwindcss` extra is waived.
+- Removed: `uxdom doctor --port/--prod` (and `info`'s copies) with the `port:`,
+  `prod:DEBUG` and `prod:.env` rows. `uxdom build` runs the pure-dom doctor and no longer
+  prints `prod:DEBUG-note`. Product readiness is `uxcompose doctor --prod [--port N]`.
+- Prerequisite ux-compose work: a bundle command, unless the owner waives it above.
+  `doctor --prod` shipped in ux-compose #128. The `pytailwindcss` extra is waived.
 - [internals/SYSTEM.md](../internals/SYSTEM.md) no longer lists `--package` ownership as open.
 - New product-ish code proposed for ux-dom is reviewed against the table above. If
   ux-compose owns the concern, the change goes there.

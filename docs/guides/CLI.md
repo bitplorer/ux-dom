@@ -51,3 +51,4 @@ uxdom add ui Button
 | serve / dev / start | `uxcompose serve` |
 | deploy | `uxcompose deploy` |
 | product doctor | `uxcompose doctor` |
+| prod readiness (secret, `DEBUG`, `.env`, deps, port) | `uxcompose doctor --prod [--port N]` |

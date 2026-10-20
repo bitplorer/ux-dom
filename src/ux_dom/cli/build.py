@@ -1,5 +1,5 @@
 # Copyright (c) 2026 ux-dom
-"""``uxdom build`` — production checks + optional runnable package.
+"""``uxdom build`` — Document/static verify + optional runnable package.
 
 Single-copy model
 -----------------
@@ -75,7 +75,7 @@ def run_build(
     package_name: Optional[str] = None,
 ) -> BuildReport:
     """
-    Production verify pipeline (not product CSS compile):
+    Document/static verify pipeline (not product CSS compile):
 
     1. Structure checks
     2. Sync static runtimes (x_element.js) from installed ux_dom
@@ -175,12 +175,8 @@ def run_build(
     try:
         from ux_dom.cli.doctor import run_doctor
 
-        doc = run_doctor(cwd=root, prod=True)
-        hard = [
-            c
-            for c in doc.checks
-            if c.level == "error" and not c.ok and c.name != "prod:DEBUG"
-        ]
+        doc = run_doctor(cwd=root)
+        hard = [c for c in doc.checks if c.level == "error" and not c.ok]
         report.steps.append(
             BuildStep(
                 "doctor",
@@ -189,14 +185,6 @@ def run_build(
                 + (f" · hard fails: {[c.name for c in hard]}" if hard else ""),
             )
         )
-        if any(c.name == "prod:DEBUG" and not c.ok for c in doc.checks):
-            report.steps.append(
-                BuildStep(
-                    "prod:DEBUG-note",
-                    True,
-                    "DEBUG still True in settings — set False before real deploy",
-                )
-            )
     except Exception as e:
         report.steps.append(BuildStep("doctor", False, str(e)))
 

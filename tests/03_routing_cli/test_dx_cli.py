@@ -27,7 +27,7 @@ class TestTemplates(unittest.TestCase):
 
 class TestDoctor(unittest.TestCase):
     def test_global_doctor_ok(self):
-        rep = run_doctor(cwd=ROOT, port=59999)
+        rep = run_doctor(cwd=ROOT)
         self.assertTrue(rep.ok)
         names = {c.name for c in rep.checks}
         self.assertIn("python", names)
@@ -41,7 +41,7 @@ class TestDoctor(unittest.TestCase):
                     "d", dest=Path(td) / "d", force=True, template="minimal"
                 )
             )
-            rep = run_doctor(cwd=root, port=59998)
+            rep = run_doctor(cwd=root)
             self.assertTrue(rep.ok)
             self.assertEqual(rep.project_root, root.resolve())
 

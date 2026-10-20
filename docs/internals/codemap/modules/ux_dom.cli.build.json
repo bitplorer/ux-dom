@@ -7,7 +7,8 @@
    "tests/03_routing_cli/test_build_honest_steps.py",
    "tests/03_routing_cli/test_build_package.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
-   "tests/03_routing_cli/test_run_build_signature.py"
+   "tests/03_routing_cli/test_run_build_signature.py",
+   "tests/07_resilience/test_doctor_product_rows_absent.py"
   ],
   "imported_by": {
    "function_level": [
