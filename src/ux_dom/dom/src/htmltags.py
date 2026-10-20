@@ -13,6 +13,7 @@ import re
 from ux_dom.dom.src.ext import _ascii_lower, _element_name
 from ux_dom.dom.src.main import extension
 from ux_dom.dom.src.utils.dom_util import (
+    TEXT_STATE_ELEMENTS,
     checked_comment_text,
     checked_doctype,
     neutralize_raw_text,
@@ -390,55 +391,214 @@ class meta(html_tag):
 # HTML rules apply again, so <style> / <script> are raw text there.
 _SVG_HTML_INTEGRATION_POINTS = frozenset({"foreignobject", "desc", "title"})
 _MATHML_TEXT_INTEGRATION_POINTS = frozenset({"mi", "mo", "mn", "ms", "mtext"})
+_MATHML_SPECIAL = _MATHML_TEXT_INTEGRATION_POINTS | {"annotation-xml"}
 _HTML_ENCODINGS = frozenset({"text/html", "application/xhtml+xml"})
+# §13.2.6.5: in foreign content these start tags pop the parser back to HTML
+# (``font`` only with one of these attributes).
+_BREAKOUT_ELEMENTS = frozenset({
+    "b", "big", "blockquote", "body", "br", "center", "code", "dd", "div", "dl",
+    "dt", "em", "embed", "h1", "h2", "h3", "h4", "h5", "h6", "head", "hr", "i",
+    "img", "li", "listing", "menu", "meta", "nobr", "ol", "p", "pre", "ruby",
+    "s", "small", "span", "strong", "strike", "sub", "sup", "table", "tt", "u",
+    "ul", "var",
+})
+_FONT_BREAKOUT_ATTRS = frozenset({"color", "face", "size"})
+# HTML elements whose body the tokenizer reads as text, not tags.
+_TEXT_BODY_ELEMENTS = TEXT_STATE_ELEMENTS | {"script", "style", "plaintext"}
 
 
-def _html_encoding(node):
-    # Attributes render sorted and a browser keeps the first duplicate, so
-    # every spelling of ``encoding`` must name HTML.
-    values = [
-        v
-        for k, v in node.attributes.items()
-        if _ascii_lower(k) == "encoding" and v is not False
+def _attr_names(node):
+    """ASCII-lowercase ``name -> value`` of the attributes ``node`` renders."""
+    control = getattr(node, "CONTROL_ATTRS", ())
+    return [
+        (_ascii_lower(k), v)
+        for k, v in sorted(node.attributes.items())
+        if k not in control and v is not False
     ]
-    return bool(values) and all(
+
+
+def _html_encoding(node, every=True):
+    # Attributes render sorted and a browser keeps the first duplicate.
+    # ``every``: every spelling of ``encoding`` must name HTML (it counts as an
+    # integration point only then); otherwise any spelling may.
+    values = [v for k, v in _attr_names(node) if k == "encoding"]
+    test = all if every else any
+    return bool(values) and test(
         isinstance(v, str) and _ascii_lower(v) in _HTML_ENCODINGS for v in values
     )
 
 
-def _parsed_namespace(node):
+def _html_rules(top, name):
+    """True if the parser handles start tag ``name`` by the HTML rules when
+    ``top`` (an open element, ``None`` for the document) is the current node."""
+    if top is None or top[1] == "html":
+        return True
+    top_name, ns, el = top
+    if ns == "svg":
+        return top_name in _SVG_HTML_INTEGRATION_POINTS
+    return (
+        top_name in _MATHML_TEXT_INTEGRATION_POINTS
+        and name not in ("mglyph", "malignmark")
+    ) or (top_name == "annotation-xml" and (name == "svg" or _html_encoding(el)))
+
+
+def _ends_breakout(entry):
+    # A breakout pops up to an HTML element or an integration point. Here an
+    # ``annotation-xml`` stops it if any ``encoding`` names HTML: popping
+    # less keeps more of the tree foreign.
+    name, ns, el = entry
+    if ns == "svg":
+        return name in _SVG_HTML_INTEGRATION_POINTS
+    if ns == "math":
+        return name in _MATHML_TEXT_INTEGRATION_POINTS or (
+            name == "annotation-xml" and _html_encoding(el, every=False)
+        )
+    return True
+
+
+def _special(entry):
+    # Where an HTML end tag stops looking for its element. Every HTML element
+    # counts: the walk then pops less, and ``_settle`` covers the rest.
+    name, ns, _ = entry
+    if ns == "svg":
+        return name in _SVG_HTML_INTEGRATION_POINTS
+    return ns == "html" or name in _MATHML_SPECIAL
+
+
+def _start_tag(stack, name, el, xhtml):
+    """``(namespace, stack)`` after the parser reads the start tag of ``el``.
+
+    ``stack`` is a tuple of open ``(name, namespace, element)`` entries.
+    """
+    top = stack[-1] if stack else None
+    if _html_rules(top, name):
+        ns = name if name in ("svg", "math") else "html"
+    elif name in _BREAKOUT_ELEMENTS or (
+        name == "font"
+        and any(k in _FONT_BREAKOUT_ATTRS for k, _ in _attr_names(el))
+    ):
+        while stack and not _ends_breakout(stack[-1]):
+            stack = stack[:-1]
+        ns = "html"
+    else:
+        ns = top[1]
+    # A tag that writes no end tag stays open in foreign content unless it is
+    # self-closing (``/>``, xhtml only).
+    if not el.is_single or (ns != "html" and not xhtml):
+        stack += ((name, ns, el),)
+    return ns, stack
+
+
+def _end_tag(stack, name):
+    """The stack after the parser reads end tag ``name`` (§13.2.6.5, §13.2.6.4.7).
+
+    An end tag whose element the parser already popped still matches by name:
+    in foreign content it pops the nearest open foreign element of that name.
+    """
+    if stack and stack[-1][1] != "html":
+        if name in ("br", "p"):  # a breakout, like their start tags
+            while stack and not _ends_breakout(stack[-1]):
+                stack = stack[:-1]
+        else:
+            for i in range(len(stack) - 1, -1, -1):
+                if stack[i][1] == "html":
+                    break
+                if stack[i][0] == name:
+                    return stack[:i]
+    if name == "template":
+        for i in range(len(stack) - 1, -1, -1):
+            if stack[i][:2] == ("template", "html"):
+                return stack[:i]
+        return stack
+    for i in range(len(stack) - 1, -1, -1):
+        if stack[i][:2] == (name, "html"):
+            return stack[:i]
+        if _special(stack[i]):
+            break
+    return stack
+
+
+def _settle(stacks):
+    """Distinct parser states, each with the state in which the HTML elements
+    on top were already closed by the parser (a ``<div>`` closes a ``<p>``, an
+    ``<a>`` closes an ``<a>``, ``<img>`` is void …) back to the integration
+    point below them. The tree does not say which, so both count."""
+    out, seen = [], set()
+    for stack in stacks:
+        i = len(stack)
+        while i and stack[i - 1][1] == "html":
+            i -= 1
+        for s in (stack, stack[:i]) if 0 < i < len(stack) else (stack,):
+            key = tuple((id(el), ns) for _, ns, el in s)
+            if key not in seen:
+                seen.add(key)
+                out.append(s)
+    return out
+
+
+def _feed(stacks, node, xhtml, seen=frozenset()):
+    """The parser states after the tags ``node`` writes."""
+    if not isinstance(node, extension.Tags) or node.left_delimiter != "<":
+        return stacks  # text, raw(), lazy, comments, template syntax: no tags
+    if id(node) in seen:
+        return stacks
+    seen = seen | {id(node)}
+    name = _element_name(node)
+    if name is None:  # a tag-less wrapper renders its children in place
+        for child in node.children:
+            stacks = _feed(stacks, child, xhtml, seen)
+        return stacks
+    out = []
+    for stack in stacks:
+        ns, stack = _start_tag(stack, name, node, xhtml)
+        inner = _settle([stack])
+        # Raw text / RCDATA / RAWTEXT bodies and the CDATA of a foreign
+        # style / script hold no tags.
+        if not (
+            name in _TEXT_BODY_ELEMENTS
+            if ns == "html"
+            else isinstance(node, _RawTextElement)
+        ):
+            for child in node.children:
+                inner = _feed(inner, child, xhtml, seen)
+        if not node.is_single:
+            inner = [_end_tag(s, name) for s in inner]
+        out += inner
+    return _settle(out)
+
+
+def _parsed_namespace(node, xhtml=False):
     """``"html"``, ``"svg"`` or ``"math"``: the namespace an HTML parser gives
     ``node`` where the tree puts it (§13.2.6).
 
-    Below a foreign element that is not an integration point, every child stays
-    foreign. The parser would pop a breakout start tag (``<div>``, ``<p>``, …)
-    back to HTML; counting it as foreign only escapes more, never less.
+    The parser's stack of open elements is replayed from the root over the
+    tags written before ``node``, including breakouts (§13.2.6.5): a start tag
+    such as ``<p>`` in foreign content pops back to HTML, for its descendants
+    and for every later sibling. Where the HTML rules may have closed an
+    element early (``_settle``), every possible state is kept, and ``node``
+    is HTML only if it is HTML in all of them.
     """
-    chain, seen = [], set()
+    path, seen = [], set()
     while node is not None and id(node) not in seen:
         seen.add(id(node))
-        name = _element_name(node)
-        if name is not None:
-            chain.append((name, node))
+        path.append(node)
         node = getattr(node, "parent", None)
-    ns, parent, parent_name = "html", None, None
-    for name, el in reversed(chain):
-        if ns == "svg":
-            html_rules = parent_name in _SVG_HTML_INTEGRATION_POINTS
-        elif ns == "math":
-            html_rules = (
-                parent_name in _MATHML_TEXT_INTEGRATION_POINTS
-                and name not in ("mglyph", "malignmark")
-            ) or (
-                parent_name == "annotation-xml"
-                and (name == "svg" or _html_encoding(parent))
-            )
-        else:
-            html_rules = True
-        if html_rules:
-            ns = name if name in ("svg", "math") else "html"
-        parent, parent_name = el, name
-    return ns
+    path.reverse()
+    stacks, namespaces = [()], ["html"]
+    for i, el in enumerate(path):
+        if i and any(ns != "html" for s in stacks for _, ns, _ in s):
+            # Earlier siblings matter only while foreign content is open. A
+            # child not found (``lazy`` renders one in place) sees none.
+            siblings = getattr(path[i - 1], "children", ())
+            index = next((k for k, c in enumerate(siblings) if c is el), 0)
+            for sibling in siblings[:index]:
+                stacks = _feed(stacks, sibling, xhtml)
+        name = _element_name(el)
+        if name is not None:
+            opened = [_start_tag(s, name, el, xhtml) for s in stacks]
+            namespaces = [ns for ns, _ in opened]
+            stacks = _settle([s for _, s in opened])
+    return next((ns for ns in namespaces if ns != "html"), "html")
 
 
 # An author's own outer ``<![CDATA[ ... ]]>`` (the usual SVG idiom), with no
@@ -466,9 +626,9 @@ class _RawTextElement(html_tag):
     Inside ``<svg>`` / ``<math>`` (foreign content, §13.2.6.5) the element is
     not raw text: the parser reads its body as markup. There the body is one
     CDATA section, which the parser keeps verbatim (§13.2.5.42), so the CSS or
-    JS is the author's text. It is neutralized first as well: if the parser
-    pops back to HTML (a breakout tag such as ``svg(div(style()))``), the
-    element is raw text again and ``<![CDATA[`` is plain text there.
+    JS is the author's text. It is neutralized first as well. After a
+    breakout tag (``svg(div(), style())``) the parser is back in HTML, and so
+    is the model (``_parsed_namespace``): the body is raw text again.
     """
 
     def _render_children(self, sb, indent_level, indent_str, pretty, xhtml, _seen=None):
@@ -477,7 +637,7 @@ class _RawTextElement(html_tag):
             body, indent_level, indent_str, pretty, xhtml, _seen=_seen
         )
         text = neutralize_raw_text("".join(map(str, body)), self.raw_text)
-        sb.append(text if _parsed_namespace(self) == "html" else _cdata(text))
+        sb.append(text if _parsed_namespace(self, xhtml) == "html" else _cdata(text))
         return inline
 
 
