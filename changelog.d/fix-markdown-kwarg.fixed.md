@@ -1,0 +1,1 @@
+- **Bug: ``markdown=`` string kwargs reach ``render``** again; only a callable ``markdown=`` overrides the converter (F-23).

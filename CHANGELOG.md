@@ -107,7 +107,6 @@
   one shard per module under ``docs/internals/codemap/``; CI fails when a
   shard is stale (``--write-changed`` rewrites only those). See
   ``docs/internals/CODEMAP.md``.
-- **Bug: ``markdown=`` string kwargs reach ``render``** again; only a callable ``markdown=`` overrides the converter (F-23).
 
 ## 0.2.0 — remove deprecations
 
