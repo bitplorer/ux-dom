@@ -75,6 +75,7 @@
    "tests/01_core/test_render_phases.py",
    "tests/01_core/test_response_decorators.py",
    "tests/01_core/test_silent_failure_guards.py",
+   "tests/01_core/test_snippets_fragment.py",
    "tests/01_core/test_streaming_and_attrs.py",
    "tests/01_core/test_surface_coverage.py",
    "tests/01_core/test_tree_ownership.py",

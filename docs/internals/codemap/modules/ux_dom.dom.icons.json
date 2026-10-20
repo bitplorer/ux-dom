@@ -45,6 +45,7 @@
    "tests/01_core/test_reactive_stress_chaos.py",
    "tests/01_core/test_regression_guards.py",
    "tests/01_core/test_silent_failure_guards.py",
+   "tests/01_core/test_snippets_fragment.py",
    "tests/01_core/test_streaming_and_attrs.py",
    "tests/01_core/test_tree_ownership.py",
    "tests/02_document_plugins/test_app_host_composition.py",
