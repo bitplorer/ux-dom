@@ -69,6 +69,7 @@
    "tests/01_core/test_parallel_first_class.py",
    "tests/01_core/test_pass3_defects.py",
    "tests/01_core/test_pretty_stream.py",
+   "tests/01_core/test_public_dom_seam.py",
    "tests/01_core/test_reactive_component.py",
    "tests/01_core/test_reactive_stress_chaos.py",
    "tests/01_core/test_regression_guards.py",
@@ -198,6 +199,7 @@
     "ux_dom.dom.src.jinjatags",
     "ux_dom.dom.src.svgtags",
     "ux_dom.dom.src.utils",
+    "ux_dom.dom.src.utils.dom_util",
     "ux_dom.dom.uniqueid"
    ],
    "type_checking": []

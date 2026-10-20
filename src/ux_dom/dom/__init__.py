@@ -37,9 +37,3 @@ from .src.component import Component as Component
 from .src.dom_tag import dom_tag as dom_tag
 from .src.utils.dom_util import escape as escape, raw as raw
 
-
-__all__ = [n for n in globals() if not n.startswith("_")]
-# Prefer documenting the seam explicitly for importers and API snapshots:
-for _n in ("Component", "dom_tag", "escape", "raw"):
-    if _n not in __all__:
-        __all__.append(_n)

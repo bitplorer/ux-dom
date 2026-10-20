@@ -11,6 +11,7 @@
    "tests/01_core/test_find_lazy_membership.py",
    "tests/01_core/test_full_mro_behaviour_integration.py",
    "tests/01_core/test_mro_signatures.py",
+   "tests/01_core/test_public_dom_seam.py",
    "tests/01_core/test_streaming_and_attrs.py",
    "tests/01_core/test_ux_dom.py",
    "tests/03_routing_cli/test_build_vs_render_pipeline.py",
