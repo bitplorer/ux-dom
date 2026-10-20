@@ -66,7 +66,7 @@ See also [COMPONENTS.md](COMPONENTS.md).
 2. **Multi-root** (`return [a, b]`) always uses `_entry is self` — never a bare
    list (that used to break on the next update with `list has no attribute add`).
 3. **Re-entrancy:** nested updates during an in-flight re-render are ignored
-   (prevents storm loops from `set_attribute` / render hooks).
+   (prevents storm loops from `_set_attribute` / render hooks).
 4. **Extras:** children appended onto a single-root entry after first paint are
    preserved across re-renders when possible.
 5. **XSS:** field values still go through normal tag escaping — never treat

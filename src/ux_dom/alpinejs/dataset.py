@@ -111,7 +111,7 @@ class MergeAlpineAttributes(Fragment):
         self.safe_attributes[key] = False
         return key, value
 
-    def set_attribute(self, key, value):
+    def _set_attribute(self, key, value):
         if isinstance(key, str):
             if key == "x-data":
                 key, value = self._merge_x_data_attr(key, value)
@@ -128,9 +128,9 @@ class MergeAlpineAttributes(Fragment):
             if key == "class":
                 key, value = self._merge_class_attr(key, value)
 
-        super().set_attribute(key, value)
+        super()._set_attribute(key, value)
 
-    __setitem__ = set_attribute
+    __setitem__ = _set_attribute
 
 
 class DataSet(MergeAlpineAttributes):

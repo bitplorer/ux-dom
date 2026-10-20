@@ -19,22 +19,23 @@ class Routed(Component):
     def render(self):
         return div(span("x", id="x"), id="r")
 
-class CustomGet(Component):
-    def render(self):
-        return div(span("x", id="x"))
-
-    def get(self, tag=None, **kwargs):
-        return ["custom"]
-
-
 class TestGetattributeRegressions(unittest.TestCase):
-    def test_custom_instance_get_wins(self):
-        self.assertEqual(CustomGet().get(id="x"), ["custom"])
+    def test_custom_instance_get_is_rejected(self):
+        # ``get`` is sealed DOM query API: redefining it fails at class creation
+        # instead of silently shadowing tree queries.
+        with self.assertRaisesRegex(TypeError, "defines 'get'"):
 
-    def test_clear_shadow(self):
+            class CustomGet(Component):
+                def render(self):
+                    return div(span("x", id="x"))
+
+                def get(self, tag=None, **kwargs):
+                    return ["custom"]
+
+    def test_clear_internal(self):
         w = Routed()
         self.assertEqual(len(w), 1)
-        w.clear()
+        w._clear()
         self.assertEqual(len(w), 0)
 
     def test_fields_matches_deepcopy_reactive(self):

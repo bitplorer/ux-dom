@@ -749,7 +749,7 @@ class SingleTemplates(SingleTags):
             **kwargs,
         )
         if any(dom_elements):
-            self.add(*dom_elements)
+            self._add(*dom_elements)
 
 
 class DoubleTemplates(DoubleTags):
@@ -800,7 +800,7 @@ class DoubleTemplates(DoubleTags):
             **kwargs,
         )
         if any(dom_elements):
-            self.add(*dom_elements)
+            self._add(*dom_elements)
 
 
 class StyleTags(Tags):

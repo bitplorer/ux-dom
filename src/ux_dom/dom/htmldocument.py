@@ -37,15 +37,15 @@ __all__ = ["HtmlDocument"]
 
 class Head(component.Component):
     def render(self, *args, **kwargs):
-        self.add(kwargs)
-        self.add(*args)
+        self._add(kwargs)
+        self._add(*args)
         return self
 
 
 class Body(component.Component):
     def render(self, *args, **kwargs):
-        self.add(kwargs)
-        self.add(*args)
+        self._add(kwargs)
+        self._add(*args)
         return self
 
 
@@ -65,18 +65,18 @@ class HtmlDocument(component.Component):
         # Auto definitions: hosts in the page → one <template x-tagname> each
         # under _xelemet_placeholder (no manual definitions list).
         self._collect_xelement_definitions(self.body)
-        if title := self.body.get("title"):
+        if title := list(self.body._find("title")):
             title = title[0]
             title_parent: dom_tag = title.parent
             if title_parent is not None:
-                title_parent.remove(title)
-                self.head.add(title)
+                title_parent._remove(title)
+                self.head._add(title)
 
-        if not self.head.get("meta", charset="utf-8"):
+        if not list(self.head._find("meta", charset="utf-8")):
             charset = self.html_tags.meta(charset="utf-8")
-            self.head.add(charset)
+            self.head._add(charset)
 
-        if not self.head.get("meta", name="viewport"):
+        if not list(self.head._find("meta", name="viewport")):
             viewport_meta = self.html_tags.meta(
                 name="viewport",
                 content=(
@@ -84,7 +84,7 @@ class HtmlDocument(component.Component):
                     "user-scalable=no, minimal-ui"
                 ),
             )
-            self.head.add(viewport_meta)
+            self.head._add(viewport_meta)
 
     def __enter__(self):
         super().__enter__()
@@ -97,26 +97,26 @@ class HtmlDocument(component.Component):
         self._entry = self._old_entry
 
     def _may_shift_Head_to_head(self):
-        if head_node_list := self.body.get(tag=Head):
+        if head_node_list := list(self.body._find(tag=Head)):
             if head_node_list:
                 for head_node in head_node_list:
                     head_parent: dom_tag = head_node.parent
                     if head_parent is not None:
                         if head_parent is self.head:
                             continue
-                        head_parent.remove(head_node)
-                        self.head.add(head_node)
+                        head_parent._remove(head_node)
+                        self.head._add(head_node)
 
     def _may_shift_Body_to_body(self):
-        if body_node_list := self.body.get(tag=Body):
+        if body_node_list := list(self.body._find(tag=Body)):
             if body_node_list:
                 for body_node in body_node_list:
                     body_parent: dom_tag = body_node.parent
                     if body_parent is not None:
                         if body_parent is self._Body_placeholder:
                             continue
-                        body_parent.remove(body_node)
-                        self._Body_placeholder.add(body_node)
+                        body_parent._remove(body_node)
+                        self._Body_placeholder._add(body_node)
 
     def _definition_tag_name(self, node: dom_tag):
         """Return ``x-tagname`` / ``tag_name`` for a definition node, if any."""
@@ -170,10 +170,10 @@ class HtmlDocument(component.Component):
         parent = getattr(definition, "parent", None)
         if parent is not None:
             try:
-                parent.remove(definition)
+                parent._remove(definition)
             except Exception:
                 pass
-        self._xelemet_placeholder.add(definition)
+        self._xelemet_placeholder._add(definition)
 
     def _collect_xelement_definitions(self, search_element: dom_tag) -> None:
         """Auto-collect custom-element definitions from the live tree.
@@ -187,7 +187,7 @@ class HtmlDocument(component.Component):
         seen: set = set()
         # Walk hosts: XTemplate nodes carry .xelement → definition
         try:
-            templates = search_element.get(XTemplate) or []
+            templates = list(search_element._find(XTemplate)) or []
         except (AttributeError, TypeError):
             templates = []
         for xt in templates:
@@ -216,7 +216,7 @@ class HtmlDocument(component.Component):
 
     def __checks__(self, element):
         if self.ensure_csrf_token:
-            token_element = element.get(name=self.csrf_field)
+            token_element = list(element._find(name=self.csrf_field))
             if not token_element:
                 raise AttributeError(
                     f"{self.__class__.__qualname__} {self.csrf_field} must be set"
@@ -275,14 +275,14 @@ class HtmlDocument(component.Component):
                 if any(head):
                     for _head_file in head:
                         if isinstance(_head_file, dom_tag):
-                            self.head.add(_head_file)
+                            self.head._add(_head_file)
                         elif isinstance(_head_file, (str, dict)):
-                            self.head.add(self._asset_tag(_head_file, "link"))
+                            self.head._add(self._asset_tag(_head_file, "link"))
 
                 if any(common_head):
                     for _hd in common_head:
                         if isinstance(_hd, dom_tag):
-                            self.head.add(_hd)
+                            self.head._add(_hd)
 
             # ^Body Section
             self._entry_with_context = extension.PlaceholderTag()
@@ -294,18 +294,18 @@ class HtmlDocument(component.Component):
                 if any(body):
                     for _body_file in body:
                         if isinstance(_body_file, dom_tag):
-                            self.body.add(_body_file)
+                            self.body._add(_body_file)
                         elif isinstance(_body_file, (str, dict)):
-                            self.body.add(self._asset_tag(_body_file, "script"))
+                            self.body._add(self._asset_tag(_body_file, "script"))
 
-                self.body.add(self._Body_placeholder)
+                self.body._add(self._Body_placeholder)
                 # Definitions slot: auto-filled at pre_render from hosts
-                self.body.add(self._xelemet_placeholder)
+                self.body._add(self._xelemet_placeholder)
 
                 if any(common_body):
                     for _bd in common_body:
                         if isinstance(_bd, dom_tag):
-                            self.body.add(_bd)
+                            self.body._add(_bd)
 
         return doc, self.html
 

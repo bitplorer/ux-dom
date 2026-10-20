@@ -136,6 +136,36 @@ class dom_tag(object):
     # time over the joined body (see htmltags._RawTextElement).
     raw_text: typing.Optional[str] = None
 
+    #: Public DOM query API, sealed. Library internals never call these:
+    #: they query via ``_find`` / ``_matches`` (and attach via ``_add``), so
+    #: the internal walk is safe either way. The seal protects *callers*:
+    #: ``node.get(...)`` / ``node.matches(...)`` are the documented query
+    #: surface of every tag (ux-compose and tests query trees through them),
+    #: and a route-style ``get`` classmethod or a ``matches`` field silently
+    #: replacing it returns wrong answers instead of failing. So a subclass
+    #: whose MRO resolves either name anywhere but ``dom_tag`` (own method,
+    #: classmethod, staticmethod, plain attribute, or a mixin earlier in the
+    #: MRO) is rejected at class creation. To customize queries, override
+    #: ``_find`` / ``_matches``. Every other public name (``add``, ``clear``,
+    #: ``remove``, ...) is free for user methods and actions.
+    _SEALED_DOM_API = ("get", "matches")
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        where = f"{cls.__module__}.{cls.__qualname__}"
+        for name in dom_tag._SEALED_DOM_API:
+            owner = next(k for k in cls.__mro__ if name in vars(k))
+            if owner is dom_tag:
+                continue
+            kind = type(vars(owner)[name]).__name__
+            via = "" if owner is cls else f" (inherited from {owner.__qualname__})"
+            raise TypeError(
+                f"{where} defines {name!r} ({kind}){via}, which would shadow "
+                f"the DOM query method dom_tag.{name}(). Rename it (e.g. "
+                f"'{name}_view' or 'on_{name}'); to customize tree queries "
+                f"override '_find' / '_matches'."
+            )
+
     def __new__(_cls, *args, **kwargs):
         """
         Check if bare tag is being used as a decorator
@@ -184,10 +214,10 @@ class dom_tag(object):
 
         # Add child elements
         if args:
-            self.add(*args)
+            self._add(*args)
 
         for attr, value in kwargs.items():
-            self.set_attribute(*type(self).clean_pair(attr, value))
+            self._set_attribute(*type(self).clean_pair(attr, value))
 
         # this is where the this class instance is added to the parent context via _add_to_context
         self._ctx: typing.Optional[dom_tag.frame] = None
@@ -223,7 +253,7 @@ class dom_tag(object):
         for item in frame.items:
             if item in frame.used:
                 continue
-            self.add(item)
+            self._add(item)
         _clear_with_stack_if_empty()
         return None
 
@@ -265,7 +295,7 @@ class dom_tag(object):
 
         return f
 
-    def set_attribute(self, key, value):
+    def _set_attribute(self, key, value):
         """
         Add or update the value of an attribute, or replace a child by index.
 
@@ -293,7 +323,7 @@ class dom_tag(object):
                     except ValueError:
                         pass
                 value.parent = self
-                value.setdocument(self.document)
+                value._setdocument(self.document)
             elif isinstance(value, dom_string):
                 value.parent = self
             self.children[key] = value
@@ -305,9 +335,9 @@ class dom_tag(object):
                 "child tags and attributes, respectively."
             )
 
-    __setitem__ = set_attribute
+    __setitem__ = _set_attribute
 
-    def delete_attribute(self, key):
+    def _delete_attribute(self, key):
         with multi_tree_lock(self):
             self._delete_attribute_unlocked(key)
 
@@ -321,9 +351,9 @@ class dom_tag(object):
         else:
             del self.attributes[key]
 
-    __delitem__ = delete_attribute
+    __delitem__ = _delete_attribute
 
-    def setdocument(self, doc):
+    def _setdocument(self, doc):
         """
         Creates a reference to the parent document to allow for partial-tree
         validation.
@@ -342,8 +372,19 @@ class dom_tag(object):
                 child._setdocument_unlocked(doc)
 
     def add(self, *args):
+        """Add child tags / strings / attr dicts. Public alias of :meth:`_add`.
+
+        Library internals (constructor args, ``with`` exit, ``+=``, Component
+        delegation, document assembly) call :meth:`_add` directly, so a
+        subclass method named ``add`` (e.g. a channel ``@action``) never
+        hijacks child attachment. Overriding ``add`` therefore affects only
+        explicit ``.add()`` calls; override ``_add`` to customize attachment.
         """
-        Add new child tags.
+        return self._add(*args)
+
+    def _add(self, *args):
+        """
+        Add new child tags (internal attach path; see :meth:`add`).
 
         Thread-safe: holds this tree's root lock and any previous parents when
         re-parenting nodes (ordered multi-lock).
@@ -414,16 +455,16 @@ class dom_tag(object):
                 if obj in self.children:
                     # already a direct child — keep single entry, refresh parent/doc
                     obj.parent = self
-                    obj.setdocument(self.document)
+                    obj._setdocument(self.document)
                     continue
 
                 self.children.append(obj)
                 obj.parent = self
-                obj.setdocument(self.document)
+                obj._setdocument(self.document)
 
             elif isinstance(obj, dict):
                 for attr, value in obj.items():
-                    self.set_attribute(*self.clean_pair(attr, value))
+                    self._set_attribute(*self.clean_pair(attr, value))
 
             elif hasattr(obj, "__iter__"):
                 if not isinstance(obj, type):
@@ -442,13 +483,13 @@ class dom_tag(object):
         with multi_tree_lock(self):
             self.children.append(s)
 
-    def remove(self, obj):
+    def _remove(self, obj):
         with multi_tree_lock(self):
             self.children.remove(obj)
             if isinstance(obj, dom_tag) and getattr(obj, "parent", None) is self:
                 obj.parent = None
 
-    def clear(self):
+    def _clear(self):
         with multi_tree_lock(self):
             self._clear_unlocked()
 
@@ -458,10 +499,10 @@ class dom_tag(object):
                 i.parent = None
         self.children = []
 
-    def replace_children(self, *args):
+    def _replace_children(self, *args):
         """Atomically replace all children (clear + add under one tree lock).
 
-        Prefer this over ``clear()`` then ``add()`` when concurrent renderers
+        Prefer this over ``_clear()`` then ``_add()`` when concurrent renderers
         must never observe an empty intermediate tree.
         """
         extras = []
@@ -648,6 +689,14 @@ class dom_tag(object):
         return self.children.__iter__()
 
     def matches(self, tag=None, **kwargs):
+        """Own-scope match (this node + Component ``_entry``); see :meth:`_matches`.
+
+        Public query API — sealed: subclasses may not redefine it (see
+        ``__init_subclass__``). Internals call :meth:`_matches`.
+        """
+        return self._matches(tag, **kwargs)
+
+    def _matches(self, tag=None, **kwargs):
         """Scope: **this node only** (plus Component transparent ``_entry``).
 
         Definition
@@ -743,7 +792,7 @@ class dom_tag(object):
         """
         Reflexive binary addition simply adds tag as a child.
         """
-        self.add(obj)
+        self._add(obj)
         return self
 
     # String and unicode representations are the same as __render__()
@@ -989,7 +1038,7 @@ def attr(*args, **kwargs):
     dicts = args + (kwargs,)
     for d in dicts:
         for attr, value in d.items():
-            c.set_attribute(*c.clean_pair(attr, value))
+            c._set_attribute(*c.clean_pair(attr, value))
 
 
 # escape() is used in render

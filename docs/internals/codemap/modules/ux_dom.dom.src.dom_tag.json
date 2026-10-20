@@ -20,6 +20,7 @@
    "tests/05_chaos/test_chaos_integration.py",
    "tests/05_chaos/test_stress_races_js_pipeline.py",
    "tests/07_resilience/test_attr_name_validation.py",
+   "tests/07_resilience/test_dom_method_shadowing.py",
    "tests/07_resilience/test_jinja_and_string_nonce.py"
   ],
   "imported_by": {

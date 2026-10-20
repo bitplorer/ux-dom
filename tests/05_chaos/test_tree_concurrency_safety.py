@@ -122,7 +122,7 @@ class TestConcurrentMutation(unittest.TestCase):
             n = 0
             while not stop.is_set() and n < 5000:
                 n += 1
-                root.replace_children(span(str(n), id="v"))
+                root._replace_children(span(str(n), id="v"))
             return n
 
         def reader(_):
@@ -151,7 +151,7 @@ class TestConcurrentMutation(unittest.TestCase):
             n = 0
             while not stop.is_set() and n < 3000:
                 n += 1
-                root.clear()
+                root._clear()
                 root.add(span(str(n), id="v"))
 
         def reader():
@@ -289,7 +289,7 @@ class TestLockDoesNotBreakSemantics(unittest.TestCase):
 
     def test_replace_children_api(self):
         root = div(span("old"), id="r")
-        root.replace_children(span("new", id="n"), span("also"))
+        root._replace_children(span("new", id="n"), span("also"))
         html = root.__render__(pretty=False)
         self.assertIn("new", html)
         self.assertIn("also", html)

@@ -174,7 +174,7 @@ def _set_attr(node: Any, key: str, value: str) -> Any:
     if isinstance(attrs, dict):
         attrs[key] = value
         try:
-            node.set_attribute(key, value)
+            node._set_attribute(key, value)
         except Exception:
             pass
         return node

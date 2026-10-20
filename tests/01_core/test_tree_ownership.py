@@ -18,7 +18,7 @@ class TestTreeOwnership(unittest.TestCase):
         a, b = div(id="a"), span("x", id="b")
         a.add(b)
         self.assertIs(b.parent, a)
-        a.remove(b)
+        a._remove(b)
         self.assertIsNone(b.parent)
         self.assertNotIn(b, a.children)
 
@@ -47,7 +47,7 @@ class TestTreeOwnership(unittest.TestCase):
     def test_clear_clears_parents(self):
         d = div(span("1"), span("2"))
         kids = list(d.children)
-        d.clear()
+        d._clear()
         self.assertTrue(all(k.parent is None for k in kids))
 
     def test_setitem_replaces_child_parent(self):

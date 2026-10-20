@@ -65,7 +65,7 @@ class TestComponentHookAbsent(unittest.TestCase):
 
         p = Plain()
         self.assertTrue(p.get(id="x"))
-        p.clear()
+        p._clear()
         self.assertEqual(len(p), 0)
 
 
