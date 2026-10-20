@@ -415,7 +415,7 @@ class Tags(dom_tag, dom1core):
             indent_level = self._dedent_handler(dedent, indent_level)
 
         if self_render_tag:
-            name = self._clean_name(getattr(self, "tagname", type(self).__name__))
+            name = self._clean_name(self._tagname())
             self._render_open_tag(
                 sb=sb,
                 name=name,
@@ -443,7 +443,7 @@ class Tags(dom_tag, dom1core):
             sb, inline = self._new_line_and_inline_handler(
                 sb, indent_level, indent_str, pretty, inline
             )
-            name = self._clean_name(getattr(self, "tagname", type(self).__name__))
+            name = self._clean_name(self._tagname())
             self._render_close_tag(sb=sb, name=name, close_tag=self.close_tag)
 
         return sb
@@ -597,7 +597,7 @@ class Tags(dom_tag, dom1core):
         self.close_tag = close_tag
 
         if self_render_tag:
-            name = self._clean_name(getattr(self, "tagname", type(self).__name__))
+            name = self._clean_name(self._tagname())
             if open_tag:
                 yield str(open_tag)
             else:
@@ -619,7 +619,7 @@ class Tags(dom_tag, dom1core):
                     yield str(child)
 
         if self_render_tag and not self.is_single:
-            name = self._clean_name(getattr(self, "tagname", type(self).__name__))
+            name = self._clean_name(self._tagname())
             if close_tag:
                 yield str(close_tag)
             else:

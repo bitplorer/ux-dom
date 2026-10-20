@@ -34,3 +34,10 @@
   with no `>`), else the same error; document-mode parsing drops such a
   doctype instead. Tag names containing `-` follow the spec's custom element
   grammar (PCENChar, so `x-ñ` is valid; uppercase is not).
+- **Security: `tagname` is never read from attributes.** `dom_tag.__getattr__`
+  falls back to the attribute dict, so `div(tagname=…)`, `{"tagname": …}`,
+  `tag["tagname"] = …` and the same on CSS tags (`CSSClass(tagname=…)`)
+  renamed the element and injected markup. Every renderer (HTML, SVG,
+  dynamic, CSS) and the CSP / dedupe plugins now read the name through
+  `dom_tag._tagname()`: an instance or class `tagname`, else the class name.
+  A `tagname` attribute renders as an ordinary escaped attribute.

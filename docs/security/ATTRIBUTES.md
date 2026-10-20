@@ -162,7 +162,10 @@ tuple adds each element; a `dom_string` is escaped; `None` / `bool` / `dict`
 raise `TypeError`). The `open_tag` / `close_tag` controls replace the tag
 verbatim, so they accept only `Markup`; a plain string raises `TypeError`. A
 `lazy()` result is escaped as text unless it is a tag, `raw()`, or `Markup`.
-`raw()` is the explicit verbatim opt-out. Tag names are checked at render
+`raw()` is the explicit verbatim opt-out. The element name comes only from
+an instance or class `tagname` (`dom_tag._tagname()`), never from the
+attribute dict, so `div(tagname=…)` is an ordinary attribute. Tag names are
+checked at render
 (`checked_tag_name`, `[A-Za-z][A-Za-z0-9._:-]*`) wherever they come from;
 a bad name raises `InvalidTagName` (`ValueError`). A name containing `-`
 must instead be a valid custom element name (`[a-z] PCENChar* - PCENChar*`,

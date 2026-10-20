@@ -701,6 +701,16 @@ class dom_tag(object):
 
     __getattr__ = __getitem__
 
+    def _tagname(self):
+        """The element name: an instance or class ``tagname``, else the class
+        name. Never an HTML attribute: ``__getattr__`` falls back to
+        ``attributes``, so ``getattr(self, "tagname")`` would let
+        ``div(tagname=...)`` or ``{"tagname": ...}`` rename the element."""
+        try:
+            return object.__getattribute__(self, "tagname")
+        except AttributeError:
+            return type(self).__name__
+
     def __len__(self):
         """
         Number of child elements.
@@ -922,7 +932,7 @@ class dom_tag(object):
 
         pretty = pretty and self.is_pretty
 
-        name = getattr(self, "tagname", type(self).__name__)
+        name = self._tagname()
 
         # Workaround for python keywords and standard classes/methods
         # (del, object, input)

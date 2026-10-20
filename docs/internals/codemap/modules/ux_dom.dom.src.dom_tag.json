@@ -39,6 +39,8 @@
     "ux_dom.dom.src.jinjatags",
     "ux_dom.dom.src.utils.dom_util",
     "ux_dom.elements.buttons",
+    "ux_dom.plugins.csp",
+    "ux_dom.plugins.dedupe",
     "ux_dom.response.serialize",
     "ux_dom.ui.dropdown_menu"
    ],

@@ -26,6 +26,7 @@
    "tests/05_chaos/test_production_trust.py",
    "tests/07_resilience/test_jinja_and_string_nonce.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
+   "tests/07_resilience/test_raw_string_sinks.py",
    "tests/07_resilience/test_top_level_facades.py",
    "tests/helpers.py"
   ],
@@ -46,7 +47,9 @@
    "function_level": [
     "ux_dom.plugins.shell"
    ],
-   "module_level": [],
+   "module_level": [
+    "ux_dom.dom.src.dom_tag"
+   ],
    "type_checking": []
   },
   "layer": "document",

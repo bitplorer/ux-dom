@@ -338,7 +338,7 @@ def _named(how, name):
     return type("T", (div,), {"tagname": name})("x")
 
 
-@pytest.mark.parametrize("how", ["kwarg", "dict", "item", "instance", "class"])
+@pytest.mark.parametrize("how", ["instance", "class"])
 @pytest.mark.parametrize("name", BAD_NAMES)
 def test_bad_tag_name_raises(how, name):
     node = _named(how, name)
@@ -371,7 +371,7 @@ GOOD_NAMES = [
 
 @pytest.mark.parametrize("name", GOOD_NAMES)
 def test_good_tag_names_render(name):
-    assert _render(_named("kwarg", name)).startswith(f"<{name}")
+    assert _render(_named("instance", name)) == f"<{name}>x</{name}>"
 
 
 def test_builtin_and_css_tags_still_render():
@@ -386,8 +386,7 @@ def test_builtin_and_css_tags_still_render():
 
 @pytest.mark.parametrize("name", ["x-ñ", "math-α", "my-el.v2_x", "font-face"])
 def test_custom_element_names_with_pcen_chars_render(name):
-    out = _render(_named("kwarg", name))
-    assert out.startswith(f"<{name} ") and out.endswith(f"</{name}>")
+    assert _render(_named("class", name)) == f"<{name}>x</{name}>"
 
 
 @pytest.mark.parametrize(
@@ -395,7 +394,7 @@ def test_custom_element_names_with_pcen_chars_render(name):
 )
 def test_bad_custom_element_names_raise(name):
     with pytest.raises(ValueError):
-        _render(_named("kwarg", name))
+        _render(_named("class", name))
 
 
 def test_builtin_names_still_valid():
@@ -483,3 +482,38 @@ def test_document_mode_drops_bad_doctype():
     assert _runnable(out) == [] and "<p>a</p>" in out
     good = _sanitized_html("<!DOCTYPE html><p>a</p>", document=True)
     assert good.startswith("<!DOCTYPE html>")
+
+
+# ── tagname is never read from the attribute dict ───────────────────────
+
+
+@pytest.mark.parametrize("how", ["kwarg", "dict", "item"])
+@pytest.mark.parametrize("name", BAD_NAMES + ["section"])
+def test_tagname_attribute_does_not_rename(how, name):
+    """kwarg / dict / tag["tagname"] are an HTML attribute, never the name."""
+    node = _named(how, name)
+    for out in (_render(node), node.__render__(), _async_render(node)):
+        assert out.lstrip().startswith("<div"), out
+        assert _runnable(out) == [], out
+
+
+def test_css_tagname_attribute_does_not_rename():
+    from ux_dom.dom.src.csstags import CSSClass
+
+    class btn(CSSClass):
+        pass
+
+    payload = "<img src=x onerror=alert(1)>"
+    out = _render(div(btn(color="red", tagname=payload)))
+    assert out.startswith("<div>.btn{"), out
+    assert "<img" not in out, out
+
+
+def test_plugins_read_the_real_tag_name():
+    from ux_dom.dom import script
+    from ux_dom.plugins.csp import _tag_name
+    from ux_dom.plugins.dedupe import _resource
+
+    assert _tag_name(div(tagname="script")) == "div"
+    assert _tag_name(script("x")) == "script"
+    assert _resource(div(tagname="script", src="/a.js")) is None
