@@ -1,0 +1,36 @@
+{
+ "ux_dom.dom.htmldocument": {
+  "consumers": [
+   "docs/internals/ARCHITECTURE.md",
+   "docs/internals/CORE.md",
+   "docs/internals/MODULE_MAP.md",
+   "tests/01_core/test_full_mro_behaviour_integration.py",
+   "tests/01_core/test_mro_signatures.py",
+   "tests/01_core/test_render_phases.py",
+   "tests/04_production/test_production_hardening.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom",
+    "ux_dom.settings.document"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.htmlelement",
+    "ux_dom.dom.src.component",
+    "ux_dom.dom.src.dom_tag",
+    "ux_dom.dom.src.main"
+   ],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/htmldocument.py",
+  "public": [
+   "HtmlDocument"
+  ]
+ }
+}

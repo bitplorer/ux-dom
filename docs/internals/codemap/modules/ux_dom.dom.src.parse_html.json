@@ -1,0 +1,43 @@
+{
+ "ux_dom.dom.src.parse_html": {
+  "consumers": [
+   "tests/01_core/test_builtin_mro_behaviour.py",
+   "tests/01_core/test_full_mro_behaviour_integration.py",
+   "tests/01_core/test_host_path_coverage.py",
+   "tests/04_production/test_intent_battery.py",
+   "tests/05_chaos/test_parsing_chaos.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.html_string"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/src/parse_html.py",
+  "public": [
+   "Attribute",
+   "Char",
+   "Comment",
+   "Data",
+   "Declaration",
+   "Element",
+   "Entity",
+   "HtmlToAst",
+   "Pi",
+   "Root",
+   "Tag",
+   "TerminalElement",
+   "Tree",
+   "VoidTag",
+   "XTag",
+   "tokenize_html"
+  ]
+ }
+}

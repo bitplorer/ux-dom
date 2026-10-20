@@ -107,6 +107,7 @@ behavior, motion IR, or product lifecycle.
 | [internals/SYSTEM.md](internals/SYSTEM.md) | Render boundary |
 | [internals/ARCHITECTURE.md](internals/ARCHITECTURE.md) | Architecture |
 | [internals/MODULE_MAP.md](internals/MODULE_MAP.md) | Module map |
+| [internals/CODEMAP.md](internals/CODEMAP.md) | Generated, sharded code map (`codemap/`) + staleness check |
 | [internals/CONCEPTS.md](internals/CONCEPTS.md) | Concepts |
 | [internals/CORE.md](internals/CORE.md) | Core |
 | [internals/DESIGN_CANON.md](internals/DESIGN_CANON.md) | Design canon |

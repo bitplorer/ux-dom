@@ -1,0 +1,26 @@
+{
+ "ux_dom.utils.functional": {
+  "consumers": [
+   "tests/01_core/test_host_path_coverage.py",
+   "tests/01_core/test_surface_coverage.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "support",
+  "path": "src/ux_dom/utils/functional.py",
+  "public": [
+   "apply_to_dict",
+   "apply_to_list",
+   "apply_to_tuple",
+   "map_recursive"
+  ]
+ }
+}

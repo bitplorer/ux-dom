@@ -1,0 +1,18 @@
+{
+ "ux_dom.utils": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "support",
+  "path": "src/ux_dom/utils/__init__.py",
+  "public": []
+ }
+}

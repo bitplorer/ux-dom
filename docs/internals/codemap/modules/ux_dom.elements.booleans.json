@@ -1,0 +1,32 @@
+{
+ "ux_dom.elements.booleans": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.elements"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.dom",
+    "ux_dom.elements.buttons"
+   ],
+   "module_level": [
+    "ux_dom.dom.src.component"
+   ],
+   "type_checking": []
+  },
+  "layer": "components",
+  "path": "src/ux_dom/elements/booleans.py",
+  "public": [
+   "BooleanField",
+   "BooleanInput",
+   "BooleanLabel",
+   "BooleanLegend",
+   "CheckboxInput",
+   "RadioInput"
+  ]
+ }
+}

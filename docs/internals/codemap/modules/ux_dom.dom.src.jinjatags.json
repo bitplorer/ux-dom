@@ -1,0 +1,51 @@
+{
+ "ux_dom.dom.src.jinjatags": {
+  "consumers": [
+   "docs/reference/HYPERMEDIA.md",
+   "examples/xelement_kit/app/routes/jinja.py",
+   "tests/02_document_plugins/test_hypermedia_surface.py",
+   "tests/07_resilience/test_jinja_and_string_nonce.py",
+   "tests/07_resilience/test_jinja_in_event_loop.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom",
+    "ux_dom.dom.htmlelement",
+    "ux_dom.dom.src.component",
+    "ux_dom.dom.src.html_string"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.dom_tag",
+    "ux_dom.dom.src.main",
+    "ux_dom.dom.src.utils"
+   ],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/src/jinjatags.py",
+  "public": [
+   "AutoEscape",
+   "Block",
+   "CSRFToken",
+   "Comment",
+   "Cycle",
+   "Elif",
+   "Else",
+   "Extends",
+   "For",
+   "If",
+   "Include",
+   "JinjaBaseTag",
+   "JinjaDoubleTags",
+   "JinjaSingleTags",
+   "Load",
+   "Var",
+   "render_jinja"
+  ]
+ }
+}

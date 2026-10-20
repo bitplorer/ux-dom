@@ -1,0 +1,32 @@
+{
+ "ux_dom.dom.uniqueid": {
+  "consumers": [
+   "docs/internals/MODULE_MAP.md",
+   "tests/01_core/test_concurrency_patterns.py",
+   "tests/01_core/test_full_mro_behaviour_integration.py",
+   "tests/04_production/test_intent_battery.py",
+   "tests/04_production/test_production_hardening.py",
+   "tests/05_chaos/test_chaos_integration.py",
+   "tests/05_chaos/test_enterprise_full_battery.py",
+   "tests/05_chaos/test_production_trust.py",
+   "tests/05_chaos/test_stress_races_js_pipeline.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/uniqueid.py",
+  "public": [
+   "uniqueid"
+  ]
+ }
+}

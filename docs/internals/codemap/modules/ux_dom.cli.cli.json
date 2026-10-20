@@ -1,0 +1,52 @@
+{
+ "ux_dom.cli.cli": {
+  "consumers": [
+   "tests/01_core/test_extract_by_id.py",
+   "tests/03_routing_cli/test_cli_output_and_doctor.py",
+   "tests/03_routing_cli/test_cli_route_maturity.py",
+   "tests/03_routing_cli/test_create_app_scaffold.py",
+   "tests/03_routing_cli/test_dashboard_dx.py",
+   "tests/03_routing_cli/test_dx_cli.py",
+   "tests/03_routing_cli/test_profile_dx.py",
+   "tests/03_routing_cli/test_run_build_signature.py",
+   "tests/03_routing_cli/test_serve_dx.py",
+   "tests/07_resilience/test_ownership_hard_cut.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.cli"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.cli.adders",
+    "ux_dom.cli.build",
+    "ux_dom.cli.dashboard",
+    "ux_dom.cli.doctor",
+    "ux_dom.cli.lint",
+    "ux_dom.cli.profile",
+    "ux_dom.ui.catalog",
+    "ux_dom.ui.copy"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "cli",
+  "path": "src/ux_dom/cli/cli.py",
+  "public": [
+   "add_cmd",
+   "app",
+   "build_cmd",
+   "dashboard_cmd",
+   "doctor_cmd",
+   "info_cmd",
+   "lint_cmd",
+   "profile_cmd",
+   "ui_cmd",
+   "ux_dom",
+   "ux_dom_logger"
+  ]
+ }
+}

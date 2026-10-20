@@ -1,0 +1,73 @@
+{
+ "ux_dom.plugins.csp": {
+  "consumers": [
+   "docs/INSTALL.md",
+   "docs/START_HERE.md",
+   "docs/guides/COOKBOOK.md",
+   "docs/guides/SNIPPETS.md",
+   "docs/guides/TUTORIAL.md",
+   "docs/internals/APP_COMPOSITION.md",
+   "docs/internals/CONTEXT_SYNC_ASYNC.md",
+   "docs/security/ASSETS.md",
+   "docs/security/CSP.md",
+   "tests/02_document_plugins/test_app_composition.py",
+   "tests/02_document_plugins/test_csp_auto_prod.py",
+   "tests/02_document_plugins/test_csp_bare_defaults.py",
+   "tests/02_document_plugins/test_csp_fields_and_stamp_tags.py",
+   "tests/02_document_plugins/test_csp_nonce.py",
+   "tests/02_document_plugins/test_csp_policies.py",
+   "tests/02_document_plugins/test_csp_resolve_nonce.py",
+   "tests/02_document_plugins/test_document_runtimes_create.py",
+   "tests/02_document_plugins/test_document_two_stage.py",
+   "tests/04_production/test_production_lock.py",
+   "tests/05_chaos/test_enterprise_full_battery.py",
+   "tests/05_chaos/test_pentest_chaos.py",
+   "tests/05_chaos/test_production_trust.py",
+   "tests/07_resilience/test_jinja_and_string_nonce.py",
+   "tests/07_resilience/test_plugin_errors_propagate.py",
+   "tests/helpers.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.plugins.hub",
+    "ux_dom.plugins.shell",
+    "ux_dom.response.serialize",
+    "ux_dom.settings.document"
+   ],
+   "module_level": [
+    "ux_dom.plugins",
+    "ux_dom.runtime"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.plugins.shell"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/plugins/csp.py",
+  "public": [
+   "Csp",
+   "CspMiddleware",
+   "CspNonce",
+   "CspPolicy",
+   "bind_nonce_to_scope",
+   "build_csp_header",
+   "clear_nonce",
+   "generate_nonce",
+   "get_nonce",
+   "policy_dev",
+   "policy_prod",
+   "policy_report_only",
+   "reset_nonce",
+   "resolve_nonce",
+   "set_nonce",
+   "shell_fragments_nonced",
+   "stamp_nonce",
+   "stamp_tree"
+  ]
+ }
+}

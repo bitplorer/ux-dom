@@ -1,0 +1,22 @@
+{
+ "ux_dom.plugins.control.channel": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.plugins.control"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/plugins/control/channel.py",
+  "public": [
+   "ChannelControl"
+  ]
+ }
+}

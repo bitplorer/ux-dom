@@ -1,0 +1,40 @@
+{
+ "ux_dom.alpinejs": {
+  "consumers": [
+   "docs/ship/CAPABILITIES.md",
+   "tests/01_core/test_alpine_dataset_merge.py",
+   "tests/01_core/test_ux_dom.py",
+   "tests/07_resilience/test_attr_escape_isolation.py",
+   "tests/07_resilience/test_no_deprecations.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.alpinejs.dataset"
+   ],
+   "type_checking": []
+  },
+  "layer": "components",
+  "path": "src/ux_dom/alpinejs/__init__.py",
+  "public": [
+   "DataSet",
+   "dataset_after",
+   "dataset_before",
+   "dataset_checked",
+   "dataset_focus_visible",
+   "dataset_focused",
+   "dataset_hovered",
+   "dataset_pressed",
+   "dataset_ripple",
+   "dataset_scrollable",
+   "dataset_scrolled",
+   "dataset_selected",
+   "dataset_xdata"
+  ]
+ }
+}

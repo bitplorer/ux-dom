@@ -1,0 +1,55 @@
+{
+ "ux_dom.runtime": {
+  "consumers": [
+   "docs/INSTALL.md",
+   "docs/START_HERE.md",
+   "docs/guides/COOKBOOK.md",
+   "docs/guides/SNIPPETS.md",
+   "docs/guides/TUTORIAL.md",
+   "docs/internals/APP_COMPOSITION.md",
+   "docs/reference/API_SURFACE.md",
+   "docs/reference/DOCUMENT.md",
+   "docs/reference/STACK.md",
+   "docs/reference/XELEMENT.md",
+   "docs/reference/XELEMENT_AUTO_DEFINITIONS.md",
+   "docs/security/ASSETS.md",
+   "docs/security/WHY_JS_URL.md",
+   "tests/01_core/test_host_path_coverage.py",
+   "tests/02_document_plugins/test_document_runtimes_create.py",
+   "tests/02_document_plugins/test_document_two_stage.py",
+   "tests/02_document_plugins/test_document_using.py",
+   "tests/04_production/test_production_lock.py",
+   "tests/helpers.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.plugins.control",
+    "ux_dom.plugins.csp",
+    "ux_dom.plugins.runtime"
+   ],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/runtime/__init__.py",
+  "public": [
+   "Channel",
+   "Csp",
+   "CspMiddleware",
+   "Htmx",
+   "HtmxControl",
+   "UxChannelRuntime",
+   "XELEMENT_JS_URL",
+   "XELEMENT_STATIC_PREFIX",
+   "XElement",
+   "XElementRuntime"
+  ]
+ }
+}

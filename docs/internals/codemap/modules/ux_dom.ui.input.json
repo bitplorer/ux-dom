@@ -1,0 +1,31 @@
+{
+ "ux_dom.ui.input": {
+  "consumers": [
+   "docs/reference/UI.md",
+   "examples/ux_kit/app/routes/index.py",
+   "tests/02_document_plugins/test_ui_kit.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.ui"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom",
+    "ux_dom.dom",
+    "ux_dom.ui.tokens"
+   ],
+   "type_checking": []
+  },
+  "layer": "ui",
+  "path": "src/ux_dom/ui/input.py",
+  "public": [
+   "Input",
+   "input_classes"
+  ]
+ }
+}

@@ -1,0 +1,37 @@
+{
+ "ux_dom.ui.channel_bridge": {
+  "consumers": [
+   "docs/adr/OWNERSHIP_COUNCIL.md",
+   "docs/reference/UI.md",
+   "examples/ux_kit/app/routes/index.py",
+   "tests/02_document_plugins/test_ui_battery.py",
+   "tests/02_document_plugins/test_ui_kit.py",
+   "tests/02_document_plugins/test_ui_kit_defects.py",
+   "tests/04_production/test_production_stability.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.dom",
+    "ux_dom.ui.button",
+    "ux_dom.ui.tokens"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "ui",
+  "path": "src/ux_dom/ui/channel_bridge.py",
+  "public": [
+   "action_button_attrs",
+   "channel_available",
+   "live_button",
+   "public_form",
+   "stamp_region",
+   "to_fragment"
+  ]
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "ux_dom.ui.skeleton": {
+  "consumers": [
+   "examples/ux_kit/app/routes/index.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.ui"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom",
+    "ux_dom.dom",
+    "ux_dom.ui.tokens"
+   ],
+   "type_checking": []
+  },
+  "layer": "ui",
+  "path": "src/ux_dom/ui/skeleton.py",
+  "public": [
+   "Skeleton"
+  ]
+ }
+}

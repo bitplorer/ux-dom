@@ -1,0 +1,29 @@
+{
+ "ux_dom.ui.dropdown_menu": {
+  "consumers": [
+   "tests/02_document_plugins/test_ui_kit_defects.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.ui"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom",
+    "ux_dom.dom",
+    "ux_dom.dom.src.dom_tag",
+    "ux_dom.ui.tokens"
+   ],
+   "type_checking": []
+  },
+  "layer": "ui",
+  "path": "src/ux_dom/ui/dropdown_menu.py",
+  "public": [
+   "DropdownMenu"
+  ]
+ }
+}

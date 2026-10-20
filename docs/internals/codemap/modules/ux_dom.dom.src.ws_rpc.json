@@ -1,0 +1,26 @@
+{
+ "ux_dom.dom.src.ws_rpc": {
+  "consumers": [
+   "docs/internals/MODULE_MAP.md",
+   "tests/05_chaos/test_stress_races_js_pipeline.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.htmlelement",
+    "ux_dom.dom.src.utils.dom_util"
+   ],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/src/ws_rpc.py",
+  "public": [
+   "ws_rpc"
+  ]
+ }
+}

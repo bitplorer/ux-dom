@@ -1,0 +1,29 @@
+{
+ "ux_dom.plugins.control.null": {
+  "consumers": [
+   "tests/01_core/test_surface_coverage.py",
+   "tests/02_document_plugins/test_app_host_composition.py",
+   "tests/02_document_plugins/test_public_api_and_plugins.py",
+   "tests/04_production/test_intent_battery.py",
+   "tests/05_chaos/test_enterprise_full_battery.py",
+   "tests/05_chaos/test_production_trust.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.plugins.control"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/plugins/control/null.py",
+  "public": [
+   "NullControl"
+  ]
+ }
+}

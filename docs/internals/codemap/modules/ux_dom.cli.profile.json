@@ -1,0 +1,30 @@
+{
+ "ux_dom.cli.profile": {
+  "consumers": [
+   "tests/03_routing_cli/test_profile_dx.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.cli.cli",
+    "ux_dom.cli.dashboard"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.concurrency",
+    "ux_dom.dom",
+    "ux_dom.profiling"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "cli",
+  "path": "src/ux_dom/cli/profile.py",
+  "public": [
+   "format_profile_report",
+   "run_profile"
+  ]
+ }
+}

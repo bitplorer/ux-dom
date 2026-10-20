@@ -1,0 +1,77 @@
+{
+ "ux_dom.ui.tokens": {
+  "consumers": [
+   "docs/adr/DESIGN_DECISIONS.md",
+   "tests/01_core/test_host_path_coverage.py",
+   "tests/01_core/test_surface_coverage.py",
+   "tests/02_document_plugins/test_ui_battery.py",
+   "tests/02_document_plugins/test_ui_kit.py",
+   "tests/04_production/test_production_stability.py",
+   "tests/05_chaos/test_enterprise_full_battery.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.ui.channel_bridge"
+   ],
+   "module_level": [
+    "ux_dom.ui",
+    "ux_dom.ui.alert",
+    "ux_dom.ui.avatar",
+    "ux_dom.ui.badge",
+    "ux_dom.ui.breadcrumb",
+    "ux_dom.ui.button",
+    "ux_dom.ui.card",
+    "ux_dom.ui.carousel",
+    "ux_dom.ui.chart",
+    "ux_dom.ui.checkbox",
+    "ux_dom.ui.command",
+    "ux_dom.ui.datepicker",
+    "ux_dom.ui.dialog",
+    "ux_dom.ui.dropdown_menu",
+    "ux_dom.ui.empty_state",
+    "ux_dom.ui.form_section",
+    "ux_dom.ui.input",
+    "ux_dom.ui.kbd",
+    "ux_dom.ui.label",
+    "ux_dom.ui.page_header",
+    "ux_dom.ui.pagination",
+    "ux_dom.ui.popover",
+    "ux_dom.ui.progress",
+    "ux_dom.ui.radio_group",
+    "ux_dom.ui.select",
+    "ux_dom.ui.separator",
+    "ux_dom.ui.sheet",
+    "ux_dom.ui.skeleton",
+    "ux_dom.ui.slider",
+    "ux_dom.ui.status_strip",
+    "ux_dom.ui.switch",
+    "ux_dom.ui.table",
+    "ux_dom.ui.tabs",
+    "ux_dom.ui.textarea",
+    "ux_dom.ui.toast"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "ui",
+  "path": "src/ux_dom/ui/tokens.py",
+  "public": [
+   "cn",
+   "color",
+   "density",
+   "field_classes",
+   "focus_ring",
+   "ink",
+   "overlay",
+   "radius",
+   "surface",
+   "target",
+   "type_scale",
+   "variants"
+  ]
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "ux_dom.htmx": {
+  "consumers": [
+   "tests/01_core/test_streaming_and_attrs.py",
+   "tests/02_document_plugins/test_htmx_route_and_partial.py",
+   "tests/02_document_plugins/test_htmx_ws_stream.py",
+   "tests/04_production/test_intent_battery.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.htmx.middleware",
+    "ux_dom.web_io"
+   ],
+   "type_checking": []
+  },
+  "layer": "integrations",
+  "path": "src/ux_dom/htmx/__init__.py",
+  "public": [
+   "Htmx",
+   "HtmxMiddleware"
+  ]
+ }
+}

@@ -1,0 +1,20 @@
+{
+ "ux_dom.__main__": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.cli"
+   ],
+   "type_checking": []
+  },
+  "layer": "cli",
+  "path": "src/ux_dom/__main__.py",
+  "public": []
+ }
+}

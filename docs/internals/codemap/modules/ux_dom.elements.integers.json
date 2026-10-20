@@ -1,0 +1,35 @@
+{
+ "ux_dom.elements.integers": {
+  "consumers": [
+   "tests/01_core/test_float_legend.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.elements"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.dom",
+    "ux_dom.elements"
+   ],
+   "module_level": [
+    "ux_dom.dom.src.component"
+   ],
+   "type_checking": []
+  },
+  "layer": "components",
+  "path": "src/ux_dom/elements/integers.py",
+  "public": [
+   "IntegerField",
+   "IntegerInput",
+   "IntegerLabel",
+   "IntegerLegend",
+   "IntegerNumberInput",
+   "IntegerRangeInput",
+   "TelephoneInput"
+  ]
+ }
+}

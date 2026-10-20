@@ -1,0 +1,43 @@
+{
+ "ux_dom.routing._directory_router_impl": {
+  "consumers": [
+   "docs/reference/API_SURFACE.md",
+   "docs/reference/ROUTING.md",
+   "tests/01_core/test_discovered_edges.py",
+   "tests/01_core/test_streaming_and_attrs.py",
+   "tests/03_routing_cli/test_directory_router.py",
+   "tests/04_production/test_production_hardening.py",
+   "tests/05_chaos/test_parsing_chaos.py",
+   "tests/05_chaos/test_pentest_chaos.py",
+   "tests/07_resilience/test_ownership_hard_cut.py",
+   "tests/helpers.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.routing.fastapi"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.diagnostics",
+    "ux_dom.response.starlette"
+   ],
+   "type_checking": []
+  },
+  "layer": "integrations",
+  "path": "src/ux_dom/routing/_directory_router_impl.py",
+  "public": [
+   "AcceptSymbol",
+   "DirectoryRouter",
+   "DirectoryRouterError",
+   "HTMLRoute",
+   "OnRoute",
+   "ResolveUnit",
+   "RouterHooks",
+   "StreamingRoute"
+  ]
+ }
+}

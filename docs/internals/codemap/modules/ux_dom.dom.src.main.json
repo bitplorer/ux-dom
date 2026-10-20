@@ -1,0 +1,29 @@
+{
+ "ux_dom.dom.src.main": {
+  "consumers": [],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.htmldocument",
+    "ux_dom.dom.src.component",
+    "ux_dom.dom.src.csstags",
+    "ux_dom.dom.src.htmltags",
+    "ux_dom.dom.src.jinjatags",
+    "ux_dom.dom.src.svgtags"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.ext"
+   ],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/src/main.py",
+  "public": [
+   "extension"
+  ]
+ }
+}

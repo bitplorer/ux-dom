@@ -24,6 +24,8 @@ jobs:
         run: pip install poetry
       - name: Install dependencies
         run: poetry install --with dev,test --no-interaction --no-ansi
+      - name: Check code map is fresh
+        run: poetry run python scripts/codemap.py --check
       - name: Install browser test toolchain (Playwright + Chromium)
         run: |
           npm ci --prefix tests/browser

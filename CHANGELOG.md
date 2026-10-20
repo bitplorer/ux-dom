@@ -94,6 +94,10 @@
   ``preconnect``/``preload`` link no longer drops the matching stylesheet or script.
   **Fix: ``uxdom add xelement`` stubs** use ``CustomElement`` / ``WebComponent`` /
   ``AlpineComponent`` with ``tag_name`` and an ``x-tagname`` template, so they construct.
+- **Infra: persisted code map.** ``scripts/codemap.py`` writes
+  one shard per module under ``docs/internals/codemap/``; CI fails when a
+  shard is stale (``--write-changed`` rewrites only those). See
+  ``docs/internals/CODEMAP.md``.
 
 ## 0.2.0 — remove deprecations
 

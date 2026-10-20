@@ -1,0 +1,51 @@
+{
+ "ux_dom.dom.src.ext": {
+  "consumers": [
+   "docs/internals/ARCHITECTURE.md",
+   "docs/internals/CORE.md",
+   "docs/internals/MODULE_MAP.md",
+   "tests/01_core/test_attr_dialects.py",
+   "tests/01_core/test_full_mro_behaviour_integration.py",
+   "tests/01_core/test_mro_signatures.py",
+   "tests/01_core/test_pretty_stream.py",
+   "tests/01_core/test_streaming_and_attrs.py",
+   "tests/04_production/test_intent_battery.py",
+   "tests/04_production/test_production_hardening.py",
+   "tests/05_chaos/test_pentest_chaos.py",
+   "tests/05_chaos/test_production_trust.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom",
+    "ux_dom.dom.htmlelement",
+    "ux_dom.dom.src.html_string",
+    "ux_dom.dom.src.main",
+    "ux_dom.settings.document"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.dom.src.concurrency"
+   ],
+   "module_level": [
+    "ux_dom.dom.src.dom1core",
+    "ux_dom.dom.src.dom_tag",
+    "ux_dom.dom.src.utils.dom_util"
+   ],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/src/ext.py",
+  "public": [
+   "DoubleTags",
+   "DoubleTemplates",
+   "PlaceholderTag",
+   "SingleTags",
+   "SingleTemplates",
+   "StyleTags",
+   "Tags"
+  ]
+ }
+}

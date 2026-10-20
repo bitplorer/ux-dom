@@ -1,0 +1,26 @@
+{
+ "ux_dom.dom.src.dom1core": {
+  "consumers": [
+   "docs/internals/MODULE_MAP.md"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.ext"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/src/dom1core.py",
+  "public": [
+   "basestring",
+   "dom1core",
+   "unicode"
+  ]
+ }
+}

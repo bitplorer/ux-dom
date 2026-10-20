@@ -1,0 +1,30 @@
+{
+ "ux_dom.elements.floats": {
+  "consumers": [
+   "tests/01_core/test_float_legend.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.elements"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.component"
+   ],
+   "type_checking": []
+  },
+  "layer": "components",
+  "path": "src/ux_dom/elements/floats.py",
+  "public": [
+   "FloatInput",
+   "FloatLabel",
+   "FloatLegend",
+   "FloatNumberInput",
+   "FloatRangeInput"
+  ]
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "ux_dom.dom.src.html_string": {
+  "consumers": [
+   "docs/internals/MODULE_MAP.md",
+   "tests/01_core/test_input_value_regressions.py",
+   "tests/01_core/test_silent_failure_guards.py",
+   "tests/01_core/test_tree_ownership.py",
+   "tests/05_chaos/test_enterprise_full_battery.py",
+   "tests/05_chaos/test_parsing_chaos.py",
+   "tests/05_chaos/test_production_trust.py",
+   "tests/07_resilience/test_htmx_same_origin.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom",
+    "ux_dom.dom.src.component"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.ext",
+    "ux_dom.dom.src.htmltags",
+    "ux_dom.dom.src.jinjatags",
+    "ux_dom.dom.src.parse_html",
+    "ux_dom.dom.src.svgtags",
+    "ux_dom.dom.src.utils"
+   ],
+   "type_checking": []
+  },
+  "layer": "dom",
+  "path": "src/ux_dom/dom/src/html_string.py",
+  "public": [
+   "StringToHTML",
+   "defHTML"
+  ]
+ }
+}

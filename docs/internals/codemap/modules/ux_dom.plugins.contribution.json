@@ -1,0 +1,37 @@
+{
+ "ux_dom.plugins.contribution": {
+  "consumers": [
+   "tests/01_core/test_host_path_coverage.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.assets",
+    "ux_dom.plugins.runtime"
+   ],
+   "module_level": [
+    "ux_dom.plugins",
+    "ux_dom.plugins.hub",
+    "ux_dom.plugins.package_static",
+    "ux_dom.plugins.runtime"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [
+    "ux_dom.dom"
+   ],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/plugins/contribution.py",
+  "public": [
+   "ContributionPlugin",
+   "Inject",
+   "StaticArtifact",
+   "TagKind",
+   "artifact_from_callable",
+   "artifact_from_path"
+  ]
+ }
+}

@@ -1,0 +1,39 @@
+{
+ "ux_dom.plugins.safe_static": {
+  "consumers": [
+   "docs/internals/ARCHITECTURE.md",
+   "docs/internals/MODULE_MAP.md",
+   "docs/security/ASSETS.md",
+   "docs/security/SAFE_STATIC.md",
+   "docs/security/WHY_JS_URL.md",
+   "tests/02_document_plugins/test_safe_static.py",
+   "tests/05_chaos/test_pentest_chaos.py"
+  ],
+  "imported_by": {
+   "function_level": [
+    "ux_dom.plugins.hub",
+    "ux_dom.plugins.package_static",
+    "ux_dom.settings.document"
+   ],
+   "module_level": [
+    "ux_dom.plugins.runtime"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/plugins/safe_static.py",
+  "public": [
+   "ALLOWED_EXTENSIONS",
+   "SafeStaticFile",
+   "UnsafeStaticError",
+   "allowlist_summary",
+   "collect_served_files",
+   "install_safe_static"
+  ]
+ }
+}

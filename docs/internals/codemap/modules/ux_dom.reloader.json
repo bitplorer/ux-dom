@@ -1,0 +1,27 @@
+{
+ "ux_dom.reloader": {
+  "consumers": [
+   "examples/standalone_showcase/app/main.py",
+   "tests/01_core/test_host_path_coverage.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.reloader._app",
+    "ux_dom.reloader._models"
+   ],
+   "type_checking": []
+  },
+  "layer": "integrations",
+  "path": "src/ux_dom/reloader/__init__.py",
+  "public": [
+   "HotReloadWebSocketRoute",
+   "WatchPath"
+  ]
+ }
+}

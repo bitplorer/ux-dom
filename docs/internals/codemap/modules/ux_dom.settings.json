@@ -1,0 +1,28 @@
+{
+ "ux_dom.settings": {
+  "consumers": [
+   "tests/03_routing_cli/test_serve_dx.py",
+   "tests/03_routing_cli/test_tailwind_command.py",
+   "tests/07_resilience/test_ownership_hard_cut.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.settings.document"
+   ],
+   "type_checking": []
+  },
+  "layer": "document",
+  "path": "src/ux_dom/settings/__init__.py",
+  "public": [
+   "Document"
+  ]
+ }
+}
