@@ -89,13 +89,17 @@ class MergeAlpineAttributes(Fragment):
         # am not sure how well have I handled this case, maybe in future
         # I will be more clear on how to merge bindings. Till then let
         # there be some working usage.
-        value = "; ".join([self.attributes[key], value])
+        if self.attributes.get(key, None):
+            value = "; ".join([self.attributes[key], value])
         return key, value
 
     def _merge_transition_attr(self, key, value):
-        if self.attributes.get(key, None):
-            if value:
-                value = " ".join([self.attributes[key], value])
+        # a boolean x-transition (True / name=name) is bare: it adds no classes
+        if value is True or value == key:
+            value = None
+        existing = self.attributes.get(key, None)
+        if existing and existing is not True and existing != key:
+            value = " ".join([existing, value]) if value else existing
 
         return key, value
 

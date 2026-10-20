@@ -516,9 +516,13 @@ class Fragment(Component):
             # --------------------------^ x-tansition section -------------------
             # ===================================================================
             # merging x-tansition from Fragment class to child class
-            if attr.startswith("x-transition") and child.attributes.get(attr, None):
-                if value:
-                    value = " ".join([child.attributes[attr], value])
+            if attr.startswith("x-transition"):
+                # a boolean x-transition (True / name=name) is bare: no classes
+                if value is True or value == attr:
+                    value = None
+                child_value = child.attributes.get(attr, None)
+                if child_value and child_value is not True and child_value != attr:
+                    value = " ".join([child_value, value]) if value else child_value
             # ===================================================================
             # --------------------------^ x-tansition section -------------------
             # ===================================================================

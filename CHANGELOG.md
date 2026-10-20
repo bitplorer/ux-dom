@@ -18,6 +18,7 @@
   raises fails the render instead of silently dropping runtime tags; nonce
   stamping no longer hides errors, and its walk only reads ``str`` tag names and
   list/tuple ``children`` (a Component field ``name: int`` no longer breaks it).
+- **Fix: Alpine `dataset_*` helpers no longer raise `KeyError` inside `DataSet`; a boolean `x-transition` merged by `Fragment` / `DataSet` renders bare or keeps the other side's classes instead of `"opacity x-transition"`.**
 - **Security (breaking default): bare ``Csp()`` is tightened to ``Csp.prod()`` on script inline and connect-src.**
   ``Csp()``, ``CspPolicy``, ``CspMiddleware``, and ``build_csp_header`` no longer
   ship script ``'unsafe-inline'`` or bare ``ws:``/``wss:``. Apps that need inline
