@@ -50,15 +50,17 @@ def channel_available() -> bool:
 def to_fragment(node: Any) -> str:
     """Coerce ux-dom / str / ``__html__`` to an HTML string.
 
-    A plain string is HTML and goes through the same allowlist sanitizer as
+    A ``__html__`` value (``Markup``) is trusted and returned verbatim. A
+    plain string is HTML and goes through the same allowlist sanitizer as
     ``defHTML``, in fragment mode. Tag trees render as built.
     """
     if node is None:
         return ""
+    # ``__html__`` first: MarkupSafe ``Markup`` is a ``str`` and is trusted.
+    if callable(getattr(node, "__html__", None)):
+        return str(node.__html__())  # type: ignore[misc]
     if isinstance(node, str):
         return _sanitized_html(node)
-    if hasattr(node, "__html__"):
-        return str(node.__html__())  # type: ignore[misc]
     # ux-dom render path
     if hasattr(node, "__render__"):
         try:

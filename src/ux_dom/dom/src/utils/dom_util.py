@@ -173,7 +173,7 @@ _JS_WS = re.compile(
 # ``not name`` below; this set is the rest of ``[A-Za-z0-9_.-]+``.
 _SSE_WS_NAME_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789_.-")
 # Attributes whose value is a whole HTML document, not a URL. A string is
-# sanitized by the HTML-string allowlist. A non-string ``__html__`` opt-in
+# sanitized by the HTML-string allowlist. A ``__html__`` opt-in (``Markup``)
 # stays verbatim.
 HTML_ATTRIBUTES = frozenset({"srcdoc"})
 UNSAFE_URL = "about:invalid#ux-dom-unsafe-url"
@@ -339,7 +339,7 @@ def safe_attr_value(attribute, value):
     spaces that browsers ignore inside a scheme are removed.
 
     HTML attributes (``srcdoc``) run a string through the same allowlist
-    sanitizer as ``defHTML``. A non-string ``__html__`` value is still the
+    sanitizer as ``defHTML``. A ``__html__`` value (``Markup``) is still the
     verbatim opt-in (it is still attribute-escaped by the renderer).
 
     For checked attributes the return value is always the ``str`` that was
@@ -372,11 +372,12 @@ def _srcdoc_value(value):
     """
     from ux_dom.dom.src.html_string import _sanitized_html
 
-    if isinstance(value, str):
-        return _sanitized_html(value)
+    # ``__html__`` first: MarkupSafe ``Markup`` is a ``str`` and is trusted.
     html_method = getattr(value, "__html__", None)
     if callable(html_method):
         return str(html_method())
+    if isinstance(value, str):
+        return _sanitized_html(value)
     return UNSAFE_URL
 
 

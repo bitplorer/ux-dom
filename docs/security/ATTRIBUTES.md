@@ -148,8 +148,10 @@ One allowlist. `defHTML`, `Fragment(str)`, `Component.render()->str`,
 `srcdoc` all use it. Strings stay HTML: known-safe tags are kept and
 sanitized, they are not turned into plain text. String HTML is always
 sanitized: `escape=False` is accepted for compatibility and does not bypass
-the allowlist. Trusted markup uses `raw()` / `Markup` (verbatim), and a
-non-string `srcdoc` `__html__` value stays verbatim. Policy:
+the allowlist. Trusted markup uses `raw()` / `Markup` (verbatim). A
+`__html__` value is checked before the `str` check, so a `Markup` (a `str`
+subclass) passed to `to_fragment`, `srcdoc`, `Fragment`, or returned from
+`Component.render()` stays verbatim. Policy:
 [ADR 0002](../adr/0002-html-string-sanitizer-policy.md).
 
 **Tags.** A fragment may contain the known-safe set (the usual content tags,
@@ -187,13 +189,16 @@ gets `colspan`, …). Anything else is dropped, including every `on*` handler
 time. `style` drops `expression(`, `javascript:`, and `vbscript:`.
 
 **Text.** Text is escaped whether `escape` is true or false, so a `<` in a
-text node cannot be parsed again as a tag. Character references are
-re-emitted on this path (`&amp;`, `&#39;`, `&#x61;`) and are not passed
-through `escape()` — that helper encodes a leading `&`, and this path does
-not depend on it letting a reference through. Same-line spaces stay, so
-`Tom &amp; Jerry` is still that text. A newline is source indentation and is
-still removed. An unknown entity name stays the letters the parser already
-yielded (`AT&T` is still `ATT`).
+text node cannot be parsed again as a tag. Numeric references are re-emitted
+as written (`&#39;`, `&#x61;`). Named references are decoded with the HTML5
+table, case-sensitive like a browser (`&AMP;` and `&amp;` are `&`), then
+escaped. A name the table does not know is literal text, so `AT&T` stays
+`AT&T`. Same-line spaces stay, including a space between inline tags
+(`<b>a</b> <i>b</i>`). A newline is source indentation and is still removed.
+
+**Attribute names** that are not `[a-z][a-z0-9_.:-]*` after the leading `_`
+is stripped (`data-a"b`, `aria-a'b`, a control character) are dropped, so
+untrusted input never reaches the renderer's `InvalidAttributeName`.
 
 **Document mode** is a keyword the caller passes (`defHTML(s,
 document=True)`, `StringToHTML(s, document=True)`). The input never selects
@@ -207,8 +212,9 @@ with `http-equiv` `content-type` / `content-language` / `x-ua-compatible`
 whose `rel` is only `stylesheet` and/or `icon` and whose `href` is a relative
 same-origin URL or `https` (`javascript:` and `http://` links are dropped),
 and `style`. `style` text is emitted verbatim (`a > b` stays `a > b`); a
-`style` whose text contains `<` is dropped, which covers `</style` in any case
-and `<svg><style>` (a browser parses those children as markup). Scripts,
+`style` whose text contains `<` is dropped, which covers `</style` in any case.
+A `style` inside `<svg>` or `<math>` is always dropped: in foreign content a
+browser parses its children as markup and decodes entities. Scripts,
 handlers, `hx-*`, and unknown tags are still stripped inside the document.
 
 Tests: `tests/07_resilience/test_html_allowlist.py`,

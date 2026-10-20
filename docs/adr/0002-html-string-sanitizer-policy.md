@@ -44,7 +44,9 @@ their `Component.render()` methods return tag trees.
 2. **`escape=False` does not bypass sanitizing.** The parameter still accepts
    values so existing calls keep working. String HTML is always sanitized.
    Trusted HTML uses `raw()` or a `Markup` (`__html__`) value, which never
-   enters the parser.
+   enters the parser. Because `Markup` is a `str` subclass, every entry point
+   checks `__html__` before `str` (`to_fragment`, `srcdoc`, `Fragment`,
+   `Component.render()`).
 3. **Document mode is the caller's keyword** (`document=True`). The input never
    selects it. Inside ux-dom only an author's HTML file returned from
    `Component.render()` as a `Path` opts in.
@@ -52,7 +54,10 @@ their `Component.render()` methods return tag trees.
    `noscript`, `noembed`, `noframes`, `xmp`, `plaintext`, `iframe`, and
    `template` are dropped with their children, and comments are dropped. A
    document-mode `<style>` keeps its text verbatim and is dropped when that
-   text contains `<`.
+   text contains `<` or when it sits inside `<svg>` / `<math>` (foreign
+   content parses style children as markup). Attribute names outside
+   `[a-z][a-z0-9_.:-]*` are dropped rather than left for the renderer to
+   refuse.
 
 **Why:** an allowlist that unwraps is the safe default for strings of unknown
 origin, and the measured external usage shows no caller depends on the old

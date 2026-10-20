@@ -31,7 +31,7 @@ from collections.abc import Iterable
 import types
 import typing as T
 from dataclasses import dataclass, field
-from html.entities import name2codepoint
+from html.entities import html5
 
 from ux_dom.dom.src import ext, htmltags, jinjatags, svgtags
 from ux_dom.dom.src.htmltags import html_tag
@@ -628,23 +628,32 @@ def _style_text(token) -> T.Optional[str]:
 
 
 def _reference_text(token: Char | Entity) -> str:
-    """Re-emit a character reference without calling ``escape()``.
+    """Re-emit a character reference as already-escaped text.
 
-    ``escape()`` on main encodes the leading ``&``, so a reference must not
-    be passed through it. Unknown names stay the letters the parser already
-    produced (``AT&T`` → ``ATT``).
+    A numeric reference is re-emitted as written. A named one is decoded with
+    the HTML5 table, which is case-sensitive like a browser (``&AMP;`` is
+    ``&``, ``&Amp;`` is not), then escaped. A name the table does not know is
+    literal text in a browser, so its ``&`` is escaped (``AT&T`` stays
+    ``AT&T``).
     """
     if isinstance(token, Char):
         return token.render()
     name = str(token.data)
-    if name in name2codepoint:
-        return f"&{name};"
-    return name
+    decoded = html5.get(f"{name};")
+    if decoded is not None:
+        return escape(decoded)
+    return f"&amp;{name}"
+
+
+# Attribute names a browser and the renderer both accept as one name.
+# Anything else (quotes, ``<``, ``/``, ``=``, controls, …) is dropped here so
+# the renderer never has to refuse it.
+_SAFE_ATTR_NAME = re.compile(r"[a-z][a-z0-9_.:-]*")
 
 
 def _attr_kept(tag: str, key: str, value) -> bool:
     kl = _norm_attr_name(key)
-    if not kl or kl == "srcdoc":
+    if not kl or kl == "srcdoc" or not _SAFE_ATTR_NAME.fullmatch(kl):
         return False
     if kl.startswith("on") or kl.startswith("hx-") or kl.startswith("data-hx-"):
         return False
@@ -722,12 +731,16 @@ def _link_attrs(attrs: dict) -> dict | None:
 
 
 def _text_data(raw: str) -> str:
-    """Keep same-line spaces. Newlines are source indentation and drop."""
+    """Keep same-line spaces. Newlines are source indentation and drop.
+
+    Whitespace on one line between inline tags (``<b>a</b> <i>b</i>``) is
+    one space, so the words are not glued together.
+    """
     if "\n" in raw:
         return raw.strip("\n").strip(" ").strip("\n")
-    if raw.strip(" "):
+    if raw.strip(" \t"):
         return raw
-    return ""
+    return " " if raw else ""
 
 
 @dataclass
@@ -745,6 +758,8 @@ class StringToHTML(object):
     # Chosen by the caller, never inferred from the input.
     document: bool = field(default=False)
     allow_custom_elements: T.Optional[Iterable[str]] = field(default=None)
+    # Inside ``<svg>`` / ``<math>``. Set by the parser for child parsers.
+    foreign: bool = field(default=False, repr=False)
 
     def __post_init__(self):
         self._custom = _custom_element_rules(self.allow_custom_elements)
@@ -769,13 +784,14 @@ class StringToHTML(object):
         if jinjatags not in self.modules:
             self.modules.append(jinjatags)
 
-    def _child_parser(self, tokens) -> "StringToHTML":
+    def _child_parser(self, tokens, foreign: bool = False) -> "StringToHTML":
         return StringToHTML(
             tokens,
             modules=self.modules,
             escape=self.escape,
             document=self.document,
             allow_custom_elements=self._custom,
+            foreign=self.foreign or foreign,
         )
 
     def _add_text(self, tag, text: str, *, already_escaped: bool):
@@ -849,7 +865,10 @@ class StringToHTML(object):
             css = None
             kept: T.Optional[dict]
             if name == "style":
-                css = _style_text(token)
+                # In foreign content a browser parses <style> children as
+                # markup and decodes entities, so a kept style there could
+                # turn into elements on re-insertion. Drop it.
+                css = None if self.foreign else _style_text(token)
                 kept = None if css is None else _filter_attrs(name, dict(token.attrs or {}))
             elif name == "meta":
                 kept = _meta_attrs(dict(token.attrs or {}))
@@ -892,7 +911,8 @@ class StringToHTML(object):
             if css:
                 dom_text(css, escape=False)
             return
-        self._child_parser(token.children).parse(tag=element)
+        foreign = str(token.name).lower() in ("svg", "math")
+        self._child_parser(token.children, foreign=foreign).parse(tag=element)
 
     def __repr__(self):
         return str(self.parse())
