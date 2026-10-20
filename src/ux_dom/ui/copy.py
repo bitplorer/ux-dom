@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import ast
 import re
 import shutil
 from importlib import import_module
@@ -22,21 +23,14 @@ _IMPORT_REWRITES = [
     (re.compile(r"from ux_dom\.ui import"), "from . import"),
 ]
 
-# stem → other catalog stems that must travel with a copy
-_DEPS: dict[str, tuple[str, ...]] = {
-    "dialog": (),
-    "sheet": (),
-    "channel_bridge": ("button",),
-    "datepicker": (),
-    "slider": (),
-    "carousel": (),
-    "toast": (),
-    "chart": (),
-    "command": (),
-    "popover": (),
-    "dropdown_menu": (),
-    "tabs": (),
-}
+
+def _deps(src: Path) -> set[str]:
+    """Catalog stems that ``src`` imports as ``from ux_dom.ui.<stem> import``."""
+    tree = ast.parse(src.read_text(encoding="utf-8"))
+    modules = {
+        node.module for node in ast.walk(tree) if isinstance(node, ast.ImportFrom) and node.module
+    }
+    return {m.split(".")[-1] for m in modules if m.startswith("ux_dom.ui.")} & set(CATALOG)
 
 
 def copy_component(
@@ -47,6 +41,9 @@ def copy_component(
 ) -> Path:
     """
     Copy a ``ux_dom.ui`` module into ``dest_dir`` for local ownership.
+
+    Kit modules it imports travel with it. When ``force`` is off, a
+    dependency file that already exists in ``dest_dir`` is kept as is.
 
     ::
 
@@ -62,10 +59,14 @@ def copy_component(
         raise UiCopyError(
             f"unknown UI component {name!r}; choose from {sorted(CATALOG)}"
         )
+    return _copy(key, Path(dest_dir), force, set())
+
+
+def _copy(key: str, dest_dir: Path, force: bool, seen: set[str]) -> Path:
+    seen.add(key)  # cycle guard for the dependency walk
     meta = CATALOG[key]
     mod = import_module(meta["module"])
     src = Path(mod.__file__).resolve()  # type: ignore[arg-type]
-    dest_dir = Path(dest_dir)
     dest_dir.mkdir(parents=True, exist_ok=True)
 
     # Always ensure tokens companion for style helpers
@@ -75,12 +76,12 @@ def copy_component(
     if not tokens_dst.exists() or force:
         shutil.copy2(tokens_src, tokens_dst)
 
-    for dep in _DEPS.get(key, ()):
-        copy_component(dep, dest_dir=dest_dir, force=force)
-
     dest = dest_dir / src.name
     if dest.exists() and not force:
         raise UiCopyError(f"{dest} exists (use --force)")
+    for dep in sorted(_deps(src) - seen):
+        if force or not (dest_dir / f"{dep}.py").exists():
+            _copy(dep, dest_dir, force, seen)
     text = src.read_text(encoding="utf-8")
     for pat, repl in _IMPORT_REWRITES:
         text = pat.sub(repl, text)

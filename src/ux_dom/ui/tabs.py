@@ -64,11 +64,22 @@ class Tabs(Component):
         chosen = active if active is not None else default
         current = chosen if chosen in keyset else normalized[0][0]
 
+        # Panel/tab ids only when the caller names the widget (``id=``).
+        base = attrs.get("id")
+        tab_id = f"{base}-tab-{current}" if base else None
+        panel_id = f"{base}-panel" if base else None
+
         tab_btns = []
         active_body: Any = None
         for key, label, body in normalized:
             is_active = key == current
-            btn_attrs: dict[str, Any] = {"type": "button"}
+            btn_attrs: dict[str, Any] = {
+                "type": "button",
+                "tabindex": "0" if is_active else "-1",
+            }
+            if is_active and panel_id:
+                btn_attrs["id"] = tab_id
+                btn_attrs["aria-controls"] = panel_id
             if select_action:
                 btn_attrs["data-channel-action"] = select_action
                 btn_attrs["data-args"] = f'{{"tab":"{key}"}}'
@@ -83,6 +94,7 @@ class Tabs(Component):
                         if is_active
                         else "text-stone-400 hover:text-stone-200",
                     ),
+                    role="tab",
                     **{"aria-selected": "true" if is_active else "false"},
                     **{"data-tab": key},
                     **btn_attrs,
@@ -104,7 +116,8 @@ class Tabs(Component):
                 active_body,
                 role="tabpanel",
                 className="mt-4 text-sm text-stone-200",
+                **({"id": panel_id, "aria-labelledby": tab_id} if panel_id else {}),
             ),
-            className=cn(className) if className else None,
+            **({"className": cn(className)} if className else {}),
             **attrs,
         )

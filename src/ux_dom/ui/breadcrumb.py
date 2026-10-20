@@ -47,6 +47,6 @@ class Breadcrumb(Component):
         return nav(
             ol(*kids, className="flex flex-wrap items-center"),
             **{"aria-label": "Breadcrumb"},
-            className=cn(className) if className else None,
+            **({"className": cn(className)} if className else {}),
             **attrs,
         )

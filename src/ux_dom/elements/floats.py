@@ -44,7 +44,7 @@ class FloatLegend(component.Component):
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
-        super(FloatLegend, self)._init__(
+        super(FloatLegend, self).__init__(
             self.label, *args, className=self.className, **kwargs
         )
 

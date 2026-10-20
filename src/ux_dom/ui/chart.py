@@ -63,6 +63,7 @@ class Chart(Component):
     ):
         vals = _nums(series)
         if not vals:
+            user_style = attrs.pop("style", None)  # caller's style overrides the size
             empty_body = empty if empty is not None else span(
                 "No data",
                 className=cn("text-sm", ink["muted"]),
@@ -76,7 +77,8 @@ class Chart(Component):
                     "border-stone-700 bg-stone-900/40",
                     className,
                 ),
-                **{"style": f"width:{width}px;height:{height}px"},
+                style=f"width:{width}px;height:{height}px"
+                + (f";{user_style}" if user_style else ""),
                 **attrs,
             )
 

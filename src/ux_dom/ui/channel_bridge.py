@@ -168,6 +168,6 @@ def public_form(
         *children,
         action=form_action,
         method=method,
-        className=cn(className) if className else None,
+        **({"className": cn(className)} if className else {}),
         **merged,
     )

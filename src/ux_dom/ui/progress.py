@@ -23,6 +23,10 @@ class Progress(Component):
         pct = 0.0 if max <= 0 else __import__("builtins").max(
             0.0, min(100.0, (float(value) / float(max)) * 100.0)
         )
+        top = max if max > 0 else 0  # a non-positive max is an empty bar
+        v = float(value)
+        # clamp into [0, top]; an in-range value renders as given, NaN as 0
+        now = value if 0 <= v <= top else (top if v > top else 0)
         return div(
             div(
                 className="h-full rounded-full bg-emerald-500 transition-all",
@@ -31,8 +35,8 @@ class Progress(Component):
             role="progressbar",
             **{
                 "aria-valuemin": "0",
-                "aria-valuemax": str(max),
-                "aria-valuenow": str(value),
+                "aria-valuemax": str(top),
+                "aria-valuenow": str(now),
             },
             className=cn("relative h-2 w-full overflow-hidden rounded-full bg-stone-800", className),
             **attrs,

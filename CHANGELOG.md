@@ -62,6 +62,15 @@
   ``ux_dom.utils.logger`` module is removed. ``uxdom doctor`` reports a
   ``ux_channel`` that fails to import as not ok (warn) with the error. The
   unused ``uxdom ui --action`` option is removed.
+- **Fix: UI kit and elements defects.** ``FloatLegend`` renders a ``<legend>``
+  (it raised ``AttributeError``). ``uxdom add ui`` derives a component's kit
+  dependencies from its imports, so ``status_strip`` brings ``badge``.
+  ``Tabs``, ``Breadcrumb``, ``FormSection`` and ``public_form`` no longer emit a
+  bare ``class`` attribute. An empty ``Chart`` accepts ``style=``.
+  ``DropdownMenu`` has one ``role="menu"``, with ``role="menuitem"`` on each
+  item's focusable element (``li`` is ``role="none"``). ``Tabs`` buttons have
+  ``role="tab"`` and a roving ``tabindex``, plus ``aria-controls`` when ``id=``
+  is given. ``Progress`` clamps ``aria-valuenow`` into ``[0, max]``.
 
 ## 0.2.0 — remove deprecations
 
