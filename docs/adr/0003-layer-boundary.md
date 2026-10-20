@@ -82,8 +82,9 @@ Rules:
 
 1. ux-dom declares no extension point for a ux-compose feature: no protocol, hub slot or
    `App.use_*` for HMR, style compile, asset layout or host.
-2. ux-dom extras contain only packages that `src/ux_dom` imports. The `fastapi` extra
-   (`ux-dom[fastapi]`) stays because it carries starlette for `ux_dom.response.starlette`.
+2. ux-dom extras contain only packages that `src/ux_dom` imports. The only extra is
+   `fastapi` (`ux-dom[fastapi]` = `fastapi`), which brings starlette for
+   `ux_dom.response.starlette`.
 3. `uxdom` checks and writes nothing a product scaffold owns: no port, `DEBUG`, `.env`,
    scaffold marker or deploy bundle.
 4. **Remove from ux-dom only after ux-compose ships the equivalent or the owner records a
@@ -96,12 +97,18 @@ Checked against ux-compose `04994da`:
 
 | Capability | ux-dom today | ux-compose today | Blocks |
 |------------|--------------|------------------|--------|
-| `pytailwindcss` extra | `ux-dom[dev]`, `ux-dom[fastapidev]` | `tailwind.py` imports it lazily; `pyproject.toml` declares only `serve` and `dev` extras, neither with `pytailwindcss` | Dropping the extras |
+| `pytailwindcss` extra | `ux-dom[dev]`, `ux-dom[fastapidev]` | `tailwind.py` imports it lazily; `pyproject.toml` declares only `serve` and `dev` extras, neither with `pytailwindcss` | Nothing: waived (see below) |
 | Runnable bundle | `uxdom build --package/--archive` (`dist/<name>/`, `run.sh`, `MANIFEST.json`, tar.gz) | `uxcompose deploy` writes Docker/fly/render/railway/systemd files; nothing writes a runnable dir or archive | Removing `--package/--archive` |
 | Prod and port pre-flight | `uxdom doctor --prod` (`DEBUG`, `.env`) and `--port` | `uxcompose doctor` has no `--prod`, `DEBUG`, `.env` or port check; `deploy` only prints "DEBUG=false" advice | Removing those doctor rows |
 
-**Waivers recorded:** none yet. The owner records each waiver here ("dropped, not
-ported") before the matching removal PR merges.
+**Waivers recorded:** the owner records each waiver here ("dropped, not ported") before
+the matching removal PR merges.
+
+- `pytailwindcss` extra: waived — ux-compose compiles Tailwind via its pinned,
+  SHA256-verified standalone binary
+  ([ux-compose #116](https://github.com/bitplorer/ux-compose/issues/116) D3/UC5); no
+  ux-compose `css` extra. Owner decision D3, 2026-10-20. UC5 (the SHA256 check) is a
+  ux-compose ticket, not yet merged at ux-compose `04994da`.
 
 **Why:** each concern has one home, so authors cannot pick the wrong layer and the ux-dom
 install stays small. ux-compose already calls `uxdom build` "Document/static verify" (its
@@ -120,8 +127,8 @@ ADR 0001); this ADR records the same split from the ux-dom side.
 
 - Breaking for users of `pip install ux-dom[dev|fastapidev]`, `App.use_hmr|use_style|use_host`,
   `uxdom doctor --port/--prod` and `uxdom build --package/--archive`, once each removal lands.
-- Prerequisite ux-compose work: a `pytailwindcss` extra, `doctor --prod` (DEBUG and
-  secrets), and a bundle command, unless the owner waives one of them above.
+- Prerequisite ux-compose work: `doctor --prod` (DEBUG and secrets) and a bundle
+  command, unless the owner waives one of them above. The `pytailwindcss` extra is waived.
 - [internals/SYSTEM.md](../internals/SYSTEM.md) no longer lists `--package` ownership as open.
 - New product-ish code proposed for ux-dom is reviewed against the table above. If
   ux-compose owns the concern, the change goes there.

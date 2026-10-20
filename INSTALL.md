@@ -8,7 +8,7 @@ Python **3.14** required. Package layout: `src/ux_dom` (Poetry).
 git clone https://github.com/bitplorer/ux-dom.git
 cd ux-dom
 poetry env use python3.14
-poetry install --with dev,test --extras fastapidev
+poetry install --with dev,test
 poetry run python -c "from ux_dom import __version__; print(__version__)"  # 0.2.0
 ```
 
@@ -17,7 +17,7 @@ poetry run python -c "from ux_dom import __version__; print(__version__)"  # 0.2
 ```bash
 python3.14 -m venv .venv && source .venv/bin/activate
 pip install -U pip
-pip install -e ".[fastapidev]"
+pip install -e ".[fastapi]"
 python -c "from ux_dom import __version__; print(__version__)"
 ```
 
@@ -27,7 +27,7 @@ python -c "from ux_dom import __version__; print(__version__)"
 |------|---------|
 | Library only | `poetry install` / `pip install -e .` |
 | FastAPI apps | `poetry install --extras fastapi` / `pip install -e ".[fastapi]"` |
-| FastAPI + pytailwindcss (dev stack) | `poetry install --extras fastapidev` / `pip install -e ".[fastapidev]"` |
+| ASGI server, Tailwind CSS | Not ux-dom extras: `pip install ux-compose` (`uxcompose serve`, `uxcompose build`) |
 | Live morph / regions | `pip install "ux-channel>=0.1.0"` (companion package) |
 
 ## Create an app

@@ -132,7 +132,6 @@ def run_doctor(
     # Optional deps
     for mod, extra in [
         ("fastapi", "fastapi"),
-        ("uvicorn", "fastapi"),
     ]:
         spec = importlib.util.find_spec(mod)
         report.checks.append(

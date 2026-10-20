@@ -7,7 +7,7 @@
 Python **3.14**. Package layout: `src/ux_dom` (Poetry).
 
 ```bash
-pip install -e ".[fastapidev]"
+pip install -e ".[fastapi]"
 pip install pytest pytest-cov black ruff mypy toml
 ```
 
@@ -15,7 +15,7 @@ Poetry:
 
 ```bash
 poetry env use python3.14
-poetry install --with dev,test --extras fastapidev
+poetry install --with dev,test
 ```
 
 See [INSTALL.md](INSTALL.md).
