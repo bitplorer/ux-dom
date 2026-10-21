@@ -4,7 +4,8 @@
    "tests/01_core/test_streaming_and_attrs.py",
    "tests/02_document_plugins/test_htmx_route_and_partial.py",
    "tests/02_document_plugins/test_htmx_ws_stream.py",
-   "tests/04_production/test_intent_battery.py"
+   "tests/04_production/test_intent_battery.py",
+   "tests/07_resilience/test_htmx_routes_single_name.py"
   ],
   "imported_by": {
    "function_level": [],
@@ -22,8 +23,8 @@
   "layer": "integrations",
   "path": "src/ux_dom/htmx/__init__.py",
   "public": [
-   "Htmx",
-   "HtmxMiddleware"
+   "HtmxMiddleware",
+   "HtmxRoutes"
   ]
  }
 }

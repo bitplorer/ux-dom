@@ -118,16 +118,10 @@ class TestSlotsAndWebComponent(unittest.TestCase):
         self.assertIn("slot", html.lower())
 
     def test_slots_shadowroot_not_boolean_name(self):
-        """shadowdom=True used to emit shadowdom="shadowdom" — must be real value."""
+        """shadowroot=True must render the value "true", not the attribute name."""
         s = Slots(tag_name="fix", slot_names=["a"], classes={})
         html = str(s)
-        self.assertNotIn('shadowdom="shadowdom"', html)
-        self.assertTrue(
-            'shadowroot="true"' in html
-            or 'shadowdom="open"' in html
-            or 'shadowdom="true"' in html,
-            html[:300],
-        )
+        self.assertIn('shadowroot="true"', html, html[:300])
         self.assertIn('x-tagname="fix"', html)
 
     def test_webcomponent_slot_template_first(self):

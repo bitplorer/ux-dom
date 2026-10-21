@@ -99,7 +99,7 @@ Prefer plain `WebComponent` + `slot()` for new code (clearer, matches `x_element
 
 ```
 CustomElement  → light DOM   → x-tagname
-WebComponent   → shadow DOM  → x-tagname + shadowroot|shadowdom
+WebComponent   → shadow DOM  → x-tagname + shadowroot
 AlpineComponent→ + Alpine    → x-tagname + x-data
 Runtime        → x_element.js
 ```

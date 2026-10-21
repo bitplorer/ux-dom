@@ -11,8 +11,8 @@ XElement contract (one name · one attribute · one runtime)
 | Role             | Name                      | Notes                            |
 +==================+===========================+==================================+
 | Python base      | ``XElement``              | Emits a *definition* template    |
-| Light DOM        | ``CustomElement``         | No ``shadowroot`` / ``shadowdom``|
-| Shadow DOM       | ``WebComponent``          | Requires ``shadowroot``/`shadowdom`|
+| Light DOM        | ``CustomElement``         | No ``shadowroot``                |
+| Shadow DOM       | ``WebComponent``          | Requires ``shadowroot``          |
 | Alpine + X       | ``AlpineComponent``       | Needs ``x-data`` + ``x-tagname`` |
 | Definition attr  | ``x-tagname="name"``      | Sole definition attribute        |
 | Host tag         | ``<x-name>``              | Created by the browser runtime   |
@@ -392,7 +392,7 @@ class CustomElement(XElement):
     Rules
     -----
     * Must set ``x-tagname`` on the definition (inherited from XElement).
-    * Must **not** set ``shadowroot`` or ``shadowdom`` (use WebComponent instead).
+    * Must **not** set ``shadowroot`` (use WebComponent instead).
 
     Runtime (``x_element.js``)
     --------------------------
@@ -415,10 +415,7 @@ class CustomElement(XElement):
         try:
             shadow_root_attr = element["shadowroot"]
         except AttributeError:
-            try:
-                shadow_root_attr = element["shadowdom"]
-            except AttributeError:
-                shadow_root_attr = None
+            shadow_root_attr = None
 
         if shadow_root_attr:
             raise AttributeError(
@@ -459,7 +456,7 @@ class WebComponent(XElement):
     Rules
     -----
     * Must set ``x-tagname`` (XElement).
-    * Must set ``shadowroot="true"|"open"`` or ``shadowdom="open"|"closed"``.
+    * Must set ``shadowroot="true"|"open"|"closed"``.
 
     Runtime (``x_element.js``)
     --------------------------
@@ -477,17 +474,10 @@ class WebComponent(XElement):
         return self.__web_component_checks(element)
 
     def __web_component_checks(self, element):  # noqa
-        # Prefer shadowroot=…; shadowdom=… is an accepted synonym.
         try:
             shadow_root_attr = element["shadowroot"]
         except AttributeError:
             shadow_root_attr = list(element._find(shadowroot=None))
-
-        if not shadow_root_attr:
-            try:
-                shadow_root_attr = element["shadowdom"]
-            except AttributeError:
-                shadow_root_attr = list(element._find(shadowdom=None))
 
         if not shadow_root_attr:
             raise AttributeError(

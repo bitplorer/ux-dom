@@ -1,11 +1,11 @@
-"""Htmx string-form route decorator (F3) and partial detection (F4)."""
+"""HtmxRoutes string-form route decorator (F3) and partial detection (F4)."""
 
 import unittest
 
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from ux_dom.htmx import Htmx
+from ux_dom.htmx import HtmxRoutes
 from ux_dom.htmx.middleware import HtmxDetails
 from ux_dom.plugins.control.htmx import HtmxControl
 
@@ -17,7 +17,7 @@ class TestHtmxStringRoute(unittest.TestCase):
         for verb in VERBS:
             with self.subTest(verb=verb):
                 app = FastAPI()
-                h = Htmx(api=app, prefix="/a")
+                h = HtmxRoutes(api=app, prefix="/a")
 
                 @getattr(h, verb)("named")
                 def handler():

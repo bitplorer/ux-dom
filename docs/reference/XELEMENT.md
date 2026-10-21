@@ -33,7 +33,7 @@ Do **not** ship multiple JS runtimes — only `x_element.js`.
 **Rules:**
 
 * `x-tagname` required  
-* `shadowroot` / `shadowdom` **forbidden**
+* `shadowroot` **forbidden**
 
 **Runtime:** clone template → **children of host**.
 
@@ -62,7 +62,7 @@ Source: `examples/xelement_kit/app/components/light_dom.py`
 **Rules:**
 
 * `x-tagname` required  
-* `shadowroot="true"|"open"` **or** `shadowdom="open"|"closed"` required  
+* `shadowroot="true"|"open"|"closed"` required  
 
 **Runtime:** `attachShadow` → clone template into shadow root.  
 Light children of the host fill `<slot>` / `<slot name="…">`.

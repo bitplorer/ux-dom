@@ -4,22 +4,22 @@
 # https://opensource.org/licenses/MIT
 
 
-"""HTMX-oriented helpers. Prefer Htmx / HtmxControl from runtime/plugins."""
+"""HTMX route decorator and middleware. The document runtime is ``ux_dom.Htmx``."""
 import typing
 
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.web_io import HtmxEvents
 
-__all__ = ["Htmx", "HtmxMiddleware"]
+__all__ = ["HtmxMiddleware", "HtmxRoutes"]
 
 
-class Htmx(HtmxEvents):
+class HtmxRoutes(HtmxEvents):
     """Decorate Component handlers and mount them on an API router.
 
     Routes mount at ``{prefix}/{name}``; with the default ``prefix=""`` they
     mount at ``/{name}``. Prefer an explicit namespace::
 
-        htmx = Htmx(api=api, prefix="/actions")
+        htmx = HtmxRoutes(api=api, prefix="/actions")
 
         @htmx.get
         def counter(): ...
@@ -43,7 +43,7 @@ class Htmx(HtmxEvents):
         return getattr(event, "__name__", str(event))
 
     def _route(self, verb: str, event):
-        registered = getattr(super(Htmx, self), verb)(event)
+        registered = getattr(super(HtmxRoutes, self), verb)(event)
         route = getattr(self.api, verb)(self._path(self._event_name(event)))
         if isinstance(event, str):
             # ``@htmx.get("name")``: route the decorated function, not the decorator.

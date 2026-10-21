@@ -3,7 +3,8 @@
   "consumers": [
    "tests/01_core/test_host_path_coverage.py",
    "tests/03_routing_cli/test_dx_cli.py",
-   "tests/03_routing_cli/test_dx_side_effects.py"
+   "tests/03_routing_cli/test_dx_side_effects.py",
+   "tests/07_resilience/test_shadowroot_only.py"
   ],
   "imported_by": {
    "function_level": [
