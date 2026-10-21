@@ -4,12 +4,34 @@
    "tests/01_core/test_float_legend.py",
    "tests/07_resilience/test_f16_ux_valio_elements.py"
   ],
+  "doc": "Typed form elements: floats. Optional higher-level inputs over HTML tags.",
+  "exported_as": [],
+  "features": [
+   "elements"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.elements"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "ux-valio": [
+     "ux_valio"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "dataclasses",
+     "typing"
+    ],
+    "ux-valio": [
+     "ux_valio"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -18,6 +40,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "components",
   "path": "src/ux_dom/elements/floats.py",
   "public": [
@@ -26,6 +49,132 @@
    "FloatLegend",
    "FloatNumberInput",
    "FloatRangeInput"
-  ]
+  ],
+  "symbols": {
+   "FloatInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "cast2float": {
+      "decorators": [
+       "max_field.post_validate",
+       "min_field.post_validate"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, value)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name, placeholder='', type, min, max, pattern, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "FloatLabel": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, label, *args, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "FloatLegend": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, label, *args, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "FloatNumberInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name, placeholder='', min, max, pattern, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "FloatRangeInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name, placeholder='', min, max, pattern, className, **kwargs)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

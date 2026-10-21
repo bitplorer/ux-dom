@@ -1,12 +1,22 @@
 {
  "ux_dom.dom.jinja": {
   "consumers": [],
+  "doc": "Jinja integration helpers (render_jinja bridges).",
+  "exported_as": [],
+  "features": [
+   "components"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.dom"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -17,10 +27,68 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/jinja.py",
   "public": [
    "JinjaComponent"
-  ]
+  ],
+  "symbols": {
+   "JinjaComponent": {
+    "bases": [
+     "component.Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__block__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, block_name, *args)"
+     },
+     "__elif__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, elif_condition, *elif_args)"
+     },
+     "__else__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *else_args)"
+     },
+     "__if__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, if_condition, *if_args)"
+     },
+     "__if_elif__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, if_condition, elif_condition, *elif_args)"
+     },
+     "__if_else__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, if_condition, *else_args)"
+     },
+     "__include__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, include, *args)"
+     },
+     "__load__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, load, *args)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

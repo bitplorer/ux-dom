@@ -5,12 +5,28 @@
    "tests/02_document_plugins/test_plugin_assets.py",
    "tests/07_resilience/test_dead_surface_removed.py"
   ],
+  "doc": "Decade-stable **Contribution** contract for static files + Document shell.",
+  "exported_as": [],
+  "features": [
+   "document"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.plugins"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -19,6 +35,7 @@
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/contribution.py",
   "public": [
@@ -26,6 +43,52 @@
    "Inject",
    "StaticArtifact",
    "TagKind"
-  ]
+  ],
+  "symbols": {
+   "ContributionPlugin": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "Unified browser-surface plugin (static files + document fragments).",
+    "kind": "class",
+    "methods": {
+     "artifacts": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[StaticArtifact]"
+     },
+     "document_body": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "document_head": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     }
+    },
+    "public": true
+   },
+   "StaticArtifact": {
+    "bases": [],
+    "decorators": [
+     "dataclass(frozen=True)"
+    ],
+    "doc": "One static file a plugin needs as a tag; the app serves the file.",
+    "kind": "class",
+    "methods": {
+     "html_node": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Any"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

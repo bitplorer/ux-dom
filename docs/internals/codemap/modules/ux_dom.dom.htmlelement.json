@@ -32,6 +32,12 @@
    "tests/07_resilience/test_shadowroot_only.py",
    "tests/fixtures/auth_xelements.py"
   ],
+  "doc": "HTML / custom-element component bases for ux-dom.",
+  "exported_as": [],
+  "features": [
+   "alpine",
+   "xelement-runtime"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -44,6 +50,23 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "re"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "pathlib",
+     "sys",
+     "types"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [
@@ -54,6 +77,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/htmlelement.py",
   "public": [
@@ -69,6 +93,365 @@
    "WebComponent",
    "XElement",
    "XTemplate"
-  ]
+  ],
+  "symbols": {
+   "AMPElement": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "Factory for ``amp-*`` tags (Accelerated Mobile Pages dialect).",
+    "kind": "class",
+    "methods": {
+     "__and__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, other)"
+     },
+     "__call__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "AlpineComponent": {
+    "bases": [
+     "AlpineElement",
+     "XElement"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "XElement + Alpine: requires ``x-tagname`` and ``x-data``.",
+    "kind": "class",
+    "methods": {
+     "__checks__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, element)"
+     }
+    },
+    "public": true
+   },
+   "AlpineElement": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "Any component whose root must declare Alpine ``x-data``.",
+    "kind": "class",
+    "methods": {
+     "__alpine_js_checks": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, element)"
+     },
+     "__and__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, other)"
+     },
+     "__checks__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, element)"
+     }
+    },
+    "public": true
+   },
+   "CustomElement": {
+    "bases": [
+     "XElement"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "Light-DOM custom element (no Shadow DOM).",
+    "kind": "class",
+    "methods": {
+     "__checks__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, element)"
+     },
+     "__custom_element_checks": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, element)"
+     }
+    },
+    "public": true
+   },
+   "ExampleCustomElement": {
+    "bases": [
+     "CustomElement"
+    ],
+    "doc": "Minimal light-DOM sample — definition only.",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, tag_name)"
+     }
+    },
+    "public": true
+   },
+   "ExampleWebComponent": {
+    "bases": [
+     "WebComponent"
+    ],
+    "doc": "Minimal shadow-DOM sample with a default slot.",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, tag_name)"
+     }
+    },
+    "public": true
+   },
+   "HTMLElement": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "Thin Component that wraps markup strings, tags or file paths.",
+    "kind": "class",
+    "methods": {
+     "__and__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, other)"
+     },
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, elem_or_str_or_path)"
+     }
+    },
+    "public": true
+   },
+   "JinjaElement": {
+    "bases": [
+     "component.Component"
+    ],
+    "doc": "Render a Jinja fragment via ``render_jinja`` when called with options.",
+    "kind": "class",
+    "methods": {
+     "__call__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **options)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, elem_or_str_or_path)"
+     }
+    },
+    "public": true
+   },
+   "MarkdownElement": {
+    "bases": [
+     "component.Component"
+    ],
+    "doc": "Component whose string children are treated as Markdown (when enabled).",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, elem_or_str_or_path)"
+     }
+    },
+    "public": true
+   },
+   "WebComponent": {
+    "bases": [
+     "XElement"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "Shadow-DOM custom element (encapsulated tree + optional slots).",
+    "kind": "class",
+    "methods": {
+     "__checks__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, element)"
+     },
+     "__web_component_checks": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, element)"
+     }
+    },
+    "public": true
+   },
+   "XElement": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "Custom element type: **class = definition**, **instance call = host**.",
+    "kind": "class",
+    "methods": {
+     "__and__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, other)"
+     },
+     "__call__": {
+      "doc": "Return a host instance (same as constructing the class).",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "__checks__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, element)"
+     },
+     "__new__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, *args, **kwargs)"
+     },
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "__x_element_checks": {
+      "doc": "Ensure the definition tree carries ``x-tagname``.",
+      "kind": "function",
+      "signature": "(self, element)"
+     },
+     "definition": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "Return the sole definition instance for this class (registry SSoT).",
+      "kind": "function",
+      "signature": "(cls)"
+     },
+     "resolve_tag_name": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls) -> str"
+     }
+    },
+    "public": true
+   },
+   "XElementRegistry": {
+    "bases": [],
+    "doc": "One definition per element class / tag_name (process-wide).",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "all_definitions": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "clear": {
+      "doc": "Test helper — not for production app code.",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "get": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, cls)"
+     },
+     "get_tag": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, tag_name: str)"
+     },
+     "put": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, cls, definition) -> None"
+     }
+    },
+    "public": false
+   },
+   "XTemplate": {
+    "bases": [
+     "DoubleTags"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "Host tag ``<x-{name}>`` — produced by constructing an XElement subclass.",
+    "kind": "class",
+    "methods": {
+     "__hash__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> int"
+     },
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "_html": {
+    "doc": "What an HTML wrapper's ``render`` returns: strings in it are HTML.",
+    "kind": "function",
+    "public": false,
+    "signature": "(value)"
+   },
+   "_html_item": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(value)"
+   },
+   "_kebab_tag": {
+    "doc": "ClassName → class-name for default tag_name.",
+    "kind": "function",
+    "public": false,
+    "signature": "(name: str) -> str"
+   }
+  }
  }
 }

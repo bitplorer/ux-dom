@@ -12,12 +12,27 @@
    "tests/04_production/test_production_readiness.py",
    "tests/07_resilience/test_no_deprecations.py"
   ],
+  "doc": "Browser runtime for Python ``XElement`` (0.1).",
+  "exported_as": [],
+  "features": [
+   "xelement-runtime"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.doctor"
    ],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "pathlib"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -27,11 +42,41 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/scripts/__init__.py",
   "public": [
    "x_element_js",
    "x_element_js_text"
-  ]
+  ],
+  "symbols": {
+   "_runtime_source": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "() -> str"
+   },
+   "x_element_js": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "Embed or save ``x_element.js`` — browser half of Python ``XElement``.",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "x_element_js_text": {
+    "doc": "Raw ``x_element.js`` source.",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> str"
+   }
+  }
  }
 }

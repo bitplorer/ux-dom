@@ -1,0 +1,22 @@
+{
+ "docs/reference/FEATURES.md": [
+  {
+   "kind": "cli",
+   "line": 23,
+   "resolved": true,
+   "text": "uxdom doctor"
+  },
+  {
+   "kind": "cli",
+   "line": 24,
+   "resolved": true,
+   "text": "uxdom lint"
+  },
+  {
+   "kind": "cli",
+   "line": 25,
+   "resolved": true,
+   "text": "uxdom profile"
+  }
+ ]
+}

@@ -173,9 +173,7 @@ class TestScaffoldProductionArtifacts(unittest.TestCase):
             self.assertFalse((root / "assets/js/html_elements.js").exists())
             self.assertFalse((root / "assets/js/xcomponent.js").exists())
             main = (root / "app/main.py").read_text(encoding="utf-8")
-            self.assertTrue(
-                "XElement" in main or "document.mount" in main
-            )
+            self.assertTrue("XElement" in main or "document.mount" in main)
             doc = (root / "app/document.py").read_text(encoding="utf-8")
             self.assertTrue("XElement" in doc or "shell_fragments" in doc)
             m = (root / "app/main.py").read_text(encoding="utf-8")

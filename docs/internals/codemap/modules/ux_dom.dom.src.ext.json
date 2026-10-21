@@ -25,6 +25,14 @@
    "tests/07_resilience/test_tag_names_no_builtin_shadow.py",
    "tests/07_resilience/test_text_state_parents.py"
   ],
+  "doc": "Tag render pipeline: ``Tags`` + single/double/style/template variants.",
+  "exported_as": [],
+  "features": [
+   "pretty-render",
+   "raw-text-safety",
+   "renderer",
+   "tag-tree"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -41,6 +49,29 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "Jinja2": [
+     "jinja2.utils"
+    ],
+    "MarkupSafe": [
+     "markupsafe"
+    ],
+    "stdlib": [
+     "__future__",
+     "contextvars",
+     "os",
+     "pathlib",
+     "queue",
+     "re",
+     "textwrap",
+     "threading",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [
     "ux_dom.dom.src.concurrency"
@@ -52,6 +83,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/ext.py",
   "public": [
@@ -62,6 +94,281 @@
    "SingleTemplates",
    "StyleTags",
    "Tags"
-  ]
+  ],
+  "symbols": {
+   "DoubleTags": {
+    "bases": [
+     "Tags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "DoubleTemplates": {
+    "bases": [
+     "DoubleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, template_name, template_text, *dom_elements, self_dedent=None, child_dedent=None, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "PlaceholderTag": {
+    "bases": [
+     "Tags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__and__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, other: dom_tag) -> Tags"
+     }
+    },
+    "public": true
+   },
+   "SingleTags": {
+    "bases": [
+     "Tags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "SingleTemplates": {
+    "bases": [
+     "SingleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, template_name, template_text, *dom_elements, self_dedent=None, child_dedent=None, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "StyleTags": {
+    "bases": [
+     "Tags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "_clean_name": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, name)"
+     },
+     "_render": {
+      "doc": "A CSS rule renders inside ``<style>`` or standalone, never as HTML.",
+      "kind": "function",
+      "signature": "(self, sb, *args, **kwargs)"
+     },
+     "_render_attribute": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, /, sb, indent_level, indent_str, pretty)"
+     },
+     "_render_close_tag": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, /, sb, name, close_tag)"
+     },
+     "_render_open_tag": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, /, sb, name, open_tag, indent_level=None, indent_str=None, pretty=None)"
+     },
+     "attr": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "clean_attribute": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "Normalize attribute names for shorthand and work around for limitations",
+      "kind": "function",
+      "signature": "(cls, attribute)"
+     }
+    },
+    "public": true
+   },
+   "Tags": {
+    "bases": [
+     "dom_tag",
+     "dom1core"
+    ],
+    "doc": "HTML-oriented tag: control attrs, pretty layout, framework attr names.",
+    "kind": "class",
+    "methods": {
+     "__and__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, other: dom_tag) -> 'Tags'"
+     },
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "__iter__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> typing.List[typing.Union[str, dom_tag, 'Tags']]"
+     },
+     "_clean_name": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, name)"
+     },
+     "_control": {
+      "doc": "Read control flag without permanently popping (idempotent re-render).",
+      "kind": "function",
+      "signature": "(self, key, default=False)"
+     },
+     "_dedent_handler": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(dedent, indent_level)"
+     },
+     "_iter_html_attrs": {
+      "doc": "Yield HTML attribute fragments (list-render and token-walk share this).",
+      "kind": "function",
+      "signature": "(self, indent_level=None, indent_str=None, pretty=None)"
+     },
+     "_iter_pretty_stream": {
+      "doc": "Pretty tokens: ``safe`` (default) or ``worker`` queue.",
+      "kind": "function",
+      "signature": "(self, indent_level, indent_str, pretty, _seen=None, *, maxsize=256, stream_mode=None, put_timeout=30.0, get_timeout=30.0)"
+     },
+     "_iter_pretty_stream_worker": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, indent_level, indent_str, pretty, _seen=None, *, maxsize=256, put_timeout=30.0, get_timeout=30.0)"
+     },
+     "_markup_control": {
+      "doc": "``open_tag`` / ``close_tag``: verbatim markup that replaces the tag.",
+      "kind": "function",
+      "signature": "(self, key)"
+     },
+     "_new_line_and_inline_handler": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, sb, indent_level, indent_str, pretty, is_inline)"
+     },
+     "_render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, sb, indent_level=1, indent_str='  ', pretty=True, _seen=None)"
+     },
+     "_render_attribute": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, sb, indent_level, indent_str, pretty)"
+     },
+     "_render_children": {
+      "doc": "Render children with partial-inline + self_dedent.",
+      "kind": "function",
+      "signature": "(self, sb, indent_level, indent_str, pretty, _seen=None)"
+     },
+     "_render_close_tag": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, /, sb, name, close_tag)"
+     },
+     "_render_open_tag": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, /, sb, name, open_tag, indent_level=None, indent_str=None, pretty=None)"
+     },
+     "_walk_render_tokens": {
+      "doc": "Token generator for async/stream serialize (compact or pretty).",
+      "kind": "function",
+      "signature": "(self, indent_level, indent_str, pretty, _seen=None)"
+     },
+     "_wrap_attr_value": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, value, indent_level, indent_str, pretty)"
+     },
+     "clean_attribute": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "Normalize attribute names (shorthand + Alpine/Vue/HTMX/Angular).",
+      "kind": "function",
+      "signature": "(cls, attribute)"
+     },
+     "save": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, file_name: typing.Union[str, Path, None]=None, folder_name: typing.Union[str, Path, None]=None, current_dir: bool=False, file_or_dir: typing.Union[str, Path, None]=None)"
+     }
+    },
+    "public": true
+   },
+   "_ascii_lower": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_delegates_to_render": {
+    "doc": "True when the compact walker must serialize ``cls`` via ``_render``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(cls) -> bool"
+   },
+   "_element_name": {
+    "doc": "Lowercase name of the start tag ``node`` writes, or ``None`` if none.",
+    "kind": "function",
+    "public": false,
+    "signature": "(node)"
+   },
+   "_html_name": {
+    "doc": "The lower-case tag name when ``node`` renders as an HTML element.",
+    "kind": "function",
+    "public": false,
+    "signature": "(node) -> str | None"
+   },
+   "_inline_neighbours": {
+    "doc": "An inline child next to inline content: a sibling, or the inside edge of",
+    "kind": "function",
+    "public": false,
+    "signature": "(node) -> bool"
+   },
+   "_scan": {
+    "doc": "``(layout, closer bits, moved)`` for ``node`` inside a ``context`` tag.",
+    "kind": "function",
+    "public": false,
+    "signature": "(node, memo: dict, context: str | None) -> tuple[int, int, bool]"
+   },
+   "_text_state_name": {
+    "doc": "``node``'s name if the tokenizer reads its body as RCDATA / RAWTEXT.",
+    "kind": "function",
+    "public": false,
+    "signature": "(node, name)"
+   }
+  }
  }
 }

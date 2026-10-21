@@ -3,12 +3,25 @@
   "consumers": [
    "examples/ux_kit/app/routes/index.py"
   ],
+  "doc": "Checkbox — operational focus, 44px hit area via label pairing.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -19,10 +32,28 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/checkbox.py",
   "public": [
    "Checkbox"
-  ]
+  ],
+  "symbols": {
+   "Checkbox": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, className: str='', checked: bool=False, disabled: bool=False, **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

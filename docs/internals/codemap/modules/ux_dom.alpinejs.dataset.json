@@ -6,12 +6,27 @@
    "tests/07_resilience/test_attr_escape_isolation.py",
    "tests/07_resilience/test_dom_method_shadowing.py"
   ],
+  "doc": "Alpine ``dataset_*`` helpers that ``DataSet`` merges onto its children.",
+  "exported_as": [],
+  "features": [
+   "alpine"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.alpinejs"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "json",
+     "textwrap"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -21,6 +36,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "components",
   "path": "src/ux_dom/alpinejs/dataset.py",
   "public": [
@@ -37,6 +53,129 @@
    "dataset_scrolled",
    "dataset_selected",
    "dataset_xdata"
-  ]
+  ],
+  "symbols": {
+   "DataSet": {
+    "bases": [
+     "MergeAlpineAttributes"
+    ],
+    "doc": "for setting data-* attributes in dom elements",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "MergeAlpineAttributes": {
+    "bases": [
+     "Fragment"
+    ],
+    "doc": "Merging the attributes with subcontexts via ux_dom.dom.src.dom_tag.attr",
+    "kind": "class",
+    "methods": {
+     "_merge_bind_attr": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     },
+     "_merge_class_attr": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     },
+     "_merge_event_attr": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     },
+     "_merge_transition_attr": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     },
+     "_merge_x_data_attr": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     },
+     "_set_attribute": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     }
+    },
+    "public": false
+   },
+   "dataset_after": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(**kwargs)"
+   },
+   "dataset_before": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(**kwargs)"
+   },
+   "dataset_checked": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(checked: bool, **kwargs)"
+   },
+   "dataset_focus_visible": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(**kwargs)"
+   },
+   "dataset_focused": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(**kwargs)"
+   },
+   "dataset_hovered": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(**kwargs)"
+   },
+   "dataset_pressed": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(**kwargs)"
+   },
+   "dataset_ripple": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(**kwargs)"
+   },
+   "dataset_scrollable": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(**kwargs)"
+   },
+   "dataset_scrolled": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(**kwargs)"
+   },
+   "dataset_selected": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(**kwargs)"
+   },
+   "dataset_xdata": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(**kwargs)"
+   }
+  }
  }
 }

@@ -1,0 +1,100 @@
+{
+ "docs/reference/HYPERMEDIA.md": [
+  {
+   "kind": "module",
+   "line": 16,
+   "resolved": true,
+   "text": "ux_dom.slots"
+  },
+  {
+   "kind": "module",
+   "line": 17,
+   "resolved": true,
+   "text": "ux_dom.dom.src.jinjatags"
+  },
+  {
+   "kind": "import",
+   "line": 27,
+   "resolved": true,
+   "text": "ux_dom.dom:div"
+  },
+  {
+   "kind": "import",
+   "line": 27,
+   "resolved": true,
+   "text": "ux_dom.dom:template"
+  },
+  {
+   "kind": "module",
+   "line": 27,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "import",
+   "line": 28,
+   "resolved": true,
+   "text": "ux_dom.dom.htmlelement:AlpineComponent"
+  },
+  {
+   "kind": "module",
+   "line": 28,
+   "resolved": true,
+   "text": "ux_dom.dom.htmlelement"
+  },
+  {
+   "kind": "module",
+   "line": 56,
+   "resolved": true,
+   "text": "ux_dom/htmx/middleware.py"
+  },
+  {
+   "kind": "import",
+   "line": 67,
+   "resolved": true,
+   "text": "ux_dom.dom:li"
+  },
+  {
+   "kind": "module",
+   "line": 67,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "import",
+   "line": 68,
+   "resolved": true,
+   "text": "ux_dom.dom.src.jinjatags:For"
+  },
+  {
+   "kind": "import",
+   "line": 68,
+   "resolved": true,
+   "text": "ux_dom.dom.src.jinjatags:Var"
+  },
+  {
+   "kind": "module",
+   "line": 68,
+   "resolved": true,
+   "text": "ux_dom.dom.src.jinjatags"
+  },
+  {
+   "kind": "module",
+   "line": 91,
+   "resolved": true,
+   "text": "ux_dom.slots.Slots"
+  },
+  {
+   "kind": "module",
+   "line": 92,
+   "resolved": true,
+   "text": "ux_dom.slots.WebComponentSlot"
+  },
+  {
+   "kind": "env",
+   "line": 118,
+   "resolved": false,
+   "text": "KIT_URL"
+  }
+ ]
+}

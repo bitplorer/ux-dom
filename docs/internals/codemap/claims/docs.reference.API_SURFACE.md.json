@@ -1,0 +1,100 @@
+{
+ "docs/reference/API_SURFACE.md": [
+  {
+   "kind": "module",
+   "line": 11,
+   "resolved": true,
+   "text": "ux_dom"
+  },
+  {
+   "kind": "cli",
+   "line": 12,
+   "resolved": true,
+   "text": "uxdom"
+  },
+  {
+   "kind": "module",
+   "line": 25,
+   "resolved": true,
+   "text": "ux_dom.plugins"
+  },
+  {
+   "kind": "module",
+   "line": 39,
+   "resolved": true,
+   "text": "ux_dom.dom.src.component"
+  },
+  {
+   "kind": "module",
+   "line": 40,
+   "resolved": true,
+   "text": "ux_dom.dom.src.dom_tag"
+  },
+  {
+   "kind": "module",
+   "line": 41,
+   "resolved": true,
+   "text": "ux_dom.dom.src.utils.dom_util"
+  },
+  {
+   "kind": "module",
+   "line": 42,
+   "resolved": true,
+   "text": "ux_dom.dom.src.utils.dom_util"
+  },
+  {
+   "kind": "module",
+   "line": 44,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "module",
+   "line": 51,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "module",
+   "line": 54,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "module",
+   "line": 59,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "env",
+   "line": 95,
+   "resolved": true,
+   "text": "MAX_BUFFER_CHARS"
+  },
+  {
+   "kind": "module",
+   "line": 124,
+   "resolved": false,
+   "text": "ux_dom.routing"
+  },
+  {
+   "kind": "cli",
+   "line": 128,
+   "resolved": true,
+   "text": "uxdom"
+  },
+  {
+   "kind": "cli",
+   "line": 147,
+   "resolved": true,
+   "text": "uxdom add route"
+  },
+  {
+   "kind": "module",
+   "line": 147,
+   "resolved": false,
+   "text": "ux_dom.routing"
+  }
+ ]
+}

@@ -5,12 +5,26 @@
    "tests/02_document_plugins/test_ui_battery.py",
    "tests/02_document_plugins/test_ui_kit_defects.py"
   ],
+  "doc": "Chart — SVG sparkline / bars. No Chart.js. Empty/disabled states required.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "html",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -21,10 +35,40 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/chart.py",
   "public": [
    "Chart"
-  ]
+  ],
+  "symbols": {
+   "Chart": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "::",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, series: Sequence[Any]=(), *, kind: str='sparkline', width: int=320, height: int=96, label: str='Chart', empty: Any=None, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "_nums": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(series: Sequence[Any]) -> list[float]"
+   },
+   "_spark_points": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(vals: list[float], *, w: int, h: int, pad: int=4) -> str"
+   }
+  }
  }
 }

@@ -1,0 +1,16 @@
+{
+ "docs/security/SAFE_STATIC.md": [
+  {
+   "kind": "import",
+   "line": 66,
+   "resolved": true,
+   "text": "ux_dom.plugins.safe_static:allowlist_summary"
+  },
+  {
+   "kind": "module",
+   "line": 66,
+   "resolved": true,
+   "text": "ux_dom.plugins.safe_static"
+  }
+ ]
+}

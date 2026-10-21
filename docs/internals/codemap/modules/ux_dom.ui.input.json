@@ -5,12 +5,25 @@
    "examples/ux_kit/app/routes/index.py",
    "tests/02_document_plugins/test_ui_kit.py"
   ],
+  "doc": "UI kit component: input — 44px target, operational border.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -21,11 +34,35 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/input.py",
   "public": [
    "Input",
    "input_classes"
-  ]
+  ],
+  "symbols": {
+   "Input": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, type: str='text', className: str='', invalid: bool=False, **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "input_classes": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(*, className: str='', invalid: bool=False) -> str"
+   }
+  }
  }
 }

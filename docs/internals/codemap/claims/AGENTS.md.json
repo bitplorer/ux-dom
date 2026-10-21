@@ -1,0 +1,100 @@
+{
+ "AGENTS.md": [
+  {
+   "kind": "cli",
+   "line": 16,
+   "resolved": true,
+   "text": "uxdom"
+  },
+  {
+   "kind": "module",
+   "line": 33,
+   "resolved": true,
+   "text": "ux_dom/scripts/x_element.js"
+  },
+  {
+   "kind": "module",
+   "line": 34,
+   "resolved": false,
+   "text": "ux_dom.cli.scaffold"
+  },
+  {
+   "kind": "cli",
+   "line": 35,
+   "resolved": true,
+   "text": "uxdom add ui"
+  },
+  {
+   "kind": "module",
+   "line": 36,
+   "resolved": true,
+   "text": "src/ux_dom/__init__.py"
+  },
+  {
+   "kind": "cli",
+   "line": 41,
+   "resolved": true,
+   "text": "uxdom"
+  },
+  {
+   "kind": "cli",
+   "line": 55,
+   "resolved": true,
+   "text": "uxdom add …"
+  },
+  {
+   "kind": "cli",
+   "line": 56,
+   "resolved": true,
+   "text": "uxdom doctor"
+  },
+  {
+   "kind": "module",
+   "line": 64,
+   "resolved": true,
+   "text": "ux_dom"
+  },
+  {
+   "kind": "module",
+   "line": 65,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "module",
+   "line": 66,
+   "resolved": true,
+   "text": "ux_dom"
+  },
+  {
+   "kind": "module",
+   "line": 66,
+   "resolved": true,
+   "text": "ux_dom.plugins"
+  },
+  {
+   "kind": "module",
+   "line": 67,
+   "resolved": true,
+   "text": "ux_dom.plugins"
+  },
+  {
+   "kind": "module",
+   "line": 68,
+   "resolved": true,
+   "text": "ux_dom.cli"
+  },
+  {
+   "kind": "module",
+   "line": 69,
+   "resolved": true,
+   "text": "ux_dom.ui"
+  },
+  {
+   "kind": "cli",
+   "line": 74,
+   "resolved": true,
+   "text": "uxdom doctor | lint | profile | add"
+  }
+ ]
+}

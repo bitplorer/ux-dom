@@ -5,12 +5,25 @@
    "tests/02_document_plugins/test_ui_kit.py",
    "tests/02_document_plugins/test_ui_kit_dedupe.py"
   ],
+  "doc": "Alert — surface-aware callout.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -21,12 +34,60 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/alert.py",
   "public": [
    "Alert",
    "AlertDescription",
    "AlertTitle"
-  ]
+  ],
+  "symbols": {
+   "Alert": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, variant: str='default', className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "AlertDescription": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "AlertTitle": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

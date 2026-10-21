@@ -19,7 +19,6 @@ from ux_dom.ui.catalog import CATALOG
 from ux_dom.ui.channel_bridge import live_button, stamp_region, to_fragment
 from ux_dom.ui.copy import copy_component
 
-
 REPO = Path(__file__).resolve().parents[2]
 
 

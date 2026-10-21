@@ -1,4 +1,5 @@
 """scripts/changelog.py: per-PR fragments in changelog.d/ (check, preview, release)."""
+
 from __future__ import annotations
 
 import datetime
@@ -40,7 +41,9 @@ def repo(tmp_path: Path) -> Path:
     d.mkdir()
     (d / "README.md").write_text("# not a fragment\n", encoding="utf-8")
     (d / "71-csp.fixed.md").write_text("- **Fix:** a bug.\n", encoding="utf-8")
-    (d / "chore-tool.added.md").write_text("- A tool.\n  Second line.\n", encoding="utf-8")
+    (d / "chore-tool.added.md").write_text(
+        "- A tool.\n  Second line.\n", encoding="utf-8"
+    )
     return tmp_path
 
 
@@ -153,8 +156,12 @@ def test_release_heading_uses_utc_date(repo: Path, tz: str):
     env = {**os.environ, "TZ": tz}
     r = subprocess.run(
         [sys.executable, str(SCRIPT), "--root", str(repo), "--release", "1.2.3"],
-        capture_output=True, text=True, env=env,
+        capture_output=True,
+        text=True,
+        env=env,
     )
     assert r.returncode == 0, r.stderr
     today = datetime.datetime.now(datetime.timezone.utc).date().isoformat()
-    assert f"## 1.2.3 — {today}\n" in (repo / "CHANGELOG.md").read_text(encoding="utf-8")
+    assert f"## 1.2.3 — {today}\n" in (repo / "CHANGELOG.md").read_text(
+        encoding="utf-8"
+    )

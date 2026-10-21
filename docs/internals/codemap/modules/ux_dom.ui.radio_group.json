@@ -1,12 +1,25 @@
 {
  "ux_dom.ui.radio_group": {
   "consumers": [],
+  "doc": "RadioGroup — native radios with operational styling.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -17,10 +30,28 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/radio_group.py",
   "public": [
    "RadioGroup"
-  ]
+  ],
+  "symbols": {
+   "RadioGroup": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, name: str, options: Sequence[tuple[str, str]]=(), value: str | None=None, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

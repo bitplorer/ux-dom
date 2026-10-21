@@ -14,12 +14,22 @@
    "tests/05_chaos/test_stress_races_js_pipeline.py",
    "tests/07_resilience/test_web_io_aliases_absent.py"
   ],
+  "doc": "WebSocket / HTMX event adapters for ux-dom apps.",
+  "exported_as": [],
+  "features": [
+   "web-io"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.htmx"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -31,6 +41,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "integrations",
   "path": "src/ux_dom/web_io/__init__.py",
   "public": [
@@ -44,6 +55,7 @@
    "WebSocketClientHandler",
    "WebSocketEvents",
    "WebSocketProtocol"
-  ]
+  ],
+  "symbols": {}
  }
 }

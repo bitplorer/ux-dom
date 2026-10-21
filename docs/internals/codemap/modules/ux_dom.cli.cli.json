@@ -15,12 +15,33 @@
    "tests/07_resilience/test_f18_directory_router_absent.py",
    "tests/07_resilience/test_ownership_hard_cut.py"
   ],
+  "doc": "uxdom CLI — pure Document / render tooling only.",
+  "exported_as": [],
+  "features": [
+   "cli"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.cli"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "json"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "pathlib"
+    ],
+    "typer": [
+     "typer"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -35,6 +56,7 @@
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "cli",
   "path": "src/ux_dom/cli/cli.py",
   "public": [
@@ -45,6 +67,62 @@
    "lint_cmd",
    "profile_cmd",
    "ui_cmd"
-  ]
+  ],
+  "symbols": {
+   "add_cmd": {
+    "decorators": [
+     "app.command('add')"
+    ],
+    "doc": "Add component | xelement | ui. Page routes live on ux-compose.",
+    "kind": "function",
+    "public": true,
+    "signature": "(kind: str, name: str, xkind: str=Option('light', '--xe-kind'), force: bool=Option(False, '--force'))"
+   },
+   "dashboard_cmd": {
+    "decorators": [
+     "app.command('dashboard')"
+    ],
+    "doc": "Render DX dashboard.",
+    "kind": "function",
+    "public": true,
+    "signature": "(out: Path=Option(None, '--out'), rounds: int=Option(40, '--rounds'), warmup: int=Option(4, '--warmup'), profile_rounds: int=Option(15, '--profile-rounds'))"
+   },
+   "doctor_cmd": {
+    "decorators": [
+     "app.command('doctor')"
+    ],
+    "doc": "Document / package / env health (pure-dom).",
+    "kind": "function",
+    "public": true,
+    "signature": "(path: str=Option(None, '--path'), json_out: bool=Option(False, '--json'))"
+   },
+   "lint_cmd": {
+    "decorators": [
+     "app.command('lint')"
+    ],
+    "doc": "Document convention checks.",
+    "kind": "function",
+    "public": true,
+    "signature": "(path: str=Option(None, '--path'))"
+   },
+   "profile_cmd": {
+    "decorators": [
+     "app.command('profile')"
+    ],
+    "doc": "Render p95 / self-time profile (pure-dom).",
+    "kind": "function",
+    "public": true,
+    "signature": "(out: Path=Option(None, '--out'), rounds: int=Option(60, '--rounds'), warmup: int=Option(6, '--warmup'), profile_rounds: int=Option(30, '--profile-rounds'), json_out: bool=Option(False, '--json'))"
+   },
+   "ui_cmd": {
+    "decorators": [
+     "app.command('ui')"
+    ],
+    "doc": "List UI kit components.",
+    "kind": "function",
+    "public": true,
+    "signature": "(channel: bool=Option(False, '--channel'))"
+   }
+  }
  }
 }

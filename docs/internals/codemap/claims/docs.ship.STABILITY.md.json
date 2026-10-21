@@ -1,0 +1,16 @@
+{
+ "docs/ship/STABILITY.md": [
+  {
+   "kind": "cli",
+   "line": 8,
+   "resolved": true,
+   "text": "uxdom doctor | lint | profile | add"
+  },
+  {
+   "kind": "cli",
+   "line": 22,
+   "resolved": true,
+   "text": "uxdom doctor"
+  }
+ ]
+}

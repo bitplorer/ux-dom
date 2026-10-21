@@ -23,6 +23,11 @@
    "tests/07_resilience/test_tag_names_no_builtin_shadow.py",
    "tests/07_resilience/test_text_state_parents.py"
   ],
+  "doc": "This module consists of classes specific to HTML5-SVG Elements. In general this module does not include",
+  "exported_as": [],
+  "features": [
+   "tag-tree"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -32,6 +37,11 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [
@@ -39,6 +49,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/svgtags.py",
   "public": [
@@ -103,6 +114,575 @@
    "tspan",
    "use",
    "view"
-  ]
+  ],
+  "symbols": {
+   "animate": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The  animate SVG element is used to animate an attribute or property of an element over time.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "animateMotion": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <animateMotion> element causes a referenced element to move along a motion path.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "animateTransform": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The animateTransform element animates a transformation attribute on its target element, thereby allowing",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "circle": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <circle> SVG element is an SVG basic shape, used to draw circles based on a center point and a radius.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "clipPath": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <clipPath> SVG element defines a clipping path, to be used used by the clip-path property.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "defs": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <defs> element is used to store graphical objects that will be used at a later time. Objects created inside a",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "desc": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <desc> element provides an accessible, long-text description of any SVG container element or graphics element.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "discard": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <discard> element removes its target element from the document at a given time.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "ellipse": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "An ellipse element for svg containers",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feBlend": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feColorMatrix": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feComponentTransfer": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feComposite": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feConvolveMatrix": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feDiffuseLighting": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feDisplacementMap": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feDistantLight": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feDropShadow": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feFlood": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feFuncA": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feFuncB": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feFuncG": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feFuncR": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feGaussianBlur": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feImage": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feMerge": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feMergeNode": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feMorphology": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feOffset": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "fePointLight": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feSpecularLighting": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feSpotLight": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feTile": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "feTurbulence": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "filter_": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <filter> element defines a filter effect.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "foreignObject": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <foreignObject> element holds elements from another namespace, usually HTML.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "g": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <g> SVG element is a container used to group other SVG elements.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "image": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <image> SVG element includes images inside SVG documents. It can display raster image files or other SVG files.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "line": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <line> element is an SVG basic shape used to create a line connecting two points.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "linearGradient": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <linearGradient> element lets authors define linear gradients that can be applied to fill or",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "marker": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <marker> element defines the graphic that is to be used for drawing arrowheads or polymarkers on a given <path>, <line>, <polyline> or <polygon> element.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "mask": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <mask> element defines an alpha mask for compositing the current object into the background.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "metadata": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <metadata> element holds structured metadata about the SVG content.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "mpath": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <mpath> sub-element for the <animateMotion> element provides the ability to reference an",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "path": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "A path element for svg containers",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "pattern": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <pattern> element defines a graphics object which can be redrawn at repeated x and y-coordinate",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "polygon": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "A polygon element for svg containers",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "polyline": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "A polyline element for svg containers",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "radialGradient": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <radialGradient> element lets authors define radial gradients that can be applied to fill",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "rect": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "A rectangle element for svg containers",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "set_": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <set> element sets the value of an attribute for a specified duration.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "stop": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The SVG <stop> element defines a color and its position to use on a gradient.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "svg": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "svg_tag": {
+    "bases": [
+     "extension.Tags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "clean_attribute": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(attribute)"
+     }
+    },
+    "public": false
+   },
+   "switch": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <switch> SVG element evaluates any requiredFeatures, requiredExtensions and systemLanguage attributes",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "symbol": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The use of symbol elements for graphics that are used multiple times in the same document adds structure and",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "text": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The SVG <text> element draws a graphics element consisting of text. It's possible to apply a gradient,",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "textPath": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "To render text along the shape of a <path>, enclose the text in a <textPath> element that has an href",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "title": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <title> element provides an accessible, short-text description of any SVG container",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "tspan": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The SVG <tspan> element define a subtext within a <text> element or another <tspan> element.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "use": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "The <use> element takes nodes from within the SVG document, and duplicates them somewhere else.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "view": {
+    "bases": [
+     "svg_tag"
+    ],
+    "doc": "A view is a defined way to view the image, like a zoom level or a detail view.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   }
+  }
  }
 }

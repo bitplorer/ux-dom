@@ -4,12 +4,25 @@
    "examples/ux_kit/app/routes/index.py",
    "tests/02_document_plugins/test_ui_battery.py"
   ],
+  "doc": "Slider — native range, operational tokens. No client runtime.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -20,11 +33,35 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/slider.py",
   "public": [
    "Slider",
    "slider_classes"
-  ]
+  ],
+  "symbols": {
+   "Slider": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, min: int | float=0, max: int | float=100, value: int | float | None=None, step: int | float=1, name: str | None=None, disabled: bool=False, show_value: bool=False, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "slider_classes": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(*, className: str='', disabled: bool=False) -> str"
+   }
+  }
  }
 }

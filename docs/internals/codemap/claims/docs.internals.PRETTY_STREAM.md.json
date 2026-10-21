@@ -1,0 +1,16 @@
+{
+ "docs/internals/PRETTY_STREAM.md": [
+  {
+   "kind": "env",
+   "line": 60,
+   "resolved": true,
+   "text": "UI_DOM_PRETTY_STREAM"
+  },
+  {
+   "kind": "env",
+   "line": 61,
+   "resolved": true,
+   "text": "UI_DOM_PRETTY_STREAM"
+  }
+ ]
+}

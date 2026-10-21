@@ -34,10 +34,18 @@
    "tests/07_resilience/test_top_level_facades.py",
    "tests/conftest.py"
   ],
+  "doc": "Document contributions (shell SSoT).",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -53,6 +61,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/__init__.py",
   "public": [
@@ -83,6 +92,7 @@
    "stamp_tree",
    "static_from_package",
    "ux_channel_static"
-  ]
+  ],
+  "symbols": {}
  }
 }

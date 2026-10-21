@@ -1,0 +1,189 @@
+# Domain charter (curated): what ux-dom is the single source of truth for, the
+# narrow public surface higher libraries build on, what it must not own, and
+# which lower libraries (and which of their public names) it may use.
+# scripts/codemap.py validates every reference and folds the charter into
+# codemap/index.json. A new import of another distribution, or of a name not
+# listed under its depends_on entry, fails `codemap.py --check`, so coupling is
+# a conscious edit here. Layer table: AGENTS.md. See CODEMAP.md.
+
+domain = "ux-dom is the single source of truth for building, sanitizing and serializing HTML/SVG trees and the Document that wraps them."
+
+# The surface higher layers (ux-compose, ux-behavior, ux-channel bridges) may use.
+public_api = [
+  "ux_dom:Document",
+  "ux_dom:Component",
+  "ux_dom:Fragment",
+  "ux_dom:ReactiveComponent",
+  "ux_dom:XElement",
+  "ux_dom:Htmx",
+  "ux_dom:Csp",
+  "ux_dom:Channel",
+  "ux_dom.dom",
+  "ux_dom.dom:dom_tag",
+  "ux_dom.dom:escape",
+  "ux_dom.dom:raw",
+  "ux_dom.dom:defHTML",
+  "ux_dom.response",
+  "ux_dom.response.sanitize:sanitize_html",
+  "ux_dom.response.sanitize:sanitize_html_stream",
+  "ux_dom.plugins",
+  "ux_dom.ui",
+]
+
+[[owns]]
+concept = "dom-tree"
+modules = ["ux_dom.dom.src.dom_tag", "ux_dom.dom.src.ext", "ux_dom.dom.src.htmltags", "ux_dom.dom.src.svgtags"]
+symbols = ["ux_dom.dom:dom_tag", "ux_dom.dom:div"]
+
+[[owns]]
+concept = "html-serialization"
+modules = ["ux_dom.dom.src.dom_tag", "ux_dom.dom.src.ext"]
+symbols = ["ux_dom.dom.src.dom_tag:dom_tag.__render__"]
+
+[[owns]]
+concept = "html-escaping"
+modules = ["ux_dom.dom.src.utils.dom_util"]
+symbols = ["ux_dom.dom:escape", "ux_dom.dom:raw"]
+
+[[owns]]
+concept = "url-attribute-policy"
+modules = ["ux_dom.dom.src.utils.dom_util"]
+symbols = ["ux_dom.dom.src.utils.dom_util:safe_attr_value"]
+
+[[owns]]
+concept = "html-parsing"
+modules = ["ux_dom.dom.src.parse_html"]
+symbols = ["ux_dom.dom.src.parse_html:tokenize_html"]
+
+[[owns]]
+concept = "html-sanitization"
+modules = ["ux_dom.dom.src.html_string", "ux_dom.response.sanitize"]
+symbols = ["ux_dom.dom:defHTML", "ux_dom.response.sanitize:sanitize_html", "ux_dom.response.sanitize:sanitize_html_stream"]
+
+[[owns]]
+concept = "components"
+modules = ["ux_dom.dom.src.component"]
+symbols = ["ux_dom:Component", "ux_dom:Fragment", "ux_dom:ReactiveComponent"]
+
+[[owns]]
+concept = "document-contributions"
+modules = ["ux_dom.settings.document", "ux_dom.plugins.contribution", "ux_dom.plugins.dedupe"]
+symbols = ["ux_dom:Document", "ux_dom.plugins.contribution:ContributionPlugin"]
+
+[[owns]]
+concept = "csp-nonces"
+modules = ["ux_dom.plugins.csp"]
+symbols = ["ux_dom:Csp", "ux_dom.plugins.csp:stamp_tree"]
+
+[[owns]]
+concept = "xelement-runtime"
+modules = ["ux_dom.dom.htmlelement", "ux_dom.plugins.runtime", "ux_dom.scripts"]
+symbols = ["ux_dom:XElement", "ux_dom.dom.htmlelement:XElement"]
+
+[[owns]]
+concept = "package-static"
+modules = ["ux_dom.plugins.safe_static", "ux_dom.plugins.package_static"]
+symbols = ["ux_dom.plugins.safe_static:install_safe_static"]
+
+[[owns]]
+concept = "ui-kit"
+modules = ["ux_dom.ui", "ux_dom.ui.catalog"]
+symbols = ["ux_dom.ui.catalog:CATALOG"]
+
+[[owns]]
+concept = "pure-dom-cli"
+modules = ["ux_dom.cli", "ux_dom.cli.cli"]
+symbols = ["ux_dom.cli:app"]
+
+# Concepts ux-dom must NOT own (AGENTS.md layer table, ADR 0003). `keywords`
+# drive a warning-only heuristic: any module or top-level symbol whose name
+# contains one of them as a whole word (CamelCase / snake_case split) is
+# listed under `non_goal_warnings` in index.json.
+[[non_goals]]
+concept = "intent-cap-result"
+owner = "ux-channel"
+keywords = ["intent", "cap"]
+
+[[non_goals]]
+concept = "wire-codecs"
+owner = "ux-channel"
+keywords = ["codec", "wire"]
+
+[[non_goals]]
+concept = "morph-state"
+owner = "ux-behavior"
+keywords = ["morph"]
+
+[[non_goals]]
+concept = "motion-ir"
+owner = "ux-motion"
+keywords = ["presence", "transition"]
+
+[[non_goals]]
+concept = "field-validation"
+owner = "ux-valio"
+keywords = ["validator"]
+
+[[non_goals]]
+concept = "product-lifecycle"
+owner = "ux-compose"
+keywords = ["scaffold", "deploy", "router", "hmr", "reloader", "tailwind", "webassets"]
+
+# Lower libraries ux-dom may use, and exactly which of their names.
+[[depends_on]]
+distribution = "Jinja2"
+imports = "jinja2"
+names = ["jinja2.sandbox:SandboxedEnvironment", "jinja2.utils:htmlsafe_json_dumps"]
+
+[[depends_on]]
+distribution = "MarkupSafe"
+imports = "markupsafe"
+names = ["markupsafe:Markup"]
+
+[[depends_on]]
+distribution = "marko"
+imports = "marko"
+names = ["marko:convert"]
+
+[[depends_on]]
+distribution = "typer"
+imports = "typer"
+names = ["typer:Option", "typer:Typer", "typer:echo"]
+
+[[depends_on]]
+distribution = "starlette"
+imports = "starlette"
+names = [
+  "starlette.background:BackgroundTask",
+  "starlette.responses:HTMLResponse",
+  "starlette.responses:Response",
+  "starlette.responses:StreamingResponse",
+]
+
+[[depends_on]]
+distribution = "fastapi"
+imports = "fastapi"
+names = ["fastapi.responses:Response"]
+
+[[depends_on]]
+distribution = "ux-valio"
+imports = "ux_valio"
+names = [
+  "ux_valio:EnumValidator",
+  "ux_valio:IntegerEnumValidator",
+  "ux_valio:Pattern",
+  "ux_valio:SetOf",
+  "ux_valio:StringEnumValidator",
+  "ux_valio:StringValidator",
+  "ux_valio:Validator",
+]
+
+# Optional, imported lazily: the ui channel bridge and `uxdom doctor`.
+[[depends_on]]
+distribution = "ux-channel"
+imports = "ux_channel"
+names = [
+  "ux_channel",
+  "ux_channel.components.primitive:region_attrs",
+  "ux_channel.html:action_attrs",
+]

@@ -1,0 +1,52 @@
+{
+ "docs/reference/DOCUMENT.md": [
+  {
+   "kind": "import",
+   "line": 216,
+   "resolved": true,
+   "text": "ux_dom:Document"
+  },
+  {
+   "kind": "import",
+   "line": 217,
+   "resolved": true,
+   "text": "ux_dom.dom:meta"
+  },
+  {
+   "kind": "import",
+   "line": 217,
+   "resolved": true,
+   "text": "ux_dom.dom:title"
+  },
+  {
+   "kind": "module",
+   "line": 217,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "import",
+   "line": 218,
+   "resolved": true,
+   "text": "ux_dom:Htmx"
+  },
+  {
+   "kind": "import",
+   "line": 218,
+   "resolved": true,
+   "text": "ux_dom:XElement"
+  },
+  {
+   "kind": "import",
+   "line": 237,
+   "resolved": true,
+   "text": "ux_dom.response.starlette:HTMLResponse"
+  },
+  {
+   "kind": "module",
+   "line": 237,
+   "resolved": true,
+   "text": "ux_dom.response.starlette"
+  }
+ ]
+}

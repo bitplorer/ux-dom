@@ -1,0 +1,16 @@
+{
+ "docs/reference/ROUTING.md": [
+  {
+   "kind": "module",
+   "line": 72,
+   "resolved": false,
+   "text": "ux_dom.routing"
+  },
+  {
+   "kind": "cli",
+   "line": 73,
+   "resolved": true,
+   "text": "uxdom add route"
+  }
+ ]
+}

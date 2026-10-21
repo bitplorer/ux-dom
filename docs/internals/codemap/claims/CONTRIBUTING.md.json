@@ -1,0 +1,28 @@
+{
+ "CONTRIBUTING.md": [
+  {
+   "kind": "module",
+   "line": 7,
+   "resolved": true,
+   "text": "src/ux_dom"
+  },
+  {
+   "kind": "cli",
+   "line": 40,
+   "resolved": true,
+   "text": "uxdom"
+  },
+  {
+   "kind": "cli",
+   "line": 45,
+   "resolved": true,
+   "text": "uxdom add component|ui|xelement"
+  },
+  {
+   "kind": "module",
+   "line": 49,
+   "resolved": true,
+   "text": "src/ux_dom"
+  }
+ ]
+}

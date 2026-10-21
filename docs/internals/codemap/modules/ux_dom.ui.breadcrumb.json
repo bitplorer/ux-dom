@@ -3,12 +3,25 @@
   "consumers": [
    "tests/02_document_plugins/test_ui_kit_defects.py"
   ],
+  "doc": "Breadcrumb — server-rendered trail.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -19,10 +32,28 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/breadcrumb.py",
   "public": [
    "Breadcrumb"
-  ]
+  ],
+  "symbols": {
+   "Breadcrumb": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "items: sequence of (label, href|None). Last item is current (no link).",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, items: Sequence[tuple[str, str | None]]=(), *, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

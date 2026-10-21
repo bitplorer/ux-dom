@@ -6,12 +6,20 @@
    "tests/07_resilience/test_f17_orphans_absent.py",
    "tests/07_resilience/test_ownership_hard_cut.py"
   ],
+  "doc": "Document settings.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -20,10 +28,12 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/settings/__init__.py",
   "public": [
    "Document"
-  ]
+  ],
+  "symbols": {}
  }
 }

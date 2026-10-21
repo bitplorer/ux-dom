@@ -12,10 +12,34 @@
    "tests/07_resilience/test_html_string_mxss.py",
    "tests/07_resilience/test_raw_string_sinks.py"
   ],
+  "doc": "Optional **ux-channel** bridge for the ux-dom UI kit.",
+  "exported_as": [],
+  "features": [
+   "channel-bridge"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "re"
+    ],
+    "ux-channel": [
+     "ux_channel",
+     "ux_channel.components.primitive",
+     "ux_channel.html"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -28,6 +52,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/channel_bridge.py",
   "public": [
@@ -37,6 +62,50 @@
    "public_form",
    "stamp_region",
    "to_fragment"
-  ]
+  ],
+  "symbols": {
+   "_parse_attr_string": {
+    "doc": "Best-effort parse ``k=\"v\"`` pairs from channel helpers.",
+    "kind": "function",
+    "public": false,
+    "signature": "(s: str) -> dict[str, str]"
+   },
+   "action_button_attrs": {
+    "doc": "Return HTML attrs for a channel action control.",
+    "kind": "function",
+    "public": true,
+    "signature": "(action: str, *, host: Any=None, trust: Optional[Mapping[str, Any]]=None, target: Optional[str]=None) -> dict[str, str]"
+   },
+   "channel_available": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> bool"
+   },
+   "live_button": {
+    "doc": "ux-dom ``Button`` with channel action attrs merged in.",
+    "kind": "function",
+    "public": true,
+    "signature": "(*children: Any, action: str, host: Any=None, trust: Optional[Mapping[str, Any]]=None, target: Optional[str]=None, variant: str='default', size: str='md', **attrs: Any)"
+   },
+   "public_form": {
+    "doc": "Progressive form for a public Action.",
+    "kind": "function",
+    "public": true,
+    "signature": "(*children: Any, action: str, href: str | None=None, method: str='post', target: str | None=None, className: str='', **attrs: Any)"
+   },
+   "stamp_region": {
+    "doc": "Ensure the root element exposes ``data-channel-id`` for channel morph.",
+    "kind": "function",
+    "public": true,
+    "signature": "(node: Any, *, uid: str, **data_attrs: str) -> Any"
+   },
+   "to_fragment": {
+    "doc": "Coerce ux-dom / str / ``__html__`` to an HTML string.",
+    "kind": "function",
+    "public": true,
+    "signature": "(node: Any) -> str"
+   }
+  }
  }
 }

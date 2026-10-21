@@ -9,6 +9,11 @@
    "tests/07_resilience/test_jinja_in_event_loop.py",
    "tests/07_resilience/test_raw_string_sinks.py"
   ],
+  "doc": "Jinja control tags (For, If, Block, ...) as ux-dom nodes for template export.",
+  "exported_as": [],
+  "features": [
+   "components"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -19,6 +24,18 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "Jinja2": [
+     "jinja2.sandbox"
+    ],
+    "stdlib": [
+     "threading"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [
@@ -28,6 +45,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/jinjatags.py",
   "public": [
@@ -48,6 +66,292 @@
    "Load",
    "Var",
    "render_jinja"
-  ]
+  ],
+  "symbols": {
+   "AutoEscape": {
+    "bases": [
+     "JinjaSingleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "Block": {
+    "bases": [
+     "JinjaDoubleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "CSRFToken": {
+    "bases": [
+     "JinjaSingleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param dom_elements: [optional] template",
+      "kind": "function",
+      "signature": "(self, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "Comment": {
+    "bases": [
+     "JinjaDoubleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "Cycle": {
+    "bases": [
+     "JinjaSingleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "Elif": {
+    "bases": [
+     "JinjaSingleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "Else": {
+    "bases": [
+     "JinjaSingleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param dom_elements: [optional] template",
+      "kind": "function",
+      "signature": "(self, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "Extends": {
+    "bases": [
+     "JinjaSingleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "For": {
+    "bases": [
+     "JinjaDoubleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "If": {
+    "bases": [
+     "JinjaDoubleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "Include": {
+    "bases": [
+     "JinjaSingleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "JinjaBaseTag": {
+    "bases": [
+     "object"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "JinjaDoubleTags": {
+    "bases": [
+     "JinjaBaseTag",
+     "extension.DoubleTemplates"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__call__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **options)"
+     }
+    },
+    "public": true
+   },
+   "JinjaSingleTags": {
+    "bases": [
+     "JinjaBaseTag",
+     "extension.SingleTemplates"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__call__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **options)"
+     }
+    },
+    "public": true
+   },
+   "Load": {
+    "bases": [
+     "JinjaSingleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "Var": {
+    "bases": [
+     "JinjaSingleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text, *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "_finish": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_hide_braces": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_needs_rewrite": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_neutralize": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(node, undo)"
+   },
+   "_protect": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_protect_context": {
+    "doc": "Escape sentinel characters in context values before render.",
+    "kind": "function",
+    "public": false,
+    "signature": "(value)"
+   },
+   "_restore": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(undo)"
+   },
+   "render_jinja": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(template, **options)"
+   }
+  }
  }
 }

@@ -3,12 +3,25 @@
   "consumers": [
    "tests/02_document_plugins/test_ui_kit_defects.py"
   ],
+  "doc": "DropdownMenu — server-rendered menu when open=True (Channel-first).",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -20,10 +33,34 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/dropdown_menu.py",
   "public": [
    "DropdownMenu"
-  ]
+  ],
+  "symbols": {
+   "DropdownMenu": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, items: Sequence[Any]=(), *, open: bool=False, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "_menuitem": {
+    "doc": "``role=\"menuitem\"`` goes on the focusable element (WAI-ARIA menu pattern).",
+    "kind": "function",
+    "public": false,
+    "signature": "(item: Any) -> Any"
+   }
+  }
  }
 }

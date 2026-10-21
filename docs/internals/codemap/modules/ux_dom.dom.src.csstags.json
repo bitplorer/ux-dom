@@ -5,6 +5,11 @@
    "tests/07_resilience/test_css_node_context.py",
    "tests/07_resilience/test_raw_string_sinks.py"
   ],
+  "doc": "CSS-oriented tags (StyleTags dialect — not Alpine/HTMX name rewrites).",
+  "exported_as": [],
+  "features": [
+   "tag-tree"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -13,6 +18,11 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [
@@ -20,6 +30,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/csstags.py",
   "public": [
@@ -28,6 +39,78 @@
    "CSSId",
    "CSSProperty",
    "Keyframes"
-  ]
+  ],
+  "symbols": {
+   "CSS": {
+    "bases": [
+     "extension.StyleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "CSSClass": {
+    "bases": [
+     "extension.StyleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "CSSId": {
+    "bases": [
+     "extension.StyleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "CSSProperty": {
+    "bases": [
+     "extension.StyleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__set_name__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, owner, name)"
+     }
+    },
+    "public": true
+   },
+   "Keyframes": {
+    "bases": [
+     "extension.StyleTags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "_clean_name": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, name)"
+     },
+     "_render_attribute": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, /, sb, indent_level, indent_str, pretty)"
+     },
+     "_to_kebab_case": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(string)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

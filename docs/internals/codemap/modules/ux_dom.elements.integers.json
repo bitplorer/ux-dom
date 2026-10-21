@@ -3,12 +3,30 @@
   "consumers": [
    "tests/01_core/test_float_legend.py"
   ],
+  "doc": "Typed form elements: integers. Optional higher-level inputs over HTML tags.",
+  "exported_as": [],
+  "features": [
+   "elements"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.elements"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "dataclasses",
+     "typing"
+    ],
+    "ux-valio": [
+     "ux_valio"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -20,6 +38,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "components",
   "path": "src/ux_dom/elements/integers.py",
   "public": [
@@ -30,6 +49,261 @@
    "IntegerNumberInput",
    "IntegerRangeInput",
    "TelephoneInput"
-  ]
+  ],
+  "symbols": {
+   "IntegerField": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, label, name, placeholder, type, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "IntegerInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "cast2int": {
+      "decorators": [
+       "max_field.validator",
+       "min_field.validator"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, value)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name, placeholder='', type, min, max, pattern, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "IntegerInputValidator": {
+    "bases": [
+     "Validator"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": false
+   },
+   "IntegerLabel": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "Validator.register",
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, label, *args, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "IntegerLabelValidator": {
+    "bases": [
+     "Validator"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": false
+   },
+   "IntegerLegend": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, label, *args, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "IntegerNumberField": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, label, name, placeholder, **kwargs)"
+     }
+    },
+    "public": false
+   },
+   "IntegerNumberInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name, placeholder='', min, max, pattern='null', className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "IntegerNumberInputValidator": {
+    "bases": [
+     "Validator"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": false
+   },
+   "IntegerRangeField": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, label, name, placeholder, **kwargs)"
+     }
+    },
+    "public": false
+   },
+   "IntegerRangeInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name, placeholder='', min='null', max='null', pattern='null', className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "IntegerRangeInputValidator": {
+    "bases": [
+     "Validator"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": false
+   },
+   "TelephoneInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name, placeholder='', min, max, pattern, className, **kwargs)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

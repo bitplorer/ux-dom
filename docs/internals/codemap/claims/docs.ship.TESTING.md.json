@@ -1,0 +1,16 @@
+{
+ "docs/ship/TESTING.md": [
+  {
+   "kind": "module",
+   "line": 8,
+   "resolved": true,
+   "text": "ux_dom"
+  },
+  {
+   "kind": "cli",
+   "line": 9,
+   "resolved": true,
+   "text": "uxdom"
+  }
+ ]
+}

@@ -1,0 +1,439 @@
+# Features registry (curated). scripts/codemap.py validates every reference:
+# modules and assets must be mapped, ``symbols`` (``module:Name`` or
+# ``module:Class.method``) must resolve, and ``tests`` / ``docs`` paths must
+# exist (``path::Class::test`` nodes are checked too). The validated entries are
+# folded into codemap/index.json, and each module shard lists its features.
+# Edit this file in the same PR that moves a feature. See CODEMAP.md.
+
+[[feature]]
+id = "tag-tree"
+purpose = "Build HTML trees from tag classes and `with` blocks, with per-root locks and node membership."
+modules = [
+  "ux_dom.dom",
+  "ux_dom.dom.src.dom_tag",
+  "ux_dom.dom.src.dom1core",
+  "ux_dom.dom.src.ext",
+  "ux_dom.dom.src.htmltags",
+  "ux_dom.dom.src.svgtags",
+  "ux_dom.dom.src.csstags",
+  "ux_dom.dom.uniqueid",
+]
+symbols = [
+  "ux_dom.dom.src.dom_tag:dom_tag",
+  "ux_dom.dom.src.dom_tag:get_current",
+  "ux_dom.dom.src.dom_tag:attr",
+  "ux_dom.dom.src.ext:Tags",
+  "ux_dom.dom:div",
+]
+tests = [
+  "tests/01_core/test_membership_contract.py",
+  "tests/01_core/test_tree_ownership.py",
+  "tests/01_core/test_contextvar_stack.py",
+  "tests/07_resilience/test_single_tag_registry.py",
+]
+docs = ["docs/internals/MEMBERSHIP.md", "docs/internals/MEMORY_TREE.md", "docs/internals/CORE.md"]
+
+[[feature]]
+id = "renderer"
+purpose = "Serialize a tree to an HTML string or async token stream via __render__ / __async_render__."
+modules = ["ux_dom.dom.src.dom_tag", "ux_dom.dom.src.ext"]
+symbols = [
+  "ux_dom.dom.src.dom_tag:dom_tag.__render__",
+  "ux_dom.dom.src.dom_tag:dom_tag._render",
+  "ux_dom.dom.src.ext:Tags._render",
+]
+tests = [
+  "tests/01_core/test_async_render_parity.py",
+  "tests/01_core/test_render_phases.py",
+  "tests/01_core/test_streaming_and_attrs.py",
+]
+docs = ["docs/internals/RENDER_PHASES.md"]
+
+[[feature]]
+id = "pretty-render"
+purpose = "Pretty-printed output that never changes rendered text: inline neighbours, block layout, verbatim bodies."
+modules = ["ux_dom.dom.src.ext"]
+symbols = ["ux_dom.dom.src.ext:Tags._render_children"]
+tests = [
+  "tests/01_core/test_pretty_stream.py",
+  "tests/01_core/test_pretty_inline_text.py",
+  "tests/01_core/test_pretty_raw_text_verbatim.py",
+  "tests/06_browser/test_pretty_inner_text_browser.py",
+  "tests/06_browser/test_pretty_raw_text_browser.py",
+]
+docs = ["docs/internals/PRETTY_STREAM.md"]
+
+[[feature]]
+id = "escaping"
+purpose = "Escape text and attribute values, validate tag/attribute names, and render boolean attributes."
+modules = ["ux_dom.dom.src.utils.dom_util"]
+symbols = [
+  "ux_dom.dom.src.utils.dom_util:escape",
+  "ux_dom.dom.src.utils.dom_util:raw",
+  "ux_dom.dom.src.utils.dom_util:checked_attr_name",
+  "ux_dom.dom.src.utils.dom_util:checked_tag_name",
+  "ux_dom.dom.src.utils.dom_util:boolean_attr_value",
+]
+tests = [
+  "tests/07_resilience/test_attr_escape_isolation.py",
+  "tests/07_resilience/test_attr_name_validation.py",
+  "tests/07_resilience/test_boolean_attributes.py",
+  "tests/01_core/test_escape_single_quote.py",
+]
+docs = ["docs/security/ATTRIBUTES.md"]
+
+[[feature]]
+id = "raw-text-safety"
+purpose = "Keep script/style/textarea/title and foreign (SVG/MathML) bodies from breaking out of their text state."
+modules = ["ux_dom.dom.src.utils.dom_util", "ux_dom.dom.src.ext"]
+symbols = [
+  "ux_dom.dom.src.utils.dom_util:neutralize_raw_text",
+  "ux_dom.dom.src.utils.dom_util:checked_text_state_body",
+  "ux_dom.dom.src.utils.dom_util:VERBATIM_ELEMENTS",
+  "ux_dom.dom.src.ext:_text_state_name",
+]
+tests = [
+  "tests/01_core/test_raw_text_elements.py",
+  "tests/07_resilience/test_foreign_breakout.py",
+  "tests/07_resilience/test_foreign_content_raw_text.py",
+  "tests/07_resilience/test_text_state_parents.py",
+  "tests/06_browser/test_foreign_breakout_browser.py",
+]
+docs = ["docs/security/SCRIPT_INJECTION.md"]
+
+[[feature]]
+id = "url-policy"
+purpose = "Neutralize unsafe URLs in URL-bearing attributes (schemes, srcset, SVG animation values, htmx sse/ws)."
+modules = ["ux_dom.dom.src.utils.dom_util"]
+symbols = [
+  "ux_dom.dom.src.utils.dom_util:safe_attr_value",
+  "ux_dom.dom.src.utils.dom_util:URL_ATTRIBUTES",
+  "ux_dom.dom.src.utils.dom_util:UNSAFE_URL",
+  "ux_dom.dom.src.utils.dom_util:cross_origin",
+]
+tests = [
+  "tests/07_resilience/test_unsafe_url_attrs.py",
+  "tests/07_resilience/test_svg_animation_urls.py",
+  "tests/07_resilience/test_xelement_ws_url_attrs.py",
+  "tests/07_resilience/test_htmx_same_origin.py",
+  "tests/06_browser/test_svg_animation_url_browser.py",
+]
+docs = ["docs/security/WHY_JS_URL.md", "docs/security/ATTRIBUTES.md"]
+
+[[feature]]
+id = "html-parser"
+purpose = "Tokenize an HTML string into an AST (stdlib HTMLParser) with charref and whitespace fidelity."
+modules = ["ux_dom.dom.src.parse_html"]
+symbols = ["ux_dom.dom.src.parse_html:tokenize_html", "ux_dom.dom.src.parse_html:HtmlToAst"]
+tests = [
+  "tests/01_core/test_parse_whitespace.py",
+  "tests/07_resilience/test_entity_roundtrip.py",
+  "tests/05_chaos/test_parsing_chaos.py",
+  "tests/06_browser/test_parse_whitespace_browser.py",
+]
+docs = ["docs/adr/0002-html-string-sanitizer-policy.md"]
+
+[[feature]]
+id = "sanitizer"
+purpose = "Turn untrusted HTML strings into allowlisted ux-dom trees (defHTML / StringToHTML)."
+modules = ["ux_dom.dom.src.html_string", "ux_dom.dom.src.parse_html"]
+symbols = ["ux_dom.dom.src.html_string:StringToHTML", "ux_dom.dom.src.html_string:defHTML"]
+tests = [
+  "tests/07_resilience/test_html_allowlist.py",
+  "tests/07_resilience/test_html_parse_sanitizer.py",
+  "tests/07_resilience/test_html_string_mxss.py",
+  "tests/07_resilience/test_html_svg_names.py",
+  "tests/06_browser/test_sanitizer_svg_browser.py",
+]
+docs = ["docs/adr/0002-html-string-sanitizer-policy.md"]
+
+[[feature]]
+id = "sanitized-stream"
+purpose = "Sanitize HTML strings and bounded (sync or async) HTML chunk streams through the sanitizer."
+modules = ["ux_dom.response.sanitize"]
+symbols = [
+  "ux_dom.response.sanitize:sanitize_html",
+  "ux_dom.response.sanitize:sanitize_html_stream",
+  "ux_dom.response.sanitize:HtmlStreamOverflow",
+]
+tests = [
+  "tests/07_resilience/test_sanitized_stream.py",
+  "tests/06_browser/test_sanitized_stream_browser.py",
+]
+docs = ["docs/adr/0002-html-string-sanitizer-policy.md"]
+
+[[feature]]
+id = "response-adapters"
+purpose = "Optional HTML/streaming response helpers: body preparation, extract_by_id, Starlette responses."
+modules = ["ux_dom.response", "ux_dom.response.serialize", "ux_dom.response.starlette"]
+symbols = [
+  "ux_dom.response.serialize:extract_by_id",
+  "ux_dom.response.serialize:to_html_bytes",
+  "ux_dom.response.starlette:HTMLResponse",
+  "ux_dom.response.starlette:StreamingResponse",
+]
+tests = [
+  "tests/01_core/test_extract_by_id.py",
+  "tests/01_core/test_response_decorators.py",
+]
+docs = ["docs/plans/2026-09-12-extract-by-id.md"]
+
+[[feature]]
+id = "components"
+purpose = "Component, Fragment and ReactiveComponent: typed trees with render(), class merging and Markdown."
+modules = ["ux_dom.dom.src.component", "ux_dom.dom.jinja", "ux_dom.dom.src.jinjatags"]
+symbols = [
+  "ux_dom.dom.src.component:Component",
+  "ux_dom.dom.src.component:Fragment",
+  "ux_dom.dom.src.component:ReactiveComponent",
+  "ux_dom.dom.src.component:MergeClassAttribute",
+  "ux_dom:Component",
+]
+tests = [
+  "tests/01_core/test_component_capabilities.py",
+  "tests/01_core/test_reactive_component.py",
+  "tests/01_core/test_snippets_fragment.py",
+  "tests/07_resilience/test_markdown_render_kwarg.py",
+]
+docs = ["docs/reference/COMPONENTS.md", "docs/reference/REACTIVE.md"]
+
+[[feature]]
+id = "document"
+purpose = "Document: the HTML head/body SSoT, two-stage resolution, and .use() runtime contributions."
+modules = [
+  "ux_dom.settings.document",
+  "ux_dom.dom.htmldocument",
+  "ux_dom.plugins.contribution",
+  "ux_dom.plugins.hub",
+  "ux_dom.plugins.shell",
+  "ux_dom.plugins.dedupe",
+]
+symbols = [
+  "ux_dom.settings.document:Document",
+  "ux_dom.settings.document:Document.use",
+  "ux_dom.dom.htmldocument:HtmlDocument",
+  "ux_dom.plugins.contribution:ContributionPlugin",
+  "ux_dom.plugins.dedupe:dedupe_dom_nodes",
+  "ux_dom:Document",
+]
+tests = [
+  "tests/02_document_plugins/test_document_two_stage.py",
+  "tests/02_document_plugins/test_document_using.py",
+  "tests/02_document_plugins/test_document_plugins.py",
+  "tests/02_document_plugins/test_script_dedupe.py",
+]
+docs = ["docs/reference/DOCUMENT.md", "docs/reference/DOCUMENT_TWO_STAGE.md", "docs/internals/DOCUMENT_AND_APP.md"]
+
+[[feature]]
+id = "csp"
+purpose = "Per-request CSP nonces, policy presets, header building, tree stamping and the Csp facade/middleware."
+modules = ["ux_dom.plugins.csp"]
+symbols = [
+  "ux_dom.plugins.csp:Csp",
+  "ux_dom.plugins.csp:CspPolicy",
+  "ux_dom.plugins.csp:CspMiddleware",
+  "ux_dom.plugins.csp:build_csp_header",
+  "ux_dom.plugins.csp:stamp_tree",
+  "ux_dom.plugins.csp:resolve_nonce",
+  "ux_dom:Csp",
+]
+tests = [
+  "tests/02_document_plugins/test_csp_nonce.py",
+  "tests/02_document_plugins/test_csp_policies.py",
+  "tests/02_document_plugins/test_csp_auto_prod.py",
+  "tests/02_document_plugins/test_csp_resolve_nonce.py",
+  "tests/07_resilience/test_jinja_and_string_nonce.py",
+]
+docs = ["docs/security/CSP.md"]
+
+[[feature]]
+id = "package-static"
+purpose = "Serve allowlisted package files (x_element.js, ux-channel assets) with fail-loud mounting."
+modules = ["ux_dom.plugins.package_static", "ux_dom.plugins.safe_static"]
+symbols = [
+  "ux_dom.plugins.package_static:PackageStaticContribution",
+  "ux_dom.plugins.safe_static:SafeStaticFile",
+  "ux_dom.plugins.safe_static:install_safe_static",
+  "ux_dom.plugins.safe_static:UnsafeStaticError",
+]
+tests = [
+  "tests/02_document_plugins/test_package_static.py",
+  "tests/02_document_plugins/test_safe_static.py",
+  "tests/07_resilience/test_mount_fail_loud.py",
+]
+docs = ["docs/security/SAFE_STATIC.md"]
+
+[[feature]]
+id = "xelement-runtime"
+purpose = "XElement custom elements: Python definitions, auto-collected templates, and the x_element.js runtime."
+modules = [
+  "ux_dom.dom.htmlelement",
+  "ux_dom.plugins.runtime",
+  "ux_dom.scripts",
+  "ux_dom.dom.htmldocument",
+]
+assets = ["ux_dom/scripts/x_element.js"]
+symbols = [
+  "ux_dom.dom.htmlelement:XElement",
+  "ux_dom.dom.htmlelement:CustomElement",
+  "ux_dom.dom.htmlelement:WebComponent",
+  "ux_dom.dom.htmlelement:XElementRegistry",
+  "ux_dom.plugins.runtime:XElementRuntime",
+  "ux_dom:XElement",
+]
+tests = [
+  "tests/02_document_plugins/test_xelement_runtime.py",
+  "tests/02_document_plugins/test_auto_xelement_definitions.py",
+  "tests/06_browser/test_xelement_browser.py",
+  "tests/07_resilience/test_shadowroot_only.py",
+]
+docs = ["docs/reference/XELEMENT.md", "docs/reference/XELEMENT_AUTO_DEFINITIONS.md"]
+
+[[feature]]
+id = "slots"
+purpose = "Slot helpers for custom elements and web components."
+modules = [
+  "ux_dom.slots",
+  "ux_dom.slots.slots",
+  "ux_dom.slots.custom_element_slot",
+  "ux_dom.slots.web_component_slot",
+]
+symbols = [
+  "ux_dom.slots.slots:Slots",
+  "ux_dom.slots.custom_element_slot:SlotElement",
+  "ux_dom.slots.web_component_slot:WebComponentSlot",
+]
+tests = ["tests/01_core/test_custom_elements_auth_complex.py"]
+docs = ["docs/reference/XELEMENT.md"]
+
+[[feature]]
+id = "elements"
+purpose = "Typed form-field components whose fields are validated with ux-valio validators."
+modules = [
+  "ux_dom.elements",
+  "ux_dom.elements.booleans",
+  "ux_dom.elements.buttons",
+  "ux_dom.elements.chars",
+  "ux_dom.elements.dates",
+  "ux_dom.elements.enums",
+  "ux_dom.elements.floats",
+  "ux_dom.elements.integers",
+]
+tests = [
+  "tests/07_resilience/test_f16_ux_valio_elements.py",
+  "tests/01_core/test_input_value_regressions.py",
+  "tests/01_core/test_float_legend.py",
+]
+docs = ["docs/ship/CAPABILITIES.md"]
+
+[[feature]]
+id = "htmx"
+purpose = "htmx integration: the Htmx Document control, request details middleware and HtmxRoutes events."
+modules = ["ux_dom.htmx", "ux_dom.htmx.middleware", "ux_dom.plugins.control.htmx", "ux_dom.web_io._events"]
+symbols = [
+  "ux_dom.htmx:HtmxRoutes",
+  "ux_dom.htmx.middleware:HtmxMiddleware",
+  "ux_dom.htmx.middleware:HtmxDetails",
+  "ux_dom.plugins.control.htmx:HtmxControl",
+  "ux_dom:Htmx",
+]
+tests = [
+  "tests/02_document_plugins/test_htmx_route_and_partial.py",
+  "tests/02_document_plugins/test_htmx_ws_stream.py",
+  "tests/07_resilience/test_htmx_routes_single_name.py",
+]
+docs = ["docs/reference/HYPERMEDIA.md"]
+
+[[feature]]
+id = "alpine"
+purpose = "Alpine.js integration: AlpineElement/AlpineComponent and data-attribute merging helpers."
+modules = ["ux_dom.alpinejs", "ux_dom.alpinejs.dataset", "ux_dom.dom.htmlelement"]
+symbols = [
+  "ux_dom.alpinejs.dataset:DataSet",
+  "ux_dom.alpinejs.dataset:MergeAlpineAttributes",
+  "ux_dom.dom.htmlelement:AlpineComponent",
+]
+tests = ["tests/01_core/test_alpine_dataset_merge.py"]
+docs = ["docs/reference/XELEMENT.md"]
+
+[[feature]]
+id = "channel-bridge"
+purpose = "Optional ux-channel hooks: the Channel runtime facade, ChannelControl, and UI channel attributes."
+modules = ["ux_dom.plugins.runtime", "ux_dom.plugins.control.channel", "ux_dom.ui.channel_bridge"]
+symbols = [
+  "ux_dom.plugins.runtime:UxChannelRuntime",
+  "ux_dom.plugins.control.channel:ChannelControl",
+  "ux_dom:Channel",
+]
+tests = ["tests/02_document_plugins/test_document_runtimes_create.py"]
+docs = ["docs/reference/STACK.md", "docs/reference/UI.md"]
+
+[[feature]]
+id = "web-io"
+purpose = "Low-level WebSocket adapter, client handler and event managers."
+modules = ["ux_dom.web_io", "ux_dom.web_io._adapter", "ux_dom.web_io._events", "ux_dom.web_io._protocol", "ux_dom.dom.src.ws_rpc"]
+symbols = [
+  "ux_dom.web_io._adapter:WebSocketAdapter",
+  "ux_dom.web_io._adapter:WebSocketClientHandler",
+  "ux_dom.web_io._protocol:WebSocketProtocol",
+]
+tests = ["tests/01_core/test_web_io_client_handler.py"]
+docs = ["docs/internals/MODULE_MAP.md"]
+
+[[feature]]
+id = "concurrency"
+purpose = "Per-root tree locks and opt-in parallel render/build of independent subtrees."
+modules = ["ux_dom.dom.src.concurrency", "ux_dom.concurrency"]
+symbols = [
+  "ux_dom.dom.src.concurrency:tree_lock_for",
+  "ux_dom.dom.src.concurrency:render_parallel",
+  "ux_dom.dom.src.concurrency:configure_concurrency",
+]
+tests = [
+  "tests/01_core/test_concurrency_patterns.py",
+  "tests/01_core/test_parallel_first_class.py",
+  "tests/05_chaos/test_tree_concurrency_safety.py",
+]
+docs = ["docs/internals/CONCURRENCY.md"]
+
+[[feature]]
+id = "ui-kit"
+purpose = "Optional copy-in Tailwind UI kit and its component catalog."
+modules = ["ux_dom.ui", "ux_dom.ui.catalog", "ux_dom.ui.tokens", "ux_dom.ui.button", "ux_dom.ui.dialog"]
+symbols = ["ux_dom.ui.catalog:CATALOG", "ux_dom.ui.catalog:list_components"]
+tests = [
+  "tests/02_document_plugins/test_ui_kit.py",
+  "tests/02_document_plugins/test_ui_battery.py",
+  "tests/06_browser/test_kit_browser_deep.py",
+]
+docs = ["docs/reference/UI.md"]
+
+[[feature]]
+id = "cli"
+purpose = "The pure-dom `uxdom` CLI: doctor, lint, profile, dashboard, add and ui."
+modules = [
+  "ux_dom.cli",
+  "ux_dom.cli.cli",
+  "ux_dom.cli.doctor",
+  "ux_dom.cli.lint",
+  "ux_dom.cli.profile",
+  "ux_dom.cli.dashboard",
+  "ux_dom.cli.adders",
+  "ux_dom.__main__",
+  "ux_dom.profiling",
+]
+symbols = [
+  "ux_dom.cli:app",
+  "ux_dom.cli.doctor:run_doctor",
+  "ux_dom.cli.lint:lint_project",
+  "ux_dom.cli.profile:run_profile",
+  "ux_dom.cli.adders:add_component",
+  "ux_dom.cli.adders:add_xelement",
+]
+tests = [
+  "tests/03_routing_cli/test_dx_cli.py",
+  "tests/03_routing_cli/test_cli_output_and_doctor.py",
+  "tests/03_routing_cli/test_profile_dx.py",
+  "tests/03_routing_cli/test_dashboard_dx.py",
+]
+docs = ["docs/guides/CLI.md"]

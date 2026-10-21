@@ -1,0 +1,40 @@
+{
+ "docs/reference/STACK.md": [
+  {
+   "kind": "cli",
+   "line": 11,
+   "resolved": true,
+   "text": "uxdom"
+  },
+  {
+   "kind": "module",
+   "line": 11,
+   "resolved": true,
+   "text": "ux_dom"
+  },
+  {
+   "kind": "module",
+   "line": 48,
+   "resolved": true,
+   "text": "ux_dom.Channel"
+  },
+  {
+   "kind": "module",
+   "line": 67,
+   "resolved": true,
+   "text": "ux_dom"
+  },
+  {
+   "kind": "cli",
+   "line": 68,
+   "resolved": true,
+   "text": "uxdom"
+  },
+  {
+   "kind": "env",
+   "line": 75,
+   "resolved": false,
+   "text": "UX_CHANNEL_PATH"
+  }
+ ]
+}

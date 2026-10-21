@@ -1,0 +1,16 @@
+{
+ "docs/reference/XELEMENT_AUTO_DEFINITIONS.md": [
+  {
+   "kind": "module",
+   "line": 63,
+   "resolved": true,
+   "text": "ux_dom.XElement"
+  },
+  {
+   "kind": "module",
+   "line": 64,
+   "resolved": true,
+   "text": "ux_dom.dom.htmlelement.CustomElement"
+  }
+ ]
+}

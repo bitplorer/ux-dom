@@ -1,0 +1,10 @@
+{
+ "docs/internals/SYSTEM.md": [
+  {
+   "kind": "cli",
+   "line": 41,
+   "resolved": true,
+   "text": "uxdom doctor | lint | profile | add"
+  }
+ ]
+}

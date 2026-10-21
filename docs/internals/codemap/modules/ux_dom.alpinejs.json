@@ -7,10 +7,20 @@
    "tests/07_resilience/test_attr_escape_isolation.py",
    "tests/07_resilience/test_no_deprecations.py"
   ],
+  "doc": "Alpine sample widgets (demos). Prefer AlpineComponent + your markup.",
+  "exported_as": [],
+  "features": [
+   "alpine"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -19,6 +29,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "components",
   "path": "src/ux_dom/alpinejs/__init__.py",
   "public": [
@@ -35,6 +46,7 @@
    "dataset_scrolled",
    "dataset_selected",
    "dataset_xdata"
-  ]
+  ],
+  "symbols": {}
  }
 }

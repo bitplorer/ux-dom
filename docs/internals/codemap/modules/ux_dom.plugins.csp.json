@@ -31,6 +31,13 @@
    "tests/07_resilience/test_top_level_facades.py",
    "tests/helpers.py"
   ],
+  "doc": "CSP nonces — **one place, least confusion: middleware**.",
+  "exported_as": [
+   "ux_dom:Csp"
+  ],
+  "features": [
+   "csp"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.plugins.hub",
@@ -44,6 +51,23 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "os"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "contextvars",
+     "dataclasses",
+     "secrets",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [
@@ -51,6 +75,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/csp.py",
   "public": [
@@ -70,6 +95,229 @@
    "set_nonce",
    "stamp_nonce",
    "stamp_tree"
-  ]
+  ],
+  "symbols": {
+   "Csp": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "**The** CSP plugin — installs middleware. One line, no other wiring.",
+    "kind": "class",
+    "methods": {
+     "artifacts": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "auto": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "Pick dev vs prod from DEBUG (env or argument) — zero-choice DX.",
+      "kind": "function",
+      "signature": "(cls, debug: Optional[bool]=None, **overrides: Any) -> 'Csp'"
+     },
+     "dev": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "Create-app / local DX: CDNs + style unsafe-inline.",
+      "kind": "function",
+      "signature": "(cls, **overrides: Any) -> 'Csp'"
+     },
+     "document_body": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "document_head": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "from_policy": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, policy: CspPolicy) -> 'Csp'"
+     },
+     "mount": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, app: Any, **kwargs: Any) -> None"
+     },
+     "partial_policy": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, request: Any) -> str"
+     },
+     "prod": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "Production: no CDN hosts, no script unsafe-inline, no bare ws:/wss:.",
+      "kind": "function",
+      "signature": "(cls, **overrides: Any) -> 'Csp'"
+     },
+     "report_only": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "Emit ``Content-Security-Policy-Report-Only`` (observe, don't block).",
+      "kind": "function",
+      "signature": "(cls, **overrides: Any) -> 'Csp'"
+     },
+     "to_policy": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> CspPolicy"
+     },
+     "wire": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: Any=None, **kwargs: Any) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "CspMiddleware": {
+    "bases": [],
+    "doc": "Pure ASGI middleware — single owner of nonce lifecycle.",
+    "kind": "class",
+    "methods": {
+     "__call__": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, scope: dict, receive: Any, send: Any) -> None"
+     },
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, app: Any, *, policy: Optional[CspPolicy]=None, strict_dynamic: bool=True, script_hosts: Sequence[str]=(), style_hosts: Sequence[str]=(), style_unsafe_inline: bool=False, script_unsafe_inline_legacy: bool=False, connect_src: Sequence[str]=(\"'self'\",), img_src: Sequence[str]=(\"'self'\", 'data:'), font_src: Sequence[str]=(\"'self'\", 'data:'), frame_ancestors: str=\"'none'\", base_uri: str=\"'self'\", object_src: str=\"'none'\", form_action: str=\"'self'\", upgrade_insecure: bool=False, report_uri: Optional[str]=None, extra_directives: Optional[dict[str, str]]=None, report_only: bool=False, debug_header: bool=False, nonce_bytes: int=_NONCE_BYTES) -> None"
+     }
+    },
+    "public": true
+   },
+   "CspPolicy": {
+    "bases": [],
+    "decorators": [
+     "dataclass(frozen=True)"
+    ],
+    "doc": "Immutable CSP knobs shared by ``build_csp_header`` and middleware.",
+    "kind": "class",
+    "methods": {
+     "build": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, nonce: str) -> str"
+     },
+     "header_kwargs": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "_nonce_from_scope": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(scope: dict) -> str"
+   },
+   "_set_attr": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(node: Any, key: str, value: str) -> Any"
+   },
+   "_tag_name": {
+    "doc": "Lower-cased tag name; only ``str`` values count (a Component field",
+    "kind": "function",
+    "public": false,
+    "signature": "(node: Any) -> str"
+   },
+   "bind_nonce_to_scope": {
+    "doc": "Mirror nonce onto ASGI scope (and state dict if present).",
+    "kind": "function",
+    "public": true,
+    "signature": "(scope: dict, nonce: str) -> None"
+   },
+   "build_csp_header": {
+    "doc": "Build a ``Content-Security-Policy`` value for one response.",
+    "kind": "function",
+    "public": true,
+    "signature": "(nonce: str, *, strict_dynamic: bool=True, script_hosts: Sequence[str]=(), style_hosts: Sequence[str]=(), style_unsafe_inline: bool=False, script_unsafe_inline_legacy: bool=False, img_src: Sequence[str]=(\"'self'\", 'data:'), connect_src: Sequence[str]=(\"'self'\",), font_src: Sequence[str]=(\"'self'\", 'data:'), frame_ancestors: str=\"'none'\", base_uri: str=\"'self'\", object_src: str=\"'none'\", form_action: str=\"'self'\", upgrade_insecure: bool=False, report_uri: Optional[str]=None, extra_directives: Optional[dict[str, str]]=None) -> str"
+   },
+   "clear_nonce": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> None"
+   },
+   "generate_nonce": {
+    "doc": "Cryptographically secure nonce (url-safe, no padding surprises).",
+    "kind": "function",
+    "public": true,
+    "signature": "(nbytes: int=_NONCE_BYTES) -> str"
+   },
+   "get_nonce": {
+    "doc": "ContextVar read (request Task / current Context). May be empty off-request.",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> str"
+   },
+   "policy_dev": {
+    "doc": "DX / create-app: CDN hosts + style unsafe-inline for Tailwind/Alpine.",
+    "kind": "function",
+    "public": true,
+    "signature": "(**overrides: Any) -> CspPolicy"
+   },
+   "policy_prod": {
+    "doc": "Production: no CDN hosts, no script unsafe-inline, no bare ws:/wss:.",
+    "kind": "function",
+    "public": true,
+    "signature": "(**overrides: Any) -> CspPolicy"
+   },
+   "policy_report_only": {
+    "doc": "Same as prod knobs but ``Content-Security-Policy-Report-Only`` header.",
+    "kind": "function",
+    "public": true,
+    "signature": "(**overrides: Any) -> CspPolicy"
+   },
+   "reset_nonce": {
+    "doc": "Reset ContextVar; tolerate cross-Context tokens (ASGI stream end).",
+    "kind": "function",
+    "public": true,
+    "signature": "(token: Token) -> None"
+   },
+   "resolve_nonce": {
+    "doc": "Read-agnostic nonce resolution (secure value, any transport).",
+    "kind": "function",
+    "public": true,
+    "signature": "(nonce: Optional[str]=None, *, scope: Optional[dict]=None, request: Any=None, require: bool=False) -> str"
+   },
+   "set_nonce": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(nonce: str) -> Token"
+   },
+   "stamp_nonce": {
+    "doc": "Stamp a flat list of nodes (shell fragments).",
+    "kind": "function",
+    "public": true,
+    "signature": "(nodes: Iterable[Any] | Any, nonce: Optional[str]=None, *, tags: Sequence[str]=('script', 'style'), scope: Optional[dict]=None, request: Any=None) -> list[Any]"
+   },
+   "stamp_tree": {
+    "doc": "Bake nonce into every ``script`` / ``style`` (or ``tags``), in place.",
+    "kind": "function",
+    "public": true,
+    "signature": "(node: Any, nonce: Optional[str]=None, *, scope: Optional[dict]=None, request: Any=None, tags: Sequence[str]=('script', 'style')) -> Any"
+   }
+  }
  }
 }

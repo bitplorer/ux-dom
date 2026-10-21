@@ -1,0 +1,52 @@
+{
+ "docs/internals/ARCHITECTURE.md": [
+  {
+   "kind": "cli",
+   "line": 29,
+   "resolved": true,
+   "text": "uxdom doctor | lint | profile | add"
+  },
+  {
+   "kind": "module",
+   "line": 74,
+   "resolved": true,
+   "text": "ux_dom/settings/document.py"
+  },
+  {
+   "kind": "module",
+   "line": 75,
+   "resolved": true,
+   "text": "ux_dom/dom/htmldocument.py"
+  },
+  {
+   "kind": "module",
+   "line": 76,
+   "resolved": true,
+   "text": "ux_dom/dom/src/component.py"
+  },
+  {
+   "kind": "module",
+   "line": 77,
+   "resolved": true,
+   "text": "ux_dom/dom/src/ext.py"
+  },
+  {
+   "kind": "module",
+   "line": 78,
+   "resolved": true,
+   "text": "ux_dom/dom/htmlelement.py"
+  },
+  {
+   "kind": "module",
+   "line": 79,
+   "resolved": true,
+   "text": "ux_dom/plugins/safe_static.py"
+  },
+  {
+   "kind": "module",
+   "line": 80,
+   "resolved": true,
+   "text": "ux_dom/cli/adders.py"
+  }
+ ]
+}

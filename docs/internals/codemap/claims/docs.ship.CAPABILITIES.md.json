@@ -1,0 +1,22 @@
+{
+ "docs/ship/CAPABILITIES.md": [
+  {
+   "kind": "module",
+   "line": 42,
+   "resolved": true,
+   "text": "ux_dom.elements"
+  },
+  {
+   "kind": "module",
+   "line": 43,
+   "resolved": true,
+   "text": "ux_dom.alpinejs"
+  },
+  {
+   "kind": "module",
+   "line": 44,
+   "resolved": true,
+   "text": "ux_dom.slots"
+  }
+ ]
+}

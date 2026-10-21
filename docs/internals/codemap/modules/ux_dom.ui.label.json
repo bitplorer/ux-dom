@@ -3,12 +3,25 @@
   "consumers": [
    "examples/ux_kit/app/routes/index.py"
   ],
+  "doc": "Label — type_scale label role.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -19,10 +32,28 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/label.py",
   "public": [
    "Label"
-  ]
+  ],
+  "symbols": {
+   "Label": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

@@ -5,12 +5,25 @@
    "tests/01_core/test_pass3_defects.py",
    "tests/02_document_plugins/test_ui_kit_dedupe.py"
   ],
+  "doc": "Textarea — operational border, matches Input ink.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -21,11 +34,35 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/textarea.py",
   "public": [
    "Textarea",
    "textarea_classes"
-  ]
+  ],
+  "symbols": {
+   "Textarea": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', invalid: bool=False, **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "textarea_classes": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(*, className: str='', invalid: bool=False) -> str"
+   }
+  }
  }
 }

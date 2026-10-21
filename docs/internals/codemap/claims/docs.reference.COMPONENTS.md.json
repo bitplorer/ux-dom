@@ -1,0 +1,64 @@
+{
+ "docs/reference/COMPONENTS.md": [
+  {
+   "kind": "import",
+   "line": 9,
+   "resolved": true,
+   "text": "ux_dom.dom:a"
+  },
+  {
+   "kind": "import",
+   "line": 9,
+   "resolved": true,
+   "text": "ux_dom.dom:button"
+  },
+  {
+   "kind": "import",
+   "line": 9,
+   "resolved": true,
+   "text": "ux_dom.dom:div"
+  },
+  {
+   "kind": "import",
+   "line": 9,
+   "resolved": true,
+   "text": "ux_dom.dom:span"
+  },
+  {
+   "kind": "module",
+   "line": 9,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "import",
+   "line": 22,
+   "resolved": true,
+   "text": "ux_dom:Component"
+  },
+  {
+   "kind": "import",
+   "line": 23,
+   "resolved": true,
+   "text": "ux_dom.dom:div"
+  },
+  {
+   "kind": "import",
+   "line": 23,
+   "resolved": true,
+   "text": "ux_dom.dom:span"
+  },
+  {
+   "kind": "module",
+   "line": 23,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "module",
+   "line": 97,
+   "resolved": true,
+   "text": "ux_dom.response.serialize"
+  }
+ ]
+}

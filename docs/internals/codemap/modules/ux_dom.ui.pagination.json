@@ -3,12 +3,25 @@
   "consumers": [
    "tests/02_document_plugins/test_ui_kit_dedupe.py"
   ],
+  "doc": "Pagination — Channel-friendly page controls (data-channel-action optional).",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -19,10 +32,28 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/pagination.py",
   "public": [
    "Pagination"
-  ]
+  ],
+  "symbols": {
+   "Pagination": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, page: int=1, total_pages: int=1, select_action: str | None=None, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

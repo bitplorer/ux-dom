@@ -23,6 +23,11 @@
    "tests/07_resilience/test_shell_helper_aliases_absent.py",
    "tests/conftest.py"
   ],
+  "doc": "PluginHub + App — explicit composition (contributions = browser surface).",
+  "exported_as": [],
+  "features": [
+   "document"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.settings.document"
@@ -32,6 +37,18 @@
     "ux_dom.plugins.shell"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "threading",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -46,6 +63,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/hub.py",
   "public": [
@@ -53,6 +71,168 @@
    "PluginHub",
    "get_hub",
    "set_hub"
-  ]
+  ],
+  "symbols": {
+   "App": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "Feature registry + ASGI wiring — **not** the HTML shell.",
+    "kind": "class",
+    "methods": {
+     "_use_one": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: Any) -> None"
+     },
+     "build": {
+      "doc": "Publish hub → leftover asgi → Document.mount (if any) → controls.",
+      "kind": "function",
+      "signature": "(self, asgi: Any=None) -> Any"
+     },
+     "channel": {
+      "doc": "uxchannel tags (optional; no-op if package missing).",
+      "kind": "function",
+      "signature": "(self, **kwargs: Any) -> 'App'"
+     },
+     "csp": {
+      "doc": "CSP nonces via middleware — see ``docs/security/CSP.md``.",
+      "kind": "function",
+      "signature": "(self, **kwargs: Any) -> 'App'"
+     },
+     "htmx": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **kwargs: Any) -> 'App'"
+     },
+     "plugin_summary": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[str]"
+     },
+     "shell_fragments": {
+      "doc": "Low-level: ``(head_tags, body_tags)`` from hub. Prefer Document.",
+      "kind": "function",
+      "signature": "(self) -> tuple[list[Any], list[Any]]"
+     },
+     "use": {
+      "doc": "Register one or many plugins. ``None`` entries are skipped.",
+      "kind": "function",
+      "signature": "(self, *plugins: Any) -> 'App'"
+     },
+     "use_control": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: ControlPlugin) -> 'App'"
+     },
+     "use_hmr": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: HmrPlugin) -> 'App'"
+     },
+     "use_host": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: HostPlugin) -> 'App'"
+     },
+     "use_style": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: StylePlugin) -> 'App'"
+     },
+     "xelement": {
+      "doc": "Ship XElement runtime (safe package file route + script tag).",
+      "kind": "function",
+      "signature": "(self, **kwargs: Any) -> 'App'"
+     }
+    },
+    "public": true
+   },
+   "PluginHub": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "Ordered plugin registry — single source of truth for browser surface.",
+    "kind": "class",
+    "methods": {
+     "_register_contribution": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: Any) -> None"
+     },
+     "add_assets": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: AssetsPlugin) -> None"
+     },
+     "add_contribution": {
+      "doc": "Register a ContributionPlugin (static + document).",
+      "kind": "function",
+      "signature": "(self, plugin: Any) -> None"
+     },
+     "add_control": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: ControlPlugin) -> None"
+     },
+     "add_hmr": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: HmrPlugin) -> None"
+     },
+     "add_host": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: HostPlugin) -> None"
+     },
+     "add_response": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: ResponsePlugin) -> None"
+     },
+     "add_style": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, plugin: StylePlugin) -> None"
+     },
+     "iter_contributions": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> list[Any]"
+     },
+     "shell_fragments": {
+      "doc": "Ordered head/body nodes for the HTML shell.",
+      "kind": "function",
+      "signature": "(self, *, dedupe: bool=True) -> tuple[list[Any], list[Any]]"
+     },
+     "summary": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> list[str]"
+     }
+    },
+    "public": true
+   },
+   "_mount_package_static": {
+    "doc": "Install allowlisted package file routes (never directory StaticFiles).",
+    "kind": "function",
+    "public": false,
+    "signature": "(app: Any, hub: PluginHub) -> None"
+   },
+   "get_hub": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> PluginHub"
+   },
+   "set_hub": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(hub: PluginHub) -> None"
+   }
+  }
  }
 }

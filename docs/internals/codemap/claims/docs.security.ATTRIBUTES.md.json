@@ -1,0 +1,70 @@
+{
+ "docs/security/ATTRIBUTES.md": [
+  {
+   "kind": "module",
+   "line": 44,
+   "resolved": true,
+   "text": "ux_dom.dom.src.utils.dom_util"
+  },
+  {
+   "kind": "env",
+   "line": 50,
+   "resolved": true,
+   "text": "URL_ATTRIBUTES"
+  },
+  {
+   "kind": "env",
+   "line": 56,
+   "resolved": true,
+   "text": "SAME_ORIGIN_URL_ATTRIBUTES"
+  },
+  {
+   "kind": "env",
+   "line": 57,
+   "resolved": true,
+   "text": "HTML_ATTRIBUTES"
+  },
+  {
+   "kind": "env",
+   "line": 58,
+   "resolved": true,
+   "text": "BOOLEAN_ATTRIBUTES"
+  },
+  {
+   "kind": "env",
+   "line": 60,
+   "resolved": true,
+   "text": "SAME_ORIGIN_URL_ATTRIBUTES"
+  },
+  {
+   "kind": "env",
+   "line": 84,
+   "resolved": true,
+   "text": "BOOLEAN_ATTRIBUTES"
+  },
+  {
+   "kind": "import",
+   "line": 140,
+   "resolved": true,
+   "text": "ux_dom.dom:cross_origin"
+  },
+  {
+   "kind": "import",
+   "line": 140,
+   "resolved": true,
+   "text": "ux_dom.dom:div"
+  },
+  {
+   "kind": "module",
+   "line": 140,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "module",
+   "line": 198,
+   "resolved": true,
+   "text": "ux_dom.response.sanitize_html"
+  }
+ ]
+}

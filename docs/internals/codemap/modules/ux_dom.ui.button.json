@@ -7,6 +7,11 @@
    "tests/02_document_plugins/test_ui_kit.py",
    "tests/04_production/test_production_stability.py"
   ],
+  "doc": "Button — operational variants (pure ux-dom + Tailwind).",
+  "exported_as": [],
+  "features": [
+   "ui-kit"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.ui.channel_bridge"
@@ -15,6 +20,16 @@
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -25,11 +40,35 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/button.py",
   "public": [
    "Button",
    "button_classes"
-  ]
+  ],
+  "symbols": {
+   "Button": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "::",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, variant: str='default', size: str='md', type: str='button', disabled: bool=False, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "button_classes": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(*, variant: str='default', size: str='md', className: str='', disabled: bool=False) -> str"
+   }
+  }
  }
 }

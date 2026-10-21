@@ -8,6 +8,9 @@
    "tests/05_chaos/test_enterprise_full_battery.py",
    "tests/05_chaos/test_production_trust.py"
   ],
+  "doc": "NullControl — no-op control plugin for tests and minimal shells.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -15,15 +18,66 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/control/null.py",
   "public": [
    "NullControl"
-  ]
+  ],
+  "symbols": {
+   "NullControl": {
+    "bases": [],
+    "doc": "No-op control plane (tests / static sites).",
+    "kind": "class",
+    "methods": {
+     "artifacts": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "document_body": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "document_head": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "mount": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, app: Any, **kwargs: Any) -> None"
+     },
+     "partial_policy": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, request: Any) -> str"
+     },
+     "wire": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, action: Any=None, **kwargs: Any) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

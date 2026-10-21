@@ -1,10 +1,20 @@
 {
  "ux_dom.__main__": {
   "consumers": [],
+  "doc": "python -m ux_dom → CLI.",
+  "exported_as": [],
+  "features": [
+   "cli"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -13,8 +23,10 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "cli",
   "path": "src/ux_dom/__main__.py",
-  "public": []
+  "public": [],
+  "symbols": {}
  }
 }

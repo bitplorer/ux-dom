@@ -6,12 +6,26 @@
    "tests/02_document_plugins/test_ui_kit_defects.py",
    "tests/04_production/test_production_stability.py"
   ],
+  "doc": "Tabs — Channel-first selection (no Alpine by default).",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "re",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -22,10 +36,34 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/tabs.py",
   "public": [
    "Tabs"
-  ]
+  ],
+  "symbols": {
+   "Tabs": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "Server-driven tabs. Active key is an argument — not client state.",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, items: Sequence[tuple[str, str, Any]]=(), *, active: str | None=None, default: str | None=None, select_action: str | None=None, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "_safe_key": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(key: str, fallback: str) -> str"
+   }
+  }
  }
 }

@@ -34,6 +34,12 @@
    "tests/07_resilience/test_top_level_facades.py",
    "tests/helpers.py"
   ],
+  "doc": "Built-in Contribution plugins — single copy, **safe file URLs only**.",
+  "exported_as": [],
+  "features": [
+   "channel-bridge",
+   "xelement-runtime"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.plugins.hub"
@@ -43,6 +49,20 @@
     "ux_dom.plugins"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "importlib"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -54,6 +74,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/runtime.py",
   "public": [
@@ -61,6 +82,72 @@
    "XELEMENT_JS_URL",
    "XELEMENT_STATIC_PREFIX",
    "XElementRuntime"
-  ]
+  ],
+  "symbols": {
+   "UxChannelRuntime": {
+    "bases": [],
+    "doc": "**ux-channel** client tags — package static URLs, or channel mount.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "Parameters",
+      "kind": "function",
+      "signature": "(self, *, path: str='/ux-channel', bridge: bool=True, inspector: bool=False, mount_via_ux_dom: bool=False) -> None"
+     },
+     "document_body": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "document_head": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "optional": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, **kwargs: Any) -> Optional['UxChannelRuntime']"
+     },
+     "scripts_html": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "served_files": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[SafeStaticFile]"
+     }
+    },
+    "public": true
+   },
+   "XElementRuntime": {
+    "bases": [],
+    "doc": "Serve ``x_element.js`` from the installed package — **one file**, not a dir.",
+    "kind": "class",
+    "methods": {
+     "document_body": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "document_head": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "served_files": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[SafeStaticFile]"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

@@ -7,6 +7,11 @@
    "tests/03_routing_cli/test_dx_side_effects.py",
    "tests/07_resilience/test_f18_directory_router_absent.py"
   ],
+  "doc": "``uxdom add`` — generate components and XElements in an app tree.",
+  "exported_as": [],
+  "features": [
+   "cli"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.cli"
@@ -14,11 +19,24 @@
    "module_level": [],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "pathlib",
+     "re",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "cli",
   "path": "src/ux_dom/cli/adders.py",
   "public": [
@@ -26,6 +44,47 @@
    "XKind",
    "add_component",
    "add_xelement"
-  ]
+  ],
+  "symbols": {
+   "AddError": {
+    "bases": [
+     "RuntimeError"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "_class_name": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(name: str) -> str"
+   },
+   "_find_app_root": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(start: Optional[Path]=None) -> Path"
+   },
+   "_module_stem": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(name: str) -> str"
+   },
+   "add_component": {
+    "doc": "Create ``app/components/{stem}.py`` with a Component stub.",
+    "kind": "function",
+    "public": true,
+    "signature": "(name: str, *, root: Optional[Path]=None, force: bool=False) -> Path"
+   },
+   "add_xelement": {
+    "doc": "Create an XElement subclass under app/components/.",
+    "kind": "function",
+    "public": true,
+    "signature": "(name: str, *, kind: XKind='light', root: Optional[Path]=None, force: bool=False) -> Path"
+   }
+  }
  }
 }

@@ -1,0 +1,16 @@
+{
+ "docs/README.md": [
+  {
+   "kind": "module",
+   "line": 12,
+   "resolved": true,
+   "text": "ux_dom"
+  },
+  {
+   "kind": "cli",
+   "line": 13,
+   "resolved": true,
+   "text": "uxdom"
+  }
+ ]
+}

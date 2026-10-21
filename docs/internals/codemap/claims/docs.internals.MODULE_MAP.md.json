@@ -1,0 +1,178 @@
+{
+ "docs/internals/MODULE_MAP.md": [
+  {
+   "kind": "module",
+   "line": 3,
+   "resolved": true,
+   "text": "ux_dom/"
+  },
+  {
+   "kind": "module",
+   "line": 24,
+   "resolved": true,
+   "text": "ux_dom/__init__.py"
+  },
+  {
+   "kind": "module",
+   "line": 25,
+   "resolved": true,
+   "text": "ux_dom/diagnostics.py"
+  },
+  {
+   "kind": "module",
+   "line": 26,
+   "resolved": true,
+   "text": "ux_dom/dom/"
+  },
+  {
+   "kind": "module",
+   "line": 27,
+   "resolved": true,
+   "text": "ux_dom/dom/htmlelement.py"
+  },
+  {
+   "kind": "module",
+   "line": 28,
+   "resolved": true,
+   "text": "ux_dom/dom/htmldocument.py"
+  },
+  {
+   "kind": "module",
+   "line": 29,
+   "resolved": true,
+   "text": "ux_dom/dom/src/component.py"
+  },
+  {
+   "kind": "module",
+   "line": 30,
+   "resolved": true,
+   "text": "ux_dom/dom/src/dom_tag.py"
+  },
+  {
+   "kind": "module",
+   "line": 31,
+   "resolved": true,
+   "text": "ux_dom/dom/src/dom1core.py"
+  },
+  {
+   "kind": "module",
+   "line": 32,
+   "resolved": true,
+   "text": "ux_dom/dom/src/ext.py"
+  },
+  {
+   "kind": "module",
+   "line": 33,
+   "resolved": true,
+   "text": "ux_dom/dom/src/concurrency.py"
+  },
+  {
+   "kind": "module",
+   "line": 34,
+   "resolved": true,
+   "text": "ux_dom.dom"
+  },
+  {
+   "kind": "module",
+   "line": 34,
+   "resolved": true,
+   "text": "ux_dom/dom/src/htmltags.py"
+  },
+  {
+   "kind": "module",
+   "line": 35,
+   "resolved": true,
+   "text": "ux_dom/dom/src/html_string.py"
+  },
+  {
+   "kind": "module",
+   "line": 36,
+   "resolved": true,
+   "text": "ux_dom/dom/uniqueid.py"
+  },
+  {
+   "kind": "module",
+   "line": 37,
+   "resolved": true,
+   "text": "ux_dom/dom/src/ws_rpc.py"
+  },
+  {
+   "kind": "module",
+   "line": 38,
+   "resolved": true,
+   "text": "ux_dom/settings/"
+  },
+  {
+   "kind": "module",
+   "line": 39,
+   "resolved": true,
+   "text": "ux_dom/plugins/"
+  },
+  {
+   "kind": "module",
+   "line": 40,
+   "resolved": true,
+   "text": "ux_dom/plugins/runtime.py"
+  },
+  {
+   "kind": "module",
+   "line": 41,
+   "resolved": true,
+   "text": "ux_dom/plugins/safe_static.py"
+  },
+  {
+   "kind": "module",
+   "line": 42,
+   "resolved": true,
+   "text": "ux_dom/response/"
+  },
+  {
+   "kind": "module",
+   "line": 43,
+   "resolved": true,
+   "text": "ux_dom/scripts/"
+  },
+  {
+   "kind": "module",
+   "line": 44,
+   "resolved": true,
+   "text": "ux_dom/cli/"
+  },
+  {
+   "kind": "module",
+   "line": 45,
+   "resolved": true,
+   "text": "ux_dom/ui/"
+  },
+  {
+   "kind": "module",
+   "line": 46,
+   "resolved": true,
+   "text": "ux_dom/slots/"
+  },
+  {
+   "kind": "module",
+   "line": 47,
+   "resolved": true,
+   "text": "ux_dom/elements/"
+  },
+  {
+   "kind": "module",
+   "line": 48,
+   "resolved": true,
+   "text": "ux_dom/htmx/"
+  },
+  {
+   "kind": "module",
+   "line": 49,
+   "resolved": true,
+   "text": "ux_dom/alpinejs/"
+  },
+  {
+   "kind": "module",
+   "line": 50,
+   "resolved": true,
+   "text": "ux_dom/web_io/"
+  }
+ ]
+}

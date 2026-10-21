@@ -1,0 +1,64 @@
+{
+ "docs/internals/CORE.md": [
+  {
+   "kind": "module",
+   "line": 9,
+   "resolved": true,
+   "text": "ux_dom.dom.src.dom_tag"
+  },
+  {
+   "kind": "module",
+   "line": 10,
+   "resolved": true,
+   "text": "ux_dom.dom.src.ext.Tags"
+  },
+  {
+   "kind": "module",
+   "line": 11,
+   "resolved": true,
+   "text": "ux_dom.dom.src.component"
+  },
+  {
+   "kind": "module",
+   "line": 12,
+   "resolved": true,
+   "text": "ux_dom.dom.htmldocument"
+  },
+  {
+   "kind": "module",
+   "line": 13,
+   "resolved": true,
+   "text": "ux_dom.settings.document"
+  },
+  {
+   "kind": "module",
+   "line": 14,
+   "resolved": true,
+   "text": "ux_dom.response"
+  },
+  {
+   "kind": "module",
+   "line": 27,
+   "resolved": true,
+   "text": "ux_dom.plugins.control"
+  },
+  {
+   "kind": "cli",
+   "line": 49,
+   "resolved": true,
+   "text": "uxdom doctor"
+  },
+  {
+   "kind": "cli",
+   "line": 50,
+   "resolved": true,
+   "text": "uxdom lint"
+  },
+  {
+   "kind": "cli",
+   "line": 51,
+   "resolved": true,
+   "text": "uxdom profile"
+  }
+ ]
+}

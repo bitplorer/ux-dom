@@ -1,0 +1,22 @@
+{
+ "docs/security/WHY_JS_URL.md": [
+  {
+   "kind": "import",
+   "line": 51,
+   "resolved": true,
+   "text": "ux_dom:Document"
+  },
+  {
+   "kind": "import",
+   "line": 52,
+   "resolved": true,
+   "text": "ux_dom:XElement"
+  },
+  {
+   "kind": "module",
+   "line": 67,
+   "resolved": true,
+   "text": "ux_dom.plugins.safe_static"
+  }
+ ]
+}

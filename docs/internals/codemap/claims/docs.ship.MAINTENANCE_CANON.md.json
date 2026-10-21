@@ -1,0 +1,10 @@
+{
+ "docs/ship/MAINTENANCE_CANON.md": [
+  {
+   "kind": "cli",
+   "line": 32,
+   "resolved": true,
+   "text": "uxdom doctor"
+  }
+ ]
+}
