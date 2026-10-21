@@ -21,21 +21,9 @@ import typing
 
 from ux_dom.dom.src.concurrency import multi_tree_lock, tree_lock_for
 from collections import defaultdict, namedtuple
+from collections.abc import Callable
 from contextvars import ContextVar
 from functools import wraps
-
-try:
-    # Python 3
-    from collections.abc import Callable
-except ImportError:
-    # Python 2.7
-    from collections import Callable  # type: ignore
-
-try:
-    basestring = basestring  # type: ignore
-except NameError:  # py3
-    basestring = str
-    unicode = str
 
 try:
     import greenlet  # type: ignore
@@ -121,7 +109,7 @@ def context_stack():
     return list(stack) if stack else []
 
 
-class dom_string(basestring):
+class dom_string(str):
     pass
 
 
@@ -356,7 +344,7 @@ class dom_tag(object):
                 value.parent = self
                 value._setdocument(self.document)
             self.children[key] = value
-        elif isinstance(key, basestring):
+        elif isinstance(key, str):
             self.attributes[key] = value
         else:
             raise TypeError(
@@ -460,7 +448,7 @@ class dom_tag(object):
                 # Convert to string so we fall into next if block
                 obj = str(obj)
 
-            if isinstance(obj, basestring):
+            if isinstance(obj, str):
                 # Raw text elements (<script>, <style>): the browser never
                 # entity-decodes their content, so escaping would corrupt JS/CSS.
                 # Breakouts are neutralized at render time, over the joined body.
@@ -579,7 +567,7 @@ class dom_tag(object):
     @staticmethod
     def _type_matches(node, tag):
         """Type / name match for one node (no recursion)."""
-        if isinstance(tag, basestring):
+        if isinstance(tag, str):
             return type(node).__name__ == tag
         if isinstance(tag, type):
             return isinstance(node, tag)
@@ -600,7 +588,7 @@ class dom_tag(object):
         if entry is not None and entry is not node and isinstance(entry, dom_tag):
             candidates.append(entry)
 
-        if isinstance(tag, (basestring, type)) or tag is None:
+        if isinstance(tag, (str, type)) or tag is None:
             type_tag = dom_tag if tag is None else tag
             for cand in candidates:
                 if self._type_matches(cand, type_tag) and self._attr_matches(
@@ -679,7 +667,7 @@ class dom_tag(object):
                 return object.__getattribute__(self, "children")[key]
             except KeyError:
                 raise IndexError('Child with index "%s" does not exist.' % key)
-        elif isinstance(key, basestring):
+        elif isinstance(key, str):
             # Attributes are accessed using strings
             try:
                 return object.__getattribute__(self, "attributes")[key]
@@ -722,8 +710,6 @@ class dom_tag(object):
             if len(node):             # has children
         """
         return True
-
-    __nonzero__ = __bool__
 
     def __iter__(self):
         """
@@ -818,7 +804,7 @@ class dom_tag(object):
             entry = getattr(self, "_entry", None)
             if entry is not None and item is entry:
                 return True
-        if isinstance(item, (basestring, type, dom_tag)):
+        if isinstance(item, (str, type, dom_tag)):
             if any(self._match_nodes(self, item, [])):
                 return True
         elif item is None:
@@ -838,11 +824,9 @@ class dom_tag(object):
         self._add(obj)
         return self
 
-    # String and unicode representations are the same as __render__()
-    def __unicode__(self):
+    # The string representation is the same as __render__()
+    def __str__(self):
         return self.__render__()
-
-    __str__ = __unicode__
 
     def __render__(self, indent="  ", pretty=True):
         """Phase **serialize** (sync): walk the finished tree → HTML string.
@@ -941,7 +925,7 @@ class dom_tag(object):
             if value is not False:  # False values must be omitted completely
                 attribute = checked_attr_name(attribute)
                 safe = safe_attr_value(attribute, value, name)
-                sb.append(' %s="%s"' % (attribute, escape(unicode(safe), True)))
+                sb.append(' %s="%s"' % (attribute, escape(str(safe), True)))
 
         sb.append(">")
 
@@ -971,7 +955,7 @@ class dom_tag(object):
                     sb.append(indent_str * indent_level)
                 child._render(sb, indent_level, indent_str, pretty, _seen=_seen)
             else:
-                sb.append(unicode(child))
+                sb.append(str(child))
 
         return inline
 

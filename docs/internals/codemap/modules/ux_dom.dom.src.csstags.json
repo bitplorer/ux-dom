@@ -16,7 +16,7 @@
   "imports_internal": {
    "function_level": [],
    "module_level": [
-    "ux_dom.dom.src.main"
+    "ux_dom.dom.src.ext"
    ],
    "type_checking": []
   },

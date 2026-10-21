@@ -29,12 +29,6 @@ Public License along with Dominate.  If not, see
 """
 
 
-try:
-    basestring = basestring
-except NameError:  # py3
-    basestring = str
-    unicode = str
-
 
 class dom1core(object):
     """
@@ -69,7 +63,7 @@ class dom1core(object):
         """
         DOM API: Returns all tags that match name.
         """
-        if isinstance(name, basestring):
+        if isinstance(name, str):
             return list(self._find(name.lower()))
         else:
             return None

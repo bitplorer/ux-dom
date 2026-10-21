@@ -105,10 +105,10 @@
     "ux_dom.dom.src.concurrency",
     "ux_dom.dom.src.csstags",
     "ux_dom.dom.src.dom_tag",
+    "ux_dom.dom.src.ext",
     "ux_dom.dom.src.html_string",
     "ux_dom.dom.src.htmltags",
     "ux_dom.dom.src.jinjatags",
-    "ux_dom.dom.src.main",
     "ux_dom.dom.src.svgtags",
     "ux_dom.dom.src.utils.dom_util",
     "ux_dom.utils.parameters"

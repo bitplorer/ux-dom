@@ -30,9 +30,12 @@
     "ux_dom.dom",
     "ux_dom.dom.htmldocument",
     "ux_dom.dom.htmlelement",
+    "ux_dom.dom.src.component",
+    "ux_dom.dom.src.csstags",
     "ux_dom.dom.src.html_string",
     "ux_dom.dom.src.htmltags",
-    "ux_dom.dom.src.main",
+    "ux_dom.dom.src.jinjatags",
+    "ux_dom.dom.src.svgtags",
     "ux_dom.settings.document"
    ],
    "type_checking": []

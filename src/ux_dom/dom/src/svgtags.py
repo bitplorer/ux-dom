@@ -9,7 +9,7 @@ This module consists of classes specific to HTML5-SVG Elements. In general this 
 - Elements that are deprecated
 """
 
-from ux_dom.dom.src.main import extension
+from ux_dom.dom.src import ext as extension
 
 # Tag attributes
 _ATTR_GLOBAL = set(

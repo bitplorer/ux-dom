@@ -30,7 +30,7 @@ from ux_dom.dom.src.concurrency import multi_tree_lock
 from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.html_string import defHTML
 from ux_dom.dom.src.utils.dom_util import raw
-from ux_dom.dom.src.main import extension
+from ux_dom.dom.src import ext as extension
 from ux_dom.utils.parameters import Parameters
 
 __all__ = ["Component", "ReactiveComponent", "Fragment", "MergeClassAttribute"]

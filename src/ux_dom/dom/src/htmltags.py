@@ -12,7 +12,7 @@ import re
 
 from ux_dom.dom.src.dom_tag import _NAMESPACE_MEMO
 from ux_dom.dom.src.ext import _ascii_lower, _element_name
-from ux_dom.dom.src.main import extension
+from ux_dom.dom.src import ext as extension
 from ux_dom.dom.src.utils.dom_util import (
     _RCDATA_ELEMENTS,
     TEXT_STATE_ELEMENTS,
@@ -20,14 +20,6 @@ from ux_dom.dom.src.utils.dom_util import (
     checked_doctype,
     neutralize_raw_text,
 )
-
-try:
-    basestring = basestring
-except NameError:  # py3
-    basestring = str
-    unicode = str
-
-underscored_classes = set(["del", "input", "map", "object"])
 
 # Tag attributes
 _ATTR_GLOBAL = set(
@@ -164,7 +156,6 @@ __all__ = [
     "dfn",
     "abbr",
     "time_",
-    "_time",
     "code",
     "var",
     "samp",
@@ -184,12 +175,10 @@ __all__ = [
     "wbr",
     "ins",
     "del_",
-    "_del",
     "img",
     "iframe",
     "embed",
     "object_",
-    "_object",
     "param",
     "video",
     "audio",
@@ -197,7 +186,6 @@ __all__ = [
     "track",
     "canvas",
     "map_",
-    "_map",
     "area",
     "table",
     "caption",
@@ -214,7 +202,6 @@ __all__ = [
     "legend",
     "label",
     "input_",
-    "_input",
     "button",
     "select",
     "datalist",
@@ -352,7 +339,7 @@ class title(html_tag):
     """
 
     def _get_text(self):
-        return "".join(self._find(basestring))
+        return "".join(self._find(str))
 
     def _set_text(self, text):
         self._clear()
@@ -1136,8 +1123,6 @@ class time_(html_tag):
     pass
 
 
-_time = time_
-
 
 class code(html_tag):
     """
@@ -1340,8 +1325,6 @@ class del_(html_tag):
     pass
 
 
-_del = del_
-
 
 # Embedded content
 class img(html_tag):
@@ -1379,8 +1362,6 @@ class object_(html_tag):
 
     pass
 
-
-_object = object_
 
 
 class param(html_tag):
@@ -1445,8 +1426,6 @@ class map_(html_tag):
 
     pass
 
-
-_map = map_
 
 
 class area(html_tag):
@@ -1598,8 +1577,6 @@ class input_(html_tag):
 
     is_single = True
 
-
-_input = input_
 
 
 class button(html_tag):
