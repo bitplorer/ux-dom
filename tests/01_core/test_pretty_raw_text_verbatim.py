@@ -88,12 +88,11 @@ def test_script_template_literal_exact():
     )
 
 
-def test_no_newline_after_a_pre_or_textarea_start_tag():
-    # HTML drops one newline right after <pre>, <textarea> and <listing>, so
-    # an added one would hide; none is added, the author's own is kept.
+def test_pretty_adds_no_layout_after_a_pre_or_textarea_start_tag():
+    # Only a body that starts with an LF gets one more, which HTML drops (#127).
     assert str(pre(span("a"), span("b"))) == "<pre><span>a</span><span>b</span></pre>"
-    assert str(textarea("\nx")) == "<textarea>\nx</textarea>"
-    assert str(pre("\n\nx")) == "<pre>\n\nx</pre>"
+    assert str(textarea("\nx")) == "<textarea>\n\nx</textarea>"
+    assert str(pre("\n\nx")) == "<pre>\n\n\nx</pre>"
 
 
 @pytest.mark.parametrize(

@@ -42,8 +42,10 @@ The body of a raw text or preformatted element (`script`, `style`,
 it, with no added newline or indent: there whitespace is a JS template
 literal, a CSS string, a form value or preformatted text. The element is
 matched by the name its start tag writes, as the parser matches it, and the
-subtree below it is flat. Inside `<svg>` / `<math>` the CDATA body of
-`script` / `style` is the same as flat too. Only the layout around the
+subtree below it is flat. Every render (pretty or flat) writes one extra LF
+after a `pre`, `listing` or `textarea` start tag when the body starts with an
+LF, because the HTML parser drops that one (#127). Inside `<svg>` / `<math>`
+the CDATA body of `script` / `style` is the same as flat too. Only the layout around the
 element is pretty (`tests/06_browser/test_pretty_raw_text_browser.py`).
 
 ## Modes

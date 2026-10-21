@@ -47,6 +47,7 @@
    "tests/01_core/test_discovered_edges.py",
    "tests/01_core/test_escape_single_quote.py",
    "tests/01_core/test_find_lazy_membership.py",
+   "tests/01_core/test_first_line_feed.py",
    "tests/01_core/test_full_mro_behaviour_integration.py",
    "tests/01_core/test_host_path_coverage.py",
    "tests/01_core/test_input_value_regressions.py",

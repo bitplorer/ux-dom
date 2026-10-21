@@ -2,6 +2,7 @@
  "ux_dom.dom.src.parse_html": {
   "consumers": [
    "tests/01_core/test_builtin_mro_behaviour.py",
+   "tests/01_core/test_first_line_feed.py",
    "tests/01_core/test_full_mro_behaviour_integration.py",
    "tests/01_core/test_host_path_coverage.py",
    "tests/01_core/test_parse_whitespace.py",
@@ -45,7 +46,9 @@
   },
   "imports_internal": {
    "function_level": [],
-   "module_level": [],
+   "module_level": [
+    "ux_dom.dom.src.utils.dom_util"
+   ],
    "type_checking": []
   },
   "is_public": true,

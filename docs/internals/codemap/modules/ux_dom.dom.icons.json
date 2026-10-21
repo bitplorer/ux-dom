@@ -25,6 +25,7 @@
    "tests/01_core/test_custom_elements_auth_complex.py",
    "tests/01_core/test_discovered_edges.py",
    "tests/01_core/test_find_lazy_membership.py",
+   "tests/01_core/test_first_line_feed.py",
    "tests/01_core/test_full_mro_behaviour_integration.py",
    "tests/01_core/test_input_value_regressions.py",
    "tests/01_core/test_membership_contract.py",

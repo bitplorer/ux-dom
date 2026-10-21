@@ -7,10 +7,11 @@ the input and the render; the DOM it builds (``innerHTML``), the text it shows
 
 Each sanitizer render is also compared with Chromium's ``innerHTML`` of the
 input as a string. (The parser's own AST re-emits its source, so markup-like
-text in a ``textarea`` stays unescaped there.) The one allowed difference: a text node in ``pre`` / ``textarea`` /
-``listing`` holds the body as written, so the newline that the browser drops
-right after the start tag is still there. Rendering it is what keeps the next
-newline (``<pre>\\n\\nx``), which Chromium's own serialization loses.
+text in a ``textarea`` stays unescaped there.) The one allowed difference: the
+parser drops the LF right after a ``pre`` / ``textarea`` / ``listing`` start
+tag, as the browser does, and the render writes one more before a body that
+still starts with an LF (#127). That is what keeps the body's own LF
+(``<pre>\\n\\nx``), which Chromium's own serialization loses.
 Exact strings: ``tests/01_core/test_parse_whitespace.py``.
 """
 
@@ -57,6 +58,10 @@ CORPUS = [
     "<textarea>  <b>x</b>  &amp; </textarea>",
     "<listing>\n\n  a\n\tb\n</listing>",
     "<listing>\r\n x</listing>",
+    # #127: a reference to an LF is dropped too; a stray end tag comes first.
+    "<pre>&#10;x</pre>",
+    "<textarea>&NewLine;\nx</textarea>",
+    "<pre></b>\nx</pre>",
     "a <b>x</b> c",
     "a\n<b>x</b>\nc",
     "<p>a\n<b>x</b>\n<i>y</i></p>",

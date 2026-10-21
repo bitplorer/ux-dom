@@ -4,6 +4,7 @@
    "docs/reference/DOCUMENT.md",
    "examples/ux_kit/app/document.py",
    "examples/xelement_kit/app/document.py",
+   "tests/01_core/test_first_line_feed.py",
    "tests/01_core/test_pretty_raw_text_verbatim.py",
    "tests/01_core/test_raw_text_elements.py",
    "tests/02_document_plugins/test_document_plugins.py",

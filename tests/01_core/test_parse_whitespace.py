@@ -23,7 +23,7 @@ SOURCES = [
     "<pre>\n\n  a\tb  \n</pre>",
     "<pre>a\r\nb\rc\r\n</pre>",
     "<textarea>\n\n x  \t y\n\n</textarea>",
-    "<listing>\n  a\n\tb\n</listing>",
+    "<listing>\n\n  a\n\tb\n</listing>",
     "a\n<b>x</b>\nc",
     "<ul>\n  <li>a</li>\n  <li>b</li>\n</ul>",
     "<script>if (a  <  2) {\r\n\t}\r</script>",
@@ -42,9 +42,10 @@ SANITIZED = [
     # Preformatted bodies, as written.
     ("<pre>\n\n  a\tb  \n</pre>", "<pre>\n\n  a\tb  \n</pre>"),
     ("<pre><b>x</b>  <i>y</i>\n  z</pre>", "<pre><b>x</b>  <i>y</i>\n  z</pre>"),
-    ("<textarea>\n x \n</textarea>", "<textarea>\n x \n</textarea>"),
+    # The LF right after the start tag is not text (#127).
+    ("<textarea>\n x \n</textarea>", "<textarea> x \n</textarea>"),
     ("<textarea>  <b>x</b>  </textarea>", "<textarea>  &lt;b&gt;x&lt;/b&gt;  </textarea>"),
-    ("<listing>\n  a\n\tb\n</listing>", "<listing>\n  a\n\tb\n</listing>"),
+    ("<listing>\n  a\n\tb\n</listing>", "<listing>  a\n\tb\n</listing>"),
     # CRLF and a lone CR are LF, as in the browser.
     ("<textarea>a\r\nb\rc\r\n</textarea>", "<textarea>a\nb\nc\n</textarea>"),
     ("<p>a\r\n<b>b</b>\rc</p>", "<p>a\n<b>b</b>\nc</p>"),

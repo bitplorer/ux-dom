@@ -153,6 +153,13 @@ TEXT_STATE_ELEMENTS = _RCDATA_ELEMENTS | {
 VERBATIM_ELEMENTS = TEXT_STATE_ELEMENTS | {
     "script", "style", "plaintext", "pre", "listing",
 }
+# The HTML parser drops one LF right after these start tags (§13.2.6.4.7),
+# written or as a character reference: a body that starts with either needs
+# one more LF in front.
+FIRST_LF_DROPPED = frozenset({"pre", "listing", "textarea"})
+LEADING_LF = re.compile(
+    r"\n|&#0*10(?![0-9])|&#[xX]0*[aA](?![0-9a-fA-F])|&NewLine;", re.ASCII
+)
 # The tokenizer folds ASCII case only, so ``re.A``.
 _TEXT_STATE_END = {
     name: re.compile("</" + name, re.I | re.A) for name in TEXT_STATE_ELEMENTS

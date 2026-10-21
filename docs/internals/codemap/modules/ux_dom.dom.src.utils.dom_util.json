@@ -5,6 +5,7 @@
    "docs/security/ATTRIBUTES.md",
    "examples/xelement_kit/app/routes/jinja.py",
    "tests/01_core/test_escape_single_quote.py",
+   "tests/01_core/test_first_line_feed.py",
    "tests/01_core/test_host_path_coverage.py",
    "tests/01_core/test_pretty_inline_text.py",
    "tests/01_core/test_public_dom_seam.py",
@@ -49,6 +50,7 @@
     "ux_dom.dom.src.ext",
     "ux_dom.dom.src.html_string",
     "ux_dom.dom.src.htmltags",
+    "ux_dom.dom.src.parse_html",
     "ux_dom.dom.src.utils",
     "ux_dom.dom.src.ws_rpc"
    ],
