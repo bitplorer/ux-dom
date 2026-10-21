@@ -4,6 +4,11 @@
    {
     "kind": "module",
     "resolved": true,
+    "text": "ux_dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
     "text": "ux_dom.dom"
    },
    {
@@ -84,22 +89,12 @@
    {
     "kind": "module",
     "resolved": true,
-    "text": "ux_dom/dom/src/ws_rpc.py"
-   },
-   {
-    "kind": "module",
-    "resolved": true,
     "text": "ux_dom/dom/uniqueid.py"
    },
    {
     "kind": "module",
     "resolved": true,
     "text": "ux_dom/elements/"
-   },
-   {
-    "kind": "module",
-    "resolved": true,
-    "text": "ux_dom/htmx/"
    },
    {
     "kind": "module",
@@ -140,11 +135,6 @@
     "kind": "module",
     "resolved": true,
     "text": "ux_dom/ui/"
-   },
-   {
-    "kind": "module",
-    "resolved": true,
-    "text": "ux_dom/web_io/"
    }
   ]
  }

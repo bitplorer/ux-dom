@@ -67,7 +67,7 @@
     "decorators": [
      "runtime_checkable"
     ],
-    "doc": "Hypermedia control plane (HTMX, ux-channel, stack, null).",
+    "doc": "Hypermedia control plane (ux-channel, stack, null).",
     "kind": "class",
     "methods": {
      "document_body": {
@@ -91,7 +91,7 @@
       "signature": "(self, request: Any) -> PartialPolicy"
      },
      "wire": {
-      "doc": "Return kwargs safe to splat onto a tag (hx_* or data_channel_*).",
+      "doc": "Return kwargs safe to splat onto a tag (``data-ux-*`` attrs).",
       "kind": "function",
       "signature": "(self, action: Any=None, **kwargs: Any) -> dict[str, Any]"
      }

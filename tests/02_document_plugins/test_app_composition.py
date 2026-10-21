@@ -8,9 +8,8 @@ from tempfile import TemporaryDirectory
 
 from fastapi.testclient import TestClient
 
-from helpers import ScaffoldOptions, create_app
+from helpers import BodyScript, ScaffoldOptions, create_app
 from ux_dom.plugins import App, Csp, XElementRuntime
-from ux_dom.plugins.control import HtmxControl
 from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
 
@@ -18,10 +17,10 @@ from ux_dom.plugins.runtime import XELEMENT_JS_URL
 class TestMultiUse(unittest.TestCase):
     def test_use_many(self):
         set_hub(PluginHub())
-        b = App().use(XElementRuntime(), HtmxControl(cdn=True), Csp())
+        b = App().use(XElementRuntime(), BodyScript(), Csp())
         names = " ".join(b.plugin_summary())
         self.assertIn("ux_dom.xelement", names)
-        self.assertIn("htmx", names)
+        self.assertIn("body_script", names)
         self.assertIn("csp", names)
 
 
@@ -31,7 +30,7 @@ class TestSemantic(unittest.TestCase):
         from fastapi.responses import HTMLResponse
 
         set_hub(PluginHub())
-        b = App(debug=True).xelement().htmx().csp()
+        b = App(debug=True).xelement().csp()
         app = b.build(asgi=FastAPI(title="t", debug=True, default_response_class=HTMLResponse))
         c = TestClient(app)
         self.assertEqual(c.get(XELEMENT_JS_URL).status_code, 200)

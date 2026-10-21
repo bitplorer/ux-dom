@@ -51,7 +51,7 @@ uxdom lint
 
 ```python
 from ux_dom import Document, Component
-from ux_dom import XElement, Htmx, Csp
+from ux_dom import XElement, Csp
 ```
 
 ## Verify

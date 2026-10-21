@@ -121,7 +121,7 @@
    "docs/reference/STACK.md: env `UX_CHANNEL_PATH`"
   ],
   "summary": {
-   "claims": 332,
+   "claims": 323,
    "docs": 76,
    "unresolved": 5
   }
@@ -247,6 +247,14 @@
     ],
     "owner": "ux-compose"
    },
+   "transport": {
+    "keywords": [
+     "rpc",
+     "transport",
+     "websocket"
+    ],
+    "owner": "ux-channel"
+   },
    "wire-codecs": {
     "keywords": [
      "codec",
@@ -335,6 +343,16 @@
      "ux_dom.dom.src.dom_tag:dom_tag.__render__"
     ]
    },
+   "htmx-alpine-attributes": {
+    "modules": [
+     "ux_dom.alpinejs.dataset",
+     "ux_dom.dom.src.ext"
+    ],
+    "symbols": [
+     "ux_dom.alpinejs.dataset:DataSet",
+     "ux_dom.dom.src.ext:Tags.clean_attribute"
+    ]
+   },
    "package-static": {
     "modules": [
      "ux_dom.plugins.package_static",
@@ -398,7 +416,6 @@
    "ux_dom:Csp",
    "ux_dom:Document",
    "ux_dom:Fragment",
-   "ux_dom:Htmx",
    "ux_dom:ReactiveComponent",
    "ux_dom:XElement"
   ]
@@ -456,6 +473,7 @@
  "features": {
   "alpine": {
    "docs": [
+    "docs/reference/HYPERMEDIA.md",
     "docs/reference/XELEMENT.md"
    ],
    "modules": [
@@ -463,14 +481,15 @@
     "ux_dom.alpinejs.dataset",
     "ux_dom.dom.htmlelement"
    ],
-   "purpose": "Alpine.js integration: AlpineElement/AlpineComponent and data-attribute merging helpers.",
+   "purpose": "Alpine.js attribute rendering: AlpineElement/AlpineComponent and the opt-in ux_dom.alpinejs merge helpers (not imported by ux_dom).",
    "symbols": [
     "ux_dom.alpinejs.dataset:DataSet",
     "ux_dom.alpinejs.dataset:MergeAlpineAttributes",
     "ux_dom.dom.htmlelement:AlpineComponent"
    ],
    "tests": [
-    "tests/01_core/test_alpine_dataset_merge.py"
+    "tests/01_core/test_alpine_dataset_merge.py",
+    "tests/07_resilience/test_htmx_alpine_opt_in.py"
    ]
   },
   "channel-bridge": {
@@ -691,23 +710,15 @@
     "docs/reference/HYPERMEDIA.md"
    ],
    "modules": [
-    "ux_dom.htmx",
-    "ux_dom.htmx.middleware",
-    "ux_dom.plugins.control.htmx",
-    "ux_dom.web_io._events"
+    "ux_dom.dom.src.ext"
    ],
-   "purpose": "htmx integration: the Htmx Document control, request details middleware and HtmxRoutes events.",
+   "purpose": "htmx attribute rendering only: hx_* kwargs serialize as hx-* attributes. No htmx script, middleware, routes or transport (ux-channel owns transport).",
    "symbols": [
-    "ux_dom.htmx.middleware:HtmxDetails",
-    "ux_dom.htmx.middleware:HtmxMiddleware",
-    "ux_dom.htmx:HtmxRoutes",
-    "ux_dom.plugins.control.htmx:HtmxControl",
-    "ux_dom:Htmx"
+    "ux_dom.dom.src.ext:Tags.clean_attribute"
    ],
    "tests": [
-    "tests/02_document_plugins/test_htmx_route_and_partial.py",
-    "tests/02_document_plugins/test_htmx_ws_stream.py",
-    "tests/07_resilience/test_htmx_routes_single_name.py"
+    "tests/02_document_plugins/test_hypermedia_surface.py",
+    "tests/07_resilience/test_htmx_alpine_opt_in.py"
    ]
   },
   "package-static": {
@@ -949,27 +960,6 @@
     "tests/07_resilience/test_xelement_ws_url_attrs.py"
    ]
   },
-  "web-io": {
-   "docs": [
-    "docs/internals/MODULE_MAP.md"
-   ],
-   "modules": [
-    "ux_dom.dom.src.ws_rpc",
-    "ux_dom.web_io",
-    "ux_dom.web_io._adapter",
-    "ux_dom.web_io._events",
-    "ux_dom.web_io._protocol"
-   ],
-   "purpose": "Low-level WebSocket adapter, client handler and event managers.",
-   "symbols": [
-    "ux_dom.web_io._adapter:WebSocketAdapter",
-    "ux_dom.web_io._adapter:WebSocketClientHandler",
-    "ux_dom.web_io._protocol:WebSocketProtocol"
-   ],
-   "tests": [
-    "tests/01_core/test_web_io_client_handler.py"
-   ]
-  },
   "xelement-runtime": {
    "assets": [
     "ux_dom/scripts/x_element.js"
@@ -1003,12 +993,10 @@
  },
  "generator": {
   "name": "codemap",
-  "sha256": "b8fc853ee27b634ac463b630ef3935419a136b806f6ee80779eb116753c1dd84",
+  "sha256": "1bbab847a5bef52397c7afdec2f57840aa0469f8e15849902b56183a75e93803",
   "version": "2.0.0"
  },
- "layer_exceptions": [
-  "ux_dom.plugins.control.htmx -> ux_dom.htmx.middleware"
- ],
+ "layer_exceptions": [],
  "layer_graph": {
   "cli": [
    "document",
@@ -1021,8 +1009,7 @@
    "dom"
   ],
   "document": [
-   "dom",
-   "integrations"
+   "dom"
   ],
   "dom": [
    "support"
@@ -1088,7 +1075,6 @@
   "ux_dom.diagnostics": "support",
   "ux_dom.dom": "dom",
   "ux_dom.elements": "components",
-  "ux_dom.htmx": "integrations",
   "ux_dom.plugins": "document",
   "ux_dom.profiling": "support",
   "ux_dom.response": "integrations",
@@ -1096,8 +1082,7 @@
   "ux_dom.settings": "document",
   "ux_dom.slots": "components",
   "ux_dom.ui": "ui",
-  "ux_dom.utils": "support",
-  "ux_dom.web_io": "integrations"
+  "ux_dom.utils": "support"
  },
  "modules": {
   "ux_dom": "root",
@@ -1132,7 +1117,6 @@
   "ux_dom.dom.src.svgtags": "dom",
   "ux_dom.dom.src.utils": "dom",
   "ux_dom.dom.src.utils.dom_util": "dom",
-  "ux_dom.dom.src.ws_rpc": "dom",
   "ux_dom.dom.uniqueid": "dom",
   "ux_dom.elements": "components",
   "ux_dom.elements.booleans": "components",
@@ -1142,13 +1126,10 @@
   "ux_dom.elements.enums": "components",
   "ux_dom.elements.floats": "components",
   "ux_dom.elements.integers": "components",
-  "ux_dom.htmx": "integrations",
-  "ux_dom.htmx.middleware": "integrations",
   "ux_dom.plugins": "document",
   "ux_dom.plugins.contribution": "document",
   "ux_dom.plugins.control": "document",
   "ux_dom.plugins.control.channel": "document",
-  "ux_dom.plugins.control.htmx": "document",
   "ux_dom.plugins.control.null": "document",
   "ux_dom.plugins.csp": "document",
   "ux_dom.plugins.dedupe": "document",
@@ -1210,12 +1191,7 @@
   "ux_dom.ui.toast": "ui",
   "ux_dom.ui.tokens": "ui",
   "ux_dom.utils": "support",
-  "ux_dom.utils.parameters": "support",
-  "ux_dom.web_io": "integrations",
-  "ux_dom.web_io._adapter": "integrations",
-  "ux_dom.web_io._events": "integrations",
-  "ux_dom.web_io._protocol": "integrations",
-  "ux_dom.web_io._types": "integrations"
+  "ux_dom.utils.parameters": "support"
  },
  "narrative_docs": [
   "docs/internals/ARCHITECTURE.md",

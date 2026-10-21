@@ -15,7 +15,7 @@ guesswork and the ASGI host stays debuggable:
 │    head/body · .use(runtimes) · page()                   │
 ├─────────────────────────────────────────────────────────┤
 │  Runtimes                                                │
-│    XElement  Htmx  Csp                                   │
+│    XElement  Csp  Channel                                │
 ├─────────────────────────────────────────────────────────┤
 │  Core DOM                                                │
 │    Component · tags · render · with / async with         │
@@ -55,7 +55,6 @@ app, asgi, bundle = build(
 | Runtime | Head | Body | On product serve |
 |---------|------|------|------------------|
 | **XElement** | `x_element.js` script | — | `/ux-dom/static/…` |
-| **Htmx** | — | CDN/local scripts | optional middleware |
 | **Csp** | — | — | CSP middleware + nonce |
 
 ## Two-stage Document
@@ -64,7 +63,7 @@ See [DOCUMENT.md](../reference/DOCUMENT.md) and [DOCUMENT_TWO_STAGE.md](../refer
 
 ```text
 <head>  [call-time head]  then  [common_head / runtimes]
-<body>  content  [call-time body]  placeholders  [common_body / HTMX]
+<body>  content  [call-time body]  placeholders  [common_body]
 ```
 
 ## Implementation map

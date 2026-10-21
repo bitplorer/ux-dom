@@ -11,7 +11,7 @@ ux-channel own the integration examples ([ADR 0003](../docs/adr/0003-layer-bound
 
 | App | Path | Stack | Port |
 |-----|------|-------|------|
-| Realtime kit | [`ux_dom_only/realtime_kit`](ux_dom_only/realtime_kit/) | SSE, WebSocketAdapter, streaming HTML | 8092 |
+| Realtime kit | [`ux_dom_only/realtime_kit`](ux_dom_only/realtime_kit/) | SSE, streaming HTML | 8092 |
 | XElement kit | [`xelement_kit`](xelement_kit/) | Light/Shadow DOM, HTMX, Alpine, slots | 8080 |
 | UI kit gallery | [`ux_kit`](ux_kit/) | `ux_dom.ui` components | 8080 |
 
@@ -20,9 +20,7 @@ ux-channel own the integration examples ([ADR 0003](../docs/adr/0003-layer-bound
 | Capability | realtime_kit |
 |------------|:---:|
 | Components / Document | ✓ |
-| HTMX partials / middleware | ✓ |
 | SSE | ✓ |
-| WebSocket (ux_dom adapter) | ✓ |
 | StreamingResponse | ✓ |
 
 ## Run

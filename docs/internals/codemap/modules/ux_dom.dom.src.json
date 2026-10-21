@@ -9,6 +9,7 @@
    "tests/07_resilience/test_comment_end.py",
    "tests/07_resilience/test_f18_directory_router_absent.py",
    "tests/07_resilience/test_foreign_breakout.py",
+   "tests/07_resilience/test_htmx_alpine_opt_in.py",
    "tests/07_resilience/test_no_deprecations.py",
    "tests/07_resilience/test_py2_residue_absent.py",
    "tests/07_resilience/test_raw_string_sinks.py",

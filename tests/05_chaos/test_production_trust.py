@@ -30,7 +30,6 @@ from ux_dom.dom.src.concurrency import tree_lock_for
 from ux_dom.dom.src.ext import PlaceholderTag, StyleTags, Tags
 from ux_dom.dom.src.html_string import defHTML
 from ux_dom.dom.uniqueid import uniqueid
-from ux_dom.plugins.control import HtmxControl, NullControl
 from ux_dom.plugins.csp import build_csp_header, generate_nonce
 from ux_dom.response import HTMLResponse, StreamingResponse
 
@@ -266,16 +265,10 @@ class TestDocumentResponseTrust(unittest.TestCase):
         self.assertIn(b"stream-ok", asyncio.run(consume()))
 
 
-class TestFragmentControlUidTrust(unittest.TestCase):
+class TestFragmentUidTrust(unittest.TestCase):
     def test_fragment_unique_id(self):
         f = Fragment(span("a"), span("b"), id="once")
         self.assertEqual(f.__render__(pretty=False).count('id="once"'), 1)
-
-    def test_htmx_control_sse(self):
-        body = "".join(str(x) for x in HtmxControl(version="2.0.4", sse=True).document_body())
-        self.assertIn("htmx.org", body)
-        self.assertIn("htmx-ext-sse", body)
-        self.assertEqual(NullControl().wire(), {})
 
     def test_uniqueid_load(self):
         ids = [uniqueid() for _ in range(2000)]

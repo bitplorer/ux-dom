@@ -3,8 +3,6 @@
 Does not import ux_channel. Live transport is attached separately via
 ``UxChannelRuntime`` / compose ``use_channel``. This plugin only owns
 tag attrs so product code stays host-agnostic: ``control("shop.add")``.
-
-HTMX remains a separate opt-in ControlPlugin (``HtmxControl``).
 """
 from __future__ import annotations
 

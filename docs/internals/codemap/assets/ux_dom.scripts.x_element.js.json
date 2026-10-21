@@ -64,7 +64,6 @@
    "ux_dom.cli.lint",
    "ux_dom.diagnostics",
    "ux_dom.dom.htmlelement",
-   "ux_dom.dom.src.ws_rpc",
    "ux_dom.plugins.contribution",
    "ux_dom.plugins.runtime",
    "ux_dom.scripts",

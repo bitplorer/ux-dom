@@ -66,7 +66,7 @@ class HmrPlugin(Protocol):
 
 @runtime_checkable
 class ControlPlugin(Protocol):
-    """Hypermedia control plane (HTMX, ux-channel, stack, null).
+    """Hypermedia control plane (ux-channel, stack, null).
 
     Isolates Intent/partial policy / client scripts from core markup.
     """
@@ -78,7 +78,7 @@ class ControlPlugin(Protocol):
     def document_body(self) -> Sequence[Any]: ...
 
     def wire(self, action: Any = None, **kwargs: Any) -> dict[str, Any]:
-        """Return kwargs safe to splat onto a tag (hx_* or data_channel_*)."""
+        """Return kwargs safe to splat onto a tag (``data-ux-*`` attrs)."""
         ...
 
     def partial_policy(self, request: Any) -> PartialPolicy: ...

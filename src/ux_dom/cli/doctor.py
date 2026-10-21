@@ -203,7 +203,7 @@ def run_doctor(*, cwd: Optional[Path] = None) -> DoctorReport:
                     (
                         "Document shell present (Document + .use)"
                         if has_shell
-                        else "prefer Document(...).use(XElement(), Htmx())"
+                        else "prefer Document(...).use(XElement())"
                     ),
                     "warn" if not has_shell else "info",
                 )

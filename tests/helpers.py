@@ -199,3 +199,22 @@ def scaffolded_app(
             )
         )
         yield root
+
+
+class BodyScript:
+    """Minimal body-placed Document runtime: one ``<script src>`` in common_body."""
+
+    plugin_kind = "contribution"
+    name = "body_script"
+    src = "https://cdn.example/lib.js"
+
+    def artifacts(self):
+        return ()
+
+    def document_head(self):
+        return ()
+
+    def document_body(self):
+        from ux_dom.dom import script
+
+        return (script(src=self.src),)

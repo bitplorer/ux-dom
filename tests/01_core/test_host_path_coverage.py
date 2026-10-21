@@ -107,9 +107,9 @@ class TestStyleTokensFunctional(unittest.TestCase):
 class TestDocumentAndPaths(unittest.TestCase):
     def test_using_and_mount(self):
         from ux_dom import Document
-        from ux_dom import Htmx
+        from ux_dom import XElement
 
-        d = Document(ensure_csrf_token=False).using(Htmx(cdn=True))
+        d = Document(ensure_csrf_token=False).using(XElement())
         self.assertTrue(d.runtimes())
         d.mount(FastAPI())
 

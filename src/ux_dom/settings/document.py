@@ -9,7 +9,7 @@ Architecture
 ::
 
     document = Document(head=…, body=[])
-    document.use(XElement(), Htmx(), Csp.auto())   # runtimes → tags + mount hooks
+    document.use(XElement(), Csp.auto())           # runtimes → tags + mount hooks
     app = FastAPI(...)
     document.mount(app)                            # static + middleware from runtimes
             │
@@ -92,7 +92,7 @@ class Document(object):
           *content              ← page components
           [B] call-time body    ← page-only body assets
           placeholders          ← Body / XElement definition slots
-          [A] common_body       ← shared end-of-body scripts (HTMX, …)
+          [A] common_body       ← shared end-of-body scripts
         </body>
 
     So shared scripts that must run **after** content belong in **init body**
@@ -107,9 +107,9 @@ class Document(object):
     ``ctx`` includes ``nonce`` (from CSP middleware), ``document``, and kwargs.
     Runtimes attach on the **instance** (``document.use``), not the class::
 
-        document = Document(head=[...]).use(XElement(), Htmx())  # shared shell
-        document.using(Alpine())(*page)  # page-only extra, does not mutate shared
-        document(*page, use=[Alpine()])  # same idea at call time
+        document = Document(head=[...]).use(XElement())  # shared shell
+        document.using(Channel.optional())(*page)  # page-only, shared untouched
+        document(*page, use=[Channel.optional()])  # same idea at call time
 
     Runtimes always feed **common_** head/body (stage A), never call-time lists.
     """
@@ -342,7 +342,7 @@ class Document(object):
         Not part of head/body placement. For each attached runtime:
 
         1. ``served_files()`` → allowlisted static routes (``/ux-dom/static/…``)
-        2. ``mount(app)`` → middleware (CSP, HTMX, …)
+        2. ``mount(app)`` → middleware (CSP, …)
 
         Call once after ``FastAPI()`` is created. See ``docs/guides/DOCUMENT.md``.
         """

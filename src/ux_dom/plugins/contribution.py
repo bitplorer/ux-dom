@@ -16,11 +16,10 @@ Anything that affects the **browser surface** of a ux-dom app is a Contribution:
 **Optional:** ``App.use(plugin)`` → ``PluginHub`` for tests/hubs. Document can
 merge hub tags only if ``include_runtimes=True`` (not the default path).
 
-CDN scripts are still Contributions (empty artifacts, tags in body)::
+Runtimes attach in order::
 
     document = Document(head=[], body=[]).use(
         XElement(),          # ships + injects x_element.js
-        Htmx(cdn=True),      # CDN script
         Channel.optional(),  # companion package when installed
         Csp.auto(),
     )

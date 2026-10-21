@@ -15,7 +15,7 @@ Stage order (``render``)::
       [B] call-time body
       Body placeholder
       XElement definitions slot  (auto-filled at pre_render)
-      [A] common_body            (HTMX, …)
+      [A] common_body            (runtime scripts)
     </body>
 
 Authors place **hosts** only; ``_collect_xelement_definitions`` dedupes

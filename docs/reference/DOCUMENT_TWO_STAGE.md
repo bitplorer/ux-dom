@@ -21,7 +21,7 @@ Your original design is intentional, not accidental:
   *content
   [B] call body      ← page-only scripts
   placeholders
-  [A] common body    ← HTMX and other “run after content” scripts
+  [A] common body    ← “run after content” scripts
 </body>
 ```
 
@@ -33,7 +33,7 @@ Your original design is intentional, not accidental:
 | Nonce on **script tags** | Stamped at **call time** on both stages when nonce is set |
 | Extra CSP **meta** / debug tag | Callable in the list for that position |
 | XElement / channel scripts | Stage A **head** (common_head) via `.use(XElement())` |
-| HTMX | Stage A **body** (common_body) via `.use(Htmx())` — after content |
+| “Run after content” scripts | Stage A **body** (common_body) via `Document(body=[…])` |
 | Page title | Stage B **head** |
 
 ```python
@@ -44,7 +44,7 @@ Document(
         lambda ctx: meta(name="x-nonce", content=ctx["nonce"]) if ctx["nonce"] else None,
     ],
     body=[],
-).use(XElement(), Htmx(), Csp())
+).use(XElement(), Csp())
 
 document(
     page_component,
@@ -66,12 +66,12 @@ call-time-first ordering. ux-dom keeps four streams and lets HtmlDocument place 
 | API | Mutates shared shell? | When |
 |-----|----------------------|------|
 | **`document.use(XElement())`** | Yes | App-wide on the module-level instance |
-| **`document.using(Alpine())`** | No (returns copy) | One page needs extra runtimes |
-| **`document(*c, use=[Alpine()])`** | No | Same as using, at call time |
+| **`document.using(Channel.optional())`** | No (returns copy) | One page needs extra runtimes |
+| **`document(*c, use=[Channel.optional()])`** | No | Same as using, at call time |
 
 ```python
 # app/document.py
-document = Document(head=[...]).use(XElement(), Htmx())
+document = Document(head=[...]).use(XElement())
 
 # most pages
 return document(page, head=[title("Home")])

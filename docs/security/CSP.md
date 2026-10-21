@@ -167,7 +167,7 @@ Hosts **do** apply. CDNs in `script_hosts` are real allowlists.
 `uxcompose create-app` wires CSP on the Document shell (`Csp.auto()  # unset DEBUG → prod; DEBUG=1 → dev`).
 Pure Document::
 
-    document.use(XElement(), Htmx(...), Csp.auto())
+    document.use(XElement(), Csp.auto())
 
 | DEBUG | Policy |
 |-------|--------|

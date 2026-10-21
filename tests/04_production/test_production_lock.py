@@ -14,7 +14,7 @@ from __future__ import annotations
 import unittest
 import ux_dom
 from ux_dom import Document
-from ux_dom import XElement, Htmx, Csp
+from ux_dom import XElement, Csp
 from ux_dom.plugins.runtime import UxChannelRuntime, XELEMENT_JS_URL
 from ux_dom.scripts import x_element_js_text
 
@@ -28,7 +28,7 @@ class TestBrandAndVersion(unittest.TestCase):
 
 class TestDocumentRuntimes(unittest.TestCase):
     def test_document_use_core_runtimes(self):
-        doc = Document(head=[], body=[]).use(XElement(), Htmx(), Csp.auto())
+        doc = Document(head=[], body=[]).use(XElement(), Csp.auto())
         html = str(doc) if hasattr(doc, "__str__") else None
         # at least constructs
         self.assertIsNotNone(doc)

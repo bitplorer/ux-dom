@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import unittest
 
+from helpers import BodyScript
 from ux_dom.dom import script
 from ux_dom.plugins import App, XElementRuntime, shell_fragments
-from ux_dom.plugins.control import HtmxControl
 from ux_dom.plugins.dedupe import dedupe_dom_nodes, extract_script_srcs, resource_key
 from ux_dom.plugins.hub import PluginHub
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
@@ -62,13 +62,12 @@ class TestHubShellDedupe(unittest.TestCase):
 
     def test_app_use_order_single_each(self):
         builder = (
-            App().use(XElementRuntime()).use(HtmxControl(cdn=True, version="2.0.4"))
+            App().use(XElementRuntime()).use(BodyScript())
         )
         head, body = builder.shell_fragments()
         srcs = extract_script_srcs(*head, *body)
         self.assertEqual(srcs.count(XELEMENT_JS_URL), 1)
-        htmx = [s for s in srcs if "htmx.org" in s]
-        self.assertEqual(len(htmx), 1)
+        self.assertEqual(srcs.count("https://cdn.example/lib.js"), 1)
 
 
 if __name__ == "__main__":

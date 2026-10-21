@@ -1787,7 +1787,7 @@ def _one_line(text: str) -> bool:
 
 
 def _words(identifier: str) -> list[str]:
-    """``HtmxRoutes`` / ``intent_codec`` -> lower-case words."""
+    """``ChannelControl`` / ``intent_codec`` -> lower-case words."""
     spaced = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", identifier)
     return [w.lower() for w in re.split(r"[\s_]+", spaced) if w]
 

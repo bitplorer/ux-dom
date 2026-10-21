@@ -4,7 +4,6 @@
    "docs/reference/API_SURFACE.md",
    "docs/security/ASSETS.md",
    "docs/security/CSP.md",
-   "examples/ux_kit/app/main.py",
    "examples/xelement_kit/app/document.py",
    "examples/xelement_kit/app/main.py",
    "tests/01_core/test_host_path_coverage.py",

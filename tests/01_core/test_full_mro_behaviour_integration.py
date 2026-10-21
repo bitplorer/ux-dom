@@ -17,7 +17,6 @@ from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.ext import Tags, StyleTags
 from ux_dom.dom.src.parse_html import tokenize_html
 from ux_dom.dom.uniqueid import uniqueid
-from ux_dom.web_io import HtmxEvents
 
 SKIP = {
     "__init__",
@@ -163,11 +162,6 @@ class TestSharedProtocolParams(unittest.TestCase):
         ):
             sig = inspect.signature(cls._render)
             self.assertIn("_seen", sig.parameters)
-
-    def test_htmx_events_get_events_is_method(self):
-        h = HtmxEvents()
-        self.assertTrue(callable(h.get_events))
-        self.assertEqual(h.get_events("hx-get"), {})
 
     def test_html_parser_param_names(self):
         from html.parser import HTMLParser

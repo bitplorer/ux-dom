@@ -37,11 +37,11 @@ Product apps::
 
 Pure document (no product host)::
 
-    from ux_dom import Document, Component, XElement, Htmx, Csp
+    from ux_dom import Document, Component, XElement, Csp
     from ux_dom.dom import div
 
     document = Document(head=[], body=[]).use(
-        XElement(), Htmx(), Csp.auto()
+        XElement(), Csp.auto()
     )
 
 See ``docs/internals/SYSTEM.md`` and ux-compose FLOW:
@@ -59,7 +59,6 @@ from ux_dom.dom.src.component import (  # noqa: E402
 )
 # Document-facing facades: aliases over plugin implementations (no logic).
 # ``Channel`` is the Document plugin, NOT ``ux_channel.Channel`` (action plane).
-from ux_dom.plugins.control import HtmxControl as Htmx  # noqa: E402, F401
 from ux_dom.plugins.csp import Csp as Csp  # noqa: E402
 from ux_dom.plugins.runtime import UxChannelRuntime as Channel  # noqa: E402, F401
 from ux_dom.plugins.runtime import XElementRuntime as XElement  # noqa: E402, F401

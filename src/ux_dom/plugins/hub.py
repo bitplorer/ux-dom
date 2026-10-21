@@ -172,7 +172,7 @@ class App:
 
     ``App`` only registers *what* plugins exist (hub). Prefer::
 
-        document = Document(...).use(XElement(), Htmx(), Csp.auto())
+        document = Document(...).use(XElement(), Csp.auto())
         app = FastAPI(...); document.mount(app)
         # or: document.mount(fastapi_app)
 
@@ -265,13 +265,6 @@ class App:
         from ux_dom.plugins.runtime import UxChannelRuntime
 
         return self.use(UxChannelRuntime.optional(**kwargs))
-
-    def htmx(self, **kwargs: Any) -> "App":
-        from ux_dom.plugins.control import HtmxControl
-
-        kwargs.setdefault("middleware", True)
-        kwargs.setdefault("version", "2.0.4")
-        return self.use(HtmxControl(**kwargs))
 
     def csp(self, **kwargs: Any) -> "App":
         """CSP nonces via middleware — see ``docs/security/CSP.md``."""

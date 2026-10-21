@@ -46,11 +46,11 @@ uxcompose serve dev app:asgi --port 8080
 
 ```python
 from ux_dom import Document
-from ux_dom import XElement, Htmx, Csp
+from ux_dom import XElement, Csp
 from ux_dom.dom import div, h1
 
 document = Document(head=[], body=[]).use(
-    XElement(), Htmx(), Csp.auto()
+    XElement(), Csp.auto()
 )
 html = document(div(h1("Hi"))).__render__()
 ```

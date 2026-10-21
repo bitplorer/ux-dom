@@ -11,7 +11,6 @@ from starlette.responses import Response
 
 from ux_dom import Component, Document
 from ux_dom.dom import div, span, button, script, h1, p
-from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.response.starlette import HTMLResponse, StreamingResponse
 
 
@@ -30,7 +29,6 @@ class TickerPage(Component):
 
 def create_app() -> FastAPI:
     app = FastAPI(title="ux_dom-sse")
-    app.add_middleware(HtmxMiddleware)
     doc = Document(ensure_csrf_token=False)
 
     @app.get("/")

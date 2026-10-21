@@ -63,12 +63,11 @@ See [INSTALL.md](INSTALL.md) and [docs/INSTALL.md](docs/INSTALL.md).
 
 ```python
 from ux_dom import Document, Component
-from ux_dom import XElement, Htmx, Csp
+from ux_dom import XElement, Csp
 from ux_dom.dom import div, h1
 
 document = Document(head=[], body=[]).use(
     XElement(),
-    Htmx(),
     Csp.auto(),
 )
 
@@ -148,7 +147,7 @@ Typical imports (see `ux_dom/__init__.py` and [docs/reference/API_SURFACE.md](do
 |--------|------|
 | `Document` | HTML head/body SSoT; `.use(...)` for control, runtime, CSP |
 | `Component`, `Fragment`, `ReactiveComponent` | Build trees |
-| `XElement`, `Htmx`, `Csp` | Optional runtimes / nonce CSP |
+| `XElement`, `Csp` | Optional runtime / nonce CSP |
 | `ux_dom.dom` (`div`, `h1`, …) | Tag constructors |
 | `ux_dom.ui` | Optional copy-in UI kit |
 | CLI `uxdom` | `ux_dom.cli:app` |

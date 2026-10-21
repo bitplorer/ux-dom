@@ -19,11 +19,7 @@ from ux_dom.dom.src.dom_tag import get_current
 from ux_dom.dom.src.ext import Tags, StyleTags
 from ux_dom.dom.src.parse_html import tokenize_html
 from ux_dom.dom.uniqueid import uniqueid
-from ux_dom.htmx import HtmxRoutes
-from ux_dom.htmx.middleware import HtmxMiddleware
-from ux_dom.plugins.control import NullControl
 from ux_dom.response.starlette import StreamingResponse
-from ux_dom.web_io import HtmxEvents, WebSocketAdapter, WebSocketEvents
 
 
 class Card(Component):
@@ -101,12 +97,6 @@ class TestIntentContracts(unittest.TestCase):
         self.assertIn("cycle", out)
         self.assertLess(len(out), 500)
 
-    def test_htmx_events_method(self):
-        h = HtmxEvents()
-        self.assertTrue(callable(h.get_events))
-        self.assertEqual(h.get_events("hx-get"), {})
-
-
 class TestChaos(unittest.TestCase):
     def test_concurrent_cards(self):
         def work(i):
@@ -156,7 +146,6 @@ class TestChaos(unittest.TestCase):
 
     def test_streaming_load(self):
         app = FastAPI(default_response_class=HTMLResponse)
-        app.add_middleware(HtmxMiddleware)
 
         @app.get("/s")
         def s():
@@ -210,7 +199,7 @@ class TestEdges(unittest.TestCase):
             copy.deepcopy(root).__render__(pretty=False),
         )
 
-    def test_attr_bool_parse_merge_ws(self):
+    def test_attr_bool_parse_merge(self):
         child = div()
         child["data-x"] = ""
         self.assertTrue(div(child).get(div, data_x=None))
@@ -228,69 +217,6 @@ class TestEdges(unittest.TestCase):
         a = div(span("x", id="x"))
         x = a.get(id="x")[0]
         self.assertNotIn(x, div())
-
-        events = WebSocketEvents()
-
-        class Box:
-            def __init__(self):
-                self.n = 0
-
-        adapter = WebSocketAdapter(Box, events)
-
-        class Fake:
-            pass
-
-        async def ws():
-            socks = [Fake() for _ in range(20)]
-            insts = await asyncio.gather(*[adapter.ensure_instance(s) for s in socks])
-            for i, inst in enumerate(insts):
-                inst.n = i
-            self.assertTrue(
-                all(adapter._instance_for(socks[i]).n == i for i in range(20))
-            )
-            for s in socks:
-                adapter.release_instance(s)
-            self.assertEqual(len(adapter._instances), 0)
-
-        asyncio.run(ws())
-
-    def test_htmx_decorator_and_null_control(self):
-        class API:
-            def __init__(self):
-                self.routes = []
-
-            def _r(self, m):
-                def path(p):
-                    def deco(fn):
-                        self.routes.append((m, p))
-                        return fn
-
-                    return deco
-
-                return path
-
-            def get(self, p):
-                return self._r("GET")(p)
-
-            def post(self, p):
-                return self._r("POST")(p)
-
-            put = patch = delete = post
-
-        api = API()
-        h = HtmxRoutes(api, prefix="/act")
-
-        @h.get
-        def ping():
-            pass
-
-        @h.post
-        def save():
-            pass
-
-        self.assertIn(("GET", "/act/ping"), api.routes)
-        self.assertIn(("POST", "/act/save"), api.routes)
-        self.assertIsNotNone(NullControl())
 
 
 if __name__ == "__main__":

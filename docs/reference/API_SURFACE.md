@@ -22,7 +22,7 @@ Product lifecycle CLI: **`uxcompose`** (`create-app` · `build` · `serve` · `d
 | `__version__` | str | e.g. `"0.2.0"` |
 | `Document` | class | HTML shell SSoT |
 | `Component` / `Fragment` / `ReactiveComponent` | class | Trees |
-| `XElement` / `Htmx` / `Csp` / `Channel` | facades | aliases of `ux_dom.plugins` (`XElementRuntime`, `HtmxControl`, `Csp`, `UxChannelRuntime`) |
+| `XElement` / `Csp` / `Channel` | facades | aliases of `ux_dom.plugins` (`XElementRuntime`, `Csp`, `UxChannelRuntime`) |
 
 `WebAssets` and `TailwindCommand` are not on this package. App folders are `from ux_compose import WebAssets`. CSS minify is `uxcompose build`.
 
@@ -121,7 +121,7 @@ HTTP adapters (`HTMLResponse`, …) stay optional. Product delivery is ux-compos
 ## Document shell
 
 ```python
-document = Document(...).use(XElement(), Htmx(), Csp.auto())
+document = Document(...).use(XElement(), Csp.auto())
 html = str(document(page_content))  # or tree.__render__()
 ```
 

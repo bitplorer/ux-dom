@@ -9,9 +9,8 @@ from tempfile import TemporaryDirectory
 
 from fastapi.testclient import TestClient
 
-from helpers import ScaffoldOptions, create_app
+from helpers import BodyScript, ScaffoldOptions, create_app
 from ux_dom.plugins import App, XElementRuntime, shell_fragments
-from ux_dom.plugins.control import HtmxControl
 from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
 from ux_dom.plugins.safe_static import collect_served_files
@@ -32,11 +31,11 @@ class TestContributionHub(unittest.TestCase):
 
     def test_app_use_order(self):
         builder = (
-            App().use(XElementRuntime()).use(HtmxControl(version="2.0.4", cdn=True))
+            App().use(XElementRuntime()).use(BodyScript())
         )
         head, body = builder.shell_fragments()
         self.assertIn("x_element.js", "".join(str(x) for x in head))
-        self.assertIn("htmx.org", "".join(str(x) for x in body))
+        self.assertIn("cdn.example/lib.js", "".join(str(x) for x in body))
 
     def test_app_owned_js_contribution_is_auto_tagged(self):
         """A contribution's artifacts become shell tags (ux-dom writes no files)."""

@@ -25,7 +25,6 @@
    "standalone/htmx_stream_app/app.py",
    "standalone/mcp_app/app.py",
    "standalone/sse_app/app.py",
-   "standalone/ws_app/app.py",
    "tests/01_core/test_alpine_dataset_merge.py",
    "tests/01_core/test_async_render_parity.py",
    "tests/01_core/test_builtin_mro_behaviour.py",

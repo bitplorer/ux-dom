@@ -54,11 +54,6 @@
    {
     "kind": "import",
     "resolved": true,
-    "text": "ux_dom:Htmx"
-   },
-   {
-    "kind": "import",
-    "resolved": true,
     "text": "ux_dom:XElement"
    },
    {

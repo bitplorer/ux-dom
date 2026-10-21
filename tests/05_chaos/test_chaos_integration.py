@@ -8,16 +8,14 @@ import concurrent.futures
 import threading
 import unittest
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from ux_dom import Component, Document, ReactiveComponent
 from ux_dom.dom import div, span, button
 from ux_dom.dom.src.dom_tag import get_current
 from ux_dom.dom.uniqueid import uniqueid
-from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.response.starlette import StreamingResponse
-from ux_dom.web_io import WebSocketAdapter, WebSocketEvents
 
 
 class Card(Component):
@@ -163,17 +161,12 @@ class TestMembershipChaos(unittest.TestCase):
 
 
 class TestHttpIntegration(unittest.TestCase):
-    def test_streaming_and_htmx_parallel(self):
+    def test_streaming_parallel(self):
         app = FastAPI()
-        app.add_middleware(HtmxMiddleware)
 
         @app.get("/s")
         def s():
             return StreamingResponse(div(*[span(str(i)) for i in range(50)], id="big"))
-
-        @app.get("/h")
-        def h(request: Request):
-            return {"hx": bool(request.state.htmx)}
 
         client = TestClient(app)
 
@@ -181,42 +174,11 @@ class TestHttpIntegration(unittest.TestCase):
             r = client.get("/s")
             return r.status_code == 200 and "49" in r.text
 
-        def hx(_):
-            return client.get("/h", headers={"HX-Request": "true"}).json()["hx"]
-
         with concurrent.futures.ThreadPoolExecutor(16) as ex:
             self.assertTrue(all(ex.map(hit, range(60))))
-            self.assertTrue(all(ex.map(hx, range(60))))
 
 
-class TestWsAndIds(unittest.TestCase):
-    def test_ws_isolation(self):
-        events = WebSocketEvents()
-
-        class Box:
-            def __init__(self):
-                self.n = 0
-
-        adapter = WebSocketAdapter(Box, events)
-
-        class FakeWS:
-            pass
-
-        async def run():
-            sockets = [FakeWS() for _ in range(30)]
-            insts = await asyncio.gather(
-                *[adapter.ensure_instance(ws) for ws in sockets]
-            )
-            for i, inst in enumerate(insts):
-                inst.n = i
-            again = [adapter._instance_for(ws) for ws in sockets]
-            self.assertTrue(all(again[i].n == i for i in range(30)))
-            for ws in sockets:
-                adapter.release_instance(ws)
-            self.assertEqual(len(adapter._instances), 0)
-
-        asyncio.run(run())
-
+class TestIds(unittest.TestCase):
     def test_uniqueid_parallel(self):
         ids = []
         lock = threading.Lock()

@@ -9,16 +9,17 @@ from fastapi.testclient import TestClient
 
 from ux_dom import Document
 from ux_dom.dom import meta, title
-from ux_dom import Csp, Htmx, XElement
+from helpers import BodyScript
+from ux_dom import Csp, XElement
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
 
 
 class TestDocumentUse(unittest.TestCase):
     def test_placement_and_dedupe_name(self):
-        doc = Document(head=[meta(charset="utf-8")]).use(XElement(), Htmx(cdn=True))
+        doc = Document(head=[meta(charset="utf-8")]).use(XElement(), BodyScript())
         h, b = doc.runtime_tags()
         self.assertTrue(any(XELEMENT_JS_URL in str(x) for x in h))
-        self.assertTrue(any("htmx" in str(x) for x in b))
+        self.assertTrue(any("cdn.example/lib.js" in str(x) for x in b))
         doc.use(XElement())  # replace same name
         self.assertEqual(
             sum(1 for r in doc.runtimes() if r.name == "ux_dom.xelement"), 1
@@ -30,7 +31,7 @@ class TestDocumentUse(unittest.TestCase):
 
     def test_mount_and_render(self):
         doc = Document(head=[title("T")]).use(
-            XElement(), Htmx(cdn=True), Csp(debug_header=True)
+            XElement(), BodyScript(), Csp(debug_header=True)
         )
         app = FastAPI(title="t", debug=True)
         doc.mount(app)
@@ -43,7 +44,7 @@ class TestDocumentUse(unittest.TestCase):
         r = c.get("/p")
         self.assertEqual(r.status_code, 200)
         self.assertIn(XELEMENT_JS_URL, r.text)
-        self.assertIn("htmx.org", r.text)
+        self.assertIn("cdn.example/lib.js", r.text)
         self.assertEqual(c.get(XELEMENT_JS_URL).status_code, 200)
         self.assertIn("content-security-policy", r.headers)
 

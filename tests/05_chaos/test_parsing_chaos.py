@@ -1,8 +1,7 @@
-"""Chaos / edge tests for all parsing surfaces (HTML, attrs, paths, WS, HTMX)."""
+"""Chaos / edge tests for HTML and attribute parsing."""
 
 from __future__ import annotations
 
-import asyncio
 import concurrent.futures
 import random
 import unittest
@@ -11,9 +10,6 @@ from ux_dom import Component
 from ux_dom.dom import div
 from ux_dom.dom.src.html_string import defHTML
 from ux_dom.dom.src.parse_html import Attribute, tokenize_html, _normalize_attrs
-from ux_dom.htmx.middleware import HtmxDetails
-from ux_dom.web_io import WebSocketEvents
-from ux_dom.web_io._adapter import WebSocketAdapter
 
 
 class TestHtmlParseChaos(unittest.TestCase):
@@ -115,51 +111,6 @@ class TestAttributeParse(unittest.TestCase):
             'class="a"',
         ):
             self.assertIn(tok, h)
-
-
-class TestPathAndHeadersParse(unittest.TestCase):
-    def test_htmx_details(self):
-        d = HtmxDetails(
-            {
-                "HX-Request": "true",
-                "HX-Target": "main",
-                "HX-Triggering-Event": '{"a":1}',
-            }
-        )
-        self.assertTrue(d)
-        self.assertEqual(d.target, "main")
-        self.assertEqual(d.triggering_event, {"a": 1})
-        self.assertIsNone(
-            HtmxDetails({"HX-Triggering-Event": "not-json"}).triggering_event
-        )
-
-
-class TestWsReceiveParse(unittest.TestCase):
-    def test_json_and_invalid_utf8(self):
-        class FakeWS:
-            def __init__(self, msg):
-                self._msg = msg
-
-            async def receive(self):
-                return self._msg
-
-        ad = WebSocketAdapter(object, WebSocketEvents())
-
-        async def run():
-            j = await ad.receive(
-                FakeWS({"type": "websocket.receive", "text": '{"event":"a"}'})
-            )
-            self.assertEqual(j["event"], "a")
-            s = await ad.receive(
-                FakeWS({"type": "websocket.receive", "text": "not-json"})
-            )
-            self.assertEqual(s, "not-json")
-            b = await ad.receive(
-                FakeWS({"type": "websocket.receive", "bytes": b"\xff\xfe"})
-            )
-            self.assertIsInstance(b, bytes)
-
-        asyncio.run(run())
 
 
 if __name__ == "__main__":
