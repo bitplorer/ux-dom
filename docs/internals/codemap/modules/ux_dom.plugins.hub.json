@@ -41,7 +41,6 @@
     "ux_dom.plugins.safe_static"
    ],
    "module_level": [
-    "ux_dom.plugins.contribution",
     "ux_dom.plugins.protocols"
    ],
    "type_checking": []
@@ -50,8 +49,6 @@
   "path": "src/ux_dom/plugins/hub.py",
   "public": [
    "App",
-   "MaterializeReport",
-   "MaterializedFile",
    "PluginHub",
    "ProductHostMoved",
    "get_hub",

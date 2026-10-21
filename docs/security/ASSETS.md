@@ -51,11 +51,13 @@ Product CSS minify and runnable bundles (`--package` / `--archive`): `uxcompose 
 ## Escape hatch (usually avoid)
 
 ```python
-XElementRuntime(serve="dual_copy")  # copies into assets/ — dual copy
+XElementRuntime(serve="dual_copy")  # tags point at /assets/js/x_element.js
 UxChannelRuntime(serve="dual_copy")
 ```
 
 Only for air-gapped trees that ship without site-packages (rare; not recommended).
+ux-dom emits the tags but writes no files: you ship the file yourself, e.g.
+`x_element_js().save(file_or_dir=assets_js_dir)` ([XELEMENT.md](../reference/XELEMENT.md)).
 
 ## Third-party libraries
 

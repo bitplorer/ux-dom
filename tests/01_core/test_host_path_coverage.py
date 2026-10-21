@@ -45,7 +45,6 @@ class TestStaticArtifactAndPackageStatic(unittest.TestCase):
             async_=True,
         )
         self.assertIn("script", str(js.html_node()).lower())
-        self.assertEqual(js.bytes(), b"1")
 
     def test_static_from_package_x_element(self):
         from ux_dom.plugins.package_static import static_from_package

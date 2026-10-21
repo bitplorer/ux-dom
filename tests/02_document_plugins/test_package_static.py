@@ -39,14 +39,6 @@ class TestSingleCopyXElement(unittest.TestCase):
         self.assertEqual(r.status_code, 200, r.text[:100])
         self.assertIn("x-tagname", r.text)
 
-    def test_materialize_writes_nothing_for_package_mount(self):
-        hub = PluginHub()
-        hub.add_contribution(XElementRuntime())
-        with TemporaryDirectory() as td:
-            rep = hub.materialize(Path(td))
-            self.assertEqual(rep.files, [])
-            self.assertFalse((Path(td) / "assets/js/x_element.js").exists())
-
 
 class TestScaffoldSingleCopy(unittest.TestCase):
     def test_create_app_no_dual_js_file(self):

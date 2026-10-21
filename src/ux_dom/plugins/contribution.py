@@ -78,9 +78,6 @@ class StaticArtifact:
     attrs: Mapping[str, str] = field(default_factory=dict)
     content_type: str = "application/javascript"
 
-    def bytes(self) -> bytes:
-        return self.loader()
-
     def html_node(self) -> Any:
         if self.inject == "none" or self.tag == "none":
             return None

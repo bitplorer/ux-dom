@@ -14,23 +14,20 @@ from ux_dom.plugins import App, XElementRuntime, shell_fragments
 from ux_dom.plugins.control import HtmxControl
 from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
+from ux_dom.plugins.safe_static import collect_served_files
 
 
 class TestContributionHub(unittest.TestCase):
     def setUp(self):
         set_hub(PluginHub())
 
-    def test_xelement_shell_no_materialize(self):
+    def test_xelement_shell_package_mount(self):
         hub = PluginHub()
         hub.add_contribution(XElementRuntime())
-        # package_mount → zero files written
-        with TemporaryDirectory() as td:
-            rep = hub.materialize(Path(td))
-            self.assertTrue(rep.ok)
-            self.assertEqual(rep.files, [])
         head, _ = hub.shell_fragments()
         self.assertIn(XELEMENT_JS_URL, "".join(str(x) for x in head))
-        files = hub.served_static_files()
+        # the files App.build mounts (_mount_package_static)
+        files = collect_served_files(hub)
         self.assertTrue(any(f.url == XELEMENT_JS_URL for f in files))
 
     def test_app_use_order(self):
@@ -41,8 +38,8 @@ class TestContributionHub(unittest.TestCase):
         self.assertIn("x_element.js", "".join(str(x) for x in head))
         self.assertIn("htmx.org", "".join(str(x) for x in body))
 
-    def test_app_owned_js_contribution_is_materialized(self):
-        """App-owned JS (a contribution with artifacts) is copied under assets."""
+    def test_app_owned_js_contribution_is_auto_tagged(self):
+        """A contribution's artifacts become shell tags (ux-dom writes no files)."""
         from ux_dom.plugins.contribution import artifact_from_path
 
         class DemoJs:
@@ -74,10 +71,10 @@ class TestContributionHub(unittest.TestCase):
             hub = PluginHub()
             set_hub(hub)
             hub.add_contribution(DemoJs(src))
-            root = Path(td) / "app"
-            root.mkdir()
-            hub.materialize(root)
-            self.assertTrue((root / "assets/js/vendor/demo/p.js").is_file())
+            _, body = hub.shell_fragments()
+            self.assertIn(
+                'src="/assets/js/vendor/demo/p.js"', "".join(str(x) for x in body)
+            )
 
 
 class TestScaffoldServesPackageJs(unittest.TestCase):

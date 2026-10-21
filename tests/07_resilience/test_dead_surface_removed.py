@@ -15,6 +15,19 @@ class DeadSurfaceRemoved(unittest.TestCase):
 
         self.assertIsNone(importlib.util.find_spec("ux_dom.assets"))
 
+    def test_asset_writers_removed_with_uxdom_build(self):
+        # Their only callers were ux_dom.cli.build / static_assets (#109).
+        from ux_dom.plugins import hub
+
+        for name in ("materialize", "served_static_files", "all_artifacts"):
+            self.assertFalse(hasattr(hub.PluginHub, name), name)
+        self.assertFalse(hasattr(hub.App, "materialize_assets"))
+        self.assertFalse(hasattr(hub, "MaterializeReport"))
+        self.assertFalse(hasattr(hub, "MaterializedFile"))
+        from ux_dom.plugins.contribution import StaticArtifact
+
+        self.assertFalse(hasattr(StaticArtifact, "bytes"))
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -2,7 +2,8 @@
  "ux_dom.plugins.contribution": {
   "consumers": [
    "tests/01_core/test_host_path_coverage.py",
-   "tests/02_document_plugins/test_plugin_assets.py"
+   "tests/02_document_plugins/test_plugin_assets.py",
+   "tests/07_resilience/test_dead_surface_removed.py"
   ],
   "imported_by": {
    "function_level": [
@@ -10,7 +11,6 @@
    ],
    "module_level": [
     "ux_dom.plugins",
-    "ux_dom.plugins.hub",
     "ux_dom.plugins.package_static",
     "ux_dom.plugins.runtime"
    ],
