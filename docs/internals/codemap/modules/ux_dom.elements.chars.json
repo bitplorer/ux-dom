@@ -1,7 +1,8 @@
 {
  "ux_dom.elements.chars": {
   "consumers": [
-   "tests/01_core/test_input_value_regressions.py"
+   "tests/01_core/test_input_value_regressions.py",
+   "tests/07_resilience/test_f16_ux_valio_elements.py"
   ],
   "imported_by": {
    "function_level": [],

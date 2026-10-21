@@ -42,7 +42,6 @@ LAYERS: dict[str, str] = {
     "ux_dom.__main__": "cli",
     "ux_dom.alpinejs": "components",
     "ux_dom.cli": "cli",
-    "ux_dom.compat": "support",
     "ux_dom.concurrency": "support",
     "ux_dom.diagnostics": "support",
     "ux_dom.dom": "dom",

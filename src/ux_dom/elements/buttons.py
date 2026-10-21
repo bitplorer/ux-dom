@@ -8,7 +8,7 @@
 import typing as T
 from dataclasses import dataclass, field
 
-from valio import StringValidator, Validator
+from ux_valio import StringValidator, Validator
 
 from ux_dom.dom.src import component
 from ux_dom.dom.src.dom_tag import dom_tag
