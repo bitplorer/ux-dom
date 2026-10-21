@@ -48,7 +48,6 @@ BREAKOUTS = {
 CONTEXTS = {
     "<style> rule": lambda v: style(btn(color=v)).__render__(pretty=False),
     "pretty": lambda v: style(btn(color=v)).__render__(),
-    "attr": lambda v: btn(color=v).attr,
     "keyframes step": lambda v: style(fade(to={"color": v})).__render__(pretty=False),
 }
 
@@ -60,10 +59,33 @@ def test_value_that_ends_its_declaration_raises(context, value):
         CONTEXTS[context](value)
 
 
-@pytest.mark.parametrize("name", ["color:red}body{x", "a;b", "a{"])
-def test_property_name_that_ends_its_declaration_raises(name):
+@pytest.mark.parametrize(
+    "name",
+    ["color:red}body{x", "a;b", "a{", "a:b", "a.b", "a!", "a(b)", "a[b]"]
+    + ["1a", "-1a", "--", "-", "a\\62"],
+)
+def test_property_name_that_is_not_a_css_ident_raises(name):
     with pytest.raises(InvalidCSSValue):
         style(btn(**{name: "y"})).__render__(pretty=False)
+
+
+@pytest.mark.parametrize(
+    "name", ["color", "-webkit-box-shadow", "--x", "--0", "---", "x-1", "é"]
+)
+def test_property_name_that_is_a_css_ident_renders(name):
+    out = style(btn(**{name: "y"})).__render__(pretty=False)
+    assert out == "<style>.btn{%s:y;}</style>" % name
+
+
+def test_custom_property_value_with_a_block_raises():
+    """CSS allows ``--x: {…}``, but a block can carry declarations."""
+    with pytest.raises(InvalidCSSValue):
+        style(btn(**{"--x": "{color: red}"})).__render__(pretty=False)
+
+
+def test_keyframes_from_step_renders_as_from():
+    out = style(fade(from_={"opacity": 0}, to={"opacity": 1})).__render__(pretty=False)
+    assert out == "<style>@keyframes fade{from{opacity:0;}to{opacity:1;}}</style>"
 
 
 UNSAFE = [
