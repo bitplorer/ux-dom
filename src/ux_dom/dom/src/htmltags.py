@@ -1145,7 +1145,7 @@ class param(html_tag):
     It does not represent anything on its own.
     """
 
-    is_single = True
+    pass
 
 
 class video(html_tag):
@@ -1421,7 +1421,7 @@ class keygen(html_tag):
     and the public key is packaged and sent to the server.
     """
 
-    is_single = True
+    pass
 
 
 class output(html_tag):
@@ -1479,7 +1479,7 @@ class command(html_tag):
     The command element represents a command that the user can invoke.
     """
 
-    is_single = True
+    pass
 
 
 class menu(html_tag):
