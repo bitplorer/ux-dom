@@ -121,12 +121,7 @@ class TestComponentDataclassChain(unittest.TestCase):
         from ux_dom.dom.src.component import Component
 
         # Clear any leftover with-stack from prior tests (coverage / chaos order)
-        try:
-            tok = getattr(dom_tag, "_WITH_STACK", None)
-            if tok is not None and hasattr(tok, "set"):
-                tok.set(None)
-        except Exception:
-            pass
+        dom_tag._WITH_STACK.set(None)
 
         @dataclass(eq=False)
         class BareBox(Component):

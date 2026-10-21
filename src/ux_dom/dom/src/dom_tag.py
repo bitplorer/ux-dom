@@ -16,7 +16,6 @@ import copy
 
 # pylint: disable=bad-indentation, bad-whitespace, missing-docstring
 import numbers
-import threading
 import typing
 
 from ux_dom.dom.src.concurrency import multi_tree_lock, tree_lock_for
@@ -25,18 +24,6 @@ from collections.abc import Callable
 from contextvars import ContextVar
 from functools import wraps
 
-try:
-    import greenlet  # type: ignore
-except ImportError:
-    greenlet = None
-
-try:
-    import contextvars
-    from contextvars import ContextVar
-except ImportError:  # pragma: no cover
-    contextvars = None  # type: ignore
-    ContextVar = None  # type: ignore
-
 __all__ = ["dom_string", "dom_tag", "get_current", "attr", "context_stack", "tree_lock_for", "multi_tree_lock"]
 
 
@@ -44,10 +31,7 @@ __all__ = ["dom_string", "dom_tag", "get_current", "attr", "context_stack", "tre
 # Pipeline: sync with → __render__; async with → __async_render__.
 # Build stack + request vars (CSP) both use ContextVar on the active Context/Task.
 
-if ContextVar is not None:
-    _WITH_STACK = ContextVar("ux_dom_dom_with_stack", default=None)
-else:  # pragma: no cover
-    _WITH_STACK = None  # type: ignore
+_WITH_STACK = ContextVar("ux_dom_dom_with_stack", default=None)
 
 
 def _peek_with_stack():
@@ -56,8 +40,6 @@ def _peek_with_stack():
     Does **not** create a stack (creating an empty list would be copied by
     reference into child asyncio Tasks and shared — classic ContextVar pitfall).
     """
-    if _WITH_STACK is None:  # pragma: no cover
-        return getattr(dom_tag, "_render_stack", None)
     return _WITH_STACK.get()
 
 
@@ -67,10 +49,6 @@ def _get_with_stack():
     If the current value is None **or** an empty list left over from a parent
     Context copy, allocate a fresh list so concurrent Tasks never share frames.
     """
-    if _WITH_STACK is None:  # pragma: no cover
-        if not hasattr(dom_tag, "_render_stack"):
-            dom_tag._render_stack = []  # type: ignore
-        return dom_tag._render_stack  # type: ignore
     stack = _WITH_STACK.get()
     if not stack:  # None or []
         stack = []
@@ -79,32 +57,13 @@ def _get_with_stack():
 
 
 def _clear_with_stack_if_empty():
-    if _WITH_STACK is None:
-        return
     stack = _WITH_STACK.get()
     if stack is not None and len(stack) == 0:
         _WITH_STACK.set(None)
 
 
-def _get_thread_context():
-    """Debug fingerprint (thread, task, greenlet). Prefer ContextVar for storage."""
-    parts = [threading.get_ident()]
-    try:
-        import asyncio
-
-        task = asyncio.current_task()
-        parts.append(id(task) if task is not None else 0)
-    except RuntimeError:
-        parts.append(0)
-    if greenlet is not None:
-        parts.append(id(greenlet.getcurrent()))
-    return tuple(parts)
-
-
 def context_stack():
     """Copy of active build frames (empty if no with/async with)."""
-    if _WITH_STACK is None:
-        return []
     stack = _WITH_STACK.get()
     return list(stack) if stack else []
 
@@ -1052,10 +1011,7 @@ def get_current(default=_get_current_none):
 
     ContextVar-backed — correct for threads and asyncio Tasks.
     """
-    if _WITH_STACK is not None:
-        stack = _WITH_STACK.get()
-    else:
-        stack = None
+    stack = _WITH_STACK.get()
     if stack:
         return stack[-1].tag
     if default is _get_current_none:
