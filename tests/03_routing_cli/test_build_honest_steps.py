@@ -54,22 +54,3 @@ def test_sync_error_fails_the_build(app_root: Path, broken_hub):
     assert "bad static mount" in step.detail
     assert rep.ok is False
 
-
-def test_package_build_syncs_once(app_root: Path, tmp_path: Path, monkeypatch):
-    calls = []
-    real = static_assets.sync_runtime_assets
-
-    def counting(*a, **kw):
-        calls.append(a)
-        return real(*a, **kw)
-
-    monkeypatch.setattr(static_assets, "sync_runtime_assets", counting)
-    rep = run_build(
-        cwd=app_root,
-        skip_import=True,
-        package=True,
-        out_dir=tmp_path / "dist-out",
-        package_name="hb",
-    )
-    assert rep.ok, rep.to_dict()
-    assert len(calls) == 1

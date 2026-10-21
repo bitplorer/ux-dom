@@ -24,7 +24,7 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 | Concern | Home |
 |---------|------|
 | create-app / product build / serve / deploy | **uxcompose only** |
-| `uxdom build` (pure-dom `app/main.py` verify) | ux-dom (verify only); `--package`/`--archive` bundling moves to ux-compose per [ADR 0003](../adr/0003-layer-boundary.md) |
+| `uxdom build` (pure-dom `app/main.py` verify) | ux-dom (verify only); runnable bundles are `uxcompose build --package` per [ADR 0003](../adr/0003-layer-boundary.md) |
 | Product page routes (`DirectoryRoutes`) | **ux-compose** |
 | Tailwind compiler / app asset layout (`WebAssets`) | **ux-compose** |
 | Host strategy / product App | ux-compose |

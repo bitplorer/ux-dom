@@ -43,10 +43,9 @@ Not library runtimes.
 
 ## Build / package
 
-Product CSS minify: `uxcompose build`.
+Product CSS minify and runnable bundles (`--package` / `--archive`): `uxcompose build`.
 
 - Verifies installed `x_element.js` contract via `uxdom doctor`  
-- **Does not** vendor library JS into `dist/` — `requirements.txt` + pip  
 - At runtime, mounts resolve from site-packages  
 
 ## Escape hatch (usually avoid)

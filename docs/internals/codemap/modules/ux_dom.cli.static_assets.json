@@ -4,6 +4,7 @@
    "tests/03_routing_cli/test_build_honest_steps.py",
    "tests/03_routing_cli/test_build_package.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
+   "tests/07_resilience/test_build_bundle_absent.py",
    "tests/07_resilience/test_dead_surface_removed.py"
   ],
   "imported_by": {
@@ -11,9 +12,7 @@
     "ux_dom.cli.build"
    ],
    "module_level": [],
-   "type_checking": [
-    "ux_dom.cli.build"
-   ]
+   "type_checking": []
   },
   "imports_internal": {
    "function_level": [
@@ -28,9 +27,7 @@
   "public": [
    "SyncReport",
    "SyncedFile",
-   "collect_package_files",
-   "sync_runtime_assets",
-   "write_runnable_package"
+   "sync_runtime_assets"
   ]
  }
 }

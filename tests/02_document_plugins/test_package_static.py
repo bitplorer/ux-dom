@@ -15,7 +15,6 @@ from ux_dom.plugins.hub import PluginHub, set_hub
 from ux_dom.plugins.package_static import PackageStaticContribution, PackagedFile
 from ux_dom.plugins.runtime import XELEMENT_JS_URL, UxChannelRuntime
 from helpers import ScaffoldOptions, create_app
-from ux_dom.cli.build import run_build
 import sys
 
 
@@ -89,21 +88,6 @@ class TestScaffoldSingleCopy(unittest.TestCase):
                 for k in list(sys.modules):
                     if k == "app" or k.startswith("app."):
                         del sys.modules[k]
-
-    def test_build_package_ok_without_assets_js(self):
-        with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "bp", dest=Path(td) / "bp", force=True, with_tailwind=False
-                )
-            )
-            rep = run_build(
-                cwd=root, package=True, package_name="bp"
-            )
-            self.assertTrue(rep.ok, rep.steps)
-            # package should not claim dual-copy requirement
-            man = (rep.package_path / "MANIFEST.json").read_text()
-            self.assertIn("single_copy", man)
 
 
 class TestUxChannelSingleCopy(unittest.TestCase):
