@@ -179,8 +179,10 @@ at the start of a token is not a prefix (`prefixconnect:/feed` is refused).
 ## String → HTML (`defHTML` / `Fragment(str)`)
 
 One allowlist. `defHTML`, `Fragment(str)`, `Component.render()->str`,
-`HTMLElement`, `JinjaElement`, `MarkdownElement`, `to_fragment(str)`, and
-`srcdoc` all use it. Strings stay HTML: known-safe tags are kept and
+`HTMLElement`, `JinjaElement`, `MarkdownElement`, `to_fragment(str)`,
+`srcdoc`, and `ux_dom.response.sanitize_html` / `sanitize_html_stream` all
+use it. A stream gives the same bytes as the whole string wherever its chunks
+are split; it is cut only where the tokenizer has nothing open (#121). Strings stay HTML: known-safe tags are kept and
 sanitized, they are not turned into plain text. String HTML is always
 sanitized and has no `escape` parameter. Trusted markup uses `raw()` /
 `Markup` (verbatim). A `__html__` value is checked before the `str` check, so
@@ -281,4 +283,5 @@ handlers, `hx-*`, and unknown tags are still stripped inside the document.
 
 Tests: `tests/07_resilience/test_html_allowlist.py`,
 `tests/07_resilience/test_html_parse_sanitizer.py`,
-`tests/07_resilience/test_html_string_mxss.py`.
+`tests/07_resilience/test_html_string_mxss.py`,
+`tests/07_resilience/test_sanitized_stream.py`.

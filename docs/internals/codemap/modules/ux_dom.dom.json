@@ -128,6 +128,7 @@
    "tests/07_resilience/test_no_deprecations.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/07_resilience/test_raw_string_sinks.py",
+   "tests/07_resilience/test_sanitized_stream.py",
    "tests/07_resilience/test_shadowroot_only.py",
    "tests/07_resilience/test_single_tag_registry.py",
    "tests/07_resilience/test_svg_animation_urls.py",

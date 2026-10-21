@@ -22,6 +22,7 @@
    "tests/07_resilience/test_html_svg_names.py",
    "tests/07_resilience/test_htmx_same_origin.py",
    "tests/07_resilience/test_raw_string_sinks.py",
+   "tests/07_resilience/test_sanitized_stream.py",
    "tests/07_resilience/test_svg_animation_urls.py",
    "tests/07_resilience/test_text_state_parents.py"
   ],
@@ -32,6 +33,7 @@
    "module_level": [
     "ux_dom.dom",
     "ux_dom.dom.src.component",
+    "ux_dom.response.sanitize",
     "ux_dom.ui.channel_bridge"
    ],
    "type_checking": []
