@@ -38,7 +38,7 @@ def _tag(name, base=Tags, **kw):
 
 
 svg_a = _tag("a", svg_tag)
-math, mi, mglyph = _tag("math"), _tag("mi"), _tag("mglyph")
+math, mi, mglyph, mtext = _tag("math"), _tag("mi"), _tag("mglyph"), _tag("mtext")
 font = _tag("font")
 
 
@@ -72,6 +72,12 @@ HTML = {
     "math > mi > mglyph > [b, el]": lambda el: math(mi(mglyph(_tag("b")(), el))),
     "svg > foreignObject > [svg > p, el]": lambda el: svg(foreignObject(svg(p()), el)),
     "div > [svg > p, el]": lambda el: div(svg(p()), el),
+    # #128: the HTML element's end tag closes it, not the integration point
+    # of the same name below it.
+    "svg > desc > [desc, el]": lambda el: svg(desc(desc(), el)),
+    "math > mi > [mi, el]": lambda el: math(mi(mi(), el)),
+    "math > mtext > [mtext, el]": lambda el: math(mtext(mtext(), el)),
+    "svg > g > desc > [g, el]": lambda el: svg(g(desc(g(), el))),
 }
 # The style is foreign: no breakout reaches it, or the parser may not have
 # closed what the tree closes.
@@ -126,6 +132,12 @@ def test_after_breakout_guard_still_applies(where):
 def test_foreign_style_is_cdata(where):
     for body in _bodies(FOREIGN[where](style(IMG))):
         assert body == f"<![CDATA[{IMG}]]>"
+
+
+def test_script_after_same_name_html_element_is_raw_text():
+    # #128: was ``<![CDATA[``, a SyntaxError in Chromium.
+    out = svg(desc(desc(), script("1"))).__render__(pretty=False)
+    assert out == "<svg><desc><desc></desc><script>1</script></desc></svg>"
 
 
 def test_script_after_breakout_is_raw_text():

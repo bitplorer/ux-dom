@@ -394,6 +394,21 @@ _BREAKOUT_ELEMENTS = frozenset({
 _FONT_BREAKOUT_ATTRS = frozenset({"color", "face", "size"})
 # HTML elements whose body the tokenizer reads as text, not tags.
 _TEXT_BODY_ELEMENTS = TEXT_STATE_ELEMENTS | {"script", "style", "plaintext"}
+# HTML elements the parser may pop, or not push, without their own end tag
+# (§13.2.6.4.7): void, implied end tags, adoption agency, table / select /
+# form / template / button / heading rules, ignored start tags, and the
+# elements whose start or end tag pops what is above them. Any other
+# element in a run is closed only by its own end tag.
+_MAY_CLOSE_EARLY = frozenset({
+    "a", "applet", "area", "b", "base", "basefont", "bgsound", "big", "body",
+    "br", "button", "caption", "code", "col", "colgroup", "dd", "dt", "em",
+    "embed", "font", "form", "frame", "frameset", "h1", "h2", "h3", "h4", "h5",
+    "h6", "head", "hr", "html", "i", "image", "img", "input", "keygen", "li",
+    "link", "marquee", "meta", "nobr", "object", "optgroup", "option", "p",
+    "param", "rb", "rp", "rt", "rtc", "s", "select", "small", "source",
+    "strike", "strong", "table", "tbody", "td", "template", "tfoot", "th",
+    "thead", "tr", "track", "tt", "u", "wbr",
+})
 
 
 def _attr_names(node):
@@ -533,13 +548,15 @@ def _settle(stacks):
     """Distinct parser states, each with the state in which the HTML elements
     on top were already closed by the parser (a ``<div>`` closes a ``<p>``, an
     ``<a>`` closes an ``<a>``, ``<img>`` is void …) back to the integration
-    point below them. The tree does not say which, so both count."""
+    point below them. The tree does not say which, so both count. A run of
+    elements none of which ``_MAY_CLOSE_EARLY`` names is still open."""
     out, seen = [], set()
     for stack in stacks:
         i = len(stack)
         while i and stack[i - 1][1] == "html":
             i -= 1
-        for s in (stack, stack[:i]) if 0 < i < len(stack) else (stack,):
+        early = any(name in _MAY_CLOSE_EARLY for name, _, _ in stack[i:])
+        for s in (stack, stack[:i]) if 0 < i < len(stack) and early else (stack,):
             key = tuple((id(el), ns) for _, ns, el in s)
             if key not in seen:
                 seen.add(key)

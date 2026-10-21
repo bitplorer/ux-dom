@@ -120,17 +120,32 @@ def _shapes():
         "math>mi>p>[div,mglyph]": lambda: math(mi(p(div(), mglyph(style("a{}"))))),
         "div>table>svg>p": lambda: div(_tag("table")(svg(p(style("a{}")), rect()))),
     }
+    # #128: an HTML element no rule closes early is still open at its end tag,
+    # which must not pop the integration point of the same name below it.
+    shapes |= {
+        "svg>desc>[desc,script]": lambda: svg(desc(desc(), script("1")), rect()),
+        "math>mi>[mi,script]": lambda: math(mi(mi(), script("1")), mglyph()),
+        "math>mtext>[mtext,script]": lambda: math(
+            _tag("mtext")(_tag("mtext")(), script("1")), mi()
+        ),
+        "svg>g>desc>[g,script]": lambda: svg(g(desc(g(), script("1"))), rect()),
+    }
+    for name in ("div", "span", "ul"):
+        E = _tag(name)
+        shapes[f"math>mi>mglyph>{name}"] = lambda E=E: math(
+            mi(mglyph(E(mglyph(style("a{}")))))
+        )
     return shapes
 
 
 # The model says MathML, Chromium HTML: an HTML element between mi and mglyph
-# might have been closed by the parser (``math>mi>p>[div,mglyph]``), and the
-# tree does not say. Foreign is the safe answer.
+# that the parser may close early (``math>mi>p>[div,mglyph]``), and the tree
+# does not say whether it did. Foreign is the safe answer.
 CONSERVATIVE = {
     f"math>mi>mglyph>{name}": lambda E=_tag(name): math(
         mi(mglyph(E(mglyph(style("a{}")))))
     )
-    for name in ("b", "div", "p", "span", "table", "ul")
+    for name in ("b", "p", "table")
 }
 
 CSS = ".c::before { content: 'a > b & c'; }"
