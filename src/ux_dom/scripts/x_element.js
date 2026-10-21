@@ -140,9 +140,7 @@
 
     XElementHost.prototype.connectedCallback = function () {
       var self = this;
-      var isShadow =
-        definitionEl.getAttribute("shadowroot") ||
-        definitionEl.getAttribute("shadowdom");
+      var isShadow = definitionEl.getAttribute("shadowroot");
       var template =
         definitionEl.tagName === "TEMPLATE"
           ? definitionEl
@@ -221,10 +219,6 @@
           self.attributeChangedCallback(key, o, n);
         }
       });
-
-      if (this.getAttribute("ws_send")) {
-        this.send(JSON.stringify(this._dataState.get("ws_send")));
-      }
     };
 
     XElementHost.prototype._initAlpine = function (root) {

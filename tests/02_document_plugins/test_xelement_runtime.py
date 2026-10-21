@@ -162,7 +162,7 @@ class TestPythonXElementAttrs(unittest.TestCase):
         with self.assertRaises(AttributeError) as ctx:
             CBad.definition()
         msg = str(ctx.exception).lower()
-        self.assertTrue("shadowroot" in msg or "shadowdom" in msg)
+        self.assertIn("shadowroot", msg)
 
     def test_webcomponent_requires_shadow(self):
         class WBad(WebComponent):
@@ -172,7 +172,7 @@ class TestPythonXElementAttrs(unittest.TestCase):
         with self.assertRaises(AttributeError) as ctx:
             WBad("w")
         msg = str(ctx.exception).lower()
-        self.assertTrue("shadowroot" in msg or "shadowdom" in msg)
+        self.assertIn("shadowroot", msg)
 
     def test_webcomponent_shadow_ok(self):
         class W(WebComponent):

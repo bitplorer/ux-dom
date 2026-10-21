@@ -1041,7 +1041,6 @@ class dom_tag(object):
         if value is True:
             # HTML boolean attrs use name=name; WC flags need "true" for JS.
             if attribute in {
-                "shadowdom",
                 "shadowroot",
                 "shadow-root",
             }:

@@ -73,12 +73,12 @@ def lint_project(root: Optional[Path] = None) -> list[LintIssue]:
                             "error",
                         )
                     )
-        if "WebComponent" in src and "shadowroot" not in src and "shadowdom" not in src:
+        if "WebComponent" in src and "shadowroot" not in src:
             if re.search(r"class\s+\w+\(WebComponent\)", src):
                 issues.append(
                     LintIssue(
                         rel,
-                        "WebComponent subclass should set shadowroot/shadowdom on definition template",
+                        "WebComponent subclass should set shadowroot on definition template",
                         "warn",
                     )
                 )

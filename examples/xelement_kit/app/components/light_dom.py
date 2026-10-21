@@ -54,7 +54,7 @@ class HelloLight(CustomElement):
     tag_name = "hello-light"
 
     def render(self, tag_name: str = "hello-light"):
-        # CustomElement forbids shadowroot/shadowdom — only x-tagname.
+        # CustomElement forbids shadowroot — only x-tagname.
         return template(
             div(
                 span("Hello from ", className="text-slate-600"),

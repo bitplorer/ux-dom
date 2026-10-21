@@ -8,7 +8,7 @@ Production-shaped examples for UxDom custom elements.
 |--------|--------------|----------|---------|
 | `XElement` | `x-tagname` | `x-{name}` | `x_element.js` |
 | `CustomElement` | `x-tagname` only (no shadow) | `x-{name}` | light DOM |
-| `WebComponent` | `x-tagname` + `shadowroot`/`shadowdom` | `x-{name}` | shadow DOM |
+| `WebComponent` | `x-tagname` + `shadowroot` | `x-{name}` | shadow DOM |
 | `AlpineComponent` | `x-tagname` + `x-data` | `x-{name}` | + Alpine |
 
 ```python

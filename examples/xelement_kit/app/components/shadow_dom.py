@@ -10,12 +10,12 @@ Shadow DOM means the upgraded host gets an **isolated tree** via
 * Light-DOM children of the host **project** into ``<slot>`` elements.
 
 Python base: ``ux_dom.dom.htmlelement.WebComponent``
-Browser:     ``x_element.js`` reads ``shadowroot`` / ``shadowdom`` and
+Browser:     ``x_element.js`` reads ``shadowroot`` and
              attaches a shadow root, then clones the template into it.
 
 Pattern
 -------
-1. Definition must include ``shadowroot="true"|"open"`` or ``shadowdom="…"``.
+1. Definition must include ``shadowroot="true"|"open"|"closed"``.
 2. Put ``<slot>`` / ``<slot name="…">`` where light children should appear.
 3. Host usage::
 
@@ -114,11 +114,7 @@ class ProfileCardShadow(WebComponent):
 
 @dataclass(eq=False)
 class CalloutShadow(WebComponent):
-    """Shadow callout with optional closed-mode documentation.
-
-    Uses ``shadowdom="open"`` (synonym path) so authors see both attributes
-    are accepted by :class:`WebComponent` / ``x_element.js``.
-    """
+    """Shadow callout; ``shadowroot="open"`` (use ``"closed"`` for a closed root)."""
     tag_name = "callout-shadow"
 
     def render(self, tag_name: str = "callout-shadow"):
@@ -139,6 +135,5 @@ class CalloutShadow(WebComponent):
                 className="rounded-xl bg-slate-950 border border-emerald-900/50 p-4",
                 **{"data-dom": "shadow"},
             ),
-            # shadowdom synonym (same effect as shadowroot for open mode)
-            **{"x-tagname": tag_name, "shadowdom": "open"},
+            **{"x-tagname": tag_name, "shadowroot": "open"},
         )
