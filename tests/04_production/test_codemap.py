@@ -162,7 +162,7 @@ class TestCodeMap(unittest.TestCase):
                 self.codemap.tracked_files(cfg, ["tests"]), [tests / "tracked.py"]
             )
 
-    def test_git_failure_is_a_one_line_error(self):
+    def test_git_failure_is_a_clean_error_with_gits_message(self):
         # Falling back to a walk would silently count untracked files.
         with tempfile.TemporaryDirectory() as tmp:
             self._git(Path(tmp), "init", "-q")

@@ -261,6 +261,10 @@ class TestLayouts(unittest.TestCase):
         self.assertNotIn('"line"', shard_text)  # line-free: doc edits don't churn
         readme = json.loads(run(repo, "--claims", "README.md").stdout)["README.md"]
         resolved = {(c["line"], c["kind"], c["text"]) for c in readme if c["resolved"]}
+        # The output key is the normalised doc path, whatever form was given.
+        for given in ("./README.md", str(repo / "README.md")):
+            out = json.loads(run(repo, "--claims", given).stdout)
+            self.assertEqual(list(out), ["README.md"])
         self.assertEqual(
             resolved,
             {
@@ -543,6 +547,12 @@ class TestCheckFailures(unittest.TestCase):
         )
         opt = shard(self.repo, "alpha.core.opt")
         self.assertIsNone(opt["public"])  # unknown, never "no public API"
+        # A star import of an unknown module is unknown too, not a guess.
+        (self.repo / "src/alpha/core/star.py").write_text(
+            "from alpha.core.opt import *\nB = 2\n", encoding="utf-8"
+        )
+        run(self.repo, "--write-changed")
+        self.assertIsNone(shard(self.repo, "alpha.core.star")["public"])
         # A dynamic root __all__ makes the package's public_api unknown too.
         (self.repo / "src/alpha/__init__.py").write_text(
             "from alpha.core.engine import Engine\n__all__ = []\n"

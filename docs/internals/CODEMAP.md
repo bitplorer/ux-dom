@@ -106,7 +106,8 @@ demand.
   `__all__.append` / `.extend` / `+= [...]`, comprehensions or concatenation.
   A module that builds `__all__` any other way, for example inside a `try` for an
   optional dependency, gets `public: null`, and so do its symbols' `public` flags.
-  If it is a package root, its `public_api` entry is `null` too. Null means
+  So does a module whose derived public set star-imports such a module. If it is
+  a package root, its `public_api` entry is `null` too. Null means
   *unknown*, never *no public API*. `--check` then fails, naming `file:line`,
   until `__all__` is rewritten as a literal.
 - **`is_public`**: no dotted segment starts with a single `_`.

@@ -799,6 +799,20 @@ class CodeMap:
         self._public[mod] = sorted(names)
         return self._public[mod]
 
+    def public_unknown(self, mod: str, _seen: frozenset[str] = frozenset()) -> bool:
+        """True when *mod*'s public set cannot be read: its ``__all__`` is not
+        a literal, or it is derived from a star import of such a module."""
+        info = self.info[mod]
+        if info.all_errors:
+            return True
+        if info.all is not None or self.cfg.public_rule == "all_only":
+            return False
+        return any(
+            self.public_unknown(star, _seen | {mod})
+            for star in info.stars
+            if star not in _seen
+        )
+
     def defining_module(
         self, mod: str, name: str, _seen: frozenset[tuple[str, str]] = frozenset()
     ) -> str:
@@ -1616,7 +1630,7 @@ class CodeMap:
             if pkg not in self.info:
                 self.problems.append(f"public_api: package {pkg} is not mapped")
                 continue
-            if self.info[pkg].all_errors:
+            if self.public_unknown(pkg):
                 public_api[pkg] = None
                 continue
             api = {n: self.defining_module(pkg, n) for n in self.public(pkg)}
@@ -1634,8 +1648,8 @@ class CodeMap:
         modules = {}
         for m, info in sorted(self.info.items()):
             # An unreadable ``__all__`` makes the public API unknown (null),
-            # never empty, for a module and (above) for a package root.
-            public = None if info.all_errors else self.public(m)
+            # never empty or guessed, for a module and (above) a package root.
+            public = None if self.public_unknown(m) else self.public(m)
             symbols = {
                 n: {**s, "public": None if public is None else n in public}
                 for n, s in sorted(info.symbols.items())
@@ -1930,11 +1944,12 @@ def main(argv: list[str] | None = None) -> int:
         doc = Path(args.claims)
         if doc.is_absolute() and doc.is_relative_to(cfg.root):
             doc = doc.relative_to(cfg.root)
-        found = cm.claim_lines.get(Path(os.path.normpath(doc)).as_posix())
+        key = Path(os.path.normpath(doc)).as_posix()
+        found = cm.claim_lines.get(key)
         if found is None:
             print(f"no claims indexed for {args.claims}", file=sys.stderr)
             return 2
-        print(json.dumps({args.claims: found}, indent=2, sort_keys=True))
+        print(json.dumps({key: found}, indent=2, sort_keys=True))
         return 0
 
     if args.feature:

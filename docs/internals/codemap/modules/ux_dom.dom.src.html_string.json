@@ -54,7 +54,6 @@
      "builtins",
      "collections.abc",
      "dataclasses",
-     "html",
      "html.entities",
      "re",
      "types",
@@ -192,12 +191,6 @@
     "kind": "function",
     "public": false,
     "signature": "(raw_string, *, document: bool=False, allow_custom_elements: T.Optional[Iterable[str]]=None) -> str"
-   },
-   "_scheme_is_dangerous": {
-    "doc": "",
-    "kind": "function",
-    "public": false,
-    "signature": "(value: str) -> bool"
    },
    "_style_is_dangerous": {
     "doc": "",
