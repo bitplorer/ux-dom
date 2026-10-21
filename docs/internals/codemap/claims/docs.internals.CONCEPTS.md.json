@@ -1,16 +1,16 @@
 {
- "docs/internals/CONCEPTS.md": [
-  {
-   "kind": "cli",
-   "line": 32,
-   "resolved": true,
-   "text": "uxdom add xelement Counter"
-  },
-  {
-   "kind": "cli",
-   "line": 33,
-   "resolved": true,
-   "text": "uxdom add ui Button"
-  }
- ]
+ "docs/internals/CONCEPTS.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add ui Button"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add xelement Counter"
+   }
+  ]
+ }
 }

@@ -160,12 +160,6 @@ tests = [".py", ".md", ".html", ".js", ".mjs"]
 rule = "all_or_derived"
 packages = ["ux_dom"]
 
-[tool.codemap.distributions]
-jinja2 = "Jinja2"
-markupsafe = "MarkupSafe"
-ux_channel = "ux-channel"
-ux_valio = "ux-valio"
-
 # Module prefix -> layer (longest prefix wins; the package root ``ux_dom``
 # matches only itself, and a module matching nothing fails the build). Extends
 # the package ontology in AGENTS.md: dom (tags / serialize), document

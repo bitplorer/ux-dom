@@ -1,28 +1,26 @@
 {
- "docs/guides/DX.md": [
-  {
-   "kind": "cli",
-   "line": 20,
-   "resolved": true,
-   "text": "uxdom doctor"
-  },
-  {
-   "kind": "cli",
-   "line": 21,
-   "resolved": true,
-   "text": "uxdom lint"
-  },
-  {
-   "kind": "cli",
-   "line": 22,
-   "resolved": true,
-   "text": "uxdom profile"
-  },
-  {
-   "kind": "cli",
-   "line": 23,
-   "resolved": true,
-   "text": "uxdom add component|ui|xelement"
-  }
- ]
+ "docs/guides/DX.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add component|ui|xelement"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom lint"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom profile"
+   }
+  ]
+ }
 }

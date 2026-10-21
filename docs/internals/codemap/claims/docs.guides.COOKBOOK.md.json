@@ -1,82 +1,56 @@
 {
- "docs/guides/COOKBOOK.md": [
-  {
-   "kind": "import",
-   "line": 10,
-   "resolved": true,
-   "text": "ux_dom:Document"
-  },
-  {
-   "kind": "import",
-   "line": 11,
-   "resolved": true,
-   "text": "ux_dom:Csp"
-  },
-  {
-   "kind": "import",
-   "line": 11,
-   "resolved": true,
-   "text": "ux_dom:Htmx"
-  },
-  {
-   "kind": "import",
-   "line": 11,
-   "resolved": true,
-   "text": "ux_dom:XElement"
-  },
-  {
-   "kind": "import",
-   "line": 12,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "import",
-   "line": 12,
-   "resolved": true,
-   "text": "ux_dom.dom:h1"
-  },
-  {
-   "kind": "module",
-   "line": 12,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "import",
-   "line": 42,
-   "resolved": true,
-   "text": "ux_dom.dom.htmlelement:CustomElement"
-  },
-  {
-   "kind": "module",
-   "line": 42,
-   "resolved": true,
-   "text": "ux_dom.dom.htmlelement"
-  },
-  {
-   "kind": "import",
-   "line": 43,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "import",
-   "line": 43,
-   "resolved": true,
-   "text": "ux_dom.dom:template"
-  },
-  {
-   "kind": "module",
-   "line": 43,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "import",
-   "line": 58,
-   "resolved": true,
-   "text": "ux_dom:Csp"
-  }
- ]
+ "docs/guides/COOKBOOK.md": {
+  "claims": [
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom.htmlelement:CustomElement"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:div"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:h1"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:template"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Csp"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Document"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Htmx"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:XElement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom.htmlelement"
+   }
+  ]
+ }
 }

@@ -258,9 +258,9 @@ class TestLayouts(unittest.TestCase):
             ],
         )
         self.assertEqual(claims["code_ahead"], [])
-        readme = json.loads(
-            (repo / "docs/internals/codemap/claims/README.md.json").read_text()
-        )["README.md"]
+        shard_text = (repo / "docs/internals/codemap/claims/README.md.json").read_text()
+        self.assertNotIn('"line"', shard_text)  # line-free: doc edits don't churn
+        readme = json.loads(run(repo, "--claims", "README.md").stdout)["README.md"]
         resolved = {(c["line"], c["kind"], c["text"]) for c in readme if c["resolved"]}
         self.assertEqual(
             resolved,
@@ -272,6 +272,10 @@ class TestLayouts(unittest.TestCase):
                 (6, "module", "alpha.core.engine.helper"),
             },
         )
+        # Moving a claim to another line leaves the map fresh.
+        text = (repo / "README.md").read_text()
+        (repo / "README.md").write_text("\n\nIntro.\n" + text)
+        self.assertEqual(run(repo, "--check").returncode, 0)
         self.assertFalse(
             (repo / "docs/internals/codemap/claims")
             .joinpath("docs.old.HISTORY.md.json")
@@ -319,6 +323,14 @@ class TestLayouts(unittest.TestCase):
         )
         proc = run(repo)
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        for note in (
+            "note: consumers: not configured",
+            "note: claims_docs: not configured",
+            "note: features: not configured",
+            "note: domain: not configured",
+            "note: narrative: not configured",
+        ):
+            self.assertIn(note, proc.stdout)  # never silently empty
         idx = index(repo, "map")
         self.assertEqual(idx["modules"], {"flat": "", "flat.a": ""})
         self.assertEqual(idx["public_api"], {"flat": {"thing": "flat.a"}})
@@ -334,7 +346,6 @@ class TestLayouts(unittest.TestCase):
                     hostcli = "host_pkg.cli:main"
                     [tool.codemap]
                     packages = ["host/src/host_pkg", "surface/src/surface_pkg"]
-                    projects = ["host/pyproject.toml", "surface/pyproject.toml"]
                     """,
                 "surface/pyproject.toml": """
                     [project.scripts]
@@ -351,6 +362,10 @@ class TestLayouts(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         idx = index(repo)
         self.assertEqual(sorted(idx["packages"]), ["host_pkg", "surface_pkg"])
+        # No ``projects`` given: each package's own pyproject is read too.
+        self.assertEqual(
+            idx["projects"], ["host/pyproject.toml", "surface/pyproject.toml"]
+        )
         self.assertEqual(
             idx["entry_points"]["scripts"],
             {"hostcli": "host_pkg.cli:main", "surf": "surface_pkg:run"},
@@ -504,6 +519,55 @@ class TestCheckFailures(unittest.TestCase):
             "private import: yaml._private:x (from PyYAML)",
             "undeclared name: yaml._private:x (from PyYAML)",
             "depends_on PyYAML: yaml:dump is declared but unused",
+        )
+
+    def test_dynamic_all_is_a_finding_not_a_crash(self):
+        # ux-channel shape: __all__ grown inside try/except for optional deps.
+        (self.repo / "src/alpha/core/opt.py").write_text(
+            "__all__: list[str] = []\n"
+            "try:\n"
+            "    from alpha.core.engine import helper\n"
+            "    __all__.append('helper')\n"
+            "except ImportError:\n"
+            "    pass\n",
+            encoding="utf-8",
+        )
+        proc = run(self.repo, "--write-changed")
+        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
+        self.assertNotIn("Traceback", proc.stderr)
+        self.assertTrue(
+            (self.repo / "docs/internals/codemap/modules/alpha.core.opt.json").exists()
+        )
+        self.check_fails_with(
+            "__all__: src/alpha/core/opt.py:4: ``__all__.append(...)``"
+        )
+
+    def test_depends_on_imports_are_enforced(self):
+        self.edit("docs/domain.toml", 'imports = "yaml"', 'imports = "totally_wrong"')
+        self.edit(
+            "docs/domain.toml",
+            '[[depends_on]]\ndistribution = "starlette"',
+            '[[depends_on]]\ndistribution = "requests"\nimports = "requests"\n'
+            'names = []\n[[depends_on]]\ndistribution = "starlette"',
+        )
+        self.check_fails_with(
+            "depends_on PyYAML: imports 'totally_wrong' is never imported",
+            "depends_on requests: declared but never imported; remove it",
+            "depends_on requests: imports 'requests' is never imported",
+        )
+
+    def test_depends_on_imports_drive_distribution_names(self):
+        # Without [tool.codemap.distributions], the charter maps yaml -> PyYAML.
+        self.edit(
+            "pyproject.toml", '[tool.codemap.distributions]\nyaml = "PyYAML"\n', ""
+        )
+        proc = run(self.repo, "--write-changed")
+        self.assertEqual(proc.returncode, 0, proc.stdout)
+        self.assertIn("PyYAML", index(self.repo)["external_usage"])
+        self.edit("docs/domain.toml", 'imports = "yaml"', "")
+        self.check_fails_with(
+            "depends_on PyYAML: needs 'imports'",
+            "undeclared dependency: yaml (yaml:safe_load)",
         )
 
     def test_hard_coupling_is_recorded(self):

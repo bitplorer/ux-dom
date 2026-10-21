@@ -1,28 +1,26 @@
 {
- "docs/reference/REACTIVE.md": [
-  {
-   "kind": "import",
-   "line": 13,
-   "resolved": true,
-   "text": "ux_dom:ReactiveComponent"
-  },
-  {
-   "kind": "import",
-   "line": 14,
-   "resolved": true,
-   "text": "ux_dom.dom:button"
-  },
-  {
-   "kind": "import",
-   "line": 14,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "module",
-   "line": 14,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  }
- ]
+ "docs/reference/REACTIVE.md": {
+  "claims": [
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:button"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:div"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:ReactiveComponent"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom"
+   }
+  ]
+ }
 }

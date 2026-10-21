@@ -1,16 +1,16 @@
 {
- "INSTALL.md": [
-  {
-   "kind": "module",
-   "line": 3,
-   "resolved": true,
-   "text": "src/ux_dom"
-  },
-  {
-   "kind": "cli",
-   "line": 43,
-   "resolved": true,
-   "text": "uxdom doctor"
-  }
- ]
+ "INSTALL.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "src/ux_dom"
+   }
+  ]
+ }
 }

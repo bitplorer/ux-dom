@@ -1,46 +1,41 @@
 {
- "docs/internals/APP_COMPOSITION.md": [
-  {
-   "kind": "import",
-   "line": 50,
-   "resolved": true,
-   "text": "ux_dom:Document"
-  },
-  {
-   "kind": "import",
-   "line": 51,
-   "resolved": true,
-   "text": "ux_dom:Csp"
-  },
-  {
-   "kind": "import",
-   "line": 51,
-   "resolved": true,
-   "text": "ux_dom:Htmx"
-  },
-  {
-   "kind": "import",
-   "line": 51,
-   "resolved": true,
-   "text": "ux_dom:XElement"
-  },
-  {
-   "kind": "import",
-   "line": 52,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "import",
-   "line": 52,
-   "resolved": true,
-   "text": "ux_dom.dom:h1"
-  },
-  {
-   "kind": "module",
-   "line": 52,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  }
- ]
+ "docs/internals/APP_COMPOSITION.md": {
+  "claims": [
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:div"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:h1"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Csp"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Document"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Htmx"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:XElement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom"
+   }
+  ]
+ }
 }

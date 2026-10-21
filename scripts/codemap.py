@@ -193,11 +193,17 @@ def load_config(root: Path, config_path: Path | None = None) -> Config:
         )
     projects = raw.get("projects")
     if projects is None:
-        projects = (
-            [source.relative_to(root).as_posix()]
-            if source.name == "pyproject.toml"
-            else []
-        )
+        # The config's own pyproject plus the nearest pyproject above each
+        # package, so every sub-project's entry points are read.
+        found = {source} if source.name == "pyproject.toml" else set()
+        for pkg in packages:
+            for d in pkg.path.parents:
+                if (d / "pyproject.toml").is_file():
+                    found.add(d / "pyproject.toml")
+                    break
+                if d == root:
+                    break
+        projects = sorted(f.relative_to(root).as_posix() for f in found)
     features = raw.get("features")
     domain = raw.get("domain")
     return Config(
@@ -447,18 +453,17 @@ class ModuleInfo:
         self.reexports: set[str] = set()  # ``import x as x`` / ``from m import x as x``
         self.stars: list[str] = []  # internal modules star-imported at module level
         self.all: list[str] | None = None
+        self.all_errors: list[str] = []  # unreadable ``__all__`` (file:line: why)
         self.symbols: dict[str, dict] = {}
         self.asgi: list[str] = []
         self.strings: set[str] = set()  # short string constants (env var names, ...)
         self.commands: set[str] = set()  # CLI subcommand names declared here
         # External usage: ``module:Name`` (or a bare ``module``) per name used.
         self.ext_used: set[str] = set()
-        self.ext_sites: dict[str, int] = (
-            {}
-        )  # top-level import name -> import statements
-        self.ext_hard: set[str] = (
-            set()
-        )  # "isinstance pkg.m:Name" / "subclass Cls(pkg.m:Name)"
+        # Top-level import name -> number of import statements.
+        self.ext_sites: dict[str, int] = {}
+        # "isinstance pkg.m(mod:Name)" / "subclass pkg.m.Cls(mod:Name)".
+        self.ext_hard: set[str] = set()
         self.ext_annotated: set[str] = set()  # names seen in type annotations
         self._scan()
         self._scan_external_usage()
@@ -573,7 +578,7 @@ class ModuleInfo:
                 and isinstance(st.value.func.value, ast.Name)
                 and st.value.func.value.id == "__all__"
             ):
-                raise self._bad_all(st, f"``__all__.{st.value.func.attr}(...)``")
+                self._bad_all(st, f"``__all__.{st.value.func.attr}(...)``")
             elif isinstance(st, ast.Import):
                 for a in st.names:
                     if a.asname and a.asname == a.name.rpartition(".")[2]:
@@ -626,7 +631,7 @@ class ModuleInfo:
                     top = a.name.partition(".")[0]
                     self.ext_sites[top] = self.ext_sites.get(top, 0) + 1
                     local = a.asname or top
-                    mods.setdefault(local, set()).add(a.name if a.asname else a.name)
+                    mods.setdefault(local, set()).add(a.name)
             elif isinstance(n, ast.ImportFrom):
                 base = self._base(n)
                 if not base or self._internal(base):
@@ -708,18 +713,19 @@ class ModuleInfo:
                 if m not in accessed:
                     self.ext_used.add(m)
 
-    def _bad_all(self, st: ast.stmt, why: str) -> SystemExit:
-        return SystemExit(
-            f"codemap: {self._where()}:{st.lineno}: {why}; ``__all__`` must be "
+    def _bad_all(self, st: ast.stmt, why: str) -> None:
+        self.all_errors.append(
+            f"{self._where()}:{st.lineno}: {why}; ``__all__`` must be "
             "a literal list/tuple of strings (or drop it to use the derived "
             "public set)"
         )
 
     def _read_all(self, st: ast.stmt) -> None:
-        """Read a literal ``__all__``; fail loudly on anything else.
+        """Read a literal ``__all__``; record anything else in ``all_errors``.
 
-        A computed ``__all__`` cannot be read statically, and silently guessing
-        would record a wrong public surface in the shards.
+        A computed ``__all__`` cannot be read statically. The module's public
+        set then falls back to the derived one and ``--check`` fails naming
+        file:line, so a guessed surface is never recorded silently.
         """
         value = getattr(st, "value", None)
         if not (
@@ -729,11 +735,13 @@ class ModuleInfo:
                 for e in value.elts
             )
         ):
-            raise self._bad_all(st, "non-literal ``__all__``")
+            self._bad_all(st, "non-literal ``__all__``")
+            return
         names = [e.value for e in value.elts]  # type: ignore[attr-defined]
         if isinstance(st, ast.AugAssign):
             if self.all is None:
-                raise self._bad_all(st, "``__all__ +=`` before ``__all__ =``")
+                self._bad_all(st, "``__all__ +=`` before ``__all__ =``")
+                return
             names = self.all + names
         self.all = names
 
@@ -752,7 +760,12 @@ class CodeMap:
         }
         self._public: dict[str, list[str]] = {}
         self._public_api_cache: dict[str, dict[str, str]] = {}
-        self.problems: list[str] = []
+        self.problems: list[str] = [
+            f"__all__: {e}" for i in self.info.values() for e in i.all_errors
+        ]
+        self.notices: list[str] = []  # unconfigured / empty sections (not failures)
+        self._import_dist: dict[str, str] = {}  # from depends_on ``imports``
+        self.claim_lines: dict[str, list[dict]] = {}  # doc -> claims with lines
 
     def public(self, mod: str, _seen: frozenset[str] = frozenset()) -> list[str]:
         """``__all__`` if defined; else (rule ``all_or_derived``) non-underscore
@@ -761,7 +774,7 @@ class CodeMap:
         if mod in self._public:
             return self._public[mod]
         info = self.info[mod]
-        if info.all is not None:
+        if info.all is not None and not info.all_errors:
             names = set(info.all)
         elif self.cfg.public_rule == "all_only":
             names = set()
@@ -838,7 +851,7 @@ class CodeMap:
         top = dotted.partition(":")[0].partition(".")[0]
         if top in sys.stdlib_module_names or top == "__future__":
             return "stdlib"
-        return self.cfg.distributions.get(top, top)
+        return self._import_dist.get(top) or self.cfg.distributions.get(top, top)
 
     # -- consumers
     def _consumer_index(self) -> tuple[dict[str, set[str]], dict[str, set[str]]]:
@@ -890,7 +903,14 @@ class CodeMap:
                 out.add(home)
             return out
 
-        for p in consumer_files(self.cfg):
+        files = consumer_files(self.cfg)
+        if not self.cfg.consumers:
+            self.notices.append(
+                "consumers: not configured; every module's consumers is empty"
+            )
+        elif not files:
+            self.notices.append("consumers: no tracked file matched")
+        for p in files:
             text = p.read_text(encoding="utf-8", errors="replace")
             rel = self.cfg.rel(p)
             found: set[str] = set()
@@ -1005,6 +1025,7 @@ class CodeMap:
     def features(self) -> dict:
         path = self.cfg.features
         if path is None:
+            self.notices.append("features: not configured; no features registry")
             return {}
         rel = self.cfg.rel(path)
         if not path.is_file():
@@ -1064,6 +1085,10 @@ class CodeMap:
         """Read, validate and normalise the domain charter (``domain.toml``)."""
         path = self.cfg.domain
         if path is None:
+            self.notices.append(
+                "domain: not configured; charter checks (depends_on, private "
+                "imports) are off"
+            )
             return {}
         rel = self.cfg.rel(path)
         if not path.is_file():
@@ -1115,6 +1140,28 @@ class CodeMap:
         depends = table(
             raw.get("depends_on", []), DEPENDS_KEYS, "distribution", "depends_on"
         )
+        # ``imports`` (a top-level import name, or a list) maps imports to the
+        # distribution, so usage is attributed to the declared distribution.
+        for dist, entry in depends.items():
+            names = entry.get("imports")
+            names = [names] if isinstance(names, str) else names or []
+            entry["imports"] = sorted(names)
+            if not names:
+                self.problems.append(f"{rel}: depends_on {dist}: needs 'imports'")
+            for name in names:
+                where = f"{rel}: depends_on {dist}: imports {name!r}"
+                if not re.fullmatch(r"[A-Za-z_]\w*", name):
+                    self.problems.append(f"{where} is not a top-level import name")
+                elif name in self._import_dist:
+                    other = self._import_dist[name]
+                    self.problems.append(f"{where} is also claimed by {other}")
+                elif self.cfg.distributions.get(name, dist) != dist:
+                    self.problems.append(
+                        f"{where} conflicts with [tool.codemap.distributions] "
+                        f"({self.cfg.distributions[name]})"
+                    )
+                else:
+                    self._import_dist[name] = dist
         law = raw.get("law", {})
         for key in sorted(set(law) - LAW_KEYS):
             self.problems.append(f"{rel}: law: unknown key {key!r}")
@@ -1202,7 +1249,22 @@ class CodeMap:
                             f"undeclared name: {ref} (from {d}) used by {where}; "
                             "add it to depends_on"
                         )
+            imported_tops = {
+                t.partition(".")[0]
+                for i in self.info.values()
+                for targets in i.external.values()
+                for t in targets
+            }
             for d, entry in declared.items():
+                if d not in usage:
+                    self.problems.append(
+                        f"depends_on {d}: declared but never imported; remove it"
+                    )
+                for name in entry.get("imports", []):
+                    if name not in imported_tops:
+                        self.problems.append(
+                            f"depends_on {d}: imports {name!r} is never imported"
+                        )
                 for ref in entry.get("names", []):
                     if not ref.endswith(":*") and ref not in usage.get(d, set()):
                         self.problems.append(
@@ -1297,6 +1359,8 @@ class CodeMap:
         """Every backticked package citation in the narrative docs must still
         exist (hard check). Returns the docs checked."""
         checked = []
+        if not self.cfg.narrative:
+            self.notices.append("narrative: not configured; no citation check")
         for rel in self.cfg.narrative:
             p = self.cfg.root / rel
             if not p.is_file():
@@ -1378,9 +1442,16 @@ class CodeMap:
                     return text, all(w in commands for w in subs if w)
             return None
 
-        claims: dict[str, list[dict]] = {}
+        claims: dict[str, dict] = {}
         corpus: dict[str, str] = {}
-        for p in self.claim_docs():
+        docs = self.claim_docs()
+        if not cfg.claims_docs:
+            self.notices.append(
+                "claims_docs: not configured; doc claims and findings are empty"
+            )
+        elif not docs:
+            self.notices.append("claims_docs: no tracked .md file matched")
+        for p in docs:
             rel = cfg.rel(p)
             lines = p.read_text(encoding="utf-8", errors="replace").splitlines()
             corpus[rel] = "\n".join(lines)
@@ -1431,16 +1502,25 @@ class CodeMap:
                     for table in re.findall(r"\[(tool\.[\w.-]+)\]", chunk):
                         found[(no, "config", f"[{table}]")] = table in tables
             if found:
-                claims[rel] = [
+                # Shards hold no line numbers (they would churn on every doc
+                # edit); ``--claims DOC`` prints them on demand.
+                self.claim_lines[rel] = [
                     {"line": line, "kind": kind, "text": text, "resolved": ok}
                     for (line, kind, text), ok in sorted(found.items())
                 ]
+                unique = {(k, t): ok for (_, k, t), ok in found.items()}
+                claims[rel] = {
+                    "claims": [
+                        {"kind": k, "text": t, "resolved": ok}
+                        for (k, t), ok in sorted(unique.items())
+                    ]
+                }
 
         docs_ahead = sorted(
             {
                 f"{rel}: {c['kind']} `{c['text']}`"
                 for rel, cs in claims.items()
-                for c in cs
+                for c in cs["claims"]
                 if not c["resolved"]
             }
         )
@@ -1483,9 +1563,9 @@ class CodeMap:
                     )
         summary = {
             "docs": len(corpus),
-            "claims": sum(len(c) for c in claims.values()),
+            "claims": sum(len(c["claims"]) for c in claims.values()),
             "unresolved": sum(
-                1 for cs in claims.values() for c in cs if not c["resolved"]
+                1 for cs in claims.values() for c in cs["claims"] if not c["resolved"]
             ),
         }
         return claims, {
@@ -1496,6 +1576,7 @@ class CodeMap:
 
     def build(self) -> dict:
         cfg = self.cfg
+        charter = self.domain()  # first: depends_on ``imports`` feed dist_of
         mod_hits, asset_hits = self._consumer_index()
         imported_by: dict[str, dict[str, set[str]]] = {
             m: {k: set() for k in IMPORT_KINDS} for m in self.mods
@@ -1509,7 +1590,7 @@ class CodeMap:
         asset_layers = {
             a: (
                 layer_of(cfg, a.rpartition("/")[0])
-                if cfg.is_internal(a.split("/")[0]) and a.split("/")[0] in cfg.names
+                if a.split("/")[0] in cfg.names
                 else ""
             )
             for a in self.assets
@@ -1599,7 +1680,6 @@ class CodeMap:
         for v in violations:
             self.problems.append(f"layer violation: {v}")
         narrative = self.narrative()
-        charter = self.domain()
         usage, coupling, non_goal_warnings = self.external_usage(charter)
         entry_points = self.entry_points()
         claims, doc_findings = self.doc_claims(entry_points, features, charter)
@@ -1613,6 +1693,7 @@ class CodeMap:
         return {
             "schema": SCHEMA,
             "generator": generator_identity(),
+            "projects": [cfg.rel(p) for p in cfg.projects],
             "packages": {
                 p.name: cfg.rel(p.path)
                 for p in sorted(cfg.packages, key=lambda p: p.name)
@@ -1705,6 +1786,7 @@ INDEX_SECTIONS = (
     "schema",
     "generator",
     "packages",
+    "projects",
     "layers",
     "layer_rules",
     "layer_exceptions",
@@ -1790,8 +1872,8 @@ def changed_fields(old_text: str | None, new_text: str) -> str:
     if len(old) == len(new) == 1 and set(old) == set(new):  # module / asset shard
         (key,) = new
         old, new = old[key], new[key]
-    if not isinstance(old, dict):
-        return ""
+    if not isinstance(old, dict) or not isinstance(new, dict):
+        return "(content)"
     fields = sorted(f for f in set(old) | set(new) if old.get(f) != new.get(f))
     return f"({', '.join(fields)})" if fields else "(formatting only)"
 
@@ -1819,6 +1901,9 @@ def main(argv: list[str] | None = None) -> int:
         "--module", metavar="DOTTED", help="print one module (or asset path) entry"
     )
     mode.add_argument("--feature", metavar="ID", help="print one feature entry")
+    mode.add_argument(
+        "--claims", metavar="DOC", help="print one doc's claims with line numbers"
+    )
     args = ap.parse_args(argv)
 
     cfg = load_config(args.root, args.config)
@@ -1835,6 +1920,14 @@ def main(argv: list[str] | None = None) -> int:
         print(
             json.dumps({args.module: {**entry, "loc": loc}}, indent=2, sort_keys=True)
         )
+        return 0
+
+    if args.claims:
+        found = cm.claim_lines.get(args.claims)
+        if found is None:
+            print(f"no claims indexed for {args.claims}", file=sys.stderr)
+            return 2
+        print(json.dumps({args.claims: found}, indent=2, sort_keys=True))
         return 0
 
     if args.feature:
@@ -1862,6 +1955,8 @@ def main(argv: list[str] | None = None) -> int:
 
     expected = shards(data)
     where = cfg.rel(cfg.out_dir)
+    for note in cm.notices:  # unconfigured or empty sections: say so
+        print(f"codemap: note: {note}")
     if data["non_goal_warnings"]:  # heuristic: reported, never failed
         print(
             f"codemap: {len(data['non_goal_warnings'])} non-goal warning(s) "

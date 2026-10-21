@@ -1,10 +1,11 @@
 {
- "docs/DOCUMENTATION.md": [
-  {
-   "kind": "cli",
-   "line": 7,
-   "resolved": true,
-   "text": "uxdom"
-  }
- ]
+ "docs/DOCUMENTATION.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom"
+   }
+  ]
+ }
 }

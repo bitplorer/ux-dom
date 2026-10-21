@@ -1,124 +1,76 @@
 {
- "docs/reference/XELEMENT.md": [
-  {
-   "kind": "module",
-   "line": 15,
-   "resolved": true,
-   "text": "ux_dom.scripts"
-  },
-  {
-   "kind": "import",
-   "line": 41,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "import",
-   "line": 41,
-   "resolved": true,
-   "text": "ux_dom.dom:template"
-  },
-  {
-   "kind": "module",
-   "line": 41,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "import",
-   "line": 42,
-   "resolved": true,
-   "text": "ux_dom.dom.htmlelement:CustomElement"
-  },
-  {
-   "kind": "module",
-   "line": 42,
-   "resolved": true,
-   "text": "ux_dom.dom.htmlelement"
-  },
-  {
-   "kind": "import",
-   "line": 71,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "import",
-   "line": 71,
-   "resolved": true,
-   "text": "ux_dom.dom:slot"
-  },
-  {
-   "kind": "import",
-   "line": 71,
-   "resolved": true,
-   "text": "ux_dom.dom:template"
-  },
-  {
-   "kind": "module",
-   "line": 71,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "import",
-   "line": 72,
-   "resolved": true,
-   "text": "ux_dom.dom.htmlelement:WebComponent"
-  },
-  {
-   "kind": "module",
-   "line": 72,
-   "resolved": true,
-   "text": "ux_dom.dom.htmlelement"
-  },
-  {
-   "kind": "import",
-   "line": 97,
-   "resolved": true,
-   "text": "ux_dom:XElement"
-  },
-  {
-   "kind": "import",
-   "line": 98,
-   "resolved": true,
-   "text": "ux_dom.dom:script"
-  },
-  {
-   "kind": "module",
-   "line": 98,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "import",
-   "line": 99,
-   "resolved": true,
-   "text": "ux_dom.scripts:x_element_js"
-  },
-  {
-   "kind": "module",
-   "line": 99,
-   "resolved": true,
-   "text": "ux_dom.scripts"
-  },
-  {
-   "kind": "module",
-   "line": 135,
-   "resolved": true,
-   "text": "ux_dom/dom/htmlelement.py"
-  },
-  {
-   "kind": "module",
-   "line": 136,
-   "resolved": true,
-   "text": "ux_dom/scripts/x_element.js"
-  },
-  {
-   "kind": "module",
-   "line": 137,
-   "resolved": true,
-   "text": "ux_dom/scripts/__init__.py"
-  }
- ]
+ "docs/reference/XELEMENT.md": {
+  "claims": [
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom.htmlelement:CustomElement"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom.htmlelement:WebComponent"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:div"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:script"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:slot"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:template"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.scripts:x_element_js"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:XElement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom.htmlelement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.scripts"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/dom/htmlelement.py"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/scripts/__init__.py"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/scripts/x_element.js"
+   }
+  ]
+ }
 }

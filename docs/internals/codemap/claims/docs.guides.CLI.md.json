@@ -1,40 +1,36 @@
 {
- "docs/guides/CLI.md": [
-  {
-   "kind": "cli",
-   "line": 21,
-   "resolved": true,
-   "text": "uxdom"
-  },
-  {
-   "kind": "cli",
-   "line": 36,
-   "resolved": true,
-   "text": "uxdom doctor"
-  },
-  {
-   "kind": "cli",
-   "line": 37,
-   "resolved": true,
-   "text": "uxdom lint"
-  },
-  {
-   "kind": "cli",
-   "line": 38,
-   "resolved": true,
-   "text": "uxdom profile"
-  },
-  {
-   "kind": "cli",
-   "line": 39,
-   "resolved": true,
-   "text": "uxdom add component Card"
-  },
-  {
-   "kind": "cli",
-   "line": 40,
-   "resolved": true,
-   "text": "uxdom add ui Button"
-  }
- ]
+ "docs/guides/CLI.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add component Card"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add ui Button"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom lint"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom profile"
+   }
+  ]
+ }
 }

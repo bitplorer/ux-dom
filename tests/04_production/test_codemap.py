@@ -180,7 +180,7 @@ class TestCodeMap(unittest.TestCase):
             """)
         self.assertEqual(info.all, ["a", "b", "c"])
 
-    def test_non_literal_all_fails_loudly(self):
+    def test_non_literal_all_is_a_finding_not_a_crash(self):
         bad = {
             "comprehension": "__all__ = [n for n in globals() if n[0] != '_']",
             "concatenation": "__all__ = ['a'] + other.__all__",
@@ -191,30 +191,29 @@ class TestCodeMap(unittest.TestCase):
             "augassign-first": "__all__ += ['a']",
         }
         for label, src in bad.items():
-            with self.subTest(label), self.assertRaises(SystemExit) as ctx:
-                self._info(src)
-            msg = str(ctx.exception.code)
-            self.assertIn("m.py:", msg)
-            self.assertIn("must be a literal list/tuple of strings", msg)
+            with self.subTest(label):
+                info = self._info(src)  # no SystemExit
+                (msg,) = info.all_errors
+                self.assertRegex(msg, r"m\.py:\d+: ")
+                self.assertIn("must be a literal list/tuple of strings", msg)
+        # The end-to-end finding (--check exits 1 naming file:line) is covered
+        # by test_codemap_fixtures.TestCheckFailures.test_dynamic_all_is_a_finding.
 
-    def test_non_literal_all_exits_nonzero(self):
-        # Same path main() takes: the SystemExit escapes to the interpreter.
-        with tempfile.TemporaryDirectory() as tmp:
-            path = Path(tmp) / "m.py"
-            path.write_text("__all__ = [n for n in dir()]\n", encoding="utf-8")
-            code = (
-                "import importlib.util, sys; from pathlib import Path\n"
-                f"spec = importlib.util.spec_from_file_location('c', {str(SCRIPT)!r})\n"
-                "m = importlib.util.module_from_spec(spec); sys.modules['c'] = m\n"
-                "spec.loader.exec_module(m)\n"
-                f"p = Path({str(path)!r})\n"
-                "m.ModuleInfo('ux_dom.m', p, {'ux_dom.m': p}, {'ux_dom'})\n"
-            )
-            proc = subprocess.run(
-                [sys.executable, "-c", code], capture_output=True, text=True
-            )
-        self.assertEqual(proc.returncode, 1, proc.stdout + proc.stderr)
-        self.assertIn("m.py:1: non-literal", proc.stderr)
+    def test_doc_edit_without_claim_change_keeps_map_fresh(self):
+        # Claims shards carry no line numbers: a blank line must not go stale.
+        doc = ROOT / "INSTALL.md"
+        original = doc.read_bytes()
+        try:
+            doc.write_bytes(b"\n" + original)
+            proc = _run("--check")
+            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+        finally:
+            doc.write_bytes(original)
+        lines = json.loads(_run("--claims", "INSTALL.md").stdout)["INSTALL.md"]
+        self.assertTrue(all("line" in c for c in lines))  # on demand only
+        for rel, text in self.codemap.shards(self.data).items():
+            if rel.startswith("claims/"):
+                self.assertNotIn('"line"', text, rel)
 
     def test_write_changed_is_surgical_and_removes_orphans(self):
         cm = self.codemap

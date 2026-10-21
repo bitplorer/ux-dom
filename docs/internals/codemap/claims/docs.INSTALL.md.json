@@ -1,88 +1,71 @@
 {
- "docs/INSTALL.md": [
-  {
-   "kind": "module",
-   "line": 8,
-   "resolved": true,
-   "text": "ux_dom"
-  },
-  {
-   "kind": "cli",
-   "line": 9,
-   "resolved": true,
-   "text": "uxdom"
-  },
-  {
-   "kind": "module",
-   "line": 29,
-   "resolved": true,
-   "text": "ux_dom.response.starlette"
-  },
-  {
-   "kind": "module",
-   "line": 31,
-   "resolved": true,
-   "text": "src/ux_dom"
-  },
-  {
-   "kind": "cli",
-   "line": 45,
-   "resolved": true,
-   "text": "uxdom --help"
-  },
-  {
-   "kind": "cli",
-   "line": 46,
-   "resolved": true,
-   "text": "uxdom doctor"
-  },
-  {
-   "kind": "cli",
-   "line": 47,
-   "resolved": true,
-   "text": "uxdom lint"
-  },
-  {
-   "kind": "import",
-   "line": 53,
-   "resolved": true,
-   "text": "ux_dom:Component"
-  },
-  {
-   "kind": "import",
-   "line": 53,
-   "resolved": true,
-   "text": "ux_dom:Document"
-  },
-  {
-   "kind": "import",
-   "line": 54,
-   "resolved": true,
-   "text": "ux_dom:Csp"
-  },
-  {
-   "kind": "import",
-   "line": 54,
-   "resolved": true,
-   "text": "ux_dom:Htmx"
-  },
-  {
-   "kind": "import",
-   "line": 54,
-   "resolved": true,
-   "text": "ux_dom:XElement"
-  },
-  {
-   "kind": "module",
-   "line": 60,
-   "resolved": true,
-   "text": "ux_dom.__version__"
-  },
-  {
-   "kind": "cli",
-   "line": 61,
-   "resolved": true,
-   "text": "uxdom doctor"
-  }
- ]
+ "docs/INSTALL.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom --help"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom lint"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Component"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Csp"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Document"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Htmx"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:XElement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "src/ux_dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.__version__"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.response.starlette"
+   }
+  ]
+ }
 }

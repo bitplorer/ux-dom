@@ -1,10 +1,11 @@
 {
- "docs/internals/DOCUMENT_AND_APP.md": [
-  {
-   "kind": "cli",
-   "line": 60,
-   "resolved": true,
-   "text": "uxdom doctor          # pure Document health"
-  }
- ]
+ "docs/internals/DOCUMENT_AND_APP.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor          # pure Document health"
+   }
+  ]
+ }
 }

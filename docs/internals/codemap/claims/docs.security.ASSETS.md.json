@@ -1,52 +1,46 @@
 {
- "docs/security/ASSETS.md": [
-  {
-   "kind": "cli",
-   "line": 48,
-   "resolved": true,
-   "text": "uxdom doctor"
-  },
-  {
-   "kind": "import",
-   "line": 54,
-   "resolved": true,
-   "text": "ux_dom.plugins:static_from_package"
-  },
-  {
-   "kind": "module",
-   "line": 54,
-   "resolved": true,
-   "text": "ux_dom.plugins"
-  },
-  {
-   "kind": "module",
-   "line": 75,
-   "resolved": true,
-   "text": "ux_dom/scripts/"
-  },
-  {
-   "kind": "module",
-   "line": 79,
-   "resolved": true,
-   "text": "ux_dom.plugins.safe_static"
-  },
-  {
-   "kind": "import",
-   "line": 99,
-   "resolved": true,
-   "text": "ux_dom:Document"
-  },
-  {
-   "kind": "import",
-   "line": 100,
-   "resolved": true,
-   "text": "ux_dom:Csp"
-  },
-  {
-   "kind": "import",
-   "line": 100,
-   "resolved": true,
-   "text": "ux_dom:XElement"
-  }
- ]
+ "docs/security/ASSETS.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.plugins:static_from_package"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Csp"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Document"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:XElement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.plugins"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.plugins.safe_static"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/scripts/"
+   }
+  ]
+ }
 }

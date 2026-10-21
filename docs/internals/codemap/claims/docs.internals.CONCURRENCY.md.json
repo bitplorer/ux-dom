@@ -1,22 +1,21 @@
 {
- "docs/internals/CONCURRENCY.md": [
-  {
-   "kind": "module",
-   "line": 8,
-   "resolved": true,
-   "text": "ux_dom"
-  },
-  {
-   "kind": "cli",
-   "line": 9,
-   "resolved": true,
-   "text": "uxdom"
-  },
-  {
-   "kind": "module",
-   "line": 33,
-   "resolved": true,
-   "text": "ux_dom.concurrency"
-  }
- ]
+ "docs/internals/CONCURRENCY.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.concurrency"
+   }
+  ]
+ }
 }

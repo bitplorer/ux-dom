@@ -97,40 +97,50 @@
    "docs/reference/STACK.md: env `UX_CHANNEL_PATH`"
   ],
   "summary": {
-   "claims": 396,
+   "claims": 332,
    "docs": 76,
-   "unresolved": 6
+   "unresolved": 5
   }
  },
  "domain": {
   "depends_on": {
    "Jinja2": {
-    "imports": "jinja2",
+    "imports": [
+     "jinja2"
+    ],
     "names": [
      "jinja2.sandbox:SandboxedEnvironment",
      "jinja2.utils:htmlsafe_json_dumps"
     ]
    },
    "MarkupSafe": {
-    "imports": "markupsafe",
+    "imports": [
+     "markupsafe"
+    ],
     "names": [
      "markupsafe:Markup"
     ]
    },
    "fastapi": {
-    "imports": "fastapi",
+    "imports": [
+     "fastapi"
+    ],
     "names": [
      "fastapi.responses:Response"
     ]
    },
    "marko": {
-    "imports": "marko",
+    "imports": [
+     "marko"
+    ],
     "names": [
      "marko:convert"
     ]
    },
    "starlette": {
-    "imports": "starlette",
+    "imports": [
+     "starlette"
+    ],
     "names": [
      "starlette.background:BackgroundTask",
      "starlette.responses:HTMLResponse",
@@ -139,7 +149,9 @@
     ]
    },
    "typer": {
-    "imports": "typer",
+    "imports": [
+     "typer"
+    ],
     "names": [
      "typer:Option",
      "typer:Typer",
@@ -147,7 +159,9 @@
     ]
    },
    "ux-channel": {
-    "imports": "ux_channel",
+    "imports": [
+     "ux_channel"
+    ],
     "names": [
      "ux_channel",
      "ux_channel.components.primitive:region_attrs",
@@ -155,7 +169,9 @@
     ]
    },
    "ux-valio": {
-    "imports": "ux_valio",
+    "imports": [
+     "ux_valio"
+    ],
     "names": [
      "ux_valio:EnumValidator",
      "ux_valio:IntegerEnumValidator",
@@ -997,7 +1013,7 @@
  },
  "generator": {
   "name": "codemap",
-  "sha256": "938ac45430b858063c386d064bb79b09a64d3bbc0de0515cf1ff49945b2359d4",
+  "sha256": "9845146ba84f722a98d5ac6a600cc162dd750a65e8dcb904982e11493df9012e",
   "version": "2.0.0"
  },
  "layer_exceptions": [
@@ -1230,6 +1246,9 @@
  "packages": {
   "ux_dom": "src/ux_dom"
  },
+ "projects": [
+  "pyproject.toml"
+ ],
  "public_api": {
   "ux_dom": {
    "Component": "ux_dom.dom.src.component",

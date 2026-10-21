@@ -1,52 +1,46 @@
 {
- "docs/reference/DOCUMENT.md": [
-  {
-   "kind": "import",
-   "line": 216,
-   "resolved": true,
-   "text": "ux_dom:Document"
-  },
-  {
-   "kind": "import",
-   "line": 217,
-   "resolved": true,
-   "text": "ux_dom.dom:meta"
-  },
-  {
-   "kind": "import",
-   "line": 217,
-   "resolved": true,
-   "text": "ux_dom.dom:title"
-  },
-  {
-   "kind": "module",
-   "line": 217,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "import",
-   "line": 218,
-   "resolved": true,
-   "text": "ux_dom:Htmx"
-  },
-  {
-   "kind": "import",
-   "line": 218,
-   "resolved": true,
-   "text": "ux_dom:XElement"
-  },
-  {
-   "kind": "import",
-   "line": 237,
-   "resolved": true,
-   "text": "ux_dom.response.starlette:HTMLResponse"
-  },
-  {
-   "kind": "module",
-   "line": 237,
-   "resolved": true,
-   "text": "ux_dom.response.starlette"
-  }
- ]
+ "docs/reference/DOCUMENT.md": {
+  "claims": [
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:meta"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:title"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.response.starlette:HTMLResponse"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Document"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Htmx"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:XElement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.response.starlette"
+   }
+  ]
+ }
 }

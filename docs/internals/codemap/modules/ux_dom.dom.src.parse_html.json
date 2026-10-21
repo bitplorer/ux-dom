@@ -392,7 +392,7 @@
       "signature": "(self, data: str)"
      },
      "handle_startendtag": {
-      "doc": "When found a XHTML tag style then nest it up to the tree.",
+      "doc": "``<tag/>``: the flag ends only void, foreign and raw text elements.",
       "kind": "function",
       "signature": "(self, tag: str, attrs)"
      },
@@ -489,40 +489,93 @@
       "kind": "function",
       "signature": "(self, name: str='')"
      },
+     "_body_start": {
+      "doc": "The \"in body\" rules (§13.2.6.4.7) that close elements before a",
+      "kind": "function",
+      "signature": "(self, name: str) -> bool"
+     },
+     "_close_p": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_current_is": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *names: str) -> bool"
+     },
+     "_generate_implied_end_tags": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, but: str='') -> None"
+     },
+     "_html_at": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "Whether a start tag at foreign ``node`` follows the HTML rules.",
+      "kind": "function",
+      "signature": "(node: Element, name: str) -> bool"
+     },
+     "_in_scope": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key: str, scope: str='scope') -> bool"
+     },
+     "_insert": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, kind, name: str, attrs, namespace: str='html') -> Element"
+     },
+     "_pop": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_pop_to": {
+      "doc": "Pop the element at ``index`` and every element above it.",
+      "kind": "function",
+      "signature": "(self, index: int) -> None"
+     },
+     "_pos": {
+      "doc": "Position of the nearest open element listed under ``key``, or -1.",
+      "kind": "function",
+      "signature": "(self, key: str) -> int"
+     },
+     "_push": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, node: Element) -> None"
+     },
+     "_table_start": {
+      "doc": "The table insertion modes (§13.2.6.4.9-15) for a start tag.",
+      "kind": "function",
+      "signature": "(self, name: str) -> bool"
+     },
      "clear": {
       "doc": "Clear the outmost and stack for a new parsing.",
       "kind": "function",
       "signature": "(self)"
      },
-     "enclose": {
-      "doc": "When a closing tag is found, pop the pointer's scope from the stack,",
+     "end": {
+      "doc": "An end tag: close the element it names where the spec does.",
       "kind": "function",
-      "signature": "(self, name: str)"
+      "signature": "(self, name: str) -> None"
      },
      "last": {
       "doc": "Return the last pointer which point to the actual tag scope.",
       "kind": "function",
       "signature": "(self) -> Element"
      },
-     "nest_tag": {
-      "doc": "Nest a given tag at the bottom of the tree using",
-      "kind": "function",
-      "signature": "(self, name: str, attrs)"
-     },
      "nest_terminal": {
       "doc": "Nest the data onto the tree.",
       "kind": "function",
       "signature": "(self, klass: type[TerminalElement], data: str)"
      },
-     "nest_vtag": {
-      "doc": "Nest a VoidTag onto the tree.",
+     "start": {
+      "doc": "A start tag: close what it implies, then insert it.",
       "kind": "function",
-      "signature": "(self, name: str, attrs)"
-     },
-     "nest_xtag": {
-      "doc": "Nest an XTag onto the tree.",
-      "kind": "function",
-      "signature": "(self, name: str, attrs)"
+      "signature": "(self, name: str, attrs, *, void: bool=False, self_closing=False)"
      }
     },
     "public": true
@@ -569,11 +622,23 @@
     "public": false,
     "signature": "(text: str, *, keep_style: bool) -> str"
    },
+   "_is_integration_point": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(namespace: str, name: str, attrs: dict) -> bool"
+   },
    "_normalize_attrs": {
     "doc": "HTMLParser may pass list[tuple[str, str|None]]; coerce to dict.",
     "kind": "function",
     "public": false,
     "signature": "(attrs) -> dict"
+   },
+   "_stack_keys": {
+    "doc": "The stack indexes ``node`` is listed in while it is open (see ``Tree``).",
+    "kind": "function",
+    "public": false,
+    "signature": "(node: Element) -> tuple[str, ...]"
    },
    "tokenize_html": {
     "doc": "",

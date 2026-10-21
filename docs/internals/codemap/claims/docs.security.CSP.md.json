@@ -1,34 +1,31 @@
 {
- "docs/security/CSP.md": [
-  {
-   "kind": "import",
-   "line": 6,
-   "resolved": true,
-   "text": "ux_dom.plugins:Csp"
-  },
-  {
-   "kind": "module",
-   "line": 6,
-   "resolved": true,
-   "text": "ux_dom.plugins"
-  },
-  {
-   "kind": "import",
-   "line": 64,
-   "resolved": true,
-   "text": "ux_dom.plugins.csp:build_csp_header"
-  },
-  {
-   "kind": "import",
-   "line": 64,
-   "resolved": true,
-   "text": "ux_dom.plugins.csp:policy_dev"
-  },
-  {
-   "kind": "module",
-   "line": 64,
-   "resolved": true,
-   "text": "ux_dom.plugins.csp"
-  }
- ]
+ "docs/security/CSP.md": {
+  "claims": [
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.plugins.csp:build_csp_header"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.plugins.csp:policy_dev"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.plugins:Csp"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.plugins"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.plugins.csp"
+   }
+  ]
+ }
 }

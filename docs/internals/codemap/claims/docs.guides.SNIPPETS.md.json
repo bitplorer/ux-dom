@@ -1,334 +1,151 @@
 {
- "docs/guides/SNIPPETS.md": [
-  {
-   "kind": "cli",
-   "line": 43,
-   "resolved": true,
-   "text": "uxdom doctor"
-  },
-  {
-   "kind": "import",
-   "line": 56,
-   "resolved": true,
-   "text": "ux_dom:Component"
-  },
-  {
-   "kind": "import",
-   "line": 56,
-   "resolved": true,
-   "text": "ux_dom:Document"
-  },
-  {
-   "kind": "import",
-   "line": 57,
-   "resolved": true,
-   "text": "ux_dom:Csp"
-  },
-  {
-   "kind": "import",
-   "line": 57,
-   "resolved": true,
-   "text": "ux_dom:Htmx"
-  },
-  {
-   "kind": "import",
-   "line": 57,
-   "resolved": true,
-   "text": "ux_dom:XElement"
-  },
-  {
-   "kind": "import",
-   "line": 58,
-   "resolved": true,
-   "text": "ux_dom.dom:button"
-  },
-  {
-   "kind": "import",
-   "line": 58,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "import",
-   "line": 58,
-   "resolved": true,
-   "text": "ux_dom.dom:h1"
-  },
-  {
-   "kind": "import",
-   "line": 58,
-   "resolved": true,
-   "text": "ux_dom.dom:p"
-  },
-  {
-   "kind": "import",
-   "line": 58,
-   "resolved": true,
-   "text": "ux_dom.dom:section"
-  },
-  {
-   "kind": "module",
-   "line": 58,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "import",
-   "line": 84,
-   "resolved": true,
-   "text": "ux_dom:Component"
-  },
-  {
-   "kind": "import",
-   "line": 85,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "import",
-   "line": 85,
-   "resolved": true,
-   "text": "ux_dom.dom:h2"
-  },
-  {
-   "kind": "import",
-   "line": 85,
-   "resolved": true,
-   "text": "ux_dom.dom:li"
-  },
-  {
-   "kind": "import",
-   "line": 85,
-   "resolved": true,
-   "text": "ux_dom.dom:ul"
-  },
-  {
-   "kind": "module",
-   "line": 85,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "import",
-   "line": 108,
-   "resolved": true,
-   "text": "ux_dom:Csp"
-  },
-  {
-   "kind": "import",
-   "line": 109,
-   "resolved": true,
-   "text": "ux_dom:Document"
-  },
-  {
-   "kind": "import",
-   "line": 110,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "module",
-   "line": 110,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "import",
-   "line": 124,
-   "resolved": true,
-   "text": "ux_dom:Fragment"
-  },
-  {
-   "kind": "import",
-   "line": 125,
-   "resolved": true,
-   "text": "ux_dom.dom:span"
-  },
-  {
-   "kind": "module",
-   "line": 125,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "import",
-   "line": 141,
-   "resolved": true,
-   "text": "ux_dom:ReactiveComponent"
-  },
-  {
-   "kind": "import",
-   "line": 142,
-   "resolved": true,
-   "text": "ux_dom.dom:button"
-  },
-  {
-   "kind": "import",
-   "line": 142,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "module",
-   "line": 142,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "import",
-   "line": 166,
-   "resolved": true,
-   "text": "ux_dom.ui:Button"
-  },
-  {
-   "kind": "import",
-   "line": 166,
-   "resolved": true,
-   "text": "ux_dom.ui:Card"
-  },
-  {
-   "kind": "import",
-   "line": 166,
-   "resolved": true,
-   "text": "ux_dom.ui:CardContent"
-  },
-  {
-   "kind": "import",
-   "line": 166,
-   "resolved": true,
-   "text": "ux_dom.ui:CardHeader"
-  },
-  {
-   "kind": "import",
-   "line": 166,
-   "resolved": true,
-   "text": "ux_dom.ui:CardTitle"
-  },
-  {
-   "kind": "module",
-   "line": 166,
-   "resolved": true,
-   "text": "ux_dom.ui"
-  },
-  {
-   "kind": "import",
-   "line": 182,
-   "resolved": true,
-   "text": "ux_dom:Document"
-  },
-  {
-   "kind": "import",
-   "line": 183,
-   "resolved": true,
-   "text": "ux_dom:Csp"
-  },
-  {
-   "kind": "import",
-   "line": 183,
-   "resolved": true,
-   "text": "ux_dom:Htmx"
-  },
-  {
-   "kind": "import",
-   "line": 183,
-   "resolved": true,
-   "text": "ux_dom:XElement"
-  },
-  {
-   "kind": "import",
-   "line": 184,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "module",
-   "line": 184,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "cli",
-   "line": 218,
-   "resolved": true,
-   "text": "uxdom doctor"
-  },
-  {
-   "kind": "cli",
-   "line": 219,
-   "resolved": true,
-   "text": "uxdom lint"
-  },
-  {
-   "kind": "cli",
-   "line": 220,
-   "resolved": true,
-   "text": "uxdom profile"
-  },
-  {
-   "kind": "cli",
-   "line": 221,
-   "resolved": true,
-   "text": "uxdom add component Card"
-  },
-  {
-   "kind": "cli",
-   "line": 233,
-   "resolved": true,
-   "text": "uxdom ui"
-  },
-  {
-   "kind": "cli",
-   "line": 234,
-   "resolved": true,
-   "text": "uxdom add ui Button"
-  },
-  {
-   "kind": "cli",
-   "line": 235,
-   "resolved": true,
-   "text": "uxdom add component Card"
-  },
-  {
-   "kind": "cli",
-   "line": 236,
-   "resolved": true,
-   "text": "uxdom doctor"
-  },
-  {
-   "kind": "cli",
-   "line": 237,
-   "resolved": true,
-   "text": "uxdom lint"
-  },
-  {
-   "kind": "cli",
-   "line": 238,
-   "resolved": true,
-   "text": "uxdom profile"
-  },
-  {
-   "kind": "import",
-   "line": 251,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "import",
-   "line": 251,
-   "resolved": true,
-   "text": "ux_dom.dom:h1"
-  },
-  {
-   "kind": "import",
-   "line": 251,
-   "resolved": true,
-   "text": "ux_dom.dom:p"
-  },
-  {
-   "kind": "module",
-   "line": 251,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  }
- ]
+ "docs/guides/SNIPPETS.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add component Card"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add ui Button"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom lint"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom profile"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom ui"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:button"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:div"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:h1"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:h2"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:li"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:p"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:section"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:span"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:ul"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:Button"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:Card"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:CardContent"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:CardHeader"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:CardTitle"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Component"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Csp"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Document"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Fragment"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Htmx"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:ReactiveComponent"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:XElement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.ui"
+   }
+  ]
+ }
 }

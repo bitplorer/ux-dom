@@ -291,6 +291,11 @@
       "kind": "function",
       "signature": "(self, sb, indent_level, indent_str, pretty, _seen=None)"
      },
+     "_render_children_steps": {
+      "doc": "``_render_children`` as steps for ``_drive``: each child render is",
+      "kind": "function",
+      "signature": "(self, sb, indent_level, indent_str, pretty, _seen)"
+     },
      "_render_close_tag": {
       "doc": "",
       "kind": "function",
@@ -301,10 +306,20 @@
       "kind": "function",
       "signature": "(self, /, sb, name, open_tag, indent_level=None, indent_str=None, pretty=None)"
      },
+     "_render_steps": {
+      "doc": "``_render`` as steps for ``_drive`` (the memos are already set).",
+      "kind": "function",
+      "signature": "(self, sb, indent_level, indent_str, pretty, _seen)"
+     },
      "_walk_render_tokens": {
       "doc": "Token generator for async/stream serialize (compact or pretty).",
       "kind": "function",
       "signature": "(self, indent_level, indent_str, pretty, _seen=None)"
+     },
+     "_walk_steps": {
+      "doc": "One node's compact tokens; a child tag is yielded as",
+      "kind": "function",
+      "signature": "(self, indent_level, indent_str, pretty, _seen)"
      },
      "_wrap_attr_value": {
       "doc": "",
@@ -339,6 +354,12 @@
     "public": false,
     "signature": "(cls) -> bool"
    },
+   "_drive": {
+    "doc": "Run render steps (``Tags._render_steps``) on an explicit stack.",
+    "kind": "function",
+    "public": false,
+    "signature": "(steps)"
+   },
    "_element_name": {
     "doc": "Lowercase name of the start tag ``node`` writes, or ``None`` if none.",
     "kind": "function",
@@ -362,6 +383,24 @@
     "kind": "function",
     "public": false,
     "signature": "(node, memo: dict, context: str | None) -> tuple[int, int, bool]"
+   },
+   "_scan_close": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(frame: list, memo: dict) -> tuple[int, int, bool]"
+   },
+   "_scan_frame": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(node, memo: dict, context: str | None) -> list"
+   },
+   "_scan_leaf": {
+    "doc": "``_scan`` of a node with nothing to walk, else ``None``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(node, memo: dict) -> tuple[int, int, bool] | None"
    },
    "_text_state_name": {
     "doc": "``node``'s name if the tokenizer reads its body as RCDATA / RAWTEXT.",

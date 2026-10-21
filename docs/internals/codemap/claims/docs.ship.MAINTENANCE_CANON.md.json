@@ -1,10 +1,11 @@
 {
- "docs/ship/MAINTENANCE_CANON.md": [
-  {
-   "kind": "cli",
-   "line": 32,
-   "resolved": true,
-   "text": "uxdom doctor"
-  }
- ]
+ "docs/ship/MAINTENANCE_CANON.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   }
+  ]
+ }
 }

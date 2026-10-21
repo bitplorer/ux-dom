@@ -1,16 +1,16 @@
 {
- "docs/ship/PUBLISHING.md": [
-  {
-   "kind": "module",
-   "line": 5,
-   "resolved": true,
-   "text": "ux_dom.__version__"
-  },
-  {
-   "kind": "module",
-   "line": 31,
-   "resolved": true,
-   "text": "ux_dom/py.typed"
-  }
- ]
+ "docs/ship/PUBLISHING.md": {
+  "claims": [
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.__version__"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/py.typed"
+   }
+  ]
+ }
 }

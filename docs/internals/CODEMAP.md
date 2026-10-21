@@ -36,6 +36,7 @@ python scripts/codemap.py                              # rewrite every shard, re
 python scripts/codemap.py --module ux_dom.cli.doctor   # one module's entry (+ loc)
 python scripts/codemap.py --module ux_dom/scripts/x_element.js
 python scripts/codemap.py --feature sanitizer          # one feature + its modules' summaries
+python scripts/codemap.py --claims INSTALL.md          # one doc's claims, with line numbers
 ```
 
 An in-flight PR that goes stale (because `main` moved, or because it touched
@@ -46,9 +47,15 @@ are orphans: `--check` names them, and both write modes delete them.
 problem: a broken reference in `features.toml`, `domain.toml`, the narrative
 docs or a console-script target; a layer violation; a module-level cycle not in
 `allowed_cycles`; an allowlist entry (`allowed_cycles`, `layer_exceptions`,
-a `depends_on` name) that no longer matches anything; or an undeclared or
-private foreign import. The write modes print the same problems and exit 1, after
-writing.
+a `depends_on` distribution, import or name) that no longer matches anything;
+an undeclared or private foreign import; or an `__all__` that is not a literal
+list/tuple of strings (named `file:line`). The write modes print the same problems
+and exit 1, after writing.
+
+Every run also prints a `codemap: note:` line for each optional section that is
+not configured or matched nothing: `consumers`, `claims_docs`, `features`,
+`domain` and `narrative`. A minimal config therefore says what it leaves out
+instead of producing silently empty sections.
 
 The output is deterministic (sorted keys and lists, no timestamps or commit
 hashes), so a shard changes only when its module's symbols, imports, public
@@ -64,7 +71,7 @@ demand.
 | `index.json` | Repo-level sections, below, plus `modules` / `assets` (name → layer). |
 | `modules/<dotted.name>.json` | `{name: {path, layer, doc, is_public, public, exported_as, symbols, imports_internal, imports_external, imported_by, consumers, features}}` |
 | `assets/<dotted.path>.json` | Asset files matched by `assets` globs, e.g. `ux_dom.scripts.x_element.js.json`: `path`, `layer`, `referenced_by` (modules naming the file), `consumers`, `features`. |
-| `claims/<dotted.doc.path>.json` | One per doc with claims, e.g. `claims/docs.guides.CLI.md.json`: `{doc: [{line, kind, text, resolved}]}`. See [Doc claims](#doc-claims). |
+| `claims/<dotted.doc.path>.json` | One per doc with claims, e.g. `claims/docs.guides.CLI.md.json`: `{doc: {claims: [{kind, text, resolved}]}}`, unique and line-free. `--claims DOC` prints them with line numbers. See [Doc claims](#doc-claims). |
 
 ### `index.json`
 
@@ -72,6 +79,7 @@ demand.
 |-----|---------|
 | `schema`, `generator` | Map schema (2); generator `name`, `version`, `sha256` of `scripts/codemap.py`. |
 | `packages` | Import name → package directory. |
+| `projects` | pyprojects read for entry points. |
 | `layers`, `layer_rules`, `layer_exceptions` | The config, echoed. |
 | `layer_graph` | Layer → other layers it imports at runtime (module or function level). |
 | `layer_violations` | Runtime edges a `layer_rules` entry forbids that `layer_exceptions` does not accept. Must be empty. |
@@ -89,8 +97,10 @@ demand.
 
 ### Module fields
 
-- **`public`**: `__all__` if defined (it must be a literal list/tuple of
-  strings, or the build fails with `file:line`). Otherwise, with
+- **`public`**: `__all__` if defined. It must be a literal list/tuple of
+  strings; anything else (a comprehension, `__all__.append` in a `try` for an
+  optional dependency, …) is a `--check` problem naming `file:line`, and that
+  module falls back to the derived set below. Otherwise, with
   `public_api.rule = "all_or_derived"`, top-level non-underscore
   defs/classes/assignments, plus PEP 484 re-exports (`x as x`) and star-import
   expansions; with `"all_only"`, nothing.
@@ -137,6 +147,11 @@ pyprojects, like cek-python, or a project in `python/`, like ux-channel).
 to the repo root.** Unknown keys fail the build. ux-dom's config is at the
 end of [`pyproject.toml`](../../pyproject.toml).
 
+**Vendor the script at `<repo root>/scripts/codemap.py`** in every repo,
+including ux-channel, whose project lives in `python/`. `--root` defaults to
+the script's grandparent directory, so a copy at `python/scripts/` would
+resolve every config path against `python/` instead.
+
 | Key | Default | Meaning |
 |-----|---------|---------|
 | `packages` | required | Package directories, e.g. `["src/ux_dom"]`, `["ux_motion"]`, `["cek-host/src/cek_host", "cek-surface/src/cek_surface"]`. Each directory's name is the import name and its parent is the import root. |
@@ -153,8 +168,8 @@ end of [`pyproject.toml`](../../pyproject.toml).
 | `features` | none | Path of the features registry. |
 | `domain` | none | Path of the domain charter. |
 | `narrative` | `[]` | Human-written docs whose citations are verified. |
-| `projects` | the config's pyproject | pyprojects read for entry points. |
-| `distributions` | `{}` | Import name → distribution name, where they differ. |
+| `projects` | the config's pyproject plus the nearest pyproject above each package | pyprojects read for entry points (listed in `index.json` `projects`). The default covers multi-project repos such as cek-python. |
+| `distributions` | `{}` | Import name → distribution name where they differ, for repos without a charter. With a charter, prefer `depends_on.imports`; a conflicting pair is a problem. |
 | `asgi` | `[]` | Extra `module:attr` ASGI apps (validated). |
 | `claims_docs` | `[]` | Markdown files or directories whose claims are indexed. |
 | `claims_exclude` | `[]` | Paths under `claims_docs` to skip (history such as ADRs or archives, which name removed code on purpose). |
@@ -191,9 +206,11 @@ checkable:
   module whose last name segment, or a top-level symbol whose name, contains a
   keyword as a whole word (CamelCase and snake_case are split, case-insensitive)
   is listed in `non_goal_warnings`.
-- `[[depends_on]]`: `distribution`, `imports`, `names`, the lower libraries the
-  library may use and exactly which of their names (`module:Name`, a bare
-  `module`, or `module:*` for a whole module).
+- `[[depends_on]]`: `distribution`, `imports`, `names`. These are the lower
+  libraries the library may use, the top-level import name(s) each provides
+  (a string or a list; this is what maps an import to its distribution) and
+  exactly which of their names (`module:Name`, a bare `module`, or `module:*`
+  for a whole module).
 - `[law]` (optional): `url`, `concepts`, an external spec the library
   implements (for example cek-framework) and the concept ids it covers. It is
   validated for shape and recorded in `index.json` under `domain.law`, so a
@@ -205,14 +222,24 @@ Checks that fail `--check`:
   has no `depends_on` entry.
 - **Undeclared name.** A foreign name is used but is not listed in its
   distribution's `names`. New coupling is therefore a conscious charter edit.
-- **Declared but unused.** A listed name is no longer used.
+- **Declared but unused.** A listed distribution is never imported, a listed
+  `imports` name is never imported, or a listed name is no longer used.
+- **Bad `imports`.** It is missing, not a top-level name, claimed by two
+  distributions, or in conflict with `[tool.codemap.distributions]`.
 - **Private import.** A foreign module path has a `_`-prefixed segment, or a
   `src` / `internal` / `internals` / `impl` segment, or the imported name is
   `_`-prefixed.
 
 Usage is collected from `import` / `from … import` statements (all three
 kinds), plus attribute access on an imported module (`jinja2.x` records
-`jinja2:x`). Whether a higher library uses only the lower library's declared
+`jinja2:x`).
+
+Limits: imports by string (`importlib.import_module("pkg._hidden")`,
+`__import__`) are invisible to the scan. Private-import and declared-usage
+checks run only when `domain` is configured; a repo without a charter gets a
+`note:` saying so.
+
+Whether a higher library uses only the lower library's declared
 `public_api`, and whether each concept is owned exactly once across all
 libraries, is checked by the ux-compose ecosystem map, which reads every
 repo's `index.json`.
@@ -255,8 +282,10 @@ Findings in `index.json`:
   subcommands never named on a line with their script; and features whose own
   `docs` name none of their modules (dotted or last segment) or symbols.
 
-Line numbers live only in the `claims/` shards, so a doc edit re-maps only that
-doc's shard.
+Claim shards are unique `(kind, text)` entries with no line numbers, so an edit
+that moves a claim without changing it leaves the map fresh. An added, removed or
+newly broken claim re-maps only that doc's shard. `--claims DOC` prints a doc's
+claims with their line numbers.
 
 ## Guards
 
@@ -273,14 +302,19 @@ asserts on ux-dom's own map that:
 - every module has a layer;
 - untracked files are ignored;
 - only the `if TYPE_CHECKING:` body counts as type-only;
-- `__all__` must be literal.
+- a non-literal `__all__` is recorded as a finding, not a crash;
+- a blank line added to `INSTALL.md` leaves `--check` green (claims are line-free).
 
 [`tests/04_production/test_codemap_fixtures.py`](../../tests/04_production/test_codemap_fixtures.py)
 runs a vendored copy on synthetic repos. It covers the src layout (symbols,
 signatures, decorators, entry points, ASGI, assets, external split, features,
 charter, `--feature`, `--module`), the flat layout, several package roots with no
-root pyproject, and a project in a subdirectory. It also checks that `--check`
+root pyproject (whose second project's entry points are still read), and a
+project in a subdirectory. A minimal config prints a `note:` per unconfigured
+section. It also checks that `--check`
 fails on broken feature, narrative and entry-point references, layer violations
-and stale exceptions, unlisted cycles and charter breaches. Finally, it checks
+and stale exceptions, unlisted cycles, charter breaches (including bad,
+unused or missing `depends_on.imports`, and unused distributions) and a dynamic
+`__all__`. Finally, it checks
 that coupling metrics, doc claims (docs-ahead and code-ahead) and the charter
 `law` are recorded without failing.

@@ -1,136 +1,106 @@
 {
- "README.md": [
-  {
-   "kind": "module",
-   "line": 15,
-   "resolved": true,
-   "text": "ux_dom"
-  },
-  {
-   "kind": "cli",
-   "line": 16,
-   "resolved": true,
-   "text": "uxdom"
-  },
-  {
-   "kind": "module",
-   "line": 42,
-   "resolved": true,
-   "text": "ux_dom.response.starlette"
-  },
-  {
-   "kind": "import",
-   "line": 65,
-   "resolved": true,
-   "text": "ux_dom:Component"
-  },
-  {
-   "kind": "import",
-   "line": 65,
-   "resolved": true,
-   "text": "ux_dom:Document"
-  },
-  {
-   "kind": "import",
-   "line": 66,
-   "resolved": true,
-   "text": "ux_dom:Csp"
-  },
-  {
-   "kind": "import",
-   "line": 66,
-   "resolved": true,
-   "text": "ux_dom:Htmx"
-  },
-  {
-   "kind": "import",
-   "line": 66,
-   "resolved": true,
-   "text": "ux_dom:XElement"
-  },
-  {
-   "kind": "import",
-   "line": 67,
-   "resolved": true,
-   "text": "ux_dom.dom:div"
-  },
-  {
-   "kind": "import",
-   "line": 67,
-   "resolved": true,
-   "text": "ux_dom.dom:h1"
-  },
-  {
-   "kind": "module",
-   "line": 67,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "module",
-   "line": 79,
-   "resolved": true,
-   "text": "ux_dom.plugins.runtime.XELEMENT_JS_URL"
-  },
-  {
-   "kind": "module",
-   "line": 81,
-   "resolved": true,
-   "text": "ux_dom.response"
-  },
-  {
-   "kind": "cli",
-   "line": 120,
-   "resolved": true,
-   "text": "uxdom doctor"
-  },
-  {
-   "kind": "cli",
-   "line": 121,
-   "resolved": true,
-   "text": "uxdom lint"
-  },
-  {
-   "kind": "cli",
-   "line": 122,
-   "resolved": true,
-   "text": "uxdom profile"
-  },
-  {
-   "kind": "cli",
-   "line": 123,
-   "resolved": true,
-   "text": "uxdom add component Card"
-  },
-  {
-   "kind": "module",
-   "line": 145,
-   "resolved": true,
-   "text": "ux_dom/__init__.py"
-  },
-  {
-   "kind": "module",
-   "line": 152,
-   "resolved": true,
-   "text": "ux_dom.dom"
-  },
-  {
-   "kind": "module",
-   "line": 153,
-   "resolved": true,
-   "text": "ux_dom.ui"
-  },
-  {
-   "kind": "cli",
-   "line": 154,
-   "resolved": true,
-   "text": "uxdom"
-  },
-  {
-   "kind": "module",
-   "line": 154,
-   "resolved": true,
-   "text": "ux_dom.cli:app"
-  }
- ]
+ "README.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add component Card"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom lint"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom profile"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:div"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:h1"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Component"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Csp"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Document"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Htmx"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:XElement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.cli:app"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.plugins.runtime.XELEMENT_JS_URL"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.response"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.response.starlette"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.ui"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/__init__.py"
+   }
+  ]
+ }
 }

@@ -69,6 +69,7 @@
     "stdlib": [
      "collections",
      "collections.abc",
+     "contextlib",
      "contextvars",
      "copy",
      "functools",
@@ -127,6 +128,15 @@
     "doc": "Copy of active build frames (empty if no with/async with).",
     "kind": "function",
     "public": true,
+    "signature": "()"
+   },
+   "detached_build": {
+    "decorators": [
+     "contextmanager"
+    ],
+    "doc": "Build nodes that join no open ``with`` frame (the caller attaches them).",
+    "kind": "function",
+    "public": false,
     "signature": "()"
    },
    "dom_string": {
@@ -257,6 +267,11 @@
       "doc": "Attribute filter for ``get``.",
       "kind": "function",
       "signature": "(node, attrs)"
+     },
+     "_clean_attrs": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, kwargs)"
      },
      "_clear": {
       "doc": "",
