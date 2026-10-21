@@ -8,7 +8,7 @@
 import typing as T
 from enum import Enum, IntEnum
 
-from valio import (
+from ux_valio import (
     EnumValidator,
     IntegerEnumValidator,
     StringEnumValidator,

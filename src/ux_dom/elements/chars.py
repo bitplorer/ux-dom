@@ -8,7 +8,7 @@
 import typing as T
 from dataclasses import dataclass, field
 
-from valio import StringValidator, Validator
+from ux_valio import StringValidator, Validator
 
 from ux_dom.dom.src import component
 
@@ -75,38 +75,38 @@ spell_check_field = StringValidator(
 
 @dataclass(eq=False)
 class CharInput(component.Component):
-    @max_length_field.add_post_validator
-    @min_length_field.add_post_validator
+    @max_length_field.post_validate
+    @min_length_field.post_validate
     def cast2int(self, value):
         if value not in ["null", None]:
             try:
-                return int(value)
+                return str(int(value))
             except TypeError as e:
                 raise ValueError(f"{value} is not an int value") from e
 
-    @spell_check_field.add_post_validator
+    @spell_check_field.post_validate
     def password_spell_check_false(self, value):
         if self.type in ["password", "hidden"]:
             return "false"
         return value
 
-    name: T.Union[str, None] = StringValidator(logger=False, debug=True)
-    type: T.Union[str, None] = StringValidator(
+    name: str = StringValidator(logger=False, debug=True)
+    type: str = StringValidator(
         in_choice=["text", "password", "hidden", "email", "search"],
         debug=True,
         logger=False,
         default="text",
     )
 
-    placeholder: T.Union[str, None] = StringValidator(logger=False, debug=True)
-    spell_check: T.Union[str, None] = spell_check_field
-    min_length: T.Union[str, None] = min_length_field
-    max_length: T.Union[str, None] = max_length_field
-    pattern: T.Union[str, None] = StringValidator(
+    placeholder: str = StringValidator(logger=False, debug=True)
+    spell_check: str = spell_check_field
+    min_length: str = min_length_field
+    max_length: str = max_length_field
+    pattern: str = StringValidator(
         logger=False, debug=True, default=None
     )
     className: str = StringValidator(logger=False, debug=True, default="")
-    value: T.Union[str, None] = StringValidator(logger=False, debug=True, default=None)
+    value: str = StringValidator(logger=False, debug=True, default=None)
 
     def __post_init__(self, *args, **kwargs):
         super(CharInput, self).__init__(

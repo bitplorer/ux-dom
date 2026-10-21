@@ -34,13 +34,11 @@ include = [
 [tool.poetry.dependencies]
 python = ">=3.14,<3.15"
 Jinja2 = ">=3.1.6,<4"
-# 0.1.0b6 works with the in-tree PEP 649 compat layer (ux_dom.compat).
-# Prefer ≥0.1.0b7 once published (native PEP 649 fix in valio).
-valio = ">=0.1.0b6,<0.2"
 marko = ">=2.0,<3"
 typer = ">=0.12,<1"
-# Imported directly by ux_dom.compat.valio_pep649; declared, not borrowed from valio.
-typingx = ">=0.6.0,<0.7"
+# ux_dom.elements validates fields with ux-valio. Pinned to an exact commit
+# (ADR 0004 lockstep); bump the SHA with the ux-valio change it needs.
+ux-valio = { git = "https://github.com/bitplorer/ux-valio.git", rev = "4982d80c92413e8409a15b279c12c9b8b371a41b" }
 
 # Optional runtime extra: fastapi brings starlette, which ux_dom.response.starlette
 # imports, and plugins.safe_static.install_safe_static imports when called.

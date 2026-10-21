@@ -146,7 +146,6 @@
   "imports_internal": {
    "function_level": [],
    "module_level": [
-    "ux_dom.compat.valio_pep649",
     "ux_dom.dom.src.component",
     "ux_dom.plugins.control",
     "ux_dom.plugins.csp",

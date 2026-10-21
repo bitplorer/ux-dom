@@ -22,7 +22,6 @@ ux-dom ships no file router (`ux_dom.routing` removed, F-18).
 | Path | Role | Public? |
 |------|------|---------|
 | `ux_dom/__init__.py` | Version + re-exports Document, Component, runtime facades | **Public** |
-| `ux_dom/compat/` | Runtime compat (e.g. valio PEP 649) | Private |
 | `ux_dom/diagnostics.py` | Error message builders for XElement checks | Private |
 | **`ux_dom/dom/`** | Tag constructors, Document HTML helpers, parse | **Public** |
 | `ux_dom/dom/htmlelement.py` | XElement / CustomElement / WebComponent / Alpine* | **Public** |

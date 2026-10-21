@@ -8,7 +8,7 @@
 import typing as T
 from dataclasses import dataclass, field
 
-from valio import StringValidator, Validator
+from ux_valio import StringValidator, Validator
 
 from ux_dom.dom.src import component
 
@@ -67,8 +67,8 @@ max_field = StringValidator(logger=False, debug=True, name="max")
 
 @dataclass(eq=False)
 class IntegerInput(component.Component):
-    @max_field.add_validator
-    @min_field.add_validator
+    @max_field.validator
+    @min_field.validator
     def cast2int(self, value):
         if value not in ["null", None]:
             try:

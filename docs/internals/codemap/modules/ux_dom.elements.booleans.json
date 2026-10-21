@@ -1,6 +1,8 @@
 {
  "ux_dom.elements.booleans": {
-  "consumers": [],
+  "consumers": [
+   "tests/07_resilience/test_f16_ux_valio_elements.py"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [

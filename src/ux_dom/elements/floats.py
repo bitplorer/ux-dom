@@ -8,7 +8,7 @@
 import typing as T
 from dataclasses import dataclass, field
 
-from valio import StringValidator
+from ux_valio import StringValidator
 
 from ux_dom.dom.src import component
 
@@ -60,12 +60,12 @@ max_field = StringValidator(logger=False, debug=True)
 
 @dataclass(eq=False)
 class FloatInput(component.Component):
-    @max_field.add_post_validator
-    @min_field.add_post_validator
+    @max_field.post_validate
+    @min_field.post_validate
     def cast2float(self, value):
         if value not in ["null", None]:
             try:
-                return float(value)
+                return str(float(value))
             except ValueError as e:
                 raise ValueError(f"got an invalid float value {value}") from e
 
@@ -179,7 +179,7 @@ class FloatRangeInput(component.Component):
 
 
 if __name__ == "__main__":
-    from valio import Pattern, SetOf
+    from ux_valio import Pattern, SetOf
 
     print(FloatRangeInput(name="test", placeholder="xyz"))
     print(
