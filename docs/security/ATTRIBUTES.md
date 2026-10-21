@@ -66,10 +66,8 @@ elements is free text.
 Steps 2 to 5 also apply to attributes marked unescaped (`safe_attributes`),
 because no caller needs an executable URL. An unescaped attribute still has
 `&` and `"` escaped (`escape_attr_minimal`), so it can never close its quotes;
-only `'`, `<` and `>` stay literal, for Alpine JSON and handlers. This
-opt-out path is **HTML-only**: under XHTML/XML serialization a raw `<` in an
-attribute value is not well-formed, so do not opt attributes out when you
-render XHTML. The
+only `'`, `<` and `>` stay literal, for Alpine JSON and handlers. ux-dom
+renders HTML only; there is no XHTML mode (#87). The
 `safe_attributes` map is per tag instance; marking one tag never changes
 another.
 

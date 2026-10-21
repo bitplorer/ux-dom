@@ -857,7 +857,7 @@ class dom_tag(object):
 
     __str__ = __unicode__
 
-    def __render__(self, indent="  ", pretty=True, xhtml=False):
+    def __render__(self, indent="  ", pretty=True):
         """Phase **serialize** (sync): walk the finished tree → HTML string.
 
         Does **not** call ``__enter__`` / ``__exit__``. Those only run while
@@ -870,24 +870,21 @@ class dom_tag(object):
         Thread-safe: holds the tree root lock for a consistent snapshot.
         """
         with multi_tree_lock(self):
-            html_tokens = self._render([], 0, indent, pretty, xhtml)
+            html_tokens = self._render([], 0, indent, pretty)
             return "".join(html_tokens)
 
-    def _walk_render_tokens(self, indent_level, indent_str, pretty, xhtml, _seen=None):
+    def _walk_render_tokens(self, indent_level, indent_str, pretty, _seen=None):
         """Yield HTML tokens while walking the tree (sync generator).
 
         Subclasses (Tags) may override for true open→children→close streaming.
         Default falls back to full ``_render`` token list.
         """
-        yield from self._render(
-            [], indent_level, indent_str, pretty, xhtml, _seen=_seen
-        )
+        yield from self._render([], indent_level, indent_str, pretty, _seen=_seen)
 
     async def __async_render__(
         self,
         indent="  ",
         pretty=True,
-        xhtml=False,
         *,
         chunk_size: int = 8,
     ):
@@ -917,7 +914,7 @@ class dom_tag(object):
         with multi_tree_lock(self):
             token = _NAMESPACE_MEMO.set({})
             try:
-                tokens = list(self._walk_render_tokens(0, indent, pretty, xhtml))
+                tokens = list(self._walk_render_tokens(0, indent, pretty))
             finally:
                 _NAMESPACE_MEMO.reset(token)
         n = 0
@@ -927,9 +924,7 @@ class dom_tag(object):
             if chunk_size and n % chunk_size == 0:
                 await asyncio.sleep(0)
 
-    def _render(
-        self, sb, indent_level=0, indent_str="  ", pretty=True, xhtml=False, _seen=None
-    ):
+    def _render(self, sb, indent_level=0, indent_str="  ", pretty=True, _seen=None):
         # Cycle guard: parent.add(child); child.add(parent) must not blow the stack
         if _seen is None:
             _seen = set()
@@ -961,11 +956,11 @@ class dom_tag(object):
                 safe = safe_attr_value(attribute, value, name)
                 sb.append(' %s="%s"' % (attribute, escape(unicode(safe), True)))
 
-        sb.append(" />" if self.is_single and xhtml else ">")
+        sb.append(">")
 
         if not self.is_single:
             inline = self._render_children(
-                sb, indent_level + 1, indent_str, pretty, xhtml, _seen=_seen
+                sb, indent_level + 1, indent_str, pretty, _seen=_seen
             )
 
             if pretty and not inline:
@@ -979,7 +974,7 @@ class dom_tag(object):
 
         return sb
 
-    def _render_children(self, sb, indent_level, indent_str, pretty, xhtml, _seen=None):
+    def _render_children(self, sb, indent_level, indent_str, pretty, _seen=None):
         inline = True
         for child in self:
             if isinstance(child, dom_tag):
@@ -987,7 +982,7 @@ class dom_tag(object):
                     inline = False
                     sb.append("\n")
                     sb.append(indent_str * indent_level)
-                child._render(sb, indent_level, indent_str, pretty, xhtml, _seen=_seen)
+                child._render(sb, indent_level, indent_str, pretty, _seen=_seen)
             else:
                 sb.append(unicode(child))
 

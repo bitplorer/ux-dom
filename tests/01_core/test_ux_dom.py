@@ -65,13 +65,6 @@ class TestSingleTag(unittest.TestCase):
         # test when __render__(pretty=True)
         self.assertEqual(str(self.SingleTagTest()), "<single-tag>")
         self.assertEqual(str(self.SingleTagTest(x=1)), """<single-tag x="1">""")
-        self.assertEqual(
-            str(self.SingleTagTest().__render__(xhtml=True)), "<single-tag/>"
-        )
-        self.assertEqual(
-            str(self.SingleTagTest(x=1).__render__(xhtml=True)),
-            """<single-tag x="1"/>""",
-        )
 
         # test when __render__(pretty=False)
         self.assertEqual(
@@ -80,14 +73,6 @@ class TestSingleTag(unittest.TestCase):
         self.assertEqual(
             str(self.SingleTagTest(x=1).__render__(pretty=False)),
             """<single-tag x="1">""",
-        )
-        self.assertEqual(
-            str(self.SingleTagTest().__render__(xhtml=True, pretty=False)),
-            "<single-tag/>",
-        )
-        self.assertEqual(
-            str(self.SingleTagTest(x=1).__render__(xhtml=True, pretty=False)),
-            """<single-tag x="1"/>""",
         )
 
     def test_single_tag_with_children(self):
@@ -119,14 +104,6 @@ class TestDoubleTag(unittest.TestCase):
         self.assertEqual(
             str(self.DoubleTagTest(x=1)), """<double-tag x="1"></double-tag>"""
         )
-        self.assertEqual(
-            str(self.DoubleTagTest().__render__(xhtml=True)),
-            "<double-tag></double-tag>",
-        )
-        self.assertEqual(
-            str(self.DoubleTagTest(x=1).__render__(xhtml=True)),
-            """<double-tag x="1"></double-tag>""",
-        )
 
         # test when __render__(pretty=False)
         self.assertEqual(
@@ -135,14 +112,6 @@ class TestDoubleTag(unittest.TestCase):
         )
         self.assertEqual(
             str(self.DoubleTagTest(x=1).__render__(pretty=False)),
-            """<double-tag x="1"></double-tag>""",
-        )
-        self.assertEqual(
-            str(self.DoubleTagTest().__render__(xhtml=True, pretty=False)),
-            "<double-tag></double-tag>",
-        )
-        self.assertEqual(
-            str(self.DoubleTagTest(x=1).__render__(xhtml=True, pretty=False)),
             """<double-tag x="1"></double-tag>""",
         )
 

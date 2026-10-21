@@ -309,7 +309,7 @@ class HtmlDocument(component.Component):
 
         return doc, self.html
 
-    def _walk_render_tokens(self, indent_level, indent_str, pretty, xhtml, _seen=None):
+    def _walk_render_tokens(self, indent_level, indent_str, pretty, _seen=None):
         """Token walk with pre_render once — pretty path must not double-run it.
 
         Compact (pretty=False) runs ``__pre_render__`` here, then streams tokens
@@ -321,14 +321,12 @@ class HtmlDocument(component.Component):
         if not pretty_flag and not _delegates_to_render(type(self)):
             self.__pre_render__()
         return super()._walk_render_tokens(
-            indent_level, indent_str, pretty, xhtml, _seen=_seen
+            indent_level, indent_str, pretty, _seen=_seen
         )
 
-    def _render(
-        self, sb, indent_level=1, indent_str="  ", pretty=True, xhtml=False, _seen=None
-    ):
+    def _render(self, sb, indent_level=1, indent_str="  ", pretty=True, _seen=None):
         self.__pre_render__()
-        return super()._render(sb, indent_level, indent_str, pretty, xhtml, _seen=_seen)
+        return super()._render(sb, indent_level, indent_str, pretty, _seen=_seen)
 
     # Our _render only adds __pre_render__, which _walk_render_tokens runs too,
     # so the compact walker need not hand the page to _render.

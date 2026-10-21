@@ -83,14 +83,14 @@ class TestTagsSerializeTrust(unittest.TestCase):
                 data_x=str(i),
                 cls="a  b\nc" if i % 2 == 0 else "x",
             )
-            walk = "".join(el._walk_render_tokens(0, "  ", False, False))
+            walk = "".join(el._walk_render_tokens(0, "  ", False))
             rend = el.__render__(pretty=False)
             self.assertEqual(walk, rend, msg=f"tree {i}")
 
     def test_pretty_stream_equals_render(self):
         el = div(div(span("a"), span("b")), p("c"))
         a = el.__render__(pretty=True)
-        b = "".join(el._walk_render_tokens(0, "  ", True, False))
+        b = "".join(el._walk_render_tokens(0, "  ", True))
         self.assertEqual(a, b)
 
     def test_async_equals_sync(self):

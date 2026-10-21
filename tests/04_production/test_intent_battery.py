@@ -200,7 +200,7 @@ class TestEdges(unittest.TestCase):
         for i in range(25):
             node = div(node, id=f"d{i}")
         a = node.__render__(pretty=False)
-        b = "".join(node._walk_render_tokens(0, "  ", False, False))
+        b = "".join(node._walk_render_tokens(0, "  ", False))
         self.assertEqual(a, b)
 
         root = div(Card(n=7), span("s"))

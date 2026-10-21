@@ -25,7 +25,7 @@ class TestWalkStream(unittest.TestCase):
             className="box",
         )
         compact = el.__render__(pretty=False)
-        walked = "".join(el._walk_render_tokens(0, "  ", False, False))
+        walked = "".join(el._walk_render_tokens(0, "  ", False))
         self.assertEqual(compact, walked)
         self.assertIn("ws-send", walked)
         self.assertIn("hx-get", walked)

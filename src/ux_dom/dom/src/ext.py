@@ -451,7 +451,6 @@ class Tags(dom_tag, dom1core):
         sb,
         name,
         open_tag,
-        xhtml,
         indent_level=None,
         indent_str=None,
         pretty=None,
@@ -462,11 +461,7 @@ class Tags(dom_tag, dom1core):
             sb.append(self.left_delimiter)
             sb.append(checked_tag_name(name))
             self._render_attribute(sb, indent_level, indent_str, pretty)
-            sb.append(
-                "".join(["/", self.right_delimiter])
-                if self.is_single and xhtml
-                else self.right_delimiter
-            )
+            sb.append(self.right_delimiter)
         return sb
 
     def _render_close_tag(self, /, sb, name, close_tag):
@@ -493,7 +488,7 @@ class Tags(dom_tag, dom1core):
             indent_level -= 1
         return indent_level
 
-    def _render_children(self, sb, indent_level, indent_str, pretty, xhtml, _seen=None):
+    def _render_children(self, sb, indent_level, indent_str, pretty, _seen=None):
         """Render children with partial-inline + self_dedent.
 
         Indent contract: never dedent a child past parent-1; newlines before a
@@ -530,7 +525,7 @@ class Tags(dom_tag, dom1core):
                             inline and self.is_inline,
                         )
 
-                child._render(sb, indent_level, indent_str, pretty, xhtml, _seen=_seen)
+                child._render(sb, indent_level, indent_str, pretty, _seen=_seen)
 
             else:
                 if isinstance(child, dom_text):
@@ -581,15 +576,13 @@ class Tags(dom_tag, dom1core):
 
         return inline
 
-    def _render(
-        self, sb, indent_level=1, indent_str="  ", pretty=True, xhtml=False, _seen=None
-    ):
+    def _render(self, sb, indent_level=1, indent_str="  ", pretty=True, _seen=None):
         if _NAMESPACE_MEMO.get() is None:
             # One namespace memo per render pass (``_parsed_namespace``).
             token = _NAMESPACE_MEMO.set({})
             try:
                 return Tags._render(
-                    self, sb, indent_level, indent_str, pretty, xhtml, _seen=_seen
+                    self, sb, indent_level, indent_str, pretty, _seen=_seen
                 )
             finally:
                 _NAMESPACE_MEMO.reset(token)
@@ -598,7 +591,7 @@ class Tags(dom_tag, dom1core):
             token = _LAYOUT_MEMO.set({})
             try:
                 return Tags._render(
-                    self, sb, indent_level, indent_str, pretty, xhtml, _seen=_seen
+                    self, sb, indent_level, indent_str, pretty, _seen=_seen
                 )
             finally:
                 _LAYOUT_MEMO.reset(token)
@@ -634,7 +627,6 @@ class Tags(dom_tag, dom1core):
                 sb=sb,
                 name=name,
                 open_tag=self.open_tag,
-                xhtml=xhtml,
                 indent_level=indent_level,
                 indent_str=indent_str,
                 pretty=pretty,
@@ -652,7 +644,6 @@ class Tags(dom_tag, dom1core):
             ),
             indent_str,
             pretty,
-            xhtml,
             _seen=_seen,
         )
         if text_state:
@@ -672,7 +663,6 @@ class Tags(dom_tag, dom1core):
         indent_level,
         indent_str,
         pretty,
-        xhtml,
         _seen=None,
         *,
         maxsize=256,
@@ -684,7 +674,7 @@ class Tags(dom_tag, dom1core):
         mode = (stream_mode or os.environ.get("UI_DOM_PRETTY_STREAM") or "safe").lower()
         if mode in ("safe", "buffer", "same_thread", "sync"):
             sb: list = []
-            self._render(sb, indent_level, indent_str, pretty, xhtml, _seen=_seen)
+            self._render(sb, indent_level, indent_str, pretty, _seen=_seen)
             yield from sb
             return
         if mode not in ("worker", "thread", "queue"):
@@ -695,7 +685,6 @@ class Tags(dom_tag, dom1core):
             indent_level,
             indent_str,
             pretty,
-            xhtml,
             _seen=_seen,
             maxsize=maxsize,
             put_timeout=put_timeout,
@@ -707,7 +696,6 @@ class Tags(dom_tag, dom1core):
         indent_level,
         indent_str,
         pretty,
-        xhtml,
         _seen=None,
         *,
         maxsize=256,
@@ -743,7 +731,6 @@ class Tags(dom_tag, dom1core):
                         indent_level,
                         indent_str,
                         pretty,
-                        xhtml,
                         _seen=_seen,
                     )
             except Exception as exc:  # noqa: BLE001
@@ -780,12 +767,12 @@ class Tags(dom_tag, dom1core):
         if error:
             raise error[0]
 
-    def _walk_render_tokens(self, indent_level, indent_str, pretty, xhtml, _seen=None):
+    def _walk_render_tokens(self, indent_level, indent_str, pretty, _seen=None):
         """Token generator for async/stream serialize (compact or pretty)."""
         pretty_flag = bool(pretty and self.is_pretty and not self.is_inline)
         if pretty_flag:
             yield from self._iter_pretty_stream(
-                indent_level, indent_str, pretty, xhtml, _seen=_seen
+                indent_level, indent_str, pretty, _seen=_seen
             )
             return
 
@@ -796,9 +783,7 @@ class Tags(dom_tag, dom1core):
         if delegate is None:
             delegate = _delegates_to_render(cls)
         if delegate:
-            yield from self._render(
-                [], indent_level, indent_str, pretty, xhtml, _seen=_seen
-            )
+            yield from self._render([], indent_level, indent_str, pretty, _seen=_seen)
             return
 
         if _seen is None:
@@ -820,7 +805,7 @@ class Tags(dom_tag, dom1core):
             if _text_state_name(self, name):  # its body is checked as a whole
                 _seen.discard(sid)
                 yield from self._render(
-                    [], indent_level, indent_str, pretty, xhtml, _seen=_seen
+                    [], indent_level, indent_str, pretty, _seen=_seen
                 )
                 return
             if open_tag:
@@ -829,15 +814,13 @@ class Tags(dom_tag, dom1core):
                 yield self.left_delimiter
                 yield checked_tag_name(name)
                 yield from self._iter_html_attrs(indent_level, indent_str, pretty)
-                if self.is_single and xhtml:
-                    yield "/"
                 yield self.right_delimiter
 
         for child in self.children:
             if isinstance(child, dom_tag):
                 # Children inherit the parent's effective (compact) layout, as in _render.
                 yield from child._walk_render_tokens(
-                    indent_level + 1, indent_str, False, xhtml, _seen=_seen
+                    indent_level + 1, indent_str, False, _seen=_seen
                 )
             else:
                 if child or any(str(child)):
@@ -1083,7 +1066,6 @@ class StyleTags(Tags):
         sb,
         name,
         open_tag,
-        xhtml,
         indent_level=None,
         indent_str=None,
         pretty=None,
@@ -1100,11 +1082,10 @@ class StyleTags(Tags):
             indent_level=indent_level,
             indent_str=indent_str,
             pretty=pretty,
-            xhtml=xhtml,
         )
         return sb
 
-    def _render_attribute(self, /, sb, indent_level, indent_str, pretty, xhtml):
+    def _render_attribute(self, /, sb, indent_level, indent_str, pretty):
         attribute_joiner = (
             f"{self.attribute_joiner}".replace(" ", "")
             if not pretty
@@ -1122,7 +1103,7 @@ class StyleTags(Tags):
                 safe = escape(unicode(safe_attr_value(attribute, value)), True)
                 sb.append(attribute_joiner % (attribute, safe))
 
-            if value is None:  # minified xhtml attributes are added
+            if value is None:  # a bare (minimized) attribute
                 sb.append(" %s" % attribute)
         return sb
 
@@ -1157,7 +1138,7 @@ class StyleTags(Tags):
                 safe = escape(unicode(safe_attr_value(attribute, value)), True)
                 r.append(attribute_joiner % (attribute, safe))
 
-            if value is None:  # minified xhtml attributes are added
+            if value is None:  # a bare (minimized) attribute
                 r.append(" %s" % attribute)
         return " ".join(r)
 
