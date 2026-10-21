@@ -28,6 +28,12 @@ class DeadSurfaceRemoved(unittest.TestCase):
 
         self.assertFalse(hasattr(StaticArtifact, "bytes"))
 
+    def test_package_dir_removed(self):
+        # Its only caller was a test (#111).
+        from ux_dom.plugins import package_static
+
+        self.assertFalse(hasattr(package_static, "package_dir"))
+
 
 if __name__ == "__main__":
     unittest.main()

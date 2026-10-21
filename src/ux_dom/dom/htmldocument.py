@@ -30,7 +30,7 @@ from ux_dom.dom.htmlelement import XTemplate
 from ux_dom.dom.src import component
 from ux_dom.dom.src.dom_tag import dom_tag
 from ux_dom.dom.src.ext import _delegates_to_render
-from ux_dom.dom.src.main import extension
+from ux_dom.dom.src import ext as extension
 
 __all__ = ["HtmlDocument"]
 

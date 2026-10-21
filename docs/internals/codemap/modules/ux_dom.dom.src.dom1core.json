@@ -18,9 +18,7 @@
   "layer": "dom",
   "path": "src/ux_dom/dom/src/dom1core.py",
   "public": [
-   "basestring",
-   "dom1core",
-   "unicode"
+   "dom1core"
   ]
  }
 }

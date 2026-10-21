@@ -61,7 +61,6 @@
   "ux_dom.dom.src.html_string": "dom",
   "ux_dom.dom.src.htmltags": "dom",
   "ux_dom.dom.src.jinjatags": "dom",
-  "ux_dom.dom.src.main": "dom",
   "ux_dom.dom.src.parse_html": "dom",
   "ux_dom.dom.src.svgtags": "dom",
   "ux_dom.dom.src.utils": "dom",

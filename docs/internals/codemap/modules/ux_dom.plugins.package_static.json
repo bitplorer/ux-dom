@@ -6,6 +6,7 @@
    "tests/02_document_plugins/test_package_static.py",
    "tests/02_document_plugins/test_package_static_fields.py",
    "tests/02_document_plugins/test_safe_static.py",
+   "tests/07_resilience/test_dead_surface_removed.py",
    "tests/07_resilience/test_no_deprecations.py"
   ],
   "imported_by": {
@@ -31,7 +32,6 @@
    "Inject",
    "PackageStaticContribution",
    "PackagedFile",
-   "package_dir",
    "static_from_package",
    "ux_channel_static"
   ]

@@ -309,6 +309,7 @@ return document(
 | `document.mount(app)` | app | no | yes |
 | `document.copy()` | no | n/a | n/a |
 | `document.runtimes()` | no | inspect | inspect |
+| `document.runtime_tags()` | no | inspect | no |
 
 ---
 
@@ -348,6 +349,7 @@ Document(
 document.use(*runtimes) -> Document     # chainable; validates plugin surface
 document.using(*runtimes) -> Document   # copy with extra runtimes
 document.runtimes() -> list             # attached runtimes
+document.runtime_tags() -> (head, body) # stage A runtime tags, deduped (incl. hub shell when include_runtimes)
 document.mount(app) -> app              # static routes + middleware
 document(*content, head=..., body=..., page_title=...)  # render page
 ```

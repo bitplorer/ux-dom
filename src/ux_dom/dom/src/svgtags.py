@@ -9,7 +9,7 @@ This module consists of classes specific to HTML5-SVG Elements. In general this 
 - Elements that are deprecated
 """
 
-from ux_dom.dom.src.main import extension
+from ux_dom.dom.src import ext as extension
 
 # Tag attributes
 _ATTR_GLOBAL = set(
@@ -187,7 +187,7 @@ __all__ = [
     "tspan",
     "use",
     "view",
-    "filter",
+    "filter_",
     "feBlend",
     "feColorMatrix",
     "feComponentTransfer",
@@ -528,7 +528,12 @@ class view(svg_tag):
 
 
 # FILTERS
-class filter(svg_tag):
+class filter_(svg_tag):
+    """
+    The <filter> element defines a filter effect.
+    Written ``filter_`` (like ``set_``) so it does not shadow the builtin ``filter``.
+    """
+
     pass
 
 

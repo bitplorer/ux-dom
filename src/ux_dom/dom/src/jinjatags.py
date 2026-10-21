@@ -13,7 +13,7 @@ import threading
 from jinja2.sandbox import SandboxedEnvironment
 
 from ux_dom.dom.src.dom_tag import dom_tag
-from ux_dom.dom.src.main import extension
+from ux_dom.dom.src import ext as extension
 
 __all__ = [
     "If",

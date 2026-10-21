@@ -28,7 +28,7 @@ from jinja2.utils import htmlsafe_json_dumps
 from markupsafe import Markup
 
 from ux_dom.dom.src.dom1core import dom1core
-from ux_dom.dom.src.dom_tag import _NAMESPACE_MEMO, dom_tag, unicode
+from ux_dom.dom.src.dom_tag import _NAMESPACE_MEMO, dom_tag
 from ux_dom.dom.src.utils.dom_util import (
     dom_text,
     escape,
@@ -428,7 +428,7 @@ class Tags(dom_tag, dom1core):
             if not isinstance(value, (dict, list)):
                 value = safe_attr_value(attribute, value, name)
                 if self.safe_attributes.get(attribute, True):
-                    yield ' %s="%s"' % (attribute, escape(unicode(value), True))
+                    yield ' %s="%s"' % (attribute, escape(str(value), True))
                 else:
                     yield ' %s="%s"' % (attribute, escape_attr_minimal(value))
             else:
@@ -437,7 +437,7 @@ class Tags(dom_tag, dom1core):
                 dumped = safe_attr_value(attribute, htmlsafe_json_dumps(value), name)
                 yield " %s='%s'" % (
                     attribute,
-                    escape(unicode(dumped), quote=False),
+                    escape(str(dumped), quote=False),
                 )
 
     def _render_attribute(self, sb, indent_level, indent_str, pretty):
@@ -544,7 +544,7 @@ class Tags(dom_tag, dom1core):
                             )
                         lines = child.splitlines()
                         for line in lines:
-                            sb.append(unicode(line))
+                            sb.append(str(line))
                             if line and line != lines[-1]:
                                 sb, inline = self._new_line_and_inline_handler(
                                     sb,
@@ -554,7 +554,7 @@ class Tags(dom_tag, dom1core):
                                     inline and self.is_inline,
                                 )
                     else:
-                        sb.append(unicode(child))
+                        sb.append(str(child))
 
             if child or any(child):
                 if not isinstance(child, PlaceholderTag) or (
@@ -1100,7 +1100,7 @@ class StyleTags(Tags):
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely
-                safe = escape(unicode(safe_attr_value(attribute, value)), True)
+                safe = escape(str(safe_attr_value(attribute, value)), True)
                 sb.append(attribute_joiner % (attribute, safe))
 
             if value is None:  # a bare (minimized) attribute
@@ -1135,7 +1135,7 @@ class StyleTags(Tags):
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely
-                safe = escape(unicode(safe_attr_value(attribute, value)), True)
+                safe = escape(str(safe_attr_value(attribute, value)), True)
                 r.append(attribute_joiner % (attribute, safe))
 
             if value is None:  # a bare (minimized) attribute

@@ -81,7 +81,7 @@ Rules:
 2. **FastAPI** owns the process (when used as an adapter; product host is ux-compose)
 3. No second document factory on `App`
 4. Prefer `document.use(runtimes)` over hub-only wiring
-5. Prefer package-mounted library JS (`/ux-dom/static/…`) over dual-copy into `/assets`
+5. Library JS is served from the package (`/ux-dom/static/…`), never copied into `/assets`
 
 ## Changelog
 

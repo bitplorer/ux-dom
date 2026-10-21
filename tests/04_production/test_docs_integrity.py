@@ -157,7 +157,7 @@ class TestNoStaleFlatDocPaths(unittest.TestCase):
 
 
 class TestSingleCopyMessaging(unittest.TestCase):
-    def test_cli_build_help_not_dual_copy(self):
+    def test_cli_names_the_package_js_url(self):
         cli = (SRC / "cli" / "cli.py").read_text(encoding="utf-8")
         self.assertNotIn(
             "copied from the installed ux_dom package into\n    assets/js/",

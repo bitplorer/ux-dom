@@ -23,7 +23,7 @@
    "function_level": [],
    "module_level": [
     "ux_dom.dom.src.dom_tag",
-    "ux_dom.dom.src.main",
+    "ux_dom.dom.src.ext",
     "ux_dom.dom.src.utils"
    ],
    "type_checking": []

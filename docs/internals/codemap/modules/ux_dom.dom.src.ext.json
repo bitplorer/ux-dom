@@ -22,6 +22,7 @@
    "tests/07_resilience/test_css_node_context.py",
    "tests/07_resilience/test_foreign_breakout.py",
    "tests/07_resilience/test_foreign_content_raw_text.py",
+   "tests/07_resilience/test_tag_names_no_builtin_shadow.py",
    "tests/07_resilience/test_text_state_parents.py"
   ],
   "imported_by": {
@@ -30,9 +31,12 @@
     "ux_dom.dom",
     "ux_dom.dom.htmldocument",
     "ux_dom.dom.htmlelement",
+    "ux_dom.dom.src.component",
+    "ux_dom.dom.src.csstags",
     "ux_dom.dom.src.html_string",
     "ux_dom.dom.src.htmltags",
-    "ux_dom.dom.src.main",
+    "ux_dom.dom.src.jinjatags",
+    "ux_dom.dom.src.svgtags",
     "ux_dom.settings.document"
    ],
    "type_checking": []

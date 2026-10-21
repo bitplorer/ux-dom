@@ -5,7 +5,7 @@
 
 
 """CSS-oriented tags (StyleTags dialect — not Alpine/HTMX name rewrites)."""
-from ux_dom.dom.src.main import extension
+from ux_dom.dom.src import ext as extension
 
 __all__ = ["CSSClass", "CSSId", "CSS", "CSSProperty", "Keyframes"]
 

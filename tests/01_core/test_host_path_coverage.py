@@ -168,10 +168,3 @@ class TestHostLifespan(unittest.TestCase):
         with self.assertRaises(ImportError):
             import ux_dom.plugins.host.fastapi  # noqa: F401
 
-
-class TestPackageStaticMore(unittest.TestCase):
-    def test_package_dir(self):
-        from ux_dom.plugins import package_static as ps
-
-        root = ps.package_dir("ux_dom.scripts")
-        self.assertTrue(root.exists())

@@ -16,22 +16,12 @@ ux-dom mirrors that for every library contribution.
 
 from __future__ import annotations
 
-import importlib
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Literal, Mapping, Sequence
 
 
 Inject = Literal["head", "body", "none"]
-
-
-def package_dir(package: str, subdir: str = "") -> Path:
-    mod = importlib.import_module(package)
-    base = Path(mod.__file__).resolve().parent  # type: ignore[arg-type]
-    d = base / subdir if subdir else base
-    if not d.is_dir():
-        raise FileNotFoundError(f"package dir not found: {package}:{subdir or '.'}")
-    return d
 
 
 @dataclass(frozen=True)

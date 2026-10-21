@@ -7,10 +7,10 @@ import time
 import unittest
 from concurrent.futures import ThreadPoolExecutor
 
+import ux_dom.concurrency
 from ux_dom.concurrency import (
     build_parallel,
     default_workers,
-    map_parallel,
     multi_tree_lock,
     render_async_gather,
     render_parallel,
@@ -54,9 +54,13 @@ class TestParallelRender(unittest.TestCase):
             self.assertIn(f'id="c{i}"', h)
             self.assertIn(f"{i}-0", h)
 
-    def test_map_parallel_alias(self):
-        out = map_parallel(lambda x: x * 2, range(10), max_workers=4)
-        self.assertEqual(out, [0, 2, 4, 6, 8, 10, 12, 14, 16, 18])
+    def test_build_parallel_takes_any_iterable(self):
+        expected = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]
+        for items in (range(10), (x for x in range(10)), iter(range(10))):
+            out = build_parallel(lambda x: x * 2, items, max_workers=4, parallel=True)
+            self.assertEqual(out, expected)
+        self.assertEqual(build_parallel(lambda x: x, iter(())), [])
+        self.assertFalse(hasattr(ux_dom.concurrency, "map_parallel"))
 
     def test_async_gather_matches_sync(self):
         roots = [div(span(f"a{i}"), id=f"ag{i}") for i in range(15)]
