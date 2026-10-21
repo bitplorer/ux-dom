@@ -60,11 +60,13 @@ is internal and may move; these four names are the supported path.
   `script` and `style`, which are the HTML classes. Names keep their case
   (`linearGradient`, `foreignObject`, `feDropShadow`). Every SVG element is
   written with an end tag.
-- **Builtin names:** a tag whose name is a Python builtin or keyword gets a
-  trailing `_` and still writes its element: `input_`, `object_`, `map_`,
-  `del_`, `set_`, `filter_`. `from ux_dom.dom import *` shadows no builtin.
-  The one exception is `time_`: `time` is not a builtin, but the `_` keeps the
-  stdlib `time` module free. Lock:
+- **Name collisions:** a tag class gets a trailing `_` when its name would
+  shadow a Python builtin on `from ux_dom.dom import *` (`filter_`, `set_`,
+  `input_`, `object_`, `map_`; `del_` because `del` is a keyword). It still
+  writes its element. There is one deliberate exception, `time_`: `time` is
+  not a builtin, but apps very commonly `import time` next to a star import.
+  `html`, `code` and `select` also match stdlib module names, but app code
+  rarely imports those, so they keep plain names. Lock:
   `tests/07_resilience/test_tag_names_no_builtin_shadow.py`.
 - **MathML:** no classes. No caller in ux-dom or its sibling repos builds
   MathML ([#104](https://github.com/bitplorer/ux-dom/issues/104)), so none

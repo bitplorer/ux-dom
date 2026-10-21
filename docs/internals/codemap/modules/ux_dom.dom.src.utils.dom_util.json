@@ -3,8 +3,6 @@
   "consumers": [
    "docs/reference/API_SURFACE.md",
    "docs/security/ATTRIBUTES.md",
-   "examples/with_ux_channel/live_cart/app.py",
-   "examples/with_ux_channel/market_board/app.py",
    "examples/xelement_kit/app/routes/jinja.py",
    "tests/01_core/test_escape_single_quote.py",
    "tests/01_core/test_host_path_coverage.py",
@@ -18,6 +16,7 @@
    "tests/07_resilience/test_add_raw_string_absent.py",
    "tests/07_resilience/test_attr_escape_isolation.py",
    "tests/07_resilience/test_attr_name_validation.py",
+   "tests/07_resilience/test_boolean_attributes.py",
    "tests/07_resilience/test_css_node_context.py",
    "tests/07_resilience/test_foreign_breakout.py",
    "tests/07_resilience/test_foreign_content_raw_text.py",
@@ -29,7 +28,8 @@
    "tests/07_resilience/test_raw_string_sinks.py",
    "tests/07_resilience/test_svg_animation_urls.py",
    "tests/07_resilience/test_text_state_parents.py",
-   "tests/07_resilience/test_unsafe_url_attrs.py"
+   "tests/07_resilience/test_unsafe_url_attrs.py",
+   "tests/07_resilience/test_xelement_ws_url_attrs.py"
   ],
   "imported_by": {
    "function_level": [

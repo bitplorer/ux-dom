@@ -1,8 +1,7 @@
-"""Production smoke for examples/ (ux_dom-only + ux-channel)."""
+"""Production smoke for examples/ux_dom_only."""
 
 from __future__ import annotations
 
-import sys
 import unittest
 
 from fastapi.testclient import TestClient
@@ -26,49 +25,6 @@ class TestRealtimeKit(unittest.TestCase):
             ws.send_json({"event": "bump", "data": {"delta": 3}})
             self.assertEqual(ws.receive_json()["data"]["n"], 3)
         self.assertIn("Streamed", self.client.get("/stream").text)
-
-
-@unittest.skipUnless(
-    "ux_channel" in sys.modules
-    or __import__("importlib").util.find_spec("ux_channel") is not None,
-    "uxchannel not installed",
-)
-class TestLiveCart(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        from examples.with_ux_channel.live_cart.app import app
-
-        cls.client = TestClient(app)
-
-    def test_page_and_health(self):
-        self.assertTrue(self.client.get("/health").json()["ok"])
-        r = self.client.get("/")
-        self.assertEqual(r.status_code, 200)
-        self.assertIn("Live Cart", r.text)
-        self.assertTrue(
-            "data-channel-action" in r.text
-            or "data_channel_action" in r.text
-            or "uid" in r.text
-        )
-
-
-@unittest.skipUnless(
-    "ux_channel" in sys.modules
-    or __import__("importlib").util.find_spec("ux_channel") is not None,
-    "uxchannel not installed",
-)
-class TestMarketBoard(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        from examples.with_ux_channel.market_board.app import app
-
-        cls.client = TestClient(app)
-
-    def test_page(self):
-        self.assertTrue(self.client.get("/health").json()["ok"])
-        r = self.client.get("/")
-        self.assertEqual(r.status_code, 200)
-        self.assertIn("Ticker", r.text)
 
 
 if __name__ == "__main__":

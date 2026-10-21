@@ -29,10 +29,36 @@ const PAGE = `<!DOCTYPE html>
   <x-sr-closed id="sr-closed"></x-sr-closed>
   <x-sd-only id="sd-only"></x-sd-only>
   <x-light id="light"></x-light>
-  <x-live id="live" ws="/ws-live" count="0"></x-live>
+  <x-live id="live" ws="/ws-live" count="0" data-count="0" aria-label="old" value="old"
+    href="/old" src="/old" action="/old" formaction="/old" xlink:href="/old"
+    hx-get="/old" srcset="/old.png" srcdoc="old" style="color: red" onclick="void 0"></x-live>
   <x-sender id="sender" ws="/ws-send" ws_send='{"hello":1}'></x-sender>
   <script src="/x_element.js"></script>
 </body></html>`;
+
+// Benign declared attributes are applied. URL, srcdoc, style and on* ones,
+// declared or not, are refused with a console warning.
+const APPLIED = { count: "5", "data-count": "5", "aria-label": "new", value: "new" };
+const REFUSED = {
+  href: "javascript:alert(1)",
+  src: "javascript:alert(1)",
+  action: "javascript:alert(1)",
+  formaction: "javascript:alert(1)",
+  "xlink:href": "javascript:alert(1)",
+  "XLINK:HREF": "javascript:alert(1)",
+  "hx-get": "https://evil.example/",
+  srcset: "javascript:alert(1)",
+  srcdoc: "<script>alert(1)</script>",
+  style: "background: url(javascript:alert(1))",
+  onclick: "alert(1)",
+  ONCLICK: "alert(1)",
+  "data-new": "added",
+};
+const LIVE_MESSAGES = Object.entries({ ...APPLIED, ...REFUSED }).map(([attr, newVal]) => ({
+  id: "live",
+  attr,
+  newVal,
+}));
 
 const sockets = {}; // path -> { opened, received: [], closed }
 
@@ -40,10 +66,11 @@ const browser = await chromium.launch({
   headless: true,
   args: ["--no-sandbox", "--disable-dev-shm-usage"],
 });
-const report = { pageErrors: [] };
+const report = { pageErrors: [], warnings: [], liveMessages: LIVE_MESSAGES };
 try {
   const page = await browser.newPage();
   page.on("pageerror", (e) => report.pageErrors.push(String(e?.message || e)));
+  page.on("console", (m) => m.type() === "warning" && report.warnings.push(m.text()));
   await page.route(`${BASE}/**`, (route) => {
     const path = new URL(route.request().url()).pathname;
     if (path === "/x_element.js") {
@@ -58,10 +85,9 @@ try {
     ws.onMessage((m) => rec.received.push(String(m)));
     ws.onClose(() => (rec.closed = true));
     if (path === "/ws-live") {
-      setTimeout(
-        () => ws.send(JSON.stringify({ id: "live", attr: "count", oldVal: "0", newVal: "5" })),
-        200
-      );
+      setTimeout(() => {
+        for (const msg of LIVE_MESSAGES) ws.send(JSON.stringify(msg));
+      }, 200);
     }
   });
 
@@ -85,7 +111,12 @@ try {
       srClosed: info("sr-closed"),
       sdOnly: info("sd-only"),
       light: info("light"),
-      liveCount: document.getElementById("live").getAttribute("count"),
+      live: Object.fromEntries(
+        document.getElementById("live").getAttributeNames().map((n) => [
+          n,
+          document.getElementById("live").getAttribute(n),
+        ])
+      ),
     };
   });
   await page.evaluate(() => document.getElementById("live").remove());

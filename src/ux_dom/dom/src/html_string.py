@@ -927,6 +927,11 @@ class StringToHTML(object):
                     pass
             if element is None:
                 element = create_dynamic_element(tag_name=tag_name)
+            # A browser reads any value of a boolean attribute as present (#122).
+            attrs = {
+                k: True if k.lower() in element.boolean_attributes else v
+                for k, v in attrs.items()
+            }
 
             if tag is not None:
                 with tag:

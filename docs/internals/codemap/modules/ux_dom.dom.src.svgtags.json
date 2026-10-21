@@ -14,6 +14,7 @@
    "tests/06_browser/test_pretty_raw_text_browser.py",
    "tests/06_browser/test_svg_animation_url_browser.py",
    "tests/06_browser/test_svg_tree_browser.py",
+   "tests/07_resilience/test_boolean_attributes.py",
    "tests/07_resilience/test_foreign_breakout.py",
    "tests/07_resilience/test_foreign_content_raw_text.py",
    "tests/07_resilience/test_raw_string_sinks.py",

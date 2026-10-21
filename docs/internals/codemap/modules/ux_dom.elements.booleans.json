@@ -1,6 +1,8 @@
 {
  "ux_dom.elements.booleans": {
   "consumers": [
+   "tests/06_browser/test_boolean_state_browser.py",
+   "tests/07_resilience/test_boolean_attributes.py",
    "tests/07_resilience/test_f16_ux_valio_elements.py"
   ],
   "imported_by": {

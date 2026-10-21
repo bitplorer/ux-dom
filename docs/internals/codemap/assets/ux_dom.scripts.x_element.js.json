@@ -47,6 +47,7 @@
    "tests/06_browser/test_xelement_shadow_ws_browser.py",
    "tests/07_resilience/test_mount_fail_loud.py",
    "tests/07_resilience/test_shadowroot_only.py",
+   "tests/07_resilience/test_xelement_ws_url_attrs.py",
    "tests/browser/auth_xelement_harness.mjs",
    "tests/browser/kit_browser_suite.mjs",
    "tests/browser/x_element_harness.mjs",
