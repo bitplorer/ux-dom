@@ -200,14 +200,6 @@
       "kind": "function",
       "signature": "(self, /, sb, name, open_tag, indent_level=None, indent_str=None, pretty=None)"
      },
-     "attr": {
-      "decorators": [
-       "property"
-      ],
-      "doc": "",
-      "kind": "function",
-      "signature": "(self)"
-     },
      "clean_attribute": {
       "decorators": [
        "classmethod"

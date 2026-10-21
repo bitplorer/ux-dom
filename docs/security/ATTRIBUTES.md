@@ -132,8 +132,10 @@ expressions, not URLs; never put untrusted text in them.
 Every HTML renderer calls it (`dom_tag`, `ext.Tags`) and passes the element
 name as `tag` for the animation rule (step 4). A CSS rule (`ext.StyleTags`)
 writes declarations, not attributes: `checked_css_value` gives each value the
-CSS URL check of step 6 and raises `InvalidCSSValue` for a value or property
-name that could end its declaration (see
+CSS URL check of step 6 and raises `InvalidCSSValue` for a value that could
+end its declaration or a property name that is not a CSS ident (`color`,
+`-webkit-x`, `--x`). That includes a custom property value with a `{}` block
+(`--x: {color: red}`), which CSS allows: a block can carry declarations (see
 [SCRIPT_INJECTION.md](SCRIPT_INJECTION.md)).
 
 Tests: `tests/07_resilience/test_unsafe_url_attrs.py`,
@@ -300,7 +302,7 @@ renderer's URL allow-list (step 2 above), so a kept URL renders as written and
 never becomes `about:invalid#ux-dom-unsafe-url` (#126). `style` drops
 `expression(`, `javascript:`, and `vbscript:`.
 
-**Text.** Text is escaped whether `escape` is true or false, so a `<` in a
+**Text.** Text is always escaped, so a `<` in a
 text node cannot be parsed again as a tag. Numeric references are re-emitted
 as written (`&#39;`, `&#x61;`). Named references are decoded with the HTML5
 table, case-sensitive like a browser (`&AMP;` and `&amp;` are `&`), then

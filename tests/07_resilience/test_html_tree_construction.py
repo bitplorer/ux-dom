@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import asyncio
 import random
-import time
+import sys
 
 import pytest
 from hypothesis import given, settings
@@ -226,16 +226,28 @@ def test_deep_author_tree_renders(n):
     assert span not in tree and len(tree.get(div)) == n - 1
 
 
-@pytest.mark.parametrize("shape", sorted(DEEP))
-def test_parse_time_is_linear_in_depth(shape):
-    def seconds(n):
-        text = DEEP[shape](n)
-        start = time.perf_counter()
-        sanitize_html(text)
-        return time.perf_counter() - start
+def _lines_run(text):
+    """Python lines ``sanitize_html(text)`` executes: work, not wall-clock time."""
+    mon, tool, count = sys.monitoring, sys.monitoring.PROFILER_ID, 0
 
-    small, large = seconds(5_000), seconds(20_000)
-    assert large < 8 * small + 0.5, (shape, small, large)  # quadratic is 16x
+    def line(code, number):
+        nonlocal count
+        count += 1
+
+    mon.use_tool_id(tool, "linear-work")
+    mon.register_callback(tool, mon.events.LINE, line)
+    mon.set_events(tool, mon.events.LINE)
+    try:
+        sanitize_html(text)
+    finally:
+        mon.free_tool_id(tool)  # also clears its events and callback
+    return count
+
+
+@pytest.mark.parametrize("shape", sorted(DEEP))
+def test_parse_work_is_linear_in_depth(shape):
+    small, large = _lines_run(DEEP[shape](1_000)), _lines_run(DEEP[shape](4_000))
+    assert large < 5 * small, (shape, small, large)  # quadratic is 16x
 
 
 # Inputs whose naive scope checks walk the whole stack once per tag.
@@ -260,11 +272,8 @@ def test_tree_construction_work_is_linear(shape, monkeypatch):
 
     monkeypatch.setattr(Tree, "_push", counted)
     text = ADVERSARIAL[shape](20_000)
-    start = time.perf_counter()
     tokenize_html(text)
-    elapsed = time.perf_counter() - start
     assert len(pushes) <= 2 * text.count("<"), (shape, len(pushes))
-    assert elapsed < 5, (shape, elapsed)
 
 
 TAGS = (

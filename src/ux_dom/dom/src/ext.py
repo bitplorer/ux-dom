@@ -1246,24 +1246,6 @@ class StyleTags(Tags):
 
         return name
 
-    @property
-    def attr(self):
-        r = []
-        attribute_joiner = self.attribute_joiner
-
-        for attribute, value in self.attributes.items():
-            if value is not False:
-                attribute = checked_attr_name(attribute)
-            if (
-                value is not False and value is not None
-            ):  # False values must be omitted completely
-                safe = self._css_value(attribute, value)
-                r.append(attribute_joiner % (attribute, safe))
-
-            if value is None:  # a bare (minimized) attribute
-                r.append(" %s" % attribute)
-        return " ".join(r)
-
     @classmethod
     def clean_attribute(cls, attribute):
         """
@@ -1284,6 +1266,8 @@ class StyleTags(Tags):
         # Workaround for Python's reserved words
         if attribute[0] == "_":
             attribute = attribute[1:]
+        if attribute[-1] == "_":
+            attribute = attribute[:-1]
 
         attribute = attribute.replace("_", "-")
 

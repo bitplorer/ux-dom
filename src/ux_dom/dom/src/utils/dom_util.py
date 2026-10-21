@@ -272,6 +272,17 @@ _SAFE_DATA_URL = re.compile(
     r"data:image/(?:%s)(?:[;,]|$)" % "|".join(sorted(_SAFE_DATA_IMAGE_TYPES))
 )
 _SRCSET_SPACE = "\t\n\f\r "
+# CSS Syntax "whitespace": newlines (LF, CR, FF), tab and space.
+_CSS_WHITESPACE = "\t\n\f\r "
+# A property name is an ident sequence (CSS Syntax §4.3.9, §4.3.11): ``--``
+# and one or more ident code points (a custom property; ``--`` alone is
+# reserved), or an optional ``-``, an ident-start code point (letter, ``_``,
+# non-ASCII) and ident code points (those, digits, ``-``). ``-1a`` would start
+# a number (§4.3.10), not an ident. Escapes are refused.
+_CSS_IDENT_START = "A-Za-z_\u0080-\U0010ffff"
+_CSS_PROPERTY_NAME = re.compile(
+    "--[{1}]+|-?[{0}][{1}]*".format(_CSS_IDENT_START, _CSS_IDENT_START + "0-9-")
+)
 # CSS functions whose string arguments are URLs (``image-set("a.png" 1x)``).
 # ``url(a.png)`` without quotes is a url token; both get the URL check.
 _CSS_URL_FUNCTIONS = frozenset(
@@ -356,11 +367,12 @@ def checked_css_value(prop, value):
 
     A value whose ``url()`` / ``src()`` / ``image()`` / ``image-set()`` URL
     fails the URL allowlist renders as ``UNSAFE_URL``, so the browser drops
-    the declaration. ``prop`` must be a plain name (#136).
+    the declaration. ``prop`` must be a CSS property name (``color``,
+    ``-webkit-x``, ``--x``).
     """
     text = str(value)
     urls = _css_urls(text)
-    if urls is None or _css_urls(str(prop)) != []:
+    if urls is None or not _CSS_PROPERTY_NAME.fullmatch(str(prop)):
         raise InvalidCSSValue(f"{prop}: {text!r} is not one CSS value")
     return text if all(map(_is_safe_url, urls)) else UNSAFE_URL
 
@@ -486,12 +498,12 @@ def _css_urls(text, *, declarations=False):
             return None
         if char == "(" and name.lower() == "url":
             j = i + 1
-            while j < end and text[j] in _SRCSET_SPACE:  # also CSS whitespace
+            while j < end and text[j] in _CSS_WHITESPACE:
                 j += 1
             if j < end and text[j] not in "\"'":
                 close = text.find(")", j)
-                url = text[j:close].rstrip(_SRCSET_SPACE)
-                if close < 0 or any(c in "\"'(\\" + _SRCSET_SPACE for c in url):
+                url = text[j:close].rstrip(_CSS_WHITESPACE)
+                if close < 0 or any(c in "\"'(\\" + _CSS_WHITESPACE for c in url):
                     return None
                 urls.append(url)
                 i, name = close + 1, ""

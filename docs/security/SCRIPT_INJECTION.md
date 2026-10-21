@@ -160,14 +160,16 @@ div(btn(color="red"))    # InvalidNodeContext: btn is a CSS rule; render it insi
 ```
 
 A value (a `Keyframes` step's too) stays one CSS value
-([#136](https://github.com/bitplorer/ux-dom/issues/136)). A value or property
-name that could end its declaration or rule raises `InvalidCSSValue` (a
-`ValueError`): `;`, `{` or `}` outside a string, an unclosed string or one with
-a newline, unbalanced `()` / `[]`, a comment, a newline, or a backslash outside
-a string (`\75rl(` spells `url(`). Escapes inside strings (`content: "\201C"`)
-are fine. Each URL a CSS function loads (`url()`, `image-set()`, `src()`,
-`image()`) gets the attribute URL allowlist in any property, custom
-properties included; a value with a refused URL renders as
+([#136](https://github.com/bitplorer/ux-dom/issues/136)). A value that could
+end its declaration or rule raises `InvalidCSSValue` (a `ValueError`): `;`,
+`{` or `}` outside a string, an unclosed string or one with a newline,
+unbalanced `()` / `[]`, a comment, a newline, or a backslash outside a string
+(`\75rl(` spells `url(`). Escapes inside strings (`content: "\201C"`) are
+fine. CSS allows a `{}` block in a custom property value (`--x: {color: red}`),
+but it raises too: a block can carry declarations. A property name must be a
+CSS ident (`color`, `-webkit-x`, `--x`; no escapes), or it raises. Each URL
+a CSS function loads (`url()`, `image-set()`, `src()`, `image()`) gets the
+attribute URL allowlist in any property, custom properties included; a value with a refused URL renders as
 `about:invalid#ux-dom-unsafe-url`, so the browser drops that declaration
 ([ATTRIBUTES.md](ATTRIBUTES.md), step 6):
 

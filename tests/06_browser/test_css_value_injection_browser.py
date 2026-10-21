@@ -158,3 +158,10 @@ class TestCssValueInjectionBrowser(unittest.TestCase):
             # Chromium lists a shorthand by its longhands (``mask-image-*``).
             dropped = [p for p in LEGIT if not any(k.startswith(p) for k in decls)]
             self.assertEqual(dropped, [], decls)
+
+    def test_ident_property_names_and_from_step_survive_the_parser(self):
+        names = {"--x": "1", "--0": "2", "---": "3", "-webkit-line-clamp": "2"}
+        keyframes = fade(from_={"opacity": 0}, to={"opacity": 1})
+        (out,) = _run([style(btn(**names), keyframes).__render__(pretty=False)])
+        self.assertEqual(set(out["rules"][0]["decls"]), set(names))
+        self.assertEqual([r["sel"] for r in out["rules"][1]["rules"]], ["0%", "100%"])
