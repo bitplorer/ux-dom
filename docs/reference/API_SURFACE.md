@@ -104,7 +104,7 @@ This package ships no file router: `ux_dom.routing` was removed (F-18).
 
 | Command | Role |
 |---------|------|
-| `doctor` / `info` | Package / Document health |
+| `doctor` | Package / Document health |
 | `lint` | Conventions |
 | `profile` / `dashboard` | Render p95 |
 | `add` | component \| xelement \| ui |

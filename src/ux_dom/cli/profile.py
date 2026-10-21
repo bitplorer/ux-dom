@@ -17,7 +17,6 @@ def run_profile(
     rounds: int = 60,
     warmup: int = 6,
     profile_rounds: int = 30,
-    open_hint: bool = True,
 ) -> dict[str, Any]:
     """Run the standard ux-dom p95 suite; return latency report dict."""
     from ux_dom.concurrency import render_parallel
@@ -67,11 +66,10 @@ def run_profile(
         "speedscope": str((out_dir / "profile.speedscope.json").resolve()),
         "cprofile": str((out_dir / "cprofile.txt").resolve()),
     }
-    if open_hint:
-        report["flamegraph_hint"] = (
-            "Open profile.speedscope.json at https://www.speedscope.app "
-            "for a per-function self-time breakdown (no call stacks)."
-        )
+    report["speedscope_hint"] = (
+        "Open profile.speedscope.json at https://www.speedscope.app "
+        "for a per-function self-time breakdown (no call stacks)."
+    )
     return report
 
 
@@ -97,8 +95,8 @@ def format_profile_report(report: dict[str, Any]) -> str:
     for k in ("html", "latency_json", "speedscope", "cprofile"):
         if arts.get(k):
             lines.append(f"  {k}: {arts[k]}")
-    if report.get("flamegraph_hint"):
-        lines.append(report["flamegraph_hint"])
+    if report.get("speedscope_hint"):
+        lines.append(report["speedscope_hint"])
     lines.append("=" * 40)
     lines.append("OK — profiling complete (app source untouched)")
     return "\n".join(lines)

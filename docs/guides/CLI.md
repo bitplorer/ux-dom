@@ -22,7 +22,7 @@ See ux-compose `docs/guides/CLI.md` and [FLOW](https://github.com/bitplorer/ux-c
 
 | Command | Role |
 |---------|------|
-| `doctor` / `info` | Document / package / env health |
+| `doctor` | Document / package / env health |
 | `lint` | Document convention checks |
 | `profile` / `dashboard` | Render p95 / DX graphs |
 | `add` | component \| xelement \| ui (pure-dom) |

@@ -1,7 +1,8 @@
 {
  "ux_dom.cli.profile": {
   "consumers": [
-   "tests/03_routing_cli/test_profile_dx.py"
+   "tests/03_routing_cli/test_profile_dx.py",
+   "tests/07_resilience/test_cli_aliases_absent.py"
   ],
   "imported_by": {
    "function_level": [

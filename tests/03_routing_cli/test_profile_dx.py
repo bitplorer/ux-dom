@@ -17,9 +17,7 @@ class TestProfileDx(unittest.TestCase):
     def test_run_profile_artifacts(self):
         with tempfile.TemporaryDirectory() as td:
             out = Path(td) / "p95"
-            report = run_profile(
-                out=out, rounds=8, warmup=1, profile_rounds=4, open_hint=True
-            )
+            report = run_profile(out=out, rounds=8, warmup=1, profile_rounds=4)
             self.assertTrue((out / "report.html").is_file())
             self.assertTrue((out / "latency.json").is_file())
             self.assertTrue((out / "profile.speedscope.json").is_file())

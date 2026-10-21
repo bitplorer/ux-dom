@@ -11,7 +11,7 @@
 
 | Command | Writes? | Notes |
 |---------|---------|--------|
-| `doctor` / `lint` / `info` | No | Read-only |
+| `doctor` / `lint` | No | Read-only |
 | `add` | Yes | refuse existing unless `--force` |
 | `profile` / `dashboard` | reports/ only | |
 

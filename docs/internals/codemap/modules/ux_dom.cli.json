@@ -11,6 +11,7 @@
    "tests/03_routing_cli/test_serve_dx.py",
    "tests/03_routing_cli/test_tailwind_command.py",
    "tests/07_resilience/test_build_command_absent.py",
+   "tests/07_resilience/test_cli_aliases_absent.py",
    "tests/07_resilience/test_dead_surface_removed.py",
    "tests/07_resilience/test_f17_orphans_absent.py",
    "tests/07_resilience/test_f18_directory_router_absent.py",
@@ -33,8 +34,7 @@
   "layer": "cli",
   "path": "src/ux_dom/cli/__init__.py",
   "public": [
-   "app",
-   "ux_dom"
+   "app"
   ]
  }
 }

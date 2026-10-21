@@ -134,7 +134,7 @@ class TestCliEntry(unittest.TestCase):
                 [
                     sys.executable,
                     "-c",
-                    "from ux_dom.cli import ux_dom; ux_dom(['--help'])",
+                    "from ux_dom.cli import app; app(['--help'])",
                 ],
                 cwd=str(ROOT),
                 capture_output=True,
