@@ -74,7 +74,8 @@
   },
   "imports_internal": {
    "function_level": [
-    "ux_dom.dom.src.concurrency"
+    "ux_dom.dom.src.concurrency",
+    "ux_dom.dom.src.htmltags"
    ],
    "module_level": [
     "ux_dom.dom.src.dom1core",
@@ -360,6 +361,12 @@
     "public": false,
     "signature": "(steps)"
    },
+   "_drops_first_lf": {
+    "doc": "Whether ``node`` is a ``pre``, ``listing`` or ``textarea``: in HTML",
+    "kind": "function",
+    "public": false,
+    "signature": "(node, name)"
+   },
    "_element_name": {
     "doc": "Lowercase name of the start tag ``node`` writes, or ``None`` if none.",
     "kind": "function",
@@ -371,6 +378,12 @@
     "kind": "function",
     "public": false,
     "signature": "(node) -> str | None"
+   },
+   "_in_html_content": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(node)"
    },
    "_inline_neighbours": {
     "doc": "An inline child next to inline content: a sibling, or the inside edge of",

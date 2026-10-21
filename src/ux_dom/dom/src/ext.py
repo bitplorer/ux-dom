@@ -36,7 +36,9 @@ from ux_dom.dom.src.utils.dom_util import (
     checked_tag_name,
     checked_text_state_body,
     escape_attr_minimal,
+    FIRST_LF_DROPPED,
     InvalidNodeContext,
+    LEADING_LF,
     safe_attr_value,
     TEXT_STATE_ELEMENTS,
     VERBATIM_ELEMENTS,
@@ -312,6 +314,22 @@ def _text_state_name(node, name):
     if name in TEXT_STATE_ELEMENTS and _element_name(node) == name:
         return name
     return None
+
+
+def _drops_first_lf(node, name):
+    """Whether ``node`` is a ``pre``, ``listing`` or ``textarea``: in HTML
+    content the parser drops one LF right after its start tag (§13.2.6.4.7).
+
+    ``name`` is the node's cleaned tag name, as for ``_text_state_name``.
+    """
+    name = _ascii_lower(name)
+    return name in FIRST_LF_DROPPED and _element_name(node) == name
+
+
+def _in_html_content(node):
+    from ux_dom.dom.src.htmltags import _parsed_namespace  # htmltags imports ext
+
+    return _parsed_namespace(node) == "html"
 
 
 def _drive(steps):
@@ -698,7 +716,8 @@ class Tags(dom_tag, dom1core):
 
         # RCDATA / RAWTEXT (#90): check the joined body, as #53 does.
         text_state = _text_state_name(self, name) if self_render_tag else None
-        body = [] if text_state else sb
+        first_lf = self_render_tag and _drops_first_lf(self, name)
+        body = [] if text_state or first_lf else sb
         args = (
             body,
             (
@@ -714,8 +733,13 @@ class Tags(dom_tag, dom1core):
             inline = yield from self._render_children_steps(*args)
         else:
             inline = self._render_children(*args)
-        if text_state:
-            sb.append(checked_text_state_body("".join(map(str, body)), text_state))
+        if text_state or first_lf:
+            text = "".join(map(str, body))
+            if text_state:
+                text = checked_text_state_body(text, text_state)
+            if first_lf and LEADING_LF.match(text) and _in_html_content(self):
+                text = "\n" + text  # the parser drops this one, not the body's
+            sb.append(text)
         inline = self.is_inline and inline
         if self_render_tag and not self.is_single:
             sb, inline = self._new_line_and_inline_handler(
@@ -892,7 +916,8 @@ class Tags(dom_tag, dom1core):
 
         if self_render_tag:
             name = self._clean_name(self._tagname())
-            if _text_state_name(self, name):  # its body is checked as a whole
+            # Its body is checked or prefixed as a whole.
+            if _text_state_name(self, name) or _drops_first_lf(self, name):
                 _seen.discard(sid)
                 yield from self._render(
                     [], indent_level, indent_str, pretty, _seen=_seen
@@ -1189,7 +1214,7 @@ class StyleTags(Tags):
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely
-                safe = escape(str(safe_attr_value(attribute, value)), True)
+                safe = str(safe_attr_value(attribute, value))
                 sb.append(attribute_joiner % (attribute, safe))
 
             if value is None:  # a bare (minimized) attribute
@@ -1224,7 +1249,7 @@ class StyleTags(Tags):
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely
-                safe = escape(str(safe_attr_value(attribute, value)), True)
+                safe = str(safe_attr_value(attribute, value))
                 r.append(attribute_joiner % (attribute, safe))
 
             if value is None:  # a bare (minimized) attribute

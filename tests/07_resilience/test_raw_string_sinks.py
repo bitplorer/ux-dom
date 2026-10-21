@@ -483,10 +483,12 @@ def test_css_tagname_attribute_does_not_rename():
     class btn(CSSClass):
         pass
 
-    payload = "<img src=x onerror=alert(1)>"
+    payload = "</style><img src=x onerror=alert(1)>"
     out = _render(style(btn(color="red", tagname=payload)))
     assert out.startswith("<style>.btn{"), out
-    assert "<img" not in out, out
+    # A CSS value is raw text (#127); ``style`` neutralizes ``</style``.
+    assert out.lower().count("</style") == 1 and out.endswith("</style>"), out
+    assert _runnable(out) == [], out
 
 
 def test_plugins_read_the_real_tag_name():

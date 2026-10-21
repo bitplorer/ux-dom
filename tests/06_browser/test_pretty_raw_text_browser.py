@@ -29,6 +29,7 @@ from ux_dom.dom import (
     textarea,
     title,
 )
+from ux_dom.dom.src.csstags import CSS
 from ux_dom.dom.src.ext import Tags
 from ux_dom.dom.src.html_string import create_dynamic_element
 from ux_dom.dom.src.svgtags import svg
@@ -45,6 +46,10 @@ def _tag(name):
 
 def _probe(name):
     return span(className="probe " + name)
+
+
+class C4Before(CSS):
+    tagname = ".c4::before"
 
 
 JS = (
@@ -77,6 +82,7 @@ RAW_TEXT_PAGES = {
         svg(style(".c2::before { content: 's\\\n  t'; }")), _probe("c2")
     ),
     "css-in-js": lambda: div(script(SHEET), _probe("c3")),
+    "css-rule": lambda: div(style(C4Before(content="'a>b&c'")), _probe("c4")),
     "textarea": lambda: div(
         textarea("\nfirst\n  second\n"), _tag("TEXTAREA")("a\n  b")
     ),
@@ -119,9 +125,9 @@ class TestPrettyRawTextBrowser(unittest.TestCase):
 
     def test_name_matched_bodies_keep_their_text(self):
         want = self.assertSameValues(NAMED_PAGES)
-        # HTML drops one newline right after <listing> (and <pre>, <textarea>).
         self.assertEqual(want["xmp"]["texts"], ["a\n  b"])
-        self.assertEqual(want["listing"]["texts"], ["a\n  b"])
+        # The body's own leading LF is kept (#127).
+        self.assertEqual(want["listing"]["texts"], ["\na\n  b"])
         self.assertEqual(want["PRE"]["texts"], ["a\n  b", "cd"])
         self.assertTrue(want["plaintext"]["texts"][0].startswith("a\n  b</plaintext>"))
 
@@ -136,8 +142,9 @@ class TestPrettyRawTextBrowser(unittest.TestCase):
         self.assertEqual(want["style"]["before"], ['"a  b"'])
         self.assertEqual(want["svg-style"]["before"], ['"s  t"'])
         self.assertEqual(want["css-in-js"]["before"], ['"x    y"'])
-        self.assertEqual(want["textarea"]["values"], ["first\n  second\n", "a\n  b"])
-        self.assertEqual(want["pre"]["texts"], ["code\n  indented", "ab", "ab"])
+        self.assertEqual(want["css-rule"]["before"], ['"a>b&c"'])  # #127
+        self.assertEqual(want["textarea"]["values"], ["\nfirst\n  second\n", "a\n  b"])
+        self.assertEqual(want["pre"]["texts"], ["\ncode\n  indented", "ab", "ab"])
         self.assertEqual(want["text-state"]["texts"], ["a\n  b", "c\n  d", "e\n  f"])
 
 

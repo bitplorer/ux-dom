@@ -135,7 +135,16 @@ def test_selector_cannot_close_style(selector):
 
 def test_value_cannot_close_style():
     out = style(btn(color=f"red</style>{IMG}")).__render__(pretty=False)
-    assert out.count("</style>") == 1 and "<img" not in out, out
+    assert out == f"<style>.btn{{color:red<\\/style>{IMG};}}</style>", out
+
+
+def test_values_are_raw_text():
+    """A value is CSS, not HTML: escaping it broke the declaration (#127)."""
+    node = style(btn(font_family="'Courier New', mono", content='"a>b&c"'))
+    for out in (node.__render__(pretty=False), _async_render(node)):
+        assert out == (
+            "<style>.btn{font-family:'Courier New', mono;content:\"a>b&c\";}</style>"
+        ), out
 
 
 def test_refusal_is_a_value_error():

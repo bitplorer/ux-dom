@@ -2,6 +2,7 @@
  "ux_dom.dom.src.html_string": {
   "consumers": [
    "docs/internals/MODULE_MAP.md",
+   "tests/01_core/test_first_line_feed.py",
    "tests/01_core/test_input_value_regressions.py",
    "tests/01_core/test_parse_whitespace.py",
    "tests/01_core/test_pretty_raw_text_verbatim.py",

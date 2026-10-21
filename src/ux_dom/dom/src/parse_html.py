@@ -23,11 +23,13 @@ import inspect
 import itertools
 import re
 from collections import abc, deque
-from html import escape
+from html import escape, unescape
 from html.parser import HTMLParser
 from html.parser import commentclose  # type: ignore[attr-defined]
 import typing as T
 from typing import Any, Callable, Iterable, Iterator
+
+from ux_dom.dom.src.utils.dom_util import FIRST_LF_DROPPED, LEADING_LF
 
 
 class Attribute(dict):
@@ -234,13 +236,17 @@ class Tag(Element):
     ) -> str:
         if tag_overrides and self.name in tag_overrides:
             return tag_overrides[self.name](self, tag_overrides)
-        return (
-            f"<{self.name}{' ' if self.attrs else ''}{self.attrs}>"
-            + "".join(
-                child.render(tag_overrides=tag_overrides, **kwargs) for child in self
-            )
-            + f"</{self.name}>"
+        body = "".join(
+            child.render(tag_overrides=tag_overrides, **kwargs) for child in self
         )
+        if (
+            LEADING_LF.match(body)
+            and self.namespace == "html"
+            and self.name in FIRST_LF_DROPPED
+        ):
+            body = "\n" + body  # the parser drops this one (``Tree.nest_terminal``)
+        open_tag = f"<{self.name}{' ' if self.attrs else ''}{self.attrs}>"
+        return f"{open_tag}{body}</{self.name}>"
 
 
 class XTag(Element):
@@ -494,6 +500,8 @@ class Tree:
         self.outmost = Root(self.name)
         self.stack: list[Element] = [self.outmost]
         self._at: dict[str, list[int]] = {key: [0] for key in _ROOT_KEYS}
+        # Set by a start tag whose next token, if an LF, is dropped.
+        self._drop_lf = False
 
     def last(self) -> Element:
         """Return the last pointer which point to the actual tag scope."""
@@ -545,10 +553,12 @@ class Tree:
         parent.append(item)
         if kind is Tag:
             self._push(item)
+            self._drop_lf = namespace == "html" and name in FIRST_LF_DROPPED
         return item
 
     def start(self, name: str, attrs, *, void: bool = False, self_closing=False):
         """A start tag: close what it implies, then insert it."""
+        self._drop_lf = False
         current = self.stack[-1]
         if current.namespace != "html" and not self._html_at(current, name):
             if not (
@@ -673,6 +683,7 @@ class Tree:
 
     def end(self, name: str) -> None:
         """An end tag: close the element it names where the spec does."""
+        self._drop_lf = False
         if self.stack[-1].namespace != "html":
             index = max(self._pos(f"svg:{name}"), self._pos(f"math:{name}"))
             if index > self._pos("html"):
@@ -718,7 +729,22 @@ class Tree:
             self._pop_to(self._pos(f"n:{name}"))  # "any other end tag"
 
     def nest_terminal(self, klass: type[TerminalElement], data: str):
-        """Nest the data onto the tree."""
+        """Nest the data onto the tree.
+
+        An LF right after a ``pre``, ``listing`` or ``textarea`` start tag is
+        dropped (§13.2.6.4.7), written or as a reference (``&#10;``); the
+        renderer writes one more LF before a body that starts with one.
+        """
+        if self._drop_lf:
+            self._drop_lf = False
+            if klass is Data and data.startswith("\n"):
+                data = data[1:]
+            elif klass in (Char, Entity):
+                lead = "&#" if klass is Char else "&"
+                if unescape(f"{lead}{data};") == "\n":
+                    return
+            if not data:
+                return
         top = self.last()
         item = klass(data)
         top.append(item)

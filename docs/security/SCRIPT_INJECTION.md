@@ -147,9 +147,10 @@ Embedding untrusted data in JS is still a JS-context problem: serialize it
 with `json.dumps` (or a `data-*` attribute) rather than string concatenation.
 
 CSS rule nodes (`CSSClass`, `CSSId`, `CSS`, `Keyframes`, `CSSProperty` rules)
-write their selector and rule text raw, so they render only inside `style`
-(directly, nested in another rule, or through `rule & rule`) or standalone as
-CSS text. As the child of any other element, including through `lazy` (a
+write their selector and rule text raw, values included
+(`font_family="'Courier New'"` stays `'Courier New'`, #127), so they render
+only inside `style` (directly, nested in another rule, or through
+`rule & rule`) or standalone as CSS text. As the child of any other element, including through `lazy` (a
 lazy result renders as a child at the lazy's position), they raise
 `InvalidNodeContext` (a `ValueError`) instead of writing CSS into HTML context:
 

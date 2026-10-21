@@ -291,8 +291,11 @@ table, case-sensitive like a browser (`&AMP;` and `&amp;` are `&`), then
 escaped. A name the table does not know is literal text, so `AT&T` stays
 `AT&T`. Whitespace is kept as written, as a browser keeps it in the DOM:
 a space or newline between inline tags (`<b>a</b>\n<i>b</i>`) and the body
-of `pre`, `listing` and `textarea`. CRLF and a lone CR become LF, as the
-browser's input stream makes them.
+of `pre`, `listing` and `textarea`. The one LF right after those three start
+tags is dropped, as the browser drops it, and the renderer writes one more
+before a body that starts with an LF, so a parse and a render round-trip
+(#127). CRLF and a lone CR become LF, as the browser's input stream makes
+them.
 
 **Attribute names** that are not `[a-z][a-z0-9_.:-]*` after the leading `_`
 is stripped (`data-a"b`, `aria-a'b`, a control character) are dropped, so
