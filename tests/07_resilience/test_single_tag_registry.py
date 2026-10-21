@@ -4,7 +4,7 @@ HTML void elements (HTML spec §13.1.2) have no end tag. Every other element
 needs one. SVG and MathML elements are foreign: an HTML parser leaves a bare
 foreign start tag open (§13.2.6.5), so it swallows the siblings after it, as
 ``<animateTransform>`` did. An empty foreign element is written with an end
-tag (or self-closing). camelCase SVG names keep their case.
+tag. camelCase SVG names keep their case.
 
 Chromium oracle: ``tests/06_browser/test_svg_tree_browser.py``.
 """
@@ -106,13 +106,8 @@ def _async(node, **kw):
 
 
 def _flat(node):
-    """Every flat render: sync, async, and each as XHTML."""
-    return [
-        node.__render__(pretty=False),
-        _async(node, pretty=False),
-        node.__render__(pretty=False, xhtml=True),
-        _async(node, pretty=False, xhtml=True),
-    ]
+    """Every flat render: sync and async."""
+    return [node.__render__(pretty=False), _async(node, pretty=False)]
 
 
 def test_only_html_void_elements_are_single():
@@ -128,9 +123,8 @@ def test_svg_registry_is_the_listed_elements():
 def test_html_void_has_no_end_tag(name):
     void = getattr(htmltags, "input_" if name == "input" else name)
     node = div(void(), span())
-    html, html_async, xhtml, xhtml_async = _flat(node)
-    assert html == html_async == f"<div><{name}><span></span></div>"
-    assert xhtml == xhtml_async == f"<div><{name}/><span></span></div>"
+    for out in _flat(node):
+        assert out == f"<div><{name}><span></span></div>"
 
 
 @pytest.mark.parametrize("name", ["param", "keygen", "command"])

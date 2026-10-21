@@ -32,7 +32,7 @@ class Keyframes(extension.StyleTags):
         tagname = ""
         is_inline = True
 
-    def _render_attribute(self, /, sb, indent_level, indent_str, pretty, xhtml):
+    def _render_attribute(self, /, sb, indent_level, indent_str, pretty):
         for key, value in self.attributes.items():
             if not isinstance(value, (dict, self.EmptyStyleTag)):
                 raise TypeError(
@@ -40,7 +40,7 @@ class Keyframes(extension.StyleTags):
                 )
             if not isinstance(value, self.EmptyStyleTag):
                 self.attributes[key] = self.EmptyStyleTag(value)
-        return super()._render_attribute(sb, indent_level, indent_str, pretty, xhtml)
+        return super()._render_attribute(sb, indent_level, indent_str, pretty)
 
     @staticmethod
     def _to_kebab_case(string):

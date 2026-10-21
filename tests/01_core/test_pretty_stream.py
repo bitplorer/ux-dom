@@ -15,7 +15,7 @@ class TestPrettyStream(unittest.TestCase):
     def test_pretty_walk_equals_str(self):
         tree = div(div(span("a"), span("b")), p("hello"))
         s = tree.__render__(pretty=True)
-        w = "".join(tree._walk_render_tokens(0, "  ", True, False))
+        w = "".join(tree._walk_render_tokens(0, "  ", True))
         self.assertEqual(s, w)
 
     def test_pretty_async_equals_str(self):
@@ -32,25 +32,21 @@ class TestPrettyStream(unittest.TestCase):
     def test_safe_mode_matches_str(self):
         tree = div(*[span(str(i)) for i in range(30)])
         s = tree.__render__(pretty=True)
-        streamed = "".join(
-            tree._iter_pretty_stream(0, "  ", True, False, stream_mode="safe")
-        )
+        streamed = "".join(tree._iter_pretty_stream(0, "  ", True, stream_mode="safe"))
         self.assertEqual(s, streamed)
 
     def test_worker_mode_matches_str(self):
         tree = div(*[span(str(i)) for i in range(30)])
         s = tree.__render__(pretty=True)
         streamed = "".join(
-            tree._iter_pretty_stream(
-                0, "  ", True, False, maxsize=8, stream_mode="worker"
-            )
+            tree._iter_pretty_stream(0, "  ", True, maxsize=8, stream_mode="worker")
         )
         self.assertEqual(s, streamed)
 
     def test_safe_mode_no_extra_thread(self):
         tree = div(span("a"))
         before = threading.active_count()
-        list(tree._iter_pretty_stream(0, "  ", True, False, stream_mode="safe"))
+        list(tree._iter_pretty_stream(0, "  ", True, stream_mode="safe"))
         after = threading.active_count()
         self.assertEqual(before, after)
 
@@ -65,7 +61,7 @@ class TestPrettyStream(unittest.TestCase):
 
         Tags._render = counting  # type: ignore
         try:
-            list(tree._walk_render_tokens(0, "  ", False, False))
+            list(tree._walk_render_tokens(0, "  ", False))
             self.assertEqual(calls["n"], 0)
         finally:
             Tags._render = orig  # type: ignore
@@ -82,7 +78,7 @@ class TestPrettyStream(unittest.TestCase):
     def test_unknown_mode_raises(self):
         tree = div("x")
         with self.assertRaises(ValueError):
-            list(tree._iter_pretty_stream(0, "  ", True, False, stream_mode="nope"))
+            list(tree._iter_pretty_stream(0, "  ", True, stream_mode="nope"))
 
 
 if __name__ == "__main__":

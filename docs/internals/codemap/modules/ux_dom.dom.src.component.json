@@ -74,6 +74,7 @@
    "tests/07_resilience/test_markdown_render_kwarg.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/07_resilience/test_text_state_parents.py",
+   "tests/07_resilience/test_xhtml_mode_absent.py",
    "tests/helpers.py"
   ],
   "imported_by": {

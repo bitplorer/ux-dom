@@ -965,8 +965,7 @@ class ReactiveComponent(Component):
         indent_level=1,
         indent_str="  ",
         pretty=True,
-        xhtml=False,
         _seen=None,
     ):
         self._check_states_and_update()
-        return super()._render(sb, indent_level, indent_str, pretty, xhtml, _seen=_seen)
+        return super()._render(sb, indent_level, indent_str, pretty, _seen=_seen)

@@ -21,7 +21,7 @@ class TestRenderCycleGuard(unittest.TestCase):
         a, b = div(id="a"), div(id="b")
         a.add(b)
         b.add(a)
-        walked = "".join(a._walk_render_tokens(0, "  ", False, False))
+        walked = "".join(a._walk_render_tokens(0, "  ", False))
         self.assertIn("cycle", walked)
 
 

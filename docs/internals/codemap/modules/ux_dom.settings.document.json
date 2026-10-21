@@ -46,6 +46,7 @@
    "tests/07_resilience/test_mount_fail_loud.py",
    "tests/07_resilience/test_ownership_hard_cut.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
+   "tests/07_resilience/test_xhtml_mode_absent.py",
    "tests/helpers.py"
   ],
   "imported_by": {

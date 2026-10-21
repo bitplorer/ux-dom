@@ -33,7 +33,6 @@ NS = {"html": HTML_NS, "svg": SVG_NS}
 RENDERS = {
     "flat": lambda node: node.__render__(pretty=False),
     "pretty": lambda node: node.__render__(pretty=True),
-    "xhtml": lambda node: node.__render__(pretty=False, xhtml=True),
 }
 
 

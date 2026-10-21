@@ -467,7 +467,7 @@ def _special(entry):
     return ns == "html" or name in _MATHML_SPECIAL
 
 
-def _start_tag(stack, name, el, xhtml):
+def _start_tag(stack, name, el):
     """``(namespace, stack)`` after the parser reads the start tag of ``el``.
 
     ``stack`` is a tuple of open ``(name, namespace, element)`` entries.
@@ -486,12 +486,11 @@ def _start_tag(stack, name, el, xhtml):
         ns = "html"
     else:
         ns = top[1]
-    # A tag that writes no end tag stays open in foreign content unless it is
-    # self-closing (``/>``, xhtml only).
+    # A tag that writes no end tag stays open in foreign content.
     if ns == "html" and name in _TEXT_BODY_ELEMENTS:
         # The tokenizer reads text up to the next ``</name``.
         stack += ((name, "text", el),)
-    elif not el.is_single or (ns != "html" and not xhtml):
+    elif not el.is_single or ns != "html":
         stack += ((name, ns, el),)
     return ns, stack
 
@@ -561,7 +560,7 @@ def _settle(stacks):
     return out
 
 
-def _feed(stacks, node, xhtml, seen=frozenset()):
+def _feed(stacks, node, seen=frozenset()):
     """The parser states after the tags ``node`` writes."""
     if not isinstance(node, extension.Tags) or node.left_delimiter != "<":
         return stacks  # text, raw(), lazy, comments, template syntax: no tags
@@ -571,11 +570,11 @@ def _feed(stacks, node, xhtml, seen=frozenset()):
     name = _element_name(node)
     if name is None:  # a tag-less wrapper renders its children in place
         for child in node.children:
-            stacks = _feed(stacks, child, xhtml, seen)
+            stacks = _feed(stacks, child, seen)
         return stacks
     out = []
     for stack in stacks:
-        ns, stack = _start_tag(stack, name, node, xhtml)
+        ns, stack = _start_tag(stack, name, node)
         inner = _settle([stack])
         # Raw text / RCDATA / RAWTEXT bodies and the CDATA of a foreign
         # style / script hold no tags.
@@ -585,7 +584,7 @@ def _feed(stacks, node, xhtml, seen=frozenset()):
             else isinstance(node, _RawTextElement)
         ):
             for child in node.children:
-                inner = _feed(inner, child, xhtml, seen)
+                inner = _feed(inner, child, seen)
         if _end_tag_written(node, name):
             inner = [_end_tag(s, name) for s in inner]
         out += inner
@@ -596,16 +595,16 @@ def _foreign_open(stacks):
     return any(ns != "html" for s in stacks for _, ns, _ in s)
 
 
-def _replay(stacks, children, xhtml, memo):
+def _replay(stacks, children, memo):
     """The parser states after ``children``. Earlier siblings matter only
     while foreign content is open."""
     for child in children:
         if _foreign_open(stacks):
-            stacks = _finish(stacks, child, xhtml, memo)
+            stacks = _finish(stacks, child, memo)
     return stacks
 
 
-def _finish(stacks, node, xhtml, memo):
+def _finish(stacks, node, memo):
     """``_feed`` that resumes the replay of a node already on a render path."""
     rec = memo.get(id(node))
     name = _element_name(node)
@@ -616,15 +615,15 @@ def _finish(stacks, node, xhtml, memo):
         or name in _TEXT_BODY_ELEMENTS
         or isinstance(node, _RawTextElement)
     ):
-        return _feed(stacks, node, xhtml)
-    out = _replay(rec[5], node.children[rec[4] :], xhtml, memo)
+        return _feed(stacks, node)
+    out = _replay(rec[5], node.children[rec[4] :], memo)
     rec[4], rec[5] = len(node.children), out
     if name is not None and _end_tag_written(node, name):
         out = [_end_tag(s, name) for s in out]
     return _settle(out)
 
 
-def _states_before(rec, child, xhtml, memo):
+def _states_before(rec, child, memo):
     """The parser states before ``child``, whose parent's record is ``rec``.
 
     The record keeps a cursor over the parent's children, so a render that
@@ -634,15 +633,15 @@ def _states_before(rec, child, xhtml, memo):
     children = getattr(node, "children", ())
     j = next((i for i in range(k, len(children)) if children[i] is child), None)
     if j is not None:
-        rec[4], rec[5] = j, _replay(stacks, children[k:j], xhtml, memo)
+        rec[4], rec[5] = j, _replay(stacks, children[k:j], memo)
         return rec[5]
     # Asked out of order, or not a child at all (``lazy`` renders one in
     # place, which sees no siblings).
     j = next((i for i in range(k) if children[i] is child), 0)
-    return _replay(rec[3], children[:j], xhtml, memo)
+    return _replay(rec[3], children[:j], memo)
 
 
-def _parsed_namespace(node, xhtml=False):
+def _parsed_namespace(node):
     """``"html"``, ``"svg"`` or ``"math"``: the namespace an HTML parser gives
     ``node`` where the tree puts it (§13.2.6).
 
@@ -663,7 +662,7 @@ def _parsed_namespace(node, xhtml=False):
     while node is not None and id(node) not in seen:
         hit = memo.get(id(node))
         parent = getattr(node, "parent", None)
-        if hit is not None and hit[0] is node and hit[1] is parent and hit[7] == xhtml:
+        if hit is not None and hit[0] is node and hit[1] is parent:
             rec = hit
             break
         seen.add(id(node))
@@ -673,15 +672,15 @@ def _parsed_namespace(node, xhtml=False):
         if rec is None:
             stacks, namespaces = [()], ["html"]
         else:
-            stacks, namespaces = _states_before(rec, el, xhtml, memo), rec[2]
+            stacks, namespaces = _states_before(rec, el, memo), rec[2]
         base, name = stacks, _element_name(el)
         if name is not None:
-            opened = [_start_tag(s, name, el, xhtml) for s in stacks]
+            opened = [_start_tag(s, name, el) for s in stacks]
             namespaces = [ns for ns, _ in opened]
             stacks = _settle([s for _, s in opened])
         # [node, parent, namespaces, states after the start tag, cursor
-        #  index, states before that child, states before the start tag, xhtml]
-        rec = [el, getattr(el, "parent", None), namespaces, stacks, 0, stacks, base, xhtml]
+        #  index, states before that child, states before the start tag]
+        rec = [el, getattr(el, "parent", None), namespaces, stacks, 0, stacks, base]
         memo[id(el)] = rec
     return next((ns for ns in rec[2] if ns != "html"), "html") if rec else "html"
 
@@ -716,13 +715,13 @@ class _RawTextElement(html_tag):
     is the model (``_parsed_namespace``): the body is raw text again.
     """
 
-    def _render_children(self, sb, indent_level, indent_str, pretty, xhtml, _seen=None):
+    def _render_children(self, sb, indent_level, indent_str, pretty, _seen=None):
         body: list = []
         inline = super()._render_children(
-            body, indent_level, indent_str, pretty, xhtml, _seen=_seen
+            body, indent_level, indent_str, pretty, _seen=_seen
         )
         text = neutralize_raw_text("".join(map(str, body)), self.raw_text)
-        sb.append(text if _parsed_namespace(self, xhtml) == "html" else _cdata(text))
+        sb.append(text if _parsed_namespace(self) == "html" else _cdata(text))
         return inline
 
 
