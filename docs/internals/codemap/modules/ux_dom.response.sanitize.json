@@ -4,6 +4,8 @@
    "docs/adr/0002-html-string-sanitizer-policy.md",
    "docs/security/ATTRIBUTES.md",
    "tests/06_browser/test_sanitized_stream_browser.py",
+   "tests/06_browser/test_tree_construction_browser.py",
+   "tests/07_resilience/test_html_tree_construction.py",
    "tests/07_resilience/test_sanitized_stream.py"
   ],
   "imported_by": {

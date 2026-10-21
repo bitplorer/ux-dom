@@ -102,6 +102,9 @@ linear; memory is the text since the last boundary, at most `max_chars`.
 Text with no boundary (one element left open, a `<!-->` with no later `-->`,
 a run of characters with no space, `;` or `>`) waits for one and fails closed
 past `max_chars`.
+Input of any nesting depth is handled: end tags are implied as a browser
+implies them and the parsed tree is at most 512 deep, as in Chromium; nothing
+raises `RecursionError` ([security/ATTRIBUTES.md](../security/ATTRIBUTES.md)).
 
 HTTP adapters (`HTMLResponse`, …) stay optional. Product delivery is ux-compose.
 

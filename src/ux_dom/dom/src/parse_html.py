@@ -13,8 +13,7 @@ Example::
     >> str(ast[0][0])
     '<p>text</p>'
 
-Note: optional tags are not accounted for
-(see https://html.spec.whatwg.org/multipage/syntax.html#optional-tags)
+Optional end tags are implied as a browser implies them (``Tree``).
 
 """
 
@@ -27,6 +26,7 @@ from collections import abc, deque
 from html import escape
 from html.parser import HTMLParser
 from html.parser import commentclose  # type: ignore[attr-defined]
+import typing as T
 from typing import Any, Callable, Iterable, Iterator
 
 
@@ -63,6 +63,11 @@ class Element(abc.MutableSequence):
 
     All xml/html entities inherit from this class.
     """
+
+    # ``"svg"`` / ``"math"`` for an element the tree puts in foreign content.
+    namespace = "html"
+    # Elements above it in the tree (``Tree`` keeps it <= ``MAX_TREE_DEPTH``).
+    depth = 0
 
     def __init__(self, name: str = "", attr: dict | None = None) -> None:
         """Initialise the element."""
@@ -339,69 +344,384 @@ def _normalize_attrs(attrs) -> dict:
     return out
 
 
+# Tree construction (HTML spec §13.2.6, WHATWG). The tokenizer is the stdlib
+# ``HTMLParser``; this builds the tree a browser builds from its tokens for a
+# fragment: implied end tags (``<p>a<p>b`` is two paragraphs, ``<li>a<li>b``
+# two items), the table modes, breakout from foreign content (§13.2.6.5), and
+# Chromium's depth limit. Each set below is the spec's list it is named for.
+#
+# Left out, so the tree can still differ from a browser's: the adoption agency
+# and the list of active formatting elements (``<b>1<p>2</b>3``), foster
+# parenting (content directly in a ``<table>``), the form element pointer
+# (only an open ``form`` makes a nested ``<form>`` be ignored; the pointer
+# outlives the element, which would hold state across a stream cut), and the
+# context element: the fragment may be inserted anywhere, so ``<tr>`` with no
+# table is kept, where ``innerHTML`` on a ``<div>`` drops it.
+
+# §13.2.4.2 "special" category (HTML namespace).
+_SPECIAL = frozenset(
+    """address applet area article aside base basefont bgsound blockquote body
+    br button caption center col colgroup dd details dir div dl dt embed
+    fieldset figcaption figure footer form frame frameset h1 h2 h3 h4 h5 h6
+    head header hgroup hr html iframe img input keygen li link listing main
+    marquee menu meta nav noembed noframes noscript object ol p param
+    plaintext pre script search section select source style summary table
+    tbody td template textarea tfoot th thead title tr track ul wbr
+    xmp""".split()
+)
+# Foreign elements that are special and bound every scope: MathML text
+# integration points plus ``annotation-xml``, and SVG HTML integration points.
+_FOREIGN_SPECIAL = {
+    "math": frozenset({"mi", "mo", "mn", "ms", "mtext", "annotation-xml"}),
+    "svg": frozenset({"foreignobject", "desc", "title"}),
+}
+# §13.2.4.2 "has an element in scope" boundaries (HTML namespace). ``select``
+# is one since the 2025 select parser change (whatwg/html#10548), as Chromium
+# parses: ``<p><select><p>`` nests the second ``p``.
+_SCOPE = frozenset(
+    "applet caption html table td th marquee object select template".split()
+)
+_HEADINGS = frozenset("h1 h2 h3 h4 h5 h6".split())
+# §13.2.6.4.7 "in body": start tags that close a ``p`` in button scope.
+_CLOSES_P = _HEADINGS | frozenset(
+    """address article aside blockquote center details dialog dir div dl
+    fieldset figcaption figure footer form header hgroup hr listing main menu
+    nav ol p plaintext pre search section summary table ul xmp""".split()
+)
+# §13.2.6.3 "generate implied end tags".
+_IMPLIED_END = frozenset("dd dt li optgroup option p rb rp rt rtc".split())
+# §13.2.6.4.7 end tags that close their element only when it is in scope.
+_FORMATTING = frozenset(
+    "a b big code em font i nobr s small strike strong tt u".split()
+)
+_TABLE_PARTS = frozenset("caption col colgroup tbody td tfoot th thead tr".split())
+_ROW_GROUPS = frozenset({"tbody", "thead", "tfoot"})
+# Elements whose nearest one on the stack picks the table insertion mode
+# (§13.2.4.1, "reset the insertion mode appropriately").
+_TABLE_CONTEXT = _TABLE_PARTS - {"col"} | {"table", "template"}
+# §13.2.6.5: start tags that pop foreign content back to HTML.
+_BREAKOUT = frozenset(
+    """b big blockquote body br center code dd div dl dt em embed h1 h2 h3 h4
+    h5 h6 head hr i img li listing menu meta nobr ol p pre ruby s small span
+    strong strike sub sup table tt u ul var""".split()
+)
+# A self-closing start tag (``<div/>``) opens an HTML element as a plain one
+# does. Void and foreign elements end there, and so do the raw text and RCDATA
+# elements: the tokenizer reads no raw text after ``/>``, so their content
+# would otherwise be parsed as markup inside them.
+_SELF_CLOSING_ENDS = frozenset(
+    HTMLParser.CDATA_CONTENT_ELEMENTS
+    + getattr(HTMLParser, "RCDATA_CONTENT_ELEMENTS", ("textarea", "title"))
+    + ("noscript", "plaintext", "svg", "math")
+)
+# Chromium attaches an element opened below this many open elements to the
+# parent of the current node instead (``kMaximumHTMLParserDOMTreeDepth``).
+# Measured in Chromium: ``<i>`` x 600 in ``innerHTML`` gives a tree 512
+# elements deep, the last 89 of them siblings. The tree here counts the
+# depth itself rather than the open elements, which is the same number
+# except after ``</form>`` (it leaves the elements inside open), so a parsed
+# tree is never deeper than this, whatever the input.
+MAX_TREE_DEPTH = 512
+
+
+def _is_integration_point(namespace: str, name: str, attrs: dict) -> bool:
+    if name in _FOREIGN_SPECIAL.get(namespace, ()):
+        if name != "annotation-xml":
+            return True
+        encoding = str(attrs.get("encoding", "")).lower()
+        return encoding in ("text/html", "application/xhtml+xml")
+    return False
+
+
+def _stack_keys(node: Element) -> tuple[str, ...]:
+    """The stack indexes ``node`` is listed in while it is open (see ``Tree``)."""
+    name, ns = node.name, node.namespace
+    if ns != "html":
+        keys = [f"{ns}:{name}"]
+        if name in _FOREIGN_SPECIAL[ns]:
+            keys += ["special", "scope", "scope:li", "scope:button"]
+            keys += ["stop:li", "stop:dd"]
+        if _is_integration_point(ns, name, node.attrs):
+            keys.append("ip")
+        return tuple(keys)
+    keys = [f"n:{name}", "html"]
+    if name in _SPECIAL:
+        keys.append("special")
+        if name not in ("address", "div", "p", "li"):
+            keys.append("stop:li")
+        if name not in ("address", "div", "p", "dd", "dt"):
+            keys.append("stop:dd")
+    if name in _SCOPE:
+        keys += ["scope", "scope:li", "scope:button"]
+    elif name in ("ol", "ul"):
+        keys.append("scope:li")
+    elif name == "button":
+        keys.append("scope:button")
+    if name in ("table", "template"):
+        keys.append("scope:table")
+    if name in _TABLE_CONTEXT:
+        keys.append("table")
+    if name in _HEADINGS:
+        keys.append("heading")
+    return tuple(keys)
+
+
+# The root stands for the ``html`` element: special, and a boundary of every
+# scope.
+_ROOT_KEYS = (
+    "special stop:li stop:dd scope scope:li scope:button scope:table html "
+    "table".split()
+)
+
+
 class Tree:
-    """The engine class to generate the AST tree."""
+    """The engine class to generate the AST tree.
+
+    ``stack`` is the stack of open elements (the root first). Each spec query
+    on it ("a ``p`` in button scope", "the nearest special element") is a
+    comparison of two positions: ``_at`` keeps, per key from
+    ``_stack_keys``, the positions of the open elements listed under it, so
+    every query is O(1) and building the tree is linear in its size.
+    """
 
     def __init__(self, name: str = ""):
         """Initialise Tree"""
         self.name = name
-        self.outmost = Root(name)
-        self.stack: deque = deque()
-        self.stack.append(self.outmost)
+        self.clear()
 
     def clear(self):
         """Clear the outmost and stack for a new parsing."""
         self.outmost = Root(self.name)
-        self.stack.clear()
-        self.stack.append(self.outmost)
+        self.stack: list[Element] = [self.outmost]
+        self._at: dict[str, list[int]] = {key: [0] for key in _ROOT_KEYS}
 
     def last(self) -> Element:
         """Return the last pointer which point to the actual tag scope."""
         return self.stack[-1]
 
-    def nest_tag(self, name: str, attrs):
-        """Nest a given tag at the bottom of the tree using
-        the last stack's pointer.
+    def _push(self, node: Element) -> None:
+        index = len(self.stack)
+        self.stack.append(node)
+        for key in _stack_keys(node):
+            self._at.setdefault(key, []).append(index)
+
+    def _pop(self) -> None:
+        node = self.stack.pop()
+        for key in _stack_keys(node):
+            self._at[key].pop()
+
+    def _pop_to(self, index: int) -> None:
+        """Pop the element at ``index`` and every element above it."""
+        while len(self.stack) > max(index, 1):
+            self._pop()
+
+    def _pos(self, key: str) -> int:
+        """Position of the nearest open element listed under ``key``, or -1."""
+        positions = self._at.get(key)
+        return positions[-1] if positions else -1
+
+    def _in_scope(self, key: str, scope: str = "scope") -> bool:
+        return self._pos(key) >= self._pos(scope)
+
+    def _current_is(self, *names: str) -> bool:
+        node = self.stack[-1]
+        return node.namespace == "html" and node.name in names
+
+    def _generate_implied_end_tags(self, but: str = "") -> None:
+        while self._current_is(*_IMPLIED_END) and self.stack[-1].name != but:
+            self._pop()
+
+    def _close_p(self) -> None:
+        if self._in_scope("n:p", "scope:button"):
+            self._pop_to(self._pos("n:p"))
+
+    def _insert(self, kind, name: str, attrs, namespace: str = "html") -> Element:
+        parent = self.stack[-1]
+        if parent.depth >= MAX_TREE_DEPTH:
+            parent = T.cast(Element, parent.parent)
+        item = kind(name, _normalize_attrs(attrs))
+        item.namespace = namespace
+        item.depth = parent.depth + 1
+        parent.append(item)
+        if kind is Tag:
+            self._push(item)
+        return item
+
+    def start(self, name: str, attrs, *, void: bool = False, self_closing=False):
+        """A start tag: close what it implies, then insert it."""
+        current = self.stack[-1]
+        if current.namespace != "html" and not self._html_at(current, name):
+            if not (
+                name in _BREAKOUT
+                or name == "font"
+                and {"color", "face", "size"} & set(_normalize_attrs(attrs))
+            ):
+                kind = XTag if self_closing else Tag
+                self._insert(kind, name, attrs, current.namespace)
+                return
+            self._pop_to(max(self._pos("html"), self._pos("ip")) + 1)
+        if not self._table_start(name) or not self._body_start(name):
+            return
+        namespace = name if name in ("svg", "math") else "html"
+        if self_closing and (void or namespace != "html" or name in _SELF_CLOSING_ENDS):
+            self._insert(XTag, name, attrs, namespace)
+        elif void:
+            self._insert(VoidTag, name, attrs)
+        else:
+            self._insert(Tag, name, attrs, namespace)
+
+    @staticmethod
+    def _html_at(node: Element, name: str) -> bool:
+        """Whether a start tag at foreign ``node`` follows the HTML rules."""
+        if not _is_integration_point(node.namespace, node.name, node.attrs):
+            return False
+        return not (
+            node.namespace == "math"
+            and node.name != "annotation-xml"
+            and name in ("mglyph", "malignmark")
+        )
+
+    def _table_start(self, name: str) -> bool:
+        """The table insertion modes (§13.2.6.4.9-15) for a start tag.
+
+        Returns ``False`` when the tag is ignored. The mode comes from the
+        nearest open table element, as "reset the insertion mode" picks it.
         """
-        pointer = self.stack.pop()
-        item = Tag(name, _normalize_attrs(attrs))
-        pointer.append(item)
-        self.stack.append(pointer)
-        self.stack.append(item)
+        while name in _TABLE_PARTS or name == "table":
+            index = self._pos("table")
+            mode = self.stack[index].name if index else ""
+            if mode in ("td", "th"):
+                if name == "table":
+                    return True
+                self._pop_to(index)  # close the cell
+            elif name == "table" and mode in ("tr", *_ROW_GROUPS):
+                self._pop_to(self._pos("n:table"))  # a table here closes the table
+            elif mode == "tr":
+                if name in ("td", "th"):
+                    self._pop_to(index + 1)
+                    return True
+                self._pop_to(index)
+            elif mode in _ROW_GROUPS:
+                if name == "tr":
+                    self._pop_to(index + 1)
+                    return True
+                self._pop_to(index + 1)
+                if name in ("td", "th"):
+                    self._insert(Tag, "tr", {})
+                else:
+                    self._pop_to(index)
+            elif mode == "caption":
+                if name == "table":
+                    return True
+                self._pop_to(index)
+            elif mode == "colgroup":
+                if name == "col":
+                    return True
+                self._pop_to(index)
+            elif mode == "table":
+                self._pop_to(index + 1)
+                if name in ("caption", "colgroup", "tbody", "tfoot", "thead"):
+                    return True
+                if name == "col":
+                    self._insert(Tag, "colgroup", {})
+                elif name in ("td", "th", "tr"):
+                    self._insert(Tag, "tbody", {})
+                else:
+                    self._pop_to(index)  # a table in a table closes it
+            else:
+                return True
+        return True
 
-    def nest_xtag(self, name: str, attrs):
-        """Nest an XTag onto the tree."""
-        top = self.last()
-        item = XTag(name, _normalize_attrs(attrs))
-        top.append(item)
+    def _body_start(self, name: str) -> bool:
+        """The "in body" rules (§13.2.6.4.7) that close elements before a
+        start tag. Returns ``False`` when the tag is ignored."""
+        if name == "form" and self._pos("n:form") > self._pos("n:template"):
+            return False
+        if name in _CLOSES_P:
+            self._close_p()
+            if name in _HEADINGS and self._current_is(*_HEADINGS):
+                self._pop()
+            if name == "hr" and self._in_scope("n:select"):
+                self._generate_implied_end_tags()
+        elif name == "li":
+            if self._pos("n:li") > self._pos("stop:li"):
+                self._pop_to(self._pos("n:li"))
+            self._close_p()
+        elif name in ("dd", "dt"):
+            index = max(self._pos("n:dd"), self._pos("n:dt"))
+            if index > self._pos("stop:dd"):
+                self._pop_to(index)
+            self._close_p()
+        elif name == "button":
+            if self._in_scope("n:button"):
+                self._pop_to(self._pos("n:button"))
+        elif name in ("select", "input", "keygen"):
+            if self._in_scope("n:select"):
+                self._pop_to(self._pos("n:select"))
+                return name != "select"
+        elif name in ("option", "optgroup"):
+            if self._in_scope("n:select"):
+                self._generate_implied_end_tags(but="optgroup" if name == "option" else "")
+            elif self._current_is("option"):
+                self._pop()
+        elif name in ("rb", "rtc", "rp", "rt"):
+            if self._in_scope("n:ruby"):
+                self._generate_implied_end_tags(but="rtc" if name in ("rp", "rt") else "")
+        elif name == "body" and self._current_is("head"):
+            self._pop()
+        return True
 
-    def nest_vtag(self, name: str, attrs):
-        """Nest a VoidTag onto the tree."""
-        top = self.last()
-        item = VoidTag(name, _normalize_attrs(attrs))
-        top.append(item)
+    def end(self, name: str) -> None:
+        """An end tag: close the element it names where the spec does."""
+        if self.stack[-1].namespace != "html":
+            index = max(self._pos(f"svg:{name}"), self._pos(f"math:{name}"))
+            if index > self._pos("html"):
+                self._pop_to(index)
+                return
+            if name in ("br", "p"):  # §13.2.6.5: these break out too
+                self._pop_to(max(self._pos("html"), self._pos("ip")) + 1)
+        if self._current_is("colgroup") and name not in ("colgroup", "col"):
+            self._pop()  # §13.2.6.4.12: any other end tag closes the colgroup
+        if name == "p":
+            if not self._in_scope("n:p", "scope:button"):
+                self._insert(XTag, "p", {})  # ``</p>`` alone is ``<p></p>``
+            self._close_p()
+        elif name == "br":
+            self._insert(VoidTag, "br", {})
+        elif name == "li":
+            if self._in_scope("n:li", "scope:li"):
+                self._pop_to(self._pos("n:li"))
+        elif name in _HEADINGS:
+            if self._in_scope("heading"):
+                self._pop_to(self._pos("heading"))
+        elif name in _TABLE_PARTS or name == "table":
+            if self._in_scope(f"n:{name}", "scope:table"):
+                self._pop_to(self._pos(f"n:{name}"))
+        elif name == "form":
+            if self._in_scope("n:form"):
+                # The form leaves the stack; what is open inside it stays
+                # open. Each element re-pushed was opened after the form, so
+                # the work is bounded by the input.
+                self._generate_implied_end_tags()
+                index = self._pos("n:form")
+                above = self.stack[index + 1 :]
+                self._pop_to(index)
+                for node in above:
+                    self._push(node)
+        elif name in ("html", "head", "body", "template"):
+            if self._pos(f"n:{name}") > 0:
+                self._pop_to(self._pos(f"n:{name}"))
+        elif name in _SPECIAL or name in _FORMATTING:
+            if self._in_scope(f"n:{name}"):
+                self._pop_to(self._pos(f"n:{name}"))
+        elif self._pos(f"n:{name}") > self._pos("special"):
+            self._pop_to(self._pos(f"n:{name}"))  # "any other end tag"
 
     def nest_terminal(self, klass: type[TerminalElement], data: str):
         """Nest the data onto the tree."""
         top = self.last()
         item = klass(data)
         top.append(item)
-
-    def enclose(self, name: str):
-        """When a closing tag is found, pop the pointer's scope from the stack,
-        to then point to the earlier scope's tag.
-        """
-        count = 0
-        for ind in reversed(self.stack):
-            count = count + 1
-            if ind.name == name:
-                break
-        else:
-            count = 0
-
-        # It pops all the items which do not match with the closing tag.
-        for _ in range(0, count):
-            self.stack.pop()
 
 
 class HtmlToAst(HTMLParser):
@@ -442,19 +762,18 @@ class HtmlToAst(HTMLParser):
 
     def handle_starttag(self, tag: str, attrs):  # type: ignore[override]
         """When found an opening tag then nest it onto the tree."""
-        if tag in self.void_elements:
-            self.struct.nest_vtag(tag, attrs)
-        else:
-            self.struct.nest_tag(tag, attrs)
+        self.struct.start(tag, attrs, void=tag in self.void_elements)
 
     def handle_startendtag(self, tag: str, attrs):  # type: ignore[override]
-        """When found a XHTML tag style then nest it up to the tree."""
-        self.struct.nest_xtag(tag, attrs)
+        """``<tag/>``: the flag ends only void, foreign and raw text elements."""
+        self.struct.start(
+            tag, attrs, void=tag in self.void_elements, self_closing=True
+        )
 
     def handle_endtag(self, tag: str):  # type: ignore[override]
         """When found a closing tag then makes it point to the right scope."""
-        if tag not in self.void_elements:
-            self.struct.enclose(tag)
+        if tag == "br" or tag not in self.void_elements:
+            self.struct.end(tag)
 
     def handle_data(self, data: str):  # type: ignore[override]
         """Nest data onto the tree."""

@@ -21,6 +21,7 @@ import typing
 from ux_dom.dom.src.concurrency import multi_tree_lock, tree_lock_for
 from collections import defaultdict, namedtuple
 from collections.abc import Callable
+from contextlib import contextmanager
 from contextvars import ContextVar
 from functools import wraps
 
@@ -54,6 +55,20 @@ def _get_with_stack():
         stack = []
         _WITH_STACK.set(stack)
     return stack
+
+
+@contextmanager
+def detached_build():
+    """Build nodes that join no open ``with`` frame (the caller attaches them).
+
+    The string parser builds its subtree bottom-up under this, so each node
+    it attaches to is still a root and ``multi_tree_lock`` finds it at once.
+    """
+    token = _WITH_STACK.set(None)
+    try:
+        yield
+    finally:
+        _WITH_STACK.reset(token)
 
 
 def _clear_with_stack_if_empty():
@@ -343,14 +358,14 @@ class dom_tag(object):
             self._setdocument_unlocked(doc)
 
     def _setdocument_unlocked(self, doc):
-        # assume that a document is correct in the subtree
-        if self.document != doc:
-            self.document = doc
-            for child in self:
-                if not isinstance(child, dom_tag):
-                    continue
-                # recursive unlocked to avoid re-locking every level (same root)
-                child._setdocument_unlocked(doc)
+        # assume that a document is correct in the subtree; unlocked (same
+        # root) and on an explicit stack, so depth costs no Python frames
+        stack = [self]
+        while stack:
+            node = stack.pop()
+            if node.document != doc:
+                node.document = doc
+                stack.extend(c for c in node if isinstance(c, dom_tag))
 
     def add(self, *args):
         """Add child tags / strings / attr dicts. Public alias of :meth:`_add`.
@@ -441,7 +456,10 @@ class dom_tag(object):
                         prev.children.remove(obj)
                     except ValueError:
                         pass
-                if obj in self.children:
+                # Only a node whose parent is this one can be a child already
+                # (single ownership), so the O(children) scan is skipped for a
+                # new node: adding n children stays linear (#125).
+                if prev is self and obj in self.children:
                     # already a direct child — keep single entry, refresh parent/doc
                     obj.parent = self
                     obj._setdocument(self.document)
@@ -569,29 +587,40 @@ class dom_tag(object):
         """Yield matches depth-first (lazy) — no intermediate full lists.
 
         Prefer this for existence / first-hit. ``get`` is ``list(self._find(...))``.
+        The walk keeps its own stack, so tree depth costs no Python frames
+        (#125); a child with its own ``_find`` (a Component) runs that.
         """
         if tag is None:
             tag = dom_tag
 
-        attrs = [(self.clean_attribute(attr), value) for attr, value in kwargs.items()]
         seen: set = set()
-        direct_children = object.__getattribute__(self, "children")
-
-        def _emit(node):
-            nid = id(node)
-            if nid in seen:
-                return
-            seen.add(nid)
-            yield node
-
-        for child in direct_children:
+        expanded: set = set()  # a parent cycle is walked once, not forever
+        # Frame: [children left, attrs as that node's class cleans them].
+        stack = [[iter(object.__getattribute__(self, "children")), self._clean_attrs(kwargs)]]
+        while stack:
+            child = next(stack[-1][0], stack)  # ``stack`` marks the end
+            if child is stack:
+                stack.pop()
+                continue
+            attrs = stack[-1][1]
             for matched in self._match_nodes(child, tag, attrs):
-                yield from _emit(matched)
-
-            if isinstance(child, dom_tag):
-                # Descend via child's lazy finder (not child.get → list)
+                if id(matched) not in seen:
+                    seen.add(id(matched))
+                    yield matched
+            if not isinstance(child, dom_tag) or id(child) in expanded:
+                continue
+            expanded.add(id(child))
+            if type(child)._find is not dom_tag._find:
                 for found in child._find(tag, **kwargs):
-                    yield from _emit(found)
+                    if id(found) not in seen:
+                        seen.add(id(found))
+                        yield found
+                continue
+            grandchildren = object.__getattribute__(child, "children")
+            stack.append([iter(grandchildren), child._clean_attrs(kwargs)])
+
+    def _clean_attrs(self, kwargs):
+        return [(self.clean_attribute(attr), value) for attr, value in kwargs.items()]
 
     def get(self, tag=None, **kwargs):
         """Find nodes matching ``tag``/attrs: **own root + entire subtree**.

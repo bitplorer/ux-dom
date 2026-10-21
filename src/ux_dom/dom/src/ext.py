@@ -190,8 +190,32 @@ def _scan(node, memo: dict, context: str | None) -> tuple[int, int, bool]:
     ``moved`` means the parser takes the node's tail out of it, so the tail
     lands next to its siblings: it renders flat and counts as inline. A
     ``lazy`` is unknown until it renders, so it counts as inline and as any
-    descendant.
+    descendant. The walk is post-order on an explicit stack (#125).
     """
+    done = _scan_leaf(node, memo)
+    if done is not None:
+        return done
+    # Frame: [node, its HTML name, its context, children left, kind, bits].
+    frames = [_scan_frame(node, memo, context)]
+    while True:
+        frame = frames[-1]
+        child = next(frame[3], frames)  # ``frames`` marks the end
+        if child is not frames:
+            done = _scan_leaf(child, memo)
+            if done is None:
+                frames.append(_scan_frame(child, memo, frame[1] or frame[2]))
+                continue
+        else:
+            frames.pop()
+            done = _scan_close(frame, memo)
+            if not frames:
+                return done
+            frame = frames[-1]
+        frame[4], frame[5] = max(frame[4], done[0]), frame[5] | done[1]
+
+
+def _scan_leaf(node, memo: dict) -> tuple[int, int, bool] | None:
+    """``_scan`` of a node with nothing to walk, else ``None``."""
     if isinstance(node, str):
         return (_INLINE if node else _EMPTY), 0, False
     if isinstance(node, dom_text):
@@ -199,14 +223,16 @@ def _scan(node, memo: dict, context: str | None) -> tuple[int, int, bool]:
     if not isinstance(node, Tags):
         return _INLINE, _ALL_BITS, False
     hit = memo.get(id(node))
-    if hit is not None:
-        return hit[1]
+    return None if hit is None else hit[1]
+
+
+def _scan_frame(node, memo: dict, context: str | None) -> list:
     memo[id(node)] = (node, (_EMPTY, 0, False))  # a cycle holds no more content
-    name = _html_name(node)
-    kind = inside = 0
-    for child in node.children:
-        child_kind, bits, _ = _scan(child, memo, name or context)
-        kind, inside = max(kind, child_kind), inside | bits
+    return [node, _html_name(node), context, iter(node.children), 0, 0]
+
+
+def _scan_close(frame: list, memo: dict) -> tuple[int, int, bool]:
+    node, name, context, _, kind, inside = frame
     moved = False
     if name is None and not node.children and node._control(Tags.RENDER_TAG, True):
         kind = _INLINE  # a comment or a Jinja ``{{ var }}``: prints in the line
@@ -286,6 +312,29 @@ def _text_state_name(node, name):
     if name in TEXT_STATE_ELEMENTS and _element_name(node) == name:
         return name
     return None
+
+
+def _drive(steps):
+    """Run render steps (``Tags._render_steps``) on an explicit stack.
+
+    A child that renders like ``Tags`` becomes a frame here instead of a
+    nested Python call, so tree depth never reaches the recursion limit
+    (#125). A child with its own ``_render`` (a Component, ``lazy``, text) is
+    called; only such nodes nest the Python stack, one call each.
+    """
+    stack = [steps]
+    while True:
+        try:
+            child, args = stack[-1].send(None)
+        except StopIteration as done:
+            stack.pop()
+            if not stack:
+                return done.value
+            continue
+        if type(child)._render is Tags._render:
+            stack.append(child._render_steps(*args))
+        else:
+            child._render(*args[:4], _seen=args[4])
 
 
 class Tags(dom_tag, dom1core):
@@ -497,6 +546,13 @@ class Tags(dom_tag, dom1core):
         child use ``(inline and self.is_inline)`` so non-inline parents still
         break before inline children.
         """
+        return _drive(
+            self._render_children_steps(sb, indent_level, indent_str, pretty, _seen)
+        )
+
+    def _render_children_steps(self, sb, indent_level, indent_str, pretty, _seen):
+        """``_render_children`` as steps for ``_drive``: each child render is
+        yielded as ``(child, args)`` instead of called."""
         inline = True
         orig_indent = indent_level
         self_render_tag = self._control(Tags.RENDER_TAG, True)
@@ -527,11 +583,13 @@ class Tags(dom_tag, dom1core):
                             inline and self.is_inline,
                         )
 
-                child._render(sb, indent_level, indent_str, pretty, _seen=_seen)
+                yield child, (sb, indent_level, indent_str, pretty, _seen)
 
             else:
                 if isinstance(child, dom_text):
-                    child = child.__render__()
+                    # The render holds the tree lock already; ``__render__``
+                    # would walk to the root again for every text (#125).
+                    child = "".join(child._render([]))
 
                 if child or any(child):
                     if pretty:
@@ -597,6 +655,10 @@ class Tags(dom_tag, dom1core):
                 )
             finally:
                 _LAYOUT_MEMO.reset(token)
+        return _drive(self._render_steps(sb, indent_level, indent_str, pretty, _seen))
+
+    def _render_steps(self, sb, indent_level, indent_str, pretty, _seen):
+        """``_render`` as steps for ``_drive`` (the memos are already set)."""
         if _seen is None:
             _seen = set()
         sid = id(self)
@@ -637,7 +699,7 @@ class Tags(dom_tag, dom1core):
         # RCDATA / RAWTEXT (#90): check the joined body, as #53 does.
         text_state = _text_state_name(self, name) if self_render_tag else None
         body = [] if text_state else sb
-        inline = self._render_children(
+        args = (
             body,
             (
                 indent_level + 1
@@ -646,8 +708,12 @@ class Tags(dom_tag, dom1core):
             ),
             indent_str,
             pretty,
-            _seen=_seen,
+            _seen,
         )
+        if type(self)._render_children is Tags._render_children:
+            inline = yield from self._render_children_steps(*args)
+        else:
+            inline = self._render_children(*args)
         if text_state:
             sb.append(checked_text_state_body("".join(map(str, body)), text_state))
         inline = self.is_inline and inline
@@ -770,14 +836,38 @@ class Tags(dom_tag, dom1core):
             raise error[0]
 
     def _walk_render_tokens(self, indent_level, indent_str, pretty, _seen=None):
-        """Token generator for async/stream serialize (compact or pretty)."""
+        """Token generator for async/stream serialize (compact or pretty).
+
+        Iterative, like ``_drive``: a child that walks like ``Tags`` is a
+        frame on an explicit stack, not a nested generator (#125).
+        """
         pretty_flag = bool(pretty and self.is_pretty and not self.is_inline)
         if pretty_flag:
             yield from self._iter_pretty_stream(
                 indent_level, indent_str, pretty, _seen=_seen
             )
             return
+        if _seen is None:
+            _seen = set()
+        stack = [self._walk_steps(indent_level, indent_str, pretty, _seen)]
+        while stack:
+            item = next(stack[-1], None)
+            if item is None:
+                stack.pop()
+            elif isinstance(item, str):
+                yield item
+            elif type(item[0])._walk_render_tokens is Tags._walk_render_tokens:
+                # Children inherit the parent's effective (compact) layout,
+                # as in _render.
+                stack.append(item[0]._walk_steps(item[1], indent_str, False, _seen))
+            else:
+                yield from item[0]._walk_render_tokens(
+                    item[1], indent_str, False, _seen=_seen
+                )
 
+    def _walk_steps(self, indent_level, indent_str, pretty, _seen):
+        """One node's compact tokens; a child tag is yielded as
+        ``(child, indent_level)`` for ``_walk_render_tokens`` to expand."""
         # Overridden hooks (StyleTags dialects, ReactiveComponent's pre-serialize
         # refresh) only run inside ``_render``.
         cls = type(self)
@@ -788,8 +878,6 @@ class Tags(dom_tag, dom1core):
             yield from self._render([], indent_level, indent_str, pretty, _seen=_seen)
             return
 
-        if _seen is None:
-            _seen = set()
         sid = id(self)
         if sid in _seen:
             yield "<!--cycle:%s-->" % type(self).__name__
@@ -820,10 +908,7 @@ class Tags(dom_tag, dom1core):
 
         for child in self.children:
             if isinstance(child, dom_tag):
-                # Children inherit the parent's effective (compact) layout, as in _render.
-                yield from child._walk_render_tokens(
-                    indent_level + 1, indent_str, False, _seen=_seen
-                )
+                yield child, indent_level + 1
             else:
                 if child or any(str(child)):
                     yield str(child)

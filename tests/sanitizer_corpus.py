@@ -1,7 +1,7 @@
 """Attack strings from the sanitizer PRs, as input to the string sanitizer.
 
 Gathered from the tests that lock each fix (#32, #55, #85, #91, #97, #98,
-#107, #113), not copied, so a vector added there is tested here too. Tree
+#107, #113, #123, #125), not copied, so a vector added there is tested here too. Tree
 corpora are rendered to the markup an attacker could send as a string. Used by
 the sanitized-stream tests (#121).
 """
@@ -9,6 +9,7 @@ the sanitized-stream tests (#121).
 from __future__ import annotations
 
 import importlib
+import random
 
 
 def _module(name: str):
@@ -126,6 +127,132 @@ def _pr113() -> list[str]:
     ]
 
 
+# Pieces that open and end every construct the tokenizer and its reference
+# pass know, so random joins and splits land in all of them.
+TOKENS = [
+    "<!--",
+    "-->",
+    "--!>",
+    "<!-->",
+    "<!--->",
+    "-",
+    "!",
+    "<a",
+    "<p",
+    "<b>",
+    "</b>",
+    " title=",
+    " href=",
+    '"',
+    "'",
+    ">",
+    "</p>",
+    "</a>",
+    "<script>",
+    "</script>",
+    "<style>",
+    "</style>",
+    "<style/>",
+    "<STYLE ",
+    "<ſtyle>",
+    "<![CDATA[",
+    "]]>",
+    "<!",
+    "<?",
+    "<!DOCTYPE",
+    "<",
+    "</",
+    "/>",
+    "x",
+    " ",
+    "\t",
+    "\n",
+    "\r",
+    ";",
+    "=",
+    "&",
+    "&amp;",
+    "&#62",
+    "&#x3c",
+    "&#",
+    "&notin;",
+    "&not",
+    "é",
+    "<svg>",
+    "</svg>",
+    "<math>",
+    "<textarea>",
+    "</textarea",
+    "<title>",
+    "</title>",
+    "<xmp>",
+    "</xmp>",
+    "<plaintext>",
+    "<template>",
+    "</template>",
+    "<noscript>",
+    "</noscript>",
+    "<img",
+    " onerror=alert(1)",
+    "javascript:alert(1)",
+    "<br>",
+    "<li>",
+    # Implied end tags and breakouts (#125): a cut must never fall inside an
+    # element a later tag closes implicitly.
+    "<ul>",
+    "</li>",
+    "<dt>",
+    "<dd>",
+    "<select>",
+    "<option>",
+    "<table>",
+    "<tr>",
+    "<td>",
+    "<ruby>",
+    "<rt>",
+    "<form>",
+    "</form>",
+    "</br>",
+    "<h1>",
+    "<div/>",
+    "<button>",
+    "<desc>",
+    "<colgroup>",
+]
+
+
+def _pr123() -> list[str]:
+    """Seeded joins of ``TOKENS``, as the stream test joins them."""
+    rng = random.Random(123)
+    return ["".join(rng.choices(TOKENS, k=rng.randint(2, 14))) for _ in range(300)]
+
+
+def _pr125() -> list[str]:
+    """Implied end tags and breakouts around the attack payloads."""
+    m = _module("07_resilience.test_html_tree_construction")
+    payloads = [
+        "<img src=x onerror=alert(1)>",
+        "<script>alert(1)</script>",
+        "<a href=javascript:alert(1)>a</a>",
+        "<style><img src=x onerror=alert(1)></style>",
+        "<noscript><p title='</noscript><img src=x onerror=alert(1)>'></noscript>",
+    ]
+    out = [src for src, _ in m.IMPLIED]
+    out += [src + payload for src, _ in m.IMPLIED for payload in payloads[:2]]
+    for payload in payloads:
+        out += [
+            f"<p>a<svg><p>{payload}",
+            f"<svg><g><li>{payload}</g></svg>",
+            f"<table><td>a<svg><td>{payload}</table>",
+            f"<select><option>a<option>{payload}</select>",
+            f"<form><div>a</form>{payload}",
+            f"<div/>{payload}",
+            "<b>" * 600 + payload,
+            "<li>" * 600 + payload,
+        ]
+    return out
+
+
 CORPORA = {
     "#32": _pr32,
     "#55": _pr55,
@@ -135,6 +262,8 @@ CORPORA = {
     "#98": _pr98,
     "#107": _pr107,
     "#113": _pr113,
+    "#123": _pr123,
+    "#125": _pr125,
 }
 
 

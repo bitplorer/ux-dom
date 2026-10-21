@@ -15,6 +15,7 @@
    "tests/06_browser/test_parse_whitespace_browser.py",
    "tests/06_browser/test_pretty_raw_text_browser.py",
    "tests/06_browser/test_sanitizer_svg_browser.py",
+   "tests/06_browser/test_tree_construction_browser.py",
    "tests/07_resilience/test_boolean_attributes.py",
    "tests/07_resilience/test_entity_roundtrip.py",
    "tests/07_resilience/test_escape_param_absent.py",
@@ -22,6 +23,7 @@
    "tests/07_resilience/test_html_parse_sanitizer.py",
    "tests/07_resilience/test_html_string_mxss.py",
    "tests/07_resilience/test_html_svg_names.py",
+   "tests/07_resilience/test_html_tree_construction.py",
    "tests/07_resilience/test_htmx_same_origin.py",
    "tests/07_resilience/test_raw_string_sinks.py",
    "tests/07_resilience/test_sanitized_stream.py",
@@ -43,6 +45,7 @@
   "imports_internal": {
    "function_level": [],
    "module_level": [
+    "ux_dom.dom.src.dom_tag",
     "ux_dom.dom.src.ext",
     "ux_dom.dom.src.htmltags",
     "ux_dom.dom.src.jinjatags",

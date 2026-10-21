@@ -1,7 +1,7 @@
 """Live Chromium: sanitized strings and streams run no script (#121).
 
 Every attack string from the sanitizer PRs (#32, #55, #85, #91, #97, #98,
-#107, #113; ``tests/sanitizer_corpus.py``) goes through ``sanitize_html``
+#107, #113, #123, #125; ``tests/sanitizer_corpus.py``) goes through ``sanitize_html``
 and through ``sanitize_html_stream`` with 1-character chunks and random split
 points. Each distinct output loads in Chromium, which fires every handler,
 link, form and animation it can (``exec_oracle_harness.mjs``): 0 executions.

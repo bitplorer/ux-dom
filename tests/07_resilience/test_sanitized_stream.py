@@ -27,7 +27,7 @@ from ux_dom.response import (
     sanitize_html_stream,
 )
 
-from sanitizer_corpus import corpus
+from sanitizer_corpus import TOKENS, corpus
 
 CORPUS = corpus()
 SEEDS = range(1, 13)
@@ -72,7 +72,18 @@ def test_public_names():
 
 def test_corpora_are_loaded():
     prs = {pr for pr, _ in CORPUS}
-    assert prs == {"#32", "#55", "#85", "#91", "#97", "#98", "#107", "#113"}
+    assert prs == {
+        "#32",
+        "#55",
+        "#85",
+        "#91",
+        "#97",
+        "#98",
+        "#107",
+        "#113",
+        "#123",
+        "#125",
+    }
     assert len(CORPUS) > 1000
 
 
@@ -114,79 +125,6 @@ def test_whole_corpus_as_one_stream_equals_whole():
     whole = sanitize_html(text)
     for seed in (0, 1):
         assert _stream(_split(text, seed)) == whole
-
-
-# Pieces that open and end every construct the tokenizer and its reference
-# pass know, so random joins and splits land in all of them.
-TOKENS = [
-    "<!--",
-    "-->",
-    "--!>",
-    "<!-->",
-    "<!--->",
-    "-",
-    "!",
-    "<a",
-    "<p",
-    "<b>",
-    "</b>",
-    " title=",
-    " href=",
-    '"',
-    "'",
-    ">",
-    "</p>",
-    "</a>",
-    "<script>",
-    "</script>",
-    "<style>",
-    "</style>",
-    "<style/>",
-    "<STYLE ",
-    "<ſtyle>",
-    "<![CDATA[",
-    "]]>",
-    "<!",
-    "<?",
-    "<!DOCTYPE",
-    "<",
-    "</",
-    "/>",
-    "x",
-    " ",
-    "\t",
-    "\n",
-    "\r",
-    ";",
-    "=",
-    "&",
-    "&amp;",
-    "&#62",
-    "&#x3c",
-    "&#",
-    "&notin;",
-    "&not",
-    "é",
-    "<svg>",
-    "</svg>",
-    "<math>",
-    "<textarea>",
-    "</textarea",
-    "<title>",
-    "</title>",
-    "<xmp>",
-    "</xmp>",
-    "<plaintext>",
-    "<template>",
-    "</template>",
-    "<noscript>",
-    "</noscript>",
-    "<img",
-    " onerror=alert(1)",
-    "javascript:alert(1)",
-    "<br>",
-    "<li>",
-]
 
 
 @settings(max_examples=1500, deadline=None)

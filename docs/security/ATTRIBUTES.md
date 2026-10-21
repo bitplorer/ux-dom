@@ -243,6 +243,24 @@ a browser and run the `<img>`. Any other tag (`portal`, a custom element) is
 removed and its children are kept, so the tag cannot run and the text is not
 thrown away. `style`, `meta`, and `link` are not fragment tags.
 
+**Tree.** The string is parsed into the tree a browser builds (HTML spec
+§13.2.6, #125): end tags are implied (`<p>one<p>two` is two paragraphs,
+`<li>` closes an open `li`, `<td>` a cell, `<option>` an option, `<rt>` a
+`rt`; a block start tag closes an open `p`), a table gets its implied
+`tbody` / `tr` / `colgroup`, a stray `</p>` is `<p></p>` and `</br>` is
+`<br>`, a breakout tag (`<p>`, `<div>`, `<img>`, …) ends `<svg>` / `<math>`,
+and `<div/>` opens a `div`. As in Chromium, an element opened below 512
+others is attached next to the 512th, so a parsed tree is at most 512 deep
+(`parse_html.MAX_TREE_DEPTH`). Parsing, the sanitizer's walk and rendering
+use their own stacks, not recursion: no input raises `RecursionError`, and
+time is linear in the input. A tree built with the DOM API is not capped
+and also renders at any depth. Not modelled, so the tree can still differ
+from a browser's: the adoption agency for formatting elements
+(`<b>1<p>2</b>3`), foster parenting of content placed directly in a
+`<table>`, the form element pointer after its `form` is closed by another
+end tag, and the context element (a `<tr>` outside a table is kept, since
+the fragment may be inserted into one).
+
 **Comments** are dropped. A browser ends a comment at `--!>` and in other
 places Python does not, so a kept comment can carry live markup.
 
@@ -299,4 +317,5 @@ handlers, `hx-*`, and unknown tags are still stripped inside the document.
 Tests: `tests/07_resilience/test_html_allowlist.py`,
 `tests/07_resilience/test_html_parse_sanitizer.py`,
 `tests/07_resilience/test_html_string_mxss.py`,
-`tests/07_resilience/test_sanitized_stream.py`.
+`tests/07_resilience/test_sanitized_stream.py`,
+`tests/07_resilience/test_html_tree_construction.py`.

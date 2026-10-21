@@ -125,7 +125,7 @@ def test_kept_name_gets_the_attribute_policy(name):
 def test_dropped_name_goes_with_its_children(name, spell):
     out = _sanitized_html(
         f"<svg><{spell(name)} attributeName=href to=javascript:hit()>"
-        f"<img src=x onerror=hit()>t</{spell(name)}><rect></rect></svg>"
+        f"<circle onclick=hit()></circle>t</{spell(name)}><rect></rect></svg>"
     )
     assert out == "<svg><rect></rect></svg>"
 

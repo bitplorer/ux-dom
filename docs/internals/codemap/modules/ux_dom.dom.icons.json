@@ -64,6 +64,7 @@
    "tests/07_resilience/test_dom_method_shadowing.py",
    "tests/07_resilience/test_f18_directory_router_absent.py",
    "tests/07_resilience/test_foreign_breakout.py",
+   "tests/07_resilience/test_html_tree_construction.py",
    "tests/07_resilience/test_single_tag_registry.py",
    "tests/07_resilience/test_text_state_parents.py",
    "tests/fixtures/auth_xelements.py"
