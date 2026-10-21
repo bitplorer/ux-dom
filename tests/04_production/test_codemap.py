@@ -144,15 +144,40 @@ class TestCodeMap(unittest.TestCase):
         finally:
             scratch.unlink()
 
-    def test_git_failure_inside_a_checkout_is_not_swallowed(self):
+    def _git(self, cwd: Path, *args: str) -> None:
+        subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True)
+
+    def test_root_inside_a_parent_repo_ignores_untracked_files(self):
+        # A --root below the top of a checkout (monorepo, subtree) is still git.
+        with tempfile.TemporaryDirectory() as tmp:
+            tests = Path(tmp) / "proj" / "tests"
+            tests.mkdir(parents=True)
+            (tests / "tracked.py").write_text("import ux_dom\n", encoding="utf-8")
+            (tests / "untracked.py").write_text("import ux_dom\n", encoding="utf-8")
+            self._git(Path(tmp), "init", "-q")
+            self._git(Path(tmp), "add", "proj/tests/tracked.py")
+            cfg = self.codemap.load_config(ROOT)
+            cfg.root = Path(tmp) / "proj"
+            self.assertEqual(
+                self.codemap.tracked_files(cfg, ["tests"]), [tests / "tracked.py"]
+            )
+
+    def test_git_failure_is_a_one_line_error(self):
         # Falling back to a walk would silently count untracked files.
         with tempfile.TemporaryDirectory() as tmp:
-            (Path(tmp) / ".git").write_text("not a repository\n", encoding="utf-8")
+            self._git(Path(tmp), "init", "-q")
+            (Path(tmp) / ".git" / "HEAD").write_text("garbage\n", encoding="utf-8")
             cfg = self.codemap.load_config(ROOT)
             cfg.root = Path(tmp)
-            with self.assertRaises(subprocess.CalledProcessError):
+            with self.assertRaises(SystemExit) as ctx:
                 self.codemap.tracked_files(cfg, ["tests"])
-            (Path(tmp) / ".git").unlink()
+            msg = str(ctx.exception.code)
+            self.assertRegex(
+                msg, r"^codemap: git [\w-]+ failed: .*not a git repository"
+            )
+            self.assertNotIn("\n", msg)
+        with tempfile.TemporaryDirectory() as tmp:  # no git at all: walk
+            cfg.root = Path(tmp)
             self.assertIsNone(self.codemap.tracked_files(cfg, ["tests"]))
 
     def test_only_if_type_checking_body_is_type_only(self):

@@ -10,6 +10,7 @@
   shards). ``--check`` also fails on broken feature, charter or narrative
   references, layer violations, unlisted cycles, and undeclared or private
   foreign imports. A non-literal ``__all__`` is now such a finding (named
-  ``file:line``) instead of a crash. ``--feature ID`` prints one feature and
+  ``file:line``) instead of a crash, and that module's public API is recorded
+  as unknown (``null``). ``--feature ID`` prints one feature and
   ``--claims DOC`` prints one doc's claims with line numbers. See
   ``docs/internals/CODEMAP.md``.

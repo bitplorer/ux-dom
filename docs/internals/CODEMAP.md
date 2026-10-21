@@ -96,13 +96,19 @@ demand.
 
 ### Module fields
 
-- **`public`**: `__all__` if defined. It must be a literal list/tuple of
-  strings; anything else (a comprehension, `__all__.append` in a `try` for an
-  optional dependency, …) is a `--check` problem naming `file:line`, and that
-  module falls back to the derived set below. Otherwise, with
+- **`public`**: `__all__` if defined. Otherwise, with
   `public_api.rule = "all_or_derived"`, top-level non-underscore
   defs/classes/assignments, plus PEP 484 re-exports (`x as x`) and star-import
   expansions; with `"all_only"`, nothing.
+
+  **Convention, across every repo that vendors the map:** `__all__` is one
+  literal list or tuple of strings. The generator does not evaluate
+  `__all__.append` / `.extend` / `+= [...]`, comprehensions or concatenation.
+  A module that builds `__all__` any other way, for example inside a `try` for an
+  optional dependency, gets `public: null`, and so do its symbols' `public` flags.
+  If it is a package root, its `public_api` entry is `null` too. Null means
+  *unknown*, never *no public API*. `--check` then fails, naming `file:line`,
+  until `__all__` is rewritten as a literal.
 - **`is_public`**: no dotted segment starts with a single `_`.
 - **`exported_as`**: `package:Name` entries of `public_api` defined here.
 - **`symbols`**: top-level classes and functions (including those under
@@ -117,13 +123,19 @@ demand.
   `if not TYPE_CHECKING:` run at import). Implicit parent-package imports are
   not edges.
 - **`imports_external`**: the same three kinds, each `{distribution: [modules]}`.
-  `stdlib` is `sys.stdlib_module_names`; any other top-level import name maps
-  through `[tool.codemap.distributions]`, else stays as the import name. No
+  `stdlib` is `sys.stdlib_module_names`. Any other top-level import name maps
+  through the charter's `depends_on.imports`, then `[tool.codemap.distributions]`,
+  else stays as the import name. No
   installed metadata is read, so the map does not depend on the environment.
 - **`consumers`**: sorted repo-relative paths of **tracked** files (per
   `git ls-files`) under the `consumers` directories that use the module.
   `git add` a new file before regenerating; untracked scratch files never
-  count. `self_files` are excluded. This is a cheap regex heuristic:
+  count. That holds when `--root` sits below the top of a checkout too.
+  Only a root with no `.git` in it or above it (no checkout at all), or a
+  machine without git, falls back to walking the directories. Any other git
+  failure (a corrupt repository, git's "dubious ownership" refusal in CI)
+  exits nonzero with `codemap: git … failed: <git's message>`.
+  `self_files` are excluded. This is a cheap regex heuristic:
   - a dotted `ux_dom.a.b.c` token resolves to its longest known module prefix,
     so a `monkeypatch` target counts;
   - `from ux_dom.a import b` counts `ux_dom.a.b` when that is a module;

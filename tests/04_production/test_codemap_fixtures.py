@@ -538,8 +538,28 @@ class TestCheckFailures(unittest.TestCase):
             (self.repo / "docs/internals/codemap/modules/alpha.core.opt.json").exists()
         )
         self.check_fails_with(
-            "__all__: src/alpha/core/opt.py:4: ``__all__.append(...)``"
+            "__all__: src/alpha/core/opt.py:4: ``__all__.append(...)``",
+            "so the public API is recorded as unknown",
         )
+        opt = shard(self.repo, "alpha.core.opt")
+        self.assertIsNone(opt["public"])  # unknown, never "no public API"
+        # A dynamic root __all__ makes the package's public_api unknown too.
+        (self.repo / "src/alpha/__init__.py").write_text(
+            "from alpha.core.engine import Engine\n__all__ = []\n"
+            "__all__ += [n for n in ('Engine',)]\n",
+            encoding="utf-8",
+        )
+        run(self.repo, "--write-changed")
+        self.assertEqual(index(self.repo)["public_api"], {"alpha": None})
+        self.assertIsNone(shard(self.repo, "alpha")["public"])
+
+    def test_git_failure_exits_with_one_line(self):
+        subprocess.run(["git", "init", "-q"], cwd=self.repo, check=True)
+        (self.repo / ".git" / "HEAD").write_text("garbage\n", encoding="utf-8")
+        proc = run(self.repo, "--check")
+        self.assertNotEqual(proc.returncode, 0)
+        self.assertNotIn("Traceback", proc.stderr)
+        self.assertRegex(proc.stderr.strip(), r"^codemap: git [\w-]+ failed: [^\n]+$")
 
     def test_depends_on_imports_are_enforced(self):
         self.edit("docs/domain.toml", 'imports = "yaml"', 'imports = "totally_wrong"')
@@ -552,8 +572,10 @@ class TestCheckFailures(unittest.TestCase):
         self.check_fails_with(
             "depends_on PyYAML: imports 'totally_wrong' is never imported",
             "depends_on requests: declared but never imported; remove it",
-            "depends_on requests: imports 'requests' is never imported",
         )
+        # One cause, one problem: no follow-on "imports never imported".
+        proc = run(self.repo, "--check")
+        self.assertNotIn("imports 'requests' is never imported", proc.stdout)
 
     def test_depends_on_imports_drive_distribution_names(self):
         # Without [tool.codemap.distributions], the charter maps yaml -> PyYAML.

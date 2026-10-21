@@ -272,21 +272,32 @@ def _walk(base: Path, exts: tuple[str, ...]) -> list[Path]:
 
 
 def tracked_files(cfg: Config, tops: list[str]) -> list[Path] | None:
-    """Git-tracked files under *tops*; None when *cfg.root* is not a git
-    checkout (or git is not installed). A git failure inside a checkout raises:
+    """Git-tracked files under *tops*; None when *cfg.root* is in no checkout
+    (or git is not installed). Any other git failure exits with git's message:
     silently walking instead would count untracked files."""
-    if not (cfg.root / ".git").exists():
-        return None
+
+    def git(*args: str) -> subprocess.CompletedProcess[bytes]:
+        return subprocess.run(["git", *args], cwd=cfg.root, capture_output=True)
+
+    def failed(proc: subprocess.CompletedProcess[bytes], what: str) -> SystemExit:
+        err = proc.stderr.decode("utf-8", "replace").strip()
+        return SystemExit(f"codemap: git {what} failed: {err}")
+
     try:
-        proc = subprocess.run(
-            ["git", "ls-files", "-z", "--", *tops],
-            cwd=cfg.root,
-            capture_output=True,
-            check=True,
-        )
+        probe = git("rev-parse", "--is-inside-work-tree")
     except FileNotFoundError:
         return None
-    return [cfg.root / rel for rel in proc.stdout.decode("utf-8").split("\0") if rel]
+    if probe.returncode:
+        # A corrupt repository also says "not a git repository"; only a root
+        # with no .git at or above it is genuinely outside a checkout.
+        in_checkout = any((d / ".git").exists() for d in [cfg.root, *cfg.root.parents])
+        if b"not a git repository" in probe.stderr and not in_checkout:
+            return None
+        raise failed(probe, "rev-parse")
+    listed = git("ls-files", "-z", "--", *tops)
+    if listed.returncode:
+        raise failed(listed, "ls-files")
+    return [cfg.root / rel for rel in listed.stdout.decode("utf-8").split("\0") if rel]
 
 
 def consumer_files(cfg: Config) -> list[Path]:
@@ -717,9 +728,8 @@ class ModuleInfo:
 
     def _bad_all(self, st: ast.stmt, why: str) -> None:
         self.all_errors.append(
-            f"{self._where()}:{st.lineno}: {why}; ``__all__`` must be "
-            "a literal list/tuple of strings (or drop it to use the derived "
-            "public set)"
+            f"{self._where()}:{st.lineno}: {why}; ``__all__`` must be a literal "
+            "list/tuple of strings, so the public API is recorded as unknown"
         )
 
     def _read_all(self, st: ast.stmt) -> None:
@@ -1146,12 +1156,13 @@ class CodeMap:
                 elif name in self._import_dist:
                     other = self._import_dist[name]
                     self.problems.append(f"{where} is also claimed by {other}")
-                elif self.cfg.distributions.get(name, dist) != dist:
-                    self.problems.append(
-                        f"{where} conflicts with [tool.codemap.distributions] "
-                        f"({self.cfg.distributions[name]})"
-                    )
                 else:
+                    if self.cfg.distributions.get(name, dist) != dist:
+                        self.problems.append(
+                            f"{where} conflicts with [tool.codemap.distributions] "
+                            f"({self.cfg.distributions[name]})"
+                        )
+                    # The charter wins, so one conflict is one problem.
                     self._import_dist[name] = dist
         law = raw.get("law", {})
         for key in sorted(set(law) - LAW_KEYS):
@@ -1252,6 +1263,7 @@ class CodeMap:
                     self.problems.append(
                         f"depends_on {d}: declared but never imported; remove it"
                     )
+                    continue
                 for name in entry.get("imports", []):
                     if name not in imported_tops:
                         self.problems.append(
@@ -1523,7 +1535,7 @@ class CodeMap:
         code_ahead = set()
         if corpus:
             for pkg, api in public_api.items():
-                for name in api:
+                for name in api or ():
                     if not mentioned(name):
                         code_ahead.add(f"public_api {pkg}:{name}")
             for ref in charter.get("public_api", []) if charter else []:
@@ -1598,11 +1610,14 @@ class CodeMap:
                 + "; add it to [tool.codemap.layers]"
             )
 
-        public_api = {}
+        public_api: dict[str, dict[str, str] | None] = {}
         exported: dict[str, list[str]] = {m: [] for m in self.mods}
         for pkg in sorted(cfg.public_packages):
             if pkg not in self.info:
                 self.problems.append(f"public_api: package {pkg} is not mapped")
+                continue
+            if self.info[pkg].all_errors:
+                public_api[pkg] = None
                 continue
             api = {n: self.defining_module(pkg, n) for n in self.public(pkg)}
             public_api[pkg] = api
@@ -1618,9 +1633,12 @@ class CodeMap:
 
         modules = {}
         for m, info in sorted(self.info.items()):
-            public = self.public(m)
+            # An unreadable ``__all__`` makes the public API unknown (null),
+            # never empty, for a module and (above) for a package root.
+            public = None if info.all_errors else self.public(m)
             symbols = {
-                n: {**s, "public": n in public} for n, s in sorted(info.symbols.items())
+                n: {**s, "public": None if public is None else n in public}
+                for n, s in sorted(info.symbols.items())
             }
             modules[m] = {
                 "path": cfg.rel(info.path),
@@ -1909,7 +1927,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     if args.claims:
-        found = cm.claim_lines.get(args.claims)
+        doc = Path(args.claims)
+        if doc.is_absolute() and doc.is_relative_to(cfg.root):
+            doc = doc.relative_to(cfg.root)
+        found = cm.claim_lines.get(Path(os.path.normpath(doc)).as_posix())
         if found is None:
             print(f"no claims indexed for {args.claims}", file=sys.stderr)
             return 2
