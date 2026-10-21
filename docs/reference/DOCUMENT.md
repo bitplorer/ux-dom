@@ -346,7 +346,7 @@ Document(
 )
 
 document.use(*runtimes) -> Document     # chainable; validates plugin surface
-document.using(*runtimes) -> Document   # alias of use
+document.using(*runtimes) -> Document   # copy with extra runtimes
 document.runtimes() -> list             # attached runtimes
 document.mount(app) -> app              # static routes + middleware
 document(*content, head=..., body=..., page_title=...)  # render page

@@ -1,6 +1,8 @@
 {
  "ux_dom.web_io._types": {
-  "consumers": [],
+  "consumers": [
+   "tests/07_resilience/test_web_io_aliases_absent.py"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -18,7 +20,6 @@
   "layer": "integrations",
   "path": "src/ux_dom/web_io/_types.py",
   "public": [
-   "MESSAGE",
    "Message",
    "Receive",
    "Scope",

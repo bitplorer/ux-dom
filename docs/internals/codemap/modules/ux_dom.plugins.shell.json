@@ -4,12 +4,11 @@
    "examples/xelement_kit/app/document.py",
    "tests/02_document_plugins/test_csp_nonce.py",
    "tests/02_document_plugins/test_plugin_assets.py",
-   "tests/02_document_plugins/test_script_dedupe.py"
+   "tests/02_document_plugins/test_script_dedupe.py",
+   "tests/07_resilience/test_shell_helper_aliases_absent.py"
   ],
   "imported_by": {
-   "function_level": [
-    "ux_dom.plugins.csp"
-   ],
+   "function_level": [],
    "module_level": [
     "ux_dom.plugins"
    ],
@@ -28,7 +27,6 @@
   "layer": "document",
   "path": "src/ux_dom/plugins/shell.py",
   "public": [
-   "runtime_tags",
    "shell_fragments"
   ]
  }

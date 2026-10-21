@@ -24,7 +24,7 @@ class TestProductCliAbsent(unittest.TestCase):
         result = runner.invoke(cli_app, ["--help"])
         self.assertEqual(result.exit_code, 0, result.output)
         out = result.output
-        for name in ("doctor", "info", "lint", "profile", "add"):
+        for name in ("doctor", "lint", "profile", "add"):
             self.assertIn(name, out, out)
         # Typer lists commands as bare tokens on their own help lines;
         # also lock via registered command names when available.

@@ -263,9 +263,6 @@ class Document(object):
     def runtime_tags(self) -> tuple[list, list]:
         return self._runtime_common_head_body()
 
-    def plugin_head_body(self) -> tuple[list, list]:
-        return self.runtime_tags()
-
     # ── evaluate callables + CSP stamp at the right moment ────────────────
 
     def _call_ctx(self, **kwargs: T.Any) -> dict:

@@ -7,6 +7,5 @@ This package does not find, download, or invoke the Tailwind CLI.
 """
 
 from .cli import app as app
-from .cli import ux_dom as ux_dom
 
-__all__ = ["app", "ux_dom"]
+__all__ = ["app"]

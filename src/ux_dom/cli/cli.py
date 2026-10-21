@@ -12,13 +12,8 @@ XElement is served from the installed package at ``/ux-dom/static/x_element.js``
 (no app copy).
 """
 from pathlib import Path
-from types import SimpleNamespace
 
 from typer import Option, Typer, echo
-
-# User messages: info to stdout, errors to stderr. Name kept for the call sites
-# open PR #49 also edits.
-ux_dom_logger = SimpleNamespace(info=echo, error=lambda msg: echo(msg, err=True))
 
 app = Typer(
     help=(
@@ -48,15 +43,6 @@ def doctor_cmd(
     raise SystemExit(0 if report.ok else 1)
 
 
-@app.command("info")
-def info_cmd(
-    path: str = Option(None, "--path"),
-    json_out: bool = Option(False, "--json"),
-):
-    """Alias of doctor."""
-    doctor_cmd(path=path, json_out=json_out)
-
-
 @app.command("lint")
 def lint_cmd(path: str = Option(None, "--path")):
     """Document convention checks."""
@@ -65,10 +51,10 @@ def lint_cmd(path: str = Option(None, "--path")):
     issues = lint_project(Path(path) if path else None)
     errors = [i for i in issues if i.level == "error"]
     if not issues:
-        ux_dom_logger.info("lint: clean")
+        echo("lint: clean")
         raise SystemExit(0)
     for i in issues:
-        ux_dom_logger.info(f"[{i.level}] {i.path}: {i.message}")
+        echo(f"[{i.level}] {i.path}: {i.message}")
     raise SystemExit(1 if errors else 0)
 
 
@@ -127,7 +113,7 @@ def add_cmd(
             path = add_component(name, force=force)
         elif kind in ("xelement", "xe", "x-element"):
             if xkind not in ("light", "shadow", "alpine"):
-                ux_dom_logger.error("--xe-kind must be light|shadow|alpine")
+                echo("--xe-kind must be light|shadow|alpine", err=True)
                 raise SystemExit(2)
             path = add_xelement(name, kind=xkind, force=force)  # type: ignore[arg-type]
         elif kind == "ui":
@@ -137,15 +123,15 @@ def add_cmd(
             try:
                 path = copy_component(name, dest_dir=dest, force=force)
             except UiCopyError as e:
-                ux_dom_logger.error(str(e))
+                echo(str(e), err=True)
                 raise SystemExit(1) from e
         else:
-            ux_dom_logger.error("kind must be component|xelement|ui")
+            echo("kind must be component|xelement|ui", err=True)
             raise SystemExit(2)
     except AddError as e:
-        ux_dom_logger.error(str(e))
+        echo(str(e), err=True)
         raise SystemExit(1) from e
-    ux_dom_logger.info(f"wrote {path}")
+    echo(f"wrote {path}")
 
 
 @app.command("ui")
@@ -158,10 +144,8 @@ def ui_cmd(
     items = list_components(channel=True if channel else None)
     for it in items:
         ch = " [channel]" if it.get("channel") else ""
-        ux_dom_logger.info(f"  · {it['name']:<16} {it['description']}{ch}")
+        echo(f"  · {it['name']:<16} {it['description']}{ch}")
 
-
-ux_dom = app
 
 if __name__ == "__main__":
     app()

@@ -26,10 +26,9 @@ def debug_app(tmp_path: Path) -> Path:
     return root
 
 
-@pytest.mark.parametrize("command", ["doctor", "info"])
 @pytest.mark.parametrize("option", [["--prod"], ["--port", "8080"]])
-def test_product_options_are_unknown(command: str, option: list[str]):
-    result = CliRunner().invoke(app, [command, *option])
+def test_product_options_are_unknown(option: list[str]):
+    result = CliRunner().invoke(app, ["doctor", *option])
     assert result.exit_code == 2, result.output
     assert "No such option" in result.output
 

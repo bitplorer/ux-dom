@@ -175,10 +175,6 @@ class HtmxEvents(BaseEventManager):
     def get(self, event: Union[str, Callable]) -> Callable:
         return super().set_event(activity="hx-get", event_name_or_method=event)
 
-    @property
-    def hx_get_events(self):
-        return super().get_events(activity="hx-get")
-
     def post(self, event: Union[str, Callable]) -> Callable:
         return super().set_event(activity="hx-post", event_name_or_method=event)
 

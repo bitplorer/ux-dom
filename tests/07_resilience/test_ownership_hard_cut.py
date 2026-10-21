@@ -71,12 +71,18 @@ class TestDirectoryRoutesTeaching(unittest.TestCase):
         with self.assertRaises(ImportError):
             import ux_dom.plugins.hmr  # noqa: F401
 
-    def test_app_fastapi_still_refuses(self):
-        from ux_dom.plugins.hub import App, ProductHostMoved
+    def test_app_fastapi_tombstone_is_absent(self):
+        import ux_dom.plugins.hub as hub
 
-        with self.assertRaises(ProductHostMoved) as ctx:
-            App().fastapi()
-        self.assertIn("ux_compose.build", str(ctx.exception))
+        self.assertFalse(hasattr(hub.App, "fastapi"))
+        self.assertFalse(hasattr(hub, "ProductHostMoved"))
+
+    def test_app_build_without_asgi_is_type_error(self):
+        from ux_dom.plugins.hub import App
+
+        with self.assertRaises(TypeError) as ctx:
+            App().build()
+        self.assertIn("asgi=", str(ctx.exception))
 
 
 class TestProductCssFailClosed(unittest.TestCase):

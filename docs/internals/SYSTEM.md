@@ -15,7 +15,7 @@ OUT → HTML string | bytes | async token stream (+ Document shell)
 
 - Tag trees, `__render__` / `__async_render__`
 - Document shell: control, runtime tags, **CSP stamp**, style
-- Pure-dom CLI: `doctor` | `lint` | `profile` | `dashboard` | `add` | `ui` | `info` (alias of `doctor`)
+- Pure-dom CLI: `doctor` | `lint` | `profile` | `dashboard` | `add` | `ui`
 - className, stylesheet `<link>`
 - Package static (`/ux-dom/static/x_element.js`)
 

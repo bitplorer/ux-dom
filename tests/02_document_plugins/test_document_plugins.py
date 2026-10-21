@@ -25,7 +25,7 @@ class TestDocumentPluginMerge(unittest.TestCase):
             body=[],
             include_runtimes=True,
         )
-        ph, pb = doc.plugin_head_body()
+        ph, pb = doc.runtime_tags()
         head_html = "".join(str(x) for x in doc.resolved_head())
         body_html = "".join(str(x) for x in doc.resolved_body())
         self.assertIn(XELEMENT_JS_URL, head_html)
@@ -40,7 +40,7 @@ class TestDocumentPluginMerge(unittest.TestCase):
         b = App().xelement()
         set_hub(b.hub)
         doc = Document(head=[title("X")], include_runtimes=False)
-        self.assertEqual(doc.plugin_head_body(), ([], []))
+        self.assertEqual(doc.runtime_tags(), ([], []))
         self.assertNotIn("x_element", "".join(str(x) for x in doc.resolved_head()))
 
 
