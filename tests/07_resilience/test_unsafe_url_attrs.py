@@ -163,7 +163,7 @@ def test_srcdoc_allowed_with_explicit_html_opt_in():
         "blob:https://x/1",
         "livescript:x",
         "ftp://example.com/x",
-        "sms:+911234567890",
+        "web+app:x",
     ],
 )
 def test_schemes_outside_allow_list_are_blocked(value):
@@ -177,11 +177,13 @@ def test_schemes_outside_allow_list_are_blocked(value):
         "http://example.com",
         "HTTPS://example.com",
         "tel:+911234567890",
+        "sms:+911234567890",
         "mailto:a@b.c",
         "data:image/png;base64,iVBOR",
         "data:image/jpeg;base64,/9j/",
         "data:image/gif;base64,R0lG",
         "data:image/webp;base64,UklG",
+        "data:image/avif;base64,AAAA",
         "/abs",
         "rel/path",
         "?q=1",

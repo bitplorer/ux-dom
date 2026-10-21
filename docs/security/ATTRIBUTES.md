@@ -2,36 +2,68 @@
 
 > **Diátaxis:** reference · **Layer:** ux-dom render path
 
-Every attribute value goes through two steps when the tree renders.
+
+Every attribute value goes through these steps when the tree renders.
 
 1. **Escape.** `& < > "` are entity-encoded, and C0 control characters are
    stripped, so a value can never close its quotes or open a new tag.
    `div(title='"><img src=x onerror=alert(1)>')` renders one `div` whose
    `title` is that literal text.
 2. **Allow-list URLs (fail closed).** In URL-bearing attributes only these
-   values pass: relative URLs (`/a`, `a/b`, `?q`, `#f`, `//host/x`), the
-   schemes `http:`, `https:`, `mailto:`, `tel:`, and
-   `data:image/{png,jpeg,gif,webp}` (never `image/svg+xml`, which can run
-   script). Anything else renders as `about:invalid#ux-dom-unsafe-url`, an
-   inert URL in the style of Google Closure's `about:invalid#zClosurez`.
-   The check runs on `str(value)` (so non-`str` values cannot slip past),
-   after HTML entities are decoded (`&#106;avascript:`, `javascript&colon;`)
-   and after the whitespace and C0 controls browsers ignore in a scheme are
-   removed (`java\tscript:`). Letter case is ignored.
-3. **HTML attributes are sanitized.** `srcdoc` holds a whole HTML document, so
+   values pass: relative URLs (`/a`, `a/b`, `?q`, `#f`), the schemes
+   `http:`, `https:`, `mailto:`, `tel:` and `sms:`, and
+   `data:image/{png,jpeg,jpg,gif,webp,avif}` (never `image/svg+xml`, which
+   can run script). Scheme-relative URLs (`//host/x`, `\\host`, `/\host`)
+   are refused: they point at another origin. Anything else renders as
+   `about:invalid#ux-dom-unsafe-url`, an inert URL in the style of Google
+   Closure's `about:invalid#zClosurez`. The check runs on the text that
+   renders: `str(value)` for any type (`Markup`, numbers, `lazy`, objects
+   with `__str__` or `__html__`), or the JSON text of a list or dict value
+   (SMIL splits that text on `;` too). It runs after HTML
+   entities are decoded (`&#106;avascript:`, `javascript&colon;`) and after
+   the whitespace and C0 controls browsers ignore in a scheme are removed
+   (`java\tscript:`). Letter case is ignored.
+3. **Lists of URLs.** In `srcset` and `imagesrcset`, each image candidate's
+   URL gets the check of step 2. Candidates are split as the HTML spec's
+   srcset parser splits them, so a comma inside a `data:` URL stays part of
+   it. If any candidate fails, the whole value becomes the inert URL.
+4. **SVG animation values.** `animate`, `set`, `animateMotion` and
+   `animateTransform` can set any attribute, `href` included, so
+   `<animate attributeName="href" to="javascript:…">` would run script on
+   click ([#86](https://github.com/bitplorer/ux-dom/issues/86)). On these
+   elements `to`, `from`, `by` and each `;`-separated item of `values` get
+   the check of step 2, whatever `attributeName` says. Ordinary values
+   (`0;1`, `rgb(0, 128, 0)`, `10px`, `#id`) have no scheme and pass as
+   relative URLs.
+5. **HTML attributes are sanitized.** `srcdoc` holds a whole HTML document, so
    a scheme check means nothing there. A string goes through the same allowlist
    sanitizer as `defHTML` (document mode included). A non-string value that
    implements `__html__` stays verbatim. Either way the renderer still
    attribute-escapes the result.
 
-URL-bearing attributes (`ux_dom.dom.src.utils.dom_util.URL_ATTRIBUTES`):
-`href`, `src`, `action`, `formaction`, `xlink:href`, `poster`, `cite`,
-`background`, `data`, `codebase`, `longdesc`, `manifest`, `ping`, `icon`,
-`archive`, `usemap`, `profile`, `lowsrc`, `dynsrc`, `hx-get`, `hx-post`,
-`hx-put`, `hx-patch`, `hx-delete`. HTML attributes (`HTML_ATTRIBUTES`):
-`srcdoc`.
+The sets, as `ux_dom.dom.src.utils.dom_util` defines them
+(`tests/04_production/test_attribute_docs_match_code.py` keeps this table
+equal to the code):
 
-Steps 2 and 3 also apply to attributes marked unescaped (`safe_attributes`),
+| Set | Members |
+| --- | --- |
+| `URL_ATTRIBUTES` | `action`, `archive`, `background`, `cite`, `codebase`, `data`, `dynsrc`, `formaction`, `href`, `icon`, `longdesc`, `lowsrc`, `manifest`, `ping`, `poster`, `profile`, `src`, `usemap`, `xlink:href` |
+| `_SRCSET_ATTRIBUTES` | `imagesrcset`, `srcset` |
+| `_ANIMATION_TAGS` | `animate`, `animateMotion`, `animateTransform`, `set` |
+| `_ANIMATION_VALUE_ATTRIBUTES` | `by`, `from`, `to`, `values` |
+| `_SAFE_SCHEMES` | `http`, `https`, `mailto`, `sms`, `tel` |
+| `_SAFE_DATA_IMAGE_TYPES` | `avif`, `gif`, `jpeg`, `jpg`, `png`, `webp` |
+| `SAME_ORIGIN_URL_ATTRIBUTES` | `data-hx-delete`, `data-hx-get`, `data-hx-patch`, `data-hx-post`, `data-hx-put`, `data-hx-sse`, `data-hx-ws`, `data-sse-connect`, `data-ws-connect`, `hx-delete`, `hx-get`, `hx-patch`, `hx-post`, `hx-put`, `hx-sse`, `hx-ws`, `sse-connect`, `ws-connect` |
+| `HTML_ATTRIBUTES` | `srcdoc` |
+
+`SAME_ORIGIN_URL_ATTRIBUTES` follow the stricter rule in
+[htmx / SSE / WebSocket URLs](#htmx--sse--websocket-urls).
+
+`meta content` is not checked. A refresh URL there (`0;url=javascript:…`,
+`data:text/html`) did not run in Chromium, and `content` on other `meta`
+elements is free text.
+
+Steps 2 to 5 also apply to attributes marked unescaped (`safe_attributes`),
 because no caller needs an executable URL. An unescaped attribute still has
 `&` and `"` escaped (`escape_attr_minimal`), so it can never close its quotes;
 only `'`, `<` and `>` stay literal, for Alpine JSON and handlers. This
@@ -57,26 +89,31 @@ untrusted data only as values.
 
 The checked text is what renders: `safe_attr_value` calls `str(value)` (or
 `__html__()`) once and returns that string, so an object cannot return a safe
-string to the check and a different one to the renderer.
+string to the check and a different one to the renderer. A list or dict value
+is dumped to JSON first, and the JSON text is what gets checked.
 
-**Behaviour change: refused schemes.** Because this is an allow-list, every
-scheme not listed above is refused, including ones that were allowed before:
-`ftp:`, `sms:`, `file:`, `blob:`, `geo:`, `webcal:`, `data:image/svg+xml` and
-`data:text/plain`. Link to them through an `https:` URL instead.
+**Refused schemes.** Because this is an allow-list, every scheme not listed
+above is refused, including `ftp:`, `file:`, `blob:`, `geo:`, `webcal:`,
+custom schemes (`web+app:`), `data:image/svg+xml` and `data:text/plain`. Link
+to them through an `https:` URL instead. There is no per-value opt-in yet: a
+typed `SafeURL` is planned only when a real caller needs one
+([ADR 0002, amendment](../adr/0002-html-string-sanitizer-policy.md#amendment-url-values-from-python-86)).
 
-**Open-redirect note.** Scheme-relative URLs (`//host/x`), and the browser
-variants `\\host` and `/\host`, count as relative and pass. They are not XSS,
+**Open-redirect note.** `https://` URLs to any host pass. They are not XSS,
 but they can point off-site: never build a redirect or link target from
 untrusted input without checking the host yourself.
 
 Out of scope: Alpine bindings such as `:href` / `x-bind:href` hold JavaScript
 expressions, not URLs; never put untrusted text in them.
 
-`safe_attr_value(attribute, value)` is the single implementation. Every
-renderer calls it (`dom_tag`, `ext.Tags`, `ext.StyleTags`).
+`safe_attr_value(attribute, value, tag="")` is the single implementation.
+Every renderer calls it (`dom_tag`, `ext.Tags`, `ext.StyleTags`); the HTML
+renderers pass the element name as `tag` for the animation rule (step 4).
 
 Tests: `tests/07_resilience/test_unsafe_url_attrs.py`,
-`tests/07_resilience/test_adversarial_render.py`.
+`tests/07_resilience/test_svg_animation_urls.py`,
+`tests/07_resilience/test_adversarial_render.py`; Chromium oracle:
+`tests/06_browser/test_svg_animation_url_browser.py`.
 
 
 ## htmx / SSE / WebSocket URLs

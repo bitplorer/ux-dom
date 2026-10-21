@@ -11,8 +11,10 @@
    "tests/01_core/test_pretty_inline_text.py",
    "tests/01_core/test_public_dom_seam.py",
    "tests/01_core/test_raw_text_elements.py",
+   "tests/04_production/test_attribute_docs_match_code.py",
    "tests/04_production/test_intent_battery.py",
    "tests/06_browser/test_pretty_inner_text_browser.py",
+   "tests/06_browser/test_svg_animation_url_browser.py",
    "tests/07_resilience/test_add_raw_string_absent.py",
    "tests/07_resilience/test_attr_escape_isolation.py",
    "tests/07_resilience/test_attr_name_validation.py",
@@ -25,6 +27,7 @@
    "tests/07_resilience/test_htmx_same_origin.py",
    "tests/07_resilience/test_jinja_and_string_nonce.py",
    "tests/07_resilience/test_raw_string_sinks.py",
+   "tests/07_resilience/test_svg_animation_urls.py",
    "tests/07_resilience/test_text_state_parents.py",
    "tests/07_resilience/test_unsafe_url_attrs.py"
   ],

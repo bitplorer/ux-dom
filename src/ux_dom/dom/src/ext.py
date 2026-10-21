@@ -411,6 +411,7 @@ class Tags(dom_tag, dom1core):
 
     def _iter_html_attrs(self, indent_level=None, indent_str=None, pretty=None):
         """Yield HTML attribute fragments (list-render and token-walk share this)."""
+        name = self._clean_name(self._tagname())
         for attribute, value in sorted(self.attributes.items()):
             if attribute in getattr(self, "CONTROL_ATTRS", ()):
                 continue
@@ -425,13 +426,15 @@ class Tags(dom_tag, dom1core):
                     value, indent_level, indent_str, pretty
                 )
             if not isinstance(value, (dict, list)):
-                value = safe_attr_value(attribute, value)
+                value = safe_attr_value(attribute, value, name)
                 if self.safe_attributes.get(attribute, True):
                     yield ' %s="%s"' % (attribute, escape(unicode(value), True))
                 else:
                     yield ' %s="%s"' % (attribute, escape_attr_minimal(value))
             else:
-                dumped = htmlsafe_json_dumps(value)
+                # The JSON text is what the browser reads (SMIL splits it on
+                # ``;``), so the URL check runs on it, not on the object (#86).
+                dumped = safe_attr_value(attribute, htmlsafe_json_dumps(value), name)
                 yield " %s='%s'" % (
                     attribute,
                     escape(unicode(dumped), quote=False),
