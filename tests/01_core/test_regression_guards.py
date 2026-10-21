@@ -74,7 +74,6 @@ class TestRouterAndEventsRegressions(unittest.TestCase):
         h = HtmxEvents()
         self.assertTrue(callable(h.get_events))
         self.assertEqual(h.get_events("hx-get"), {})
-        self.assertIsInstance(h.hx_get_events, dict)
 
 
 if __name__ == "__main__":

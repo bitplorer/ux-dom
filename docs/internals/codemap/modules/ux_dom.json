@@ -92,6 +92,7 @@
    "tests/07_resilience/test_shell_helper_aliases_absent.py",
    "tests/07_resilience/test_text_state_parents.py",
    "tests/07_resilience/test_top_level_facades.py",
+   "tests/07_resilience/test_web_io_aliases_absent.py",
    "tests/07_resilience/test_xhtml_mode_absent.py",
    "tests/helpers.py"
   ],

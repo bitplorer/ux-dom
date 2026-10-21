@@ -6,7 +6,7 @@
 """web_io protocol internals. Private transport layer."""
 from typing import Any, AsyncIterator, Optional, Protocol
 
-from ux_dom.web_io._types import MESSAGE, Receive, Scope, Send
+from ux_dom.web_io._types import Message, Receive, Scope, Send
 
 __all__ = ["WebSocketProtocol"]
 
@@ -18,7 +18,7 @@ class WebSocketProtocol(Protocol):
 
     async def close(self, code: int = 1000, reason: Optional[str] = None) -> None: ...
 
-    async def receive(self) -> MESSAGE: ...
+    async def receive(self) -> Message: ...
 
     async def receive_text(self) -> str: ...
 
@@ -26,7 +26,7 @@ class WebSocketProtocol(Protocol):
 
     async def receive_json(self, mode: str = "text") -> Any: ...
 
-    async def send(self, message: MESSAGE) -> None: ...
+    async def send(self, message: Message) -> None: ...
 
     async def send_text(self, data: str) -> None: ...
 

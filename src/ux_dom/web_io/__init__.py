@@ -11,7 +11,7 @@ from ._adapter import (
 )
 from ._events import HtmxEvents as HtmxEvents, WebSocketEvents as WebSocketEvents
 from ._protocol import WebSocketProtocol as WebSocketProtocol
-from ._types import MESSAGE as MESSAGE, Receive as Receive, Scope as Scope, Send as Send
+from ._types import Message as Message, Receive as Receive, Scope as Scope, Send as Send
 
 __all__ = [
     "DataFetcher",
@@ -20,7 +20,7 @@ __all__ = [
     "HtmxEvents",
     "WebSocketEvents",
     "WebSocketProtocol",
-    "MESSAGE",
+    "Message",
     "Receive",
     "Scope",
     "Send",

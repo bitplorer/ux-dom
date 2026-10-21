@@ -13,7 +13,7 @@ from typing import Any, Optional, Type
 
 from ux_dom.web_io._events import WebSocketEvents
 from ux_dom.web_io._protocol import WebSocketProtocol as WebSocket
-from ux_dom.web_io._types import MESSAGE
+from ux_dom.web_io._types import Message
 
 
 async def _run_handlers(handlers):
@@ -132,7 +132,7 @@ class WebSocketAdapter:
         await websocket.close()
 
     async def on_disconnect(
-        self, *args, websocket: WebSocket, message: Optional[MESSAGE], **kwargs
+        self, *args, websocket: WebSocket, message: Optional[Message], **kwargs
     ):
         """
         Callback function called on WebSocket disconnection.
@@ -153,7 +153,7 @@ class WebSocketAdapter:
             )
         # await self.disconnect(websocket)
 
-    async def receive(self, websocket: WebSocket) -> MESSAGE:
+    async def receive(self, websocket: WebSocket) -> Message:
         # Receive the WebSocket message.
         message = await websocket.receive()
         if "text" in message:
@@ -181,7 +181,7 @@ class WebSocketAdapter:
                 pass
         return payload  # type: ignore[return-value]
 
-    async def on_receive(self, *args, websocket: WebSocket, message: MESSAGE, **kwargs):
+    async def on_receive(self, *args, websocket: WebSocket, message: Message, **kwargs):
         """
         Callback function called on receiving a message over the WebSocket.
 

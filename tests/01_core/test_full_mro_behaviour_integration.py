@@ -168,7 +168,6 @@ class TestSharedProtocolParams(unittest.TestCase):
         h = HtmxEvents()
         self.assertTrue(callable(h.get_events))
         self.assertEqual(h.get_events("hx-get"), {})
-        self.assertIsInstance(h.hx_get_events, dict)
 
     def test_html_parser_param_names(self):
         from html.parser import HTMLParser
