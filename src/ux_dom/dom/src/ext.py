@@ -418,6 +418,8 @@ class Tags(dom_tag, dom1core):
             if value is False:
                 continue
             attribute = checked_attr_name(attribute)
+            if value is True and attribute.lower() in self.boolean_attributes:
+                value = attribute
             if value is None:
                 yield " %s" % attribute
                 continue
@@ -925,6 +927,7 @@ class DoubleTags(Tags):
 
 
 class SingleTemplates(SingleTags):
+    boolean_attributes = frozenset()  # template tags, not HTML elements
     left_delimiter = "{%"
     right_delimiter = "%}"
     self_dedent = False
@@ -978,6 +981,7 @@ class SingleTemplates(SingleTags):
 
 
 class DoubleTemplates(DoubleTags):
+    boolean_attributes = frozenset()  # template tags, not HTML elements
     left_delimiter = "{%"
     right_delimiter = "%}"
     self_dedent = True

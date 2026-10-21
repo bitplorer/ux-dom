@@ -55,6 +55,7 @@ equal to the code):
 | `_SAFE_DATA_IMAGE_TYPES` | `avif`, `gif`, `jpeg`, `jpg`, `png`, `webp` |
 | `SAME_ORIGIN_URL_ATTRIBUTES` | `data-hx-delete`, `data-hx-get`, `data-hx-patch`, `data-hx-post`, `data-hx-put`, `data-hx-sse`, `data-hx-ws`, `data-sse-connect`, `data-ws-connect`, `hx-delete`, `hx-get`, `hx-patch`, `hx-post`, `hx-put`, `hx-sse`, `hx-ws`, `sse-connect`, `ws-connect` |
 | `HTML_ATTRIBUTES` | `srcdoc` |
+| `BOOLEAN_ATTRIBUTES` | `allowfullscreen`, `alpha`, `async`, `autofocus`, `autoplay`, `checked`, `controls`, `default`, `defer`, `disabled`, `formnovalidate`, `headingreset`, `inert`, `ismap`, `itemscope`, `loop`, `multiple`, `muted`, `nomodule`, `novalidate`, `open`, `playsinline`, `readonly`, `required`, `reversed`, `selected`, `shadowrootclonable`, `shadowrootcustomelementregistry`, `shadowrootdelegatesfocus`, `shadowrootserializable` |
 
 `SAME_ORIGIN_URL_ATTRIBUTES` follow the stricter rule in
 [htmx / SSE / WebSocket URLs](#htmx--sse--websocket-urls).
@@ -78,6 +79,20 @@ another.
 `span(**{'x" onmouseover="alert(1)': "1"})` would inject an event handler.
 Alpine and htmx names (`@click`, `:class`, `x-on:keyup.enter`, `hx-post`)
 are valid.
+
+**Boolean attributes take `True`, `False` or `None`.** For the HTML boolean
+attributes (`BOOLEAN_ATTRIBUTES`, the WHATWG attribute index's "Boolean
+attribute" entries), `True` renders `name="name"`, `False` and `None` omit the
+attribute, and any other value raises `TypeError`. A browser treats any value
+as present, so `checked="unchecked"` or `disabled="false"` would turn the state
+on ([#122](https://github.com/bitplorer/ux-dom/issues/122)). The rule holds for
+keyword arguments, `tag["checked"] = …` and `attr(...)`, and names match in any
+case. Parsed HTML keeps a boolean attribute as `True`, whatever its value, as
+a browser does. Only these names are governed: attributes that look boolean
+but are enumerated or belong to htmx / Alpine (`hidden="until-found"`,
+`draggable="false"`, `hx-boost="false"`, `x-cloak`) keep their values, and SVG
+tags are not governed. Browser check:
+`tests/06_browser/test_boolean_state_browser.py`.
 
 **Never spread untrusted keys as attributes.** Name validation only stops a
 name from breaking out of the tag. A valid name can still be dangerous on its

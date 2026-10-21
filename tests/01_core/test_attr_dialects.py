@@ -73,7 +73,7 @@ class TestAttrDialects(unittest.TestCase):
         html = div(disabled=True, hidden=False, open=None).__render__(pretty=False)
         self.assertIn('disabled="disabled"', html)
         self.assertNotIn("hidden", html)
-        self.assertIn("open", html)
+        self.assertNotIn("open", html)  # None omits a boolean attribute (#122)
 
     def test_dict_attrs_json(self):
         html = div(x_data={"open": True}).__render__(pretty=False)

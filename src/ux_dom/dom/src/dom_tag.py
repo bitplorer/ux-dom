@@ -123,6 +123,9 @@ class dom_tag(object):
     is_pretty = True  # False renders the subtree flat. Raw text, <pre>,
     # <option> and <ruby> bodies are flat by tag name (``ext._FLAT_BODIES``).
     is_inline = False
+    # HTML boolean attributes this tag governs (#122): dom_util.BOOLEAN_ATTRIBUTES,
+    # set below the class (dom_util imports this module). Foreign tags clear it.
+    boolean_attributes: typing.FrozenSet[str] = frozenset()
     # Raw text element name ("script" / "style"): string children are stored
     # verbatim (no HTML escaping); end-tag breakouts are neutralized at render
     # time over the joined body (see htmltags._RawTextElement).
@@ -345,6 +348,8 @@ class dom_tag(object):
                 value._setdocument(self.document)
             self.children[key] = value
         elif isinstance(key, str):
+            if key.lower() in self.boolean_attributes:
+                value = boolean_attr_value(key, value)
             self.attributes[key] = value
         else:
             raise TypeError(
@@ -924,6 +929,8 @@ class dom_tag(object):
         for attribute, value in sorted(self.attributes.items()):
             if value is not False:  # False values must be omitted completely
                 attribute = checked_attr_name(attribute)
+                if value is True and attribute.lower() in self.boolean_attributes:
+                    value = attribute
                 safe = safe_attr_value(attribute, value, name)
                 sb.append(' %s="%s"' % (attribute, escape(str(safe), True)))
 
@@ -1016,14 +1023,14 @@ class dom_tag(object):
         This will call `clean_attribute` on the attribute and also allows for the
         creation of boolean attributes.
 
-        Ex. input(selected=True) is equivalent to input(selected="selected")
+        Ex. input(selected=True) renders as input(selected="selected")
         """
         attribute = cls.clean_attribute(attribute)
 
-        # Check for boolean attributes
-        # (i.e. selected=True becomes selected="selected")
-        if value is True:
-            # HTML boolean attrs use name=name; WC flags need "true" for JS.
+        # An HTML boolean attribute keeps True (_set_attribute checks it and
+        # the renderer writes name="name"). Any other True becomes its name.
+        if value is True and attribute.lower() not in cls.boolean_attributes:
+            # Other flags use name=name; WC flags need "true" for JS.
             if attribute in {
                 "shadowroot",
                 "shadow-root",
@@ -1069,8 +1076,12 @@ def attr(*args, **kwargs):
 
 # escape() is used in render
 from ux_dom.dom.src.utils.dom_util import (
+    BOOLEAN_ATTRIBUTES,
+    boolean_attr_value,
     checked_attr_name,
     checked_tag_name,
     escape,
     safe_attr_value,
 )
+
+dom_tag.boolean_attributes = BOOLEAN_ATTRIBUTES

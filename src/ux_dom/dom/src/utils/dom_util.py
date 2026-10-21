@@ -178,6 +178,35 @@ def checked_text_state_body(body, name):
     return body
 
 
+# HTML boolean attributes: the WHATWG attribute index entries whose value is
+# "Boolean attribute". ``hidden`` is enumerated (``until-found``), so it is not
+# one. ``True`` renders the attribute, ``False`` / ``None`` omit it, and any
+# other value raises: a browser reads ``checked="unchecked"`` as checked (#122).
+BOOLEAN_ATTRIBUTES: frozenset[str] = frozenset(
+    {
+        "allowfullscreen", "alpha", "async", "autofocus", "autoplay", "checked",
+        "controls", "default", "defer", "disabled", "formnovalidate",
+        "headingreset", "inert", "ismap", "itemscope", "loop", "multiple",
+        "muted", "nomodule", "novalidate", "open", "playsinline", "readonly",
+        "required", "reversed", "selected", "shadowrootclonable",
+        "shadowrootcustomelementregistry", "shadowrootdelegatesfocus",
+        "shadowrootserializable",
+    }
+)
+
+
+def boolean_attr_value(name, value):
+    """``True`` stays, ``False`` / ``None`` become ``False`` (omitted); else ``TypeError``."""
+    if value is True or value is False:
+        return value
+    if value is None:
+        return False
+    raise TypeError(
+        "boolean attribute %r takes True, False or None, not %s %r"
+        % (name, type(value).__name__, value)
+    )
+
+
 # URL-bearing attributes. A script-capable scheme here is an XSS sink, so the
 # renderer fails closed: the value becomes UNSAFE_URL (inert, like Closure's
 # "about:invalid#zClosurez"). Applies to every render path, including

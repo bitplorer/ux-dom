@@ -1,7 +1,9 @@
 {
  "ux_dom.elements": {
   "consumers": [
-   "docs/ship/CAPABILITIES.md"
+   "docs/ship/CAPABILITIES.md",
+   "tests/06_browser/test_boolean_state_browser.py",
+   "tests/07_resilience/test_boolean_attributes.py"
   ],
   "imported_by": {
    "function_level": [

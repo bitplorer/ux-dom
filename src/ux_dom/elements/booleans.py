@@ -65,12 +65,8 @@ class BooleanInput(component.Component):
     type: str = StringValidator(
         in_choice=["checkbox", "radio"], logger=False, debug=True, default="checkbox"
     )
-    checked: T.Union[str, bool] = Validator(
-        in_choice=["unchecked", "checked", "null", True, False],
-        logger=False,
-        debug=True,
-        default="checked",
-    )
+    # An HTML boolean attribute (#122): True, False or None (unchecked).
+    checked: T.Optional[bool] = Validator(logger=False, debug=True)
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
@@ -88,7 +84,7 @@ class BooleanInput(component.Component):
             *args,
             name=name,
             type=type,
-            checked=checked if checked != "null" else False,
+            checked=checked,
             className=className if className else False,
             **kwargs,
         )
@@ -101,11 +97,8 @@ class BooleanInputValidator(Validator):
 @dataclass(eq=False)
 class CheckboxInput(BooleanInput):
     name: str = StringValidator(logger=False, debug=True)
-    checked: T.Union[str, bool] = Validator(
-        in_choice=["unchecked", "checked", "null", True, False],
-        logger=False,
-        debug=True,
-    )
+    # An HTML boolean attribute (#122): True, False or None (unchecked).
+    checked: T.Optional[bool] = Validator(logger=False, debug=True)
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
@@ -131,12 +124,8 @@ class CheckboxInput(BooleanInput):
 @dataclass(eq=False)
 class RadioInput(BooleanInput):
     name: str = StringValidator(logger=False, debug=True)
-    checked: T.Union[str, bool] = Validator(
-        in_choice=["unchecked", "checked", "null", True, False],
-        logger=False,
-        debug=True,
-        default="checked",
-    )
+    # An HTML boolean attribute (#122): True, False or None (unchecked).
+    checked: T.Optional[bool] = Validator(logger=False, debug=True)
     className: str = StringValidator(logger=False, debug=True, default="")
 
     def __post_init__(self, *args, **kwargs):
@@ -166,7 +155,7 @@ class BooleanField(component.Component):
     label: str
     name: str
     type: str
-    checked: T.Union[str, bool]
+    checked: T.Optional[bool]
 
     def __post_init__(self, *args, **kwargs):
         super(BooleanField, self).__init__(
@@ -201,10 +190,10 @@ if __name__ == "__main__":
     from ux_dom.elements.buttons import SubmitButton
 
     field = BooleanField(
-        label="Terms and Conditions", checked="null", name="select", type="radio"
+        label="Terms and Conditions", checked=None, name="select", type="radio"
     )
     button = SubmitButton(label="Agree", value="agree")
     field.input_id = "select"
     button["for"] = field["id"] = "xyz"
     print(form(field, button, method="POST"))
-    print(RadioInput(checked="unchecked", name="deliver"))
+    print(RadioInput(checked=False, name="deliver"))

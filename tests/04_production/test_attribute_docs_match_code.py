@@ -1,4 +1,4 @@
-"""docs/security/ATTRIBUTES.md lists exactly the URL sets the renderer uses (#86)."""
+"""docs/security/ATTRIBUTES.md lists exactly the attribute sets the renderer uses (#86, #122)."""
 
 from __future__ import annotations
 
@@ -21,6 +21,7 @@ SETS = [
     "_SAFE_DATA_IMAGE_TYPES",
     "SAME_ORIGIN_URL_ATTRIBUTES",
     "HTML_ATTRIBUTES",
+    "BOOLEAN_ATTRIBUTES",
 ]
 
 

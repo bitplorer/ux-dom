@@ -218,6 +218,8 @@ __all__ = [
 
 # https://developer.mozilla.org/en-US/docs/Web/SVG/Element/svg
 class svg_tag(extension.Tags):
+    boolean_attributes = frozenset()  # HTML boolean attributes are HTML-only
+
     @staticmethod
     def clean_attribute(attribute):
         attribute = extension.Tags.clean_attribute(attribute)

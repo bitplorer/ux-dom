@@ -102,7 +102,7 @@ class TestSubtreeMembership(unittest.TestCase):
         html = div(hidden=True, disabled=False, open=None).__render__(pretty=False)
         self.assertIn("hidden", html)
         self.assertNotIn("disabled", html)
-        self.assertIn("open", html)
+        self.assertNotIn("open", html)  # None omits a boolean attribute (#122)
 
 
 class TestSyncAsyncPipelineParity(unittest.TestCase):
