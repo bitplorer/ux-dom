@@ -86,15 +86,31 @@ first, and the commented forms (`/*<![CDATA[*/ … /*]]>*/`,
 `//<![CDATA[ … //]]>`) stay comments, so CDATA-wrapped SVG CSS and JS keep
 working.
 
-The renderer follows the parser's namespace rules down the parent chain. Raw
-text resumes below an HTML integration point (SVG `foreignObject`, `desc`,
-`title`; MathML `annotation-xml` whose `encoding` is `text/html` or
-`application/xhtml+xml`) and a MathML text integration point (`mi`, `mo`,
-`mn`, `ms`, `mtext`). Tag-less wrappers (`Component`, `PlaceholderTag`) and
-`lazy` do not change the context. A breakout tag such as
-`svg(div(style(...)))` puts the browser back in HTML, where `<![CDATA[` is
-plain text: the CSS breaks, but the rewrite still stops the body from closing
-the element. Nest HTML under `foreignObject`.
+The renderer replays the parser's stack of open elements over the tags
+written before the element. Raw text resumes below an HTML integration point
+(SVG `foreignObject`, `desc`, `title`; MathML `annotation-xml` whose
+`encoding` is `text/html` or `application/xhtml+xml`) and a MathML text
+integration point (`mi`, `mo`, `mn`, `ms`, `mtext`). A breakout tag in foreign
+content (`b`, `big`, `blockquote`, `body`, `br`, `center`, `code`, `dd`,
+`div`, `dl`, `dt`, `em`, `embed`, `h1`–`h6`, `head`, `hr`, `i`, `img`, `li`,
+`listing`, `menu`, `meta`, `nobr`, `ol`, `p`, `pre`, `ruby`, `s`, `small`,
+`span`, `strong`, `strike`, `sub`, `sup`, `table`, `tt`, `u`, `ul`, `var`,
+and `font` with `color`, `face` or `size`) pops back to HTML, for its
+descendants and for every later sibling, until an `svg` / `math` opens
+foreign content again:
+
+```python
+svg(div(), style("a > b { }"))
+# <svg><div></div><style>a > b { }</style></svg>
+```
+
+Tag-less wrappers (`Component`, `PlaceholderTag`) do not change the context;
+the tags a `lazy` sibling renders are not seen. Where the HTML rules may have
+closed an element early (`<div>` closes a `<p>`, `<img>` is void, `<a>`
+closes an `<a>`), the tree does not say which, so the body stays CDATA unless
+it is raw text in every case: `math(mi(p(div(), mglyph(style(...)))))` is
+CDATA. That never runs script; at worst the browser is in HTML and the CSS or
+JS gets a literal `<![CDATA[`. Nest HTML under `foreignObject`.
 
 **A `raw()` / `Markup` string that opens `<svg>` or `<math>` is author trust
 (ADR 0002).** The tree does not model a context opened by a string, so

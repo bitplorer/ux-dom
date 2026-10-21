@@ -28,7 +28,7 @@ from jinja2.utils import htmlsafe_json_dumps
 from markupsafe import Markup
 
 from ux_dom.dom.src.dom1core import dom1core
-from ux_dom.dom.src.dom_tag import dom_tag, unicode
+from ux_dom.dom.src.dom_tag import _NAMESPACE_MEMO, dom_tag, unicode
 from ux_dom.dom.src.utils.dom_util import (
     dom_text,
     escape,
@@ -581,6 +581,15 @@ class Tags(dom_tag, dom1core):
     def _render(
         self, sb, indent_level=1, indent_str="  ", pretty=True, xhtml=False, _seen=None
     ):
+        if _NAMESPACE_MEMO.get() is None:
+            # One namespace memo per render pass (``_parsed_namespace``).
+            token = _NAMESPACE_MEMO.set({})
+            try:
+                return Tags._render(
+                    self, sb, indent_level, indent_str, pretty, xhtml, _seen=_seen
+                )
+            finally:
+                _NAMESPACE_MEMO.reset(token)
         if pretty and _LAYOUT_MEMO.get() is None:
             # One memo per pretty render keeps the layout check linear.
             token = _LAYOUT_MEMO.set({})

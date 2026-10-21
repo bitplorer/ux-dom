@@ -5,7 +5,8 @@
  * and prints, per page, what its scripts stored in ``window.__out``, the
  * ``value`` of each ``<textarea>``, the ``textContent`` of each
  * pre / listing / xmp / plaintext / title / iframe / noscript, and the ``::before``
- * ``content`` of each ``.probe`` element.
+ * ``content`` of each ``.probe`` element, and the ``namespaceURI`` of each
+ * element with an ``id``.
  *
  *   echo '["<script>__out = {a: `x`}</script>"]' | node tests/browser/raw_text_value_harness.mjs
  */
@@ -40,6 +41,7 @@ try {
           before: all(".probe").map(
             (e) => getComputedStyle(e, "::before").content,
           ),
+          ns: Object.fromEntries(all("[id]").map((e) => [e.id, e.namespaceURI])),
         };
       }),
     );
