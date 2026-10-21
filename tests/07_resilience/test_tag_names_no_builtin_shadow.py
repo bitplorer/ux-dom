@@ -49,3 +49,10 @@ def test_trailing_underscore_only_for_builtin_or_keyword(name, cls):
 def test_filter_writes_filter():
     node = ux_dom.dom.svg(ux_dom.dom.filter_(ux_dom.dom.feBlend(), id="f"))
     assert node.__render__(pretty=False) == '<svg><filter id="f"><feBlend></feBlend></filter></svg>'
+
+
+def test_stdlib_module_names_keep_plain_names():
+    # #119: only ``time`` gets the ``_``; ``html``, ``code`` and ``select`` stay plain.
+    for name in ("html", "code", "select", "time_"):
+        assert hasattr(ux_dom.dom, name)
+    assert not hasattr(ux_dom.dom, "time")

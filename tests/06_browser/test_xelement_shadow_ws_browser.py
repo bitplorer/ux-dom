@@ -15,6 +15,20 @@ from browser_gate import NODE, require_browser
 ROOT = Path(__file__).resolve().parents[2]
 HARNESS = ROOT / "tests" / "browser" / "x_element_shadow_ws_harness.mjs"
 
+BENIGN = {"count": "5", "data-count": "5", "aria-label": "new", "value": "new"}
+DECLARED_REFUSED = {
+    "href": "/old",
+    "src": "/old",
+    "action": "/old",
+    "formaction": "/old",
+    "xlink:href": "/old",
+    "hx-get": "/old",
+    "srcset": "/old.png",
+    "srcdoc": "old",
+    "style": "color: red",
+    "onclick": "void 0",
+}
+
 
 class TestXElementShadowAndWs(unittest.TestCase):
     @classmethod
@@ -56,11 +70,33 @@ class TestXElementShadowAndWs(unittest.TestCase):
     def test_ws_message_echoed_and_closed_on_disconnect(self):
         live = self.sockets["/ws-live"]
         self.assertEqual(live["opened"], 1)
-        self.assertEqual(
-            [json.loads(m) for m in live["received"]],
-            [{"id": "live", "attr": "count", "oldVal": "0", "newVal": "5"}],
-        )
+        self.assertEqual([json.loads(m) for m in live["received"]], self.report["liveMessages"])
         self.assertTrue(live["closed"])
+
+    def test_ws_message_is_applied_to_the_dom(self):
+        # Received is not enough: a benign declared attribute takes the new value.
+        live = self.dom["live"]
+        for attr, value in BENIGN.items():
+            with self.subTest(attr):
+                self.assertEqual(live[attr], value)
+
+    def test_ws_message_cannot_set_url_style_srcdoc_or_handler(self):
+        # #107's URL policy is Python-only, so the runtime refuses these names
+        # outright; the declared value stays.
+        live = self.dom["live"]
+        for attr, value in DECLARED_REFUSED.items():
+            with self.subTest(attr):
+                self.assertEqual(live[attr], value)
+        self.assertNotIn("data-new", live)  # undeclared: never added
+
+    def test_each_refused_message_warns_and_keeps_the_socket(self):
+        refused = [m["attr"] for m in self.report["liveMessages"] if m["attr"] not in BENIGN]
+        warned = [w for w in self.report["warnings"] if "ws message" in w]
+        self.assertEqual(len(warned), len(refused))
+        for attr in refused:
+            with self.subTest(attr):
+                self.assertTrue(any(json.dumps(attr) in w for w in warned))
+        self.assertEqual(self.report["pageErrors"], [])
 
     def test_ws_send_attribute_sends_nothing_on_connect(self):
         sender = self.sockets["/ws-send"]

@@ -27,7 +27,8 @@
    "tests/07_resilience/test_raw_string_sinks.py",
    "tests/07_resilience/test_svg_animation_urls.py",
    "tests/07_resilience/test_text_state_parents.py",
-   "tests/07_resilience/test_unsafe_url_attrs.py"
+   "tests/07_resilience/test_unsafe_url_attrs.py",
+   "tests/07_resilience/test_xelement_ws_url_attrs.py"
   ],
   "imported_by": {
    "function_level": [

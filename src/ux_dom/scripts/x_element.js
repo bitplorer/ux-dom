@@ -39,6 +39,32 @@
     return s4() + s4() + "-" + s4() + "-" + s4() + "-" + s4() + "-" + s4() + s4() + s4();
   }
 
+  /* URL-bearing attribute names: Python dom_util URL_ATTRIBUTES,
+   * SAME_ORIGIN_URL_ATTRIBUTES and _SRCSET_ATTRIBUTES, sorted. The URL policy
+   * (#107) runs only in Python, so a ws message may not set these. Drift guard:
+   * tests/07_resilience/test_xelement_ws_url_attrs.py. */
+  var WS_URL_ATTRS = [
+    "action", "archive", "background", "cite", "codebase", "data",
+    "data-hx-delete", "data-hx-get", "data-hx-patch", "data-hx-post",
+    "data-hx-put", "data-hx-sse", "data-hx-ws", "data-sse-connect",
+    "data-ws-connect", "dynsrc", "formaction", "href", "hx-delete", "hx-get",
+    "hx-patch", "hx-post", "hx-put", "hx-sse", "hx-ws", "icon", "imagesrcset",
+    "longdesc", "lowsrc", "manifest", "ping", "poster", "profile", "src",
+    "srcset", "sse-connect", "usemap", "ws-connect", "xlink:href"
+  ];
+
+  /* May a ws message set this (declared) attribute? Not a URL, srcdoc, style
+   * or on* handler: their values need the server-side policy. */
+  function wsMaySet(attr) {
+    var name = String(attr).toLowerCase();
+    return (
+      name.indexOf("on") !== 0 &&
+      name !== "style" &&
+      name !== "srcdoc" &&
+      WS_URL_ATTRS.indexOf(name) === -1
+    );
+  }
+
   function isJSON(str) {
     if (typeof str !== "string" || !str) return false;
     try {
@@ -263,8 +289,18 @@
       if (typeof message === "string") {
         return;
       }
+      // Apply to the DOM only an attribute the element declares and a
+      // message may set; refuse the rest with a warning, keeping the socket.
       if (this.id === message.id) {
-        this.attributeChangedCallback(message.attr, message.oldVal, message.newVal);
+        if (this._dataState.has(message.attr) && wsMaySet(message.attr)) {
+          this.setAttribute(message.attr, message.newVal);
+          this.attributeChangedCallback(message.attr, message.oldVal, message.newVal);
+        } else {
+          console.warn(
+            "ux-dom XElement: ws message may not set attribute " +
+              JSON.stringify(message.attr) + " on #" + this.id
+          );
+        }
       }
       if (this.ws) this.send(JSON.stringify(message));
     };
