@@ -181,7 +181,7 @@ def test_overflow_fails_closed():
 @pytest.mark.parametrize(
     "held",
     [
-        "<!-->" + "x" * 100,  # an empty comment only if no --> ever follows
+        "<!--" + " x" * 50,  # an unfinished comment
         "<div>" + "<b>x</b> " * 20,
         "<a title='" + "x" * 100,
         "word" * 30,  # a cut must end any reference: no space, no cut
@@ -224,7 +224,7 @@ SHAPES = {
     "open div": lambda n: "<div>" + "<p>x</p> " * (n // 9) + "</div>",
     "long comment": lambda n: "<!--" + "x" * n + "-->",
     "long attribute": lambda n: '<a title="' + "x" * n + '">q</a>',
-    "unclosed <!-->": lambda n: "<!-->" + "x " * (n // 2),
+    "unclosed comment": lambda n: "<!--" + "x " * (n // 2),
     "<style/> regions": lambda n: "<style/>a " * (n // 10),
     "words": lambda n: "word " * (n // 5),
 }
@@ -239,13 +239,14 @@ def test_parser_work_is_linear(shape, monkeypatch):
         work.append(len(self.rawdata))
         return goahead(self, end)
 
-    monkeypatch.setattr(HTMLParser, "goahead", counted)
     text = SHAPES[shape](40_000)
-    assert _stream(list(text), max_chars=len(text)) == sanitize_html(text)
+    whole = sanitize_html(text)
+    monkeypatch.setattr(HTMLParser, "goahead", counted)
+    assert _stream(list(text), max_chars=len(text)) == whole
     assert sum(work) <= 4 * len(text), (shape, sum(work), len(text))
 
 
-@pytest.mark.parametrize("shape", ["elements", "long comment", "unclosed <!-->"])
+@pytest.mark.parametrize("shape", ["elements", "long comment", "unclosed comment"])
 def test_time_grows_linearly(shape):
     def seconds(n):
         text = SHAPES[shape](n)

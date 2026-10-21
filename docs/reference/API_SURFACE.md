@@ -99,9 +99,17 @@ no open element, tag, comment, raw text or reference. Each stretch between two
 is sanitized as one string, so the sanitizer has one policy for strings and
 streams ([ADR 0002](../adr/0002-html-string-sanitizer-policy.md)). Time is
 linear; memory is the text since the last boundary, at most `max_chars`.
-Text with no boundary (one element left open, a `<!-->` with no later `-->`,
-a run of characters with no space, `;` or `>`) waits for one and fails closed
-past `max_chars`.
+Text with no boundary (one element left open, an unfinished comment, a run
+of characters with no space, `;` or `>`) waits for one and fails closed past
+`max_chars`.
+
+Memory budget: a stream holds at most `max_chars` characters, which cost
+about 1 to 2.5 bytes each for Latin-1 text and up to 10 for emoji (measured
+peak, an open element vs an open attribute or comment). At the default that
+is 1 to 10 MiB per stream, so 1,000 concurrent streams can hold 1 to 10 GiB;
+pass a lower `max_chars` when that is too much. The default is not lower
+because a page wrapped in one element is held whole: the largest ux-compose
+app page measured holds 66,606 characters, more than 64 KiB (#124).
 Input of any nesting depth is handled: end tags are implied as a browser
 implies them and the parsed tree is at most 512 deep, as in Chromium; nothing
 raises `RecursionError` ([security/ATTRIBUTES.md](../security/ATTRIBUTES.md)).
