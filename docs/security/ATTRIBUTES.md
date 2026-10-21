@@ -214,9 +214,13 @@ are template source, trusted like `raw()`. Policy:
 
 **Tags.** A fragment may contain the known-safe set (the usual content tags,
 form controls, `html` / `head` / `body` / `title`, `textarea`, and SVG
-geometry such as `svg`, `circle`, `path`). `script`, `iframe`, `object`,
-`embed`, `base`, `frame`, `frameset`, `math`, and SVG animation (`animate`,
-`set`, `foreignObject`) are dropped with their children. So are the elements a
+geometry and paint such as `svg`, `circle`, `path`, `linearGradient`,
+`radialGradient`, `clipPath`, `textPath`). Tag names are matched in any case
+and a kept camelCase SVG name is written with its case, from the HTML
+parser's SVG tag-name table. `script`, `iframe`, `object`, `embed`, `base`,
+`frame`, `frameset`, `math`, SVG animation (`animate`, `animateMotion`,
+`animateTransform`, `set`) and `foreignObject` are dropped with their
+children. SVG filters, `image` and `feImage` are unwrapped. So are the elements a
 browser parses as raw text while Python parses their children as markup:
 `noscript`, `noembed`, `noframes`, `xmp`, `plaintext`, and `template`. Kept,
 `<noscript><!-- </noscript><img onerror=…> --></noscript>` would end early in

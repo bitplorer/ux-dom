@@ -54,6 +54,23 @@ is internal and may move; these four names are the supported path.
 - `ux_dom.dom` has no `__all__` on purpose. A literal list would freeze every
   star-exported name (311 of them, including undecided ones) as public API.
 
+### SVG and MathML tags
+
+- **SVG:** `ux_dom.dom` has a class for every SVG 2 element except `a`,
+  `script` and `style`, which are the HTML classes. Names keep their case
+  (`linearGradient`, `foreignObject`, `feDropShadow`). `set_` writes `<set>`;
+  the trailing `_` keeps the builtin `set` free, as with `input_`. Every SVG
+  element is written with an end tag.
+- **MathML:** no classes. No caller in ux-dom or its sibling repos builds
+  MathML ([#104](https://github.com/bitplorer/ux-dom/issues/104)), so none
+  are added ([ADR 0004](../adr/0004-no-compat-shims-pre-release.md)). Author
+  MathML with a `Tags` subclass that names its element
+  (`class mi(Tags): tagname = "mi"`), or as trusted markup with `raw()` /
+  `Markup`. The renderer's namespace model knows MathML integration points
+  (`mi` / `mo` / `mn` / `ms` / `mtext`, `annotation-xml`) by name, so such a
+  class gets the same raw-text and breakout rules. The string sanitizer drops
+  `math`.
+
 ## Serialize (`from ux_dom.response.serialize import …`)
 
 | Symbol | Kind | Notes |

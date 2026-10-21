@@ -227,25 +227,31 @@ _ALLOWED_TAGS = frozenset(
         "var",
         "video",
         "wbr",
-        # SVG geometry. Animation / foreignObject / math stay in ``_DROP_TAGS``.
+        # SVG geometry and paint servers. Animation / foreignObject / math
+        # stay in ``_DROP_TAGS``. Lowercase, as tokenized: ``_SVG_TAG_NAMES``
+        # gives the element's case.
         "circle",
+        "clippath",
         "defs",
         "desc",
         "ellipse",
         "g",
         "line",
+        "lineargradient",
         "marker",
         "mask",
         "path",
         "pattern",
         "polygon",
         "polyline",
+        "radialgradient",
         "rect",
         "stop",
         "svg",
         "switch",
         "symbol",
         "text",
+        "textpath",
         "tspan",
         "use",
         "view",
@@ -427,23 +433,27 @@ _TAG_ATTRS: dict[str, frozenset[str]] = {
 _SVG_TAGS = frozenset(
     {
         "circle",
+        "clippath",
         "defs",
         "desc",
         "ellipse",
         "g",
         "line",
+        "lineargradient",
         "marker",
         "mask",
         "path",
         "pattern",
         "polygon",
         "polyline",
+        "radialgradient",
         "rect",
         "stop",
         "svg",
         "switch",
         "symbol",
         "text",
+        "textpath",
         "tspan",
         "use",
         "view",
@@ -451,6 +461,8 @@ _SVG_TAGS = frozenset(
 )
 _SVG_ATTRS = frozenset(
     {
+        "clip-path",
+        "clippathunits",
         "cx",
         "cy",
         "d",
@@ -460,6 +472,8 @@ _SVG_ATTRS = frozenset(
         "font-size",
         "fx",
         "fy",
+        "gradienttransform",
+        "gradientunits",
         "height",
         "href",
         "offset",
@@ -470,6 +484,8 @@ _SVG_ATTRS = frozenset(
         "r",
         "rx",
         "ry",
+        "spreadmethod",
+        "startoffset",
         "stop-color",
         "stop-opacity",
         "stroke",
@@ -491,6 +507,26 @@ _SVG_ATTRS = frozenset(
         "y2",
     }
 )
+
+# HTML spec §13.2.6.5, "adjust SVG tag name": the tokenizer lowercases tag
+# names and the tree builder restores these in SVG. The parser looks up the
+# tag class by the restored name, so a kept ``lineargradient`` is written as
+# ``<linearGradient>``. The allowlists above stay lowercase.
+_SVG_TAG_NAMES = {
+    name.lower(): name
+    for name in (
+        "altGlyph", "altGlyphDef", "altGlyphItem", "animateColor",
+        "animateMotion", "animateTransform", "clipPath", "feBlend",
+        "feColorMatrix", "feComponentTransfer", "feComposite",
+        "feConvolveMatrix", "feDiffuseLighting", "feDisplacementMap",
+        "feDistantLight", "feDropShadow", "feFlood", "feFuncA", "feFuncB",
+        "feFuncG", "feFuncR", "feGaussianBlur", "feImage", "feMerge",
+        "feMergeNode", "feMorphology", "feOffset", "fePointLight",
+        "feSpecularLighting", "feSpotLight", "feTile", "feTurbulence",
+        "foreignObject", "glyphRef", "linearGradient", "radialGradient",
+        "textPath",
+    )
+}
 
 # URL attributes that remain on the allowlist. ``hx-*`` is not here: those
 # attributes are never kept. Scheme checks match the renderer; document
@@ -881,7 +917,7 @@ class StringToHTML(object):
             attrs = kept
 
             element = None
-            tag_name = token.name
+            tag_name = _SVG_TAG_NAMES.get(name, token.name)
             if tag_name in builtins.__dict__:
                 # work around for builtins like 'input' tag
                 tag_name = "".join([token.name, "_"])

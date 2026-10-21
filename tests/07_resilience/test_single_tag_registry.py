@@ -35,23 +35,29 @@ HTML_VOID = {
     "wbr",
 }
 
-# Every element in ``svgtags``, as the tags are written (SVG 2 element index).
+# Every element in ``svgtags``, as the classes are named (SVG 2 element index,
+# without ``a`` / ``script`` / ``style``, which are the HTML classes). ``set_``
+# writes ``<set>``: a trailing ``_`` keeps a builtin name free, as ``input_``.
 SVG_ELEMENTS = [
     "svg",
     "animate",
     "animateMotion",
     "animateTransform",
+    "set_",
     "circle",
     "clipPath",
     "defs",
     "desc",
+    "discard",
     "ellipse",
+    "foreignObject",
     "g",
     "image",
     "line",
     "linearGradient",
     "marker",
     "mask",
+    "metadata",
     "mpath",
     "pattern",
     "polygon",
@@ -76,10 +82,16 @@ SVG_ELEMENTS = [
     "feConvolveMatrix",
     "feDiffuseLighting",
     "feDisplacementMap",
+    "feDropShadow",
     "feFlood",
+    "feFuncA",
+    "feFuncB",
+    "feFuncG",
+    "feFuncR",
     "feGaussianBlur",
     "feImage",
     "feMerge",
+    "feMergeNode",
     "feMorphology",
     "feOffset",
     "feSpecularLighting",
@@ -146,7 +158,7 @@ def test_html_non_void_has_an_end_tag(name):
 
 @pytest.mark.parametrize("name", SVG_ELEMENTS)
 def test_empty_svg_element_is_closed(name):
-    el = getattr(svgtags, name)
+    el, name = getattr(svgtags, name), name.rstrip("_")
     expected = f"<svg><{name}></{name}><rect></rect></svg>"
     for out in _flat(svgtags.svg(el(), svgtags.rect())):
         assert out == expected
@@ -155,7 +167,7 @@ def test_empty_svg_element_is_closed(name):
 
 @pytest.mark.parametrize("name", SVG_ELEMENTS)
 def test_svg_element_keeps_its_children(name):
-    el = getattr(svgtags, name)
+    el, name = getattr(svgtags, name), name.rstrip("_")
     expected = f"<svg><{name}><g></g></{name}><rect></rect></svg>"
     for out in _flat(svgtags.svg(el(svgtags.g()), svgtags.rect())):
         assert out == expected

@@ -42,7 +42,7 @@ from ux_dom.dom import (
 from ux_dom.dom.src.ext import Tags
 from ux_dom.dom.src.html_string import create_dynamic_element
 from ux_dom.dom.src.htmltags import html_tag
-from ux_dom.dom.src.svgtags import svg_tag
+from ux_dom.dom.src.svgtags import foreignObject
 from ux_dom.dom.src.svgtags import title as svg_title
 from ux_dom.dom.src.utils.dom_util import InvalidNodeContext, lazy
 
@@ -53,7 +53,6 @@ def _tag(name, base=Tags):
     return type(name.replace("-", "_"), (base,), {"tagname": name})
 
 
-foreignObject = _tag("foreignObject", svg_tag)
 xmp = create_dynamic_element("xmp")
 noembed = _tag("noembed", html_tag)
 noframes = _tag("NOFRAMES", html_tag)

@@ -25,8 +25,10 @@ from ux_dom.dom.src.svgtags import (
     circle,
     defs,
     rect,
+    set_,
     svg,
     svg_tag,
+    use,
 )
 
 from ux_dom.dom.src.utils.dom_util import lazy
@@ -41,10 +43,10 @@ def _svg_el(name):
     return type(name, (svg_tag,), {"tagname": name})
 
 
-svg_a, svg_set, use = _svg_el("a"), _svg_el("set"), _svg_el("use")
+svg_a = _svg_el("a")
 ANIMATIONS = {
     "animate": animate,
-    "set": svg_set,
+    "set": set_,
     "ANIMATE": _svg_el("ANIMATE"),
     "animateMotion": animateMotion,
     "animateTransform": animateTransform,
@@ -154,7 +156,7 @@ LEGIT = {
         [30, 5],
     ),
     "set fragment href": (
-        svg(svg_a(rect(width="8", height="8"), svg_set(attributeName="href", to="#b", **TIMING), id="l", href="#a")),
+        svg(svg_a(rect(width="8", height="8"), set_(attributeName="href", to="#b", **TIMING), id="l", href="#a")),
         "document.getElementById('l').href.animVal",
         "#b",
     ),

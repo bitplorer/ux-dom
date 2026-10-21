@@ -16,11 +16,10 @@ from markupsafe import Markup
 
 from ux_dom.dom import div, img, link
 from ux_dom.dom.src.html_string import create_dynamic_element
-from ux_dom.dom.src.svgtags import animate, animateMotion, animateTransform, svg_tag
+from ux_dom.dom.src.svgtags import animate, animateMotion, animateTransform, set_, svg_tag
 from ux_dom.dom.src.utils.dom_util import UNSAFE_URL, safe_attr_value
 
-svg_set = type("set", (svg_tag,), {"tagname": "set"})
-ANIMATIONS = [animate, svg_set, animateMotion, animateTransform]
+ANIMATIONS = [animate, set_, animateMotion, animateTransform]
 EVIL = [
     "javascript:hit()",
     "JaVaScRiPt:hit()",
@@ -39,7 +38,7 @@ EVIL = [
 @pytest.mark.parametrize("value", EVIL, ids=repr)
 def test_animation_url_values_refused(tag, attr, value):
     html = tag(attributeName="href", **{attr: value}).__render__(pretty=False)
-    name = "set" if tag is svg_set else tag.__name__
+    name = tag.__name__.rstrip("_")
     assert html == f'<{name} attributeName="href" {attr}="{UNSAFE_URL}"></{name}>'
 
 
