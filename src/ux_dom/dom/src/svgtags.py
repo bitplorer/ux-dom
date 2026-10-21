@@ -156,17 +156,21 @@ __all__ = [
     "animate",
     "animateMotion",
     "animateTransform",
+    "set_",
     "circle",
     "clipPath",
     "defs",
     "desc",
+    "discard",
     "ellipse",
+    "foreignObject",
     "g",
     "image",
     "line",
     "linearGradient",
     "marker",
     "mask",
+    "metadata",
     "mpath",
     "pattern",
     "polygon",
@@ -191,10 +195,16 @@ __all__ = [
     "feConvolveMatrix",
     "feDiffuseLighting",
     "feDisplacementMap",
+    "feDropShadow",
     "feFlood",
+    "feFuncA",
+    "feFuncB",
+    "feFuncG",
+    "feFuncR",
     "feGaussianBlur",
     "feImage",
     "feMerge",
+    "feMergeNode",
     "feMorphology",
     "feOffset",
     "feSpecularLighting",
@@ -247,6 +257,15 @@ class animateTransform(svg_tag):
     pass
 
 
+class set_(svg_tag):
+    """
+    The <set> element sets the value of an attribute for a specified duration.
+    Written ``set_`` (like ``input_``) so it does not shadow the builtin ``set``.
+    """
+
+    pass
+
+
 class circle(svg_tag):
     """
     The <circle> SVG element is an SVG basic shape, used to draw circles based on a center point and a radius.
@@ -281,9 +300,26 @@ class desc(svg_tag):
     pass
 
 
+class discard(svg_tag):
+    """
+    The <discard> element removes its target element from the document at a given time.
+    """
+
+    pass
+
+
 class ellipse(svg_tag):
     """
     An ellipse element for svg containers
+    """
+
+    pass
+
+
+class foreignObject(svg_tag):
+    """
+    The <foreignObject> element holds elements from another namespace, usually HTML.
+    It is an HTML integration point: below it the HTML parsing rules apply again.
     """
 
     pass
@@ -337,6 +373,14 @@ class mask(svg_tag):
     """
     The <mask> element defines an alpha mask for compositing the current object into the background.
     A mask is used/referenced using the mask property.
+    """
+
+    pass
+
+
+class metadata(svg_tag):
+    """
+    The <metadata> element holds structured metadata about the SVG content.
     """
 
     pass
@@ -516,7 +560,27 @@ class feDisplacementMap(svg_tag):
     pass
 
 
+class feDropShadow(svg_tag):
+    pass
+
+
 class feFlood(svg_tag):
+    pass
+
+
+class feFuncA(svg_tag):
+    pass
+
+
+class feFuncB(svg_tag):
+    pass
+
+
+class feFuncG(svg_tag):
+    pass
+
+
+class feFuncR(svg_tag):
     pass
 
 
@@ -529,6 +593,10 @@ class feImage(svg_tag):
 
 
 class feMerge(svg_tag):
+    pass
+
+
+class feMergeNode(svg_tag):
     pass
 
 

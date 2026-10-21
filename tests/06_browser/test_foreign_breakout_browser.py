@@ -25,7 +25,7 @@ from ux_dom import Component
 from ux_dom.dom import a, br, div, img, p, script, span, style
 from ux_dom.dom.src.ext import PlaceholderTag, Tags, _element_name
 from ux_dom.dom.src.htmltags import _BREAKOUT_ELEMENTS, _parsed_namespace
-from ux_dom.dom.src.svgtags import circle, desc, g, rect, svg, svg_tag
+from ux_dom.dom.src.svgtags import circle, desc, foreignObject, g, rect, svg, svg_tag
 from ux_dom.dom.src.svgtags import title as svg_title
 
 from browser_gate import NODE, require_browser
@@ -43,7 +43,6 @@ def _tag(name, base=Tags, **kw):
     return type(name.replace("-", "_"), (base,), {"tagname": name, **kw})
 
 
-foreignObject = _tag("foreignObject", svg_tag)
 svg_a = _tag("a", svg_tag)
 math, mi, mo, mglyph = _tag("math"), _tag("mi"), _tag("mo"), _tag("mglyph")
 annotation_xml = _tag("annotation-xml")

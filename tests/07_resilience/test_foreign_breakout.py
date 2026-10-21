@@ -25,7 +25,7 @@ import pytest
 from ux_dom.dom import a, div, img, p, script, span, style
 from ux_dom.dom.src import htmltags
 from ux_dom.dom.src.ext import Tags
-from ux_dom.dom.src.svgtags import desc, g, rect, svg, svg_tag
+from ux_dom.dom.src.svgtags import desc, foreignObject, g, rect, svg, svg_tag
 from ux_dom.dom.src.svgtags import title as svg_title
 from ux_dom.dom.src.utils.dom_util import lazy, neutralize_raw_text
 
@@ -37,7 +37,6 @@ def _tag(name, base=Tags, **kw):
     return type(name.replace("-", "_"), (base,), {"tagname": name, **kw})
 
 
-foreignObject = _tag("foreignObject", svg_tag)
 svg_a = _tag("a", svg_tag)
 math, mi, mglyph = _tag("math"), _tag("mi"), _tag("mglyph")
 font = _tag("font")
