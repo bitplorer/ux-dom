@@ -33,6 +33,7 @@ from dataclasses import dataclass, field
 from html.entities import html5
 
 from ux_dom.dom.src import ext, htmltags, jinjatags, svgtags
+from ux_dom.dom.src.dom_tag import detached_build
 from ux_dom.dom.src.htmltags import html_tag
 from ux_dom.dom.src.parse_html import (
     Char,
@@ -829,24 +830,53 @@ class StringToHTML(object):
         return tag
 
     def _unwrap(self, token, tag):
+        """Sanitize ``token``'s children into ``tag`` (or a new holder)."""
         children = list(token.children)
         if not children:
             return tag
         if tag is not None:
-            for child in children:
-                self._child_parser([child]).parse(tag=tag)
-            return tag
+            return self._child_parser(children).parse(tag=tag)
         holder = ext.PlaceholderTag()
-        for child in children:
-            self._child_parser([child]).parse(tag=holder)
+        self._child_parser(children).parse(tag=holder)
         return holder if holder.children else tag
 
     def parse(self, tag: T.Optional[ext.Tags] = None) -> T.Union[str, ext.Tags, None]:
-        for token in self.tokens:  # type: ignore[union-attr]
+        """Sanitize the tokens into ``tag``; the result is ``tag`` or, when
+        ``tag`` is ``None``, the node the first token made.
+
+        The walk is iterative: each frame is an element with the tokens still
+        to sanitize into it, so a deep input never deepens the Python stack.
+        It builds bottom-up: an element joins its parent once its children
+        are in, so every node it adds to is still a root, and the tree lock
+        each add takes finds that root at once. Linear time at any depth.
+        """
+        with detached_build():
+            node = self._build(tag)
+        if tag is None and node is not None:
+            node._add_to_ctx()  # as if built here: an open ``with`` adopts it
+        return node
+
+    def _build(self, tag):
+        # Frame: [node the tokens go into, remaining tokens, foreign, the
+        # parent ``node`` joins when its tokens are done]. Only the bottom
+        # frame's node can be ``None`` (and change: the first token decides
+        # it); every other frame is an element's or an unwrapped tag's
+        # children.
+        bottom = [tag, iter(self.tokens), self.foreign, None]
+        frames: list = [bottom]
+        while frames:
+            frame = frames[-1]
+            token = next(frame[1], None)
+            if token is None:
+                frames.pop()
+                if frame[3] is not None:
+                    frame[3]._add(frame[0])
+                continue
+            node, foreign = frame[0], frame[2]
             if isinstance(token, (Char, Entity)):
                 text = _reference_text(token)
                 if text:
-                    tag = self._add_text(tag, text, already_escaped=True)
+                    frame[0] = self._add_text(node, text, already_escaped=True)
                 continue
 
             if isinstance(token, Declaration) and str(token.data).lower().startswith(
@@ -862,11 +892,11 @@ class StringToHTML(object):
                 except InvalidMarkupToken:
                     # Untrusted input: drop a doctype that does not parse.
                     continue
-                if tag is not None:
-                    with tag:
+                if node is not None:
+                    with node:
                         htmltags.DocType(label)
                 else:
-                    tag = htmltags.DocType(label)
+                    frame[0] = htmltags.DocType(label)
                 continue
 
             if not token.name:
@@ -881,17 +911,21 @@ class StringToHTML(object):
                     data = token.data
                     if not data:
                         continue
-                    with tag or ext.PlaceholderTag() as tag:  # type: ignore[assignment]
+                    with node or ext.PlaceholderTag() as node:  # type: ignore[assignment]
                         # Braced text is text. Jinja stays the tag DSL or
                         # raw(), not a hole in this parser.
                         dom_text(escape(data), escape=False)
+                    frame[0] = node
                 continue
 
             name = str(token.name).lower()
             if name in _DROP_TAGS or (name in _DOCUMENT_ONLY_TAGS and not self.document):
                 continue
             if not _tag_allowed(name, self.document, self._custom):
-                tag = self._unwrap(token, tag)
+                if node is None:
+                    frame[0] = self._unwrap(token, node)
+                else:
+                    frames.append([node, iter(token.children), foreign, None])
                 continue
 
             css = None
@@ -900,7 +934,7 @@ class StringToHTML(object):
                 # In foreign content a browser parses <style> children as
                 # markup and decodes entities, so a kept style there could
                 # turn into elements on re-insertion. Drop it.
-                css = None if self.foreign else _style_text(token)
+                css = None if foreign else _style_text(token)
                 kept = None if css is None else _filter_attrs(name, dict(token.attrs or {}))
             elif name == "meta":
                 kept = _meta_attrs(dict(token.attrs or {}))
@@ -933,23 +967,20 @@ class StringToHTML(object):
                 for k, v in attrs.items()
             }
 
-            if tag is not None:
-                with tag:
-                    with element(**attrs) as child_tag:
-                        self._fill(child_tag, token, css)
-            else:
-                with element(**attrs) as tag:
-                    self._fill(tag, token, css)
-        return tag
-
-    def _fill(self, element, token, css: T.Optional[str]) -> None:
-        if css is not None:
-            # Raw text, checked by ``_style_text``: verbatim, never escaped.
-            if css:
-                dom_text(css, escape=False)
-            return
-        foreign = str(token.name).lower() in ("svg", "math")
-        self._child_parser(token.children, foreign=foreign).parse(tag=element)
+            child = element(**attrs)
+            if node is None:
+                frame[0] = child
+            if css is not None:
+                # Raw text, checked by ``_style_text``: verbatim, never escaped.
+                if css:
+                    with child:
+                        dom_text(css, escape=False)
+                if node is not None:
+                    node._add(child)
+                continue
+            foreign = foreign or name in ("svg", "math")
+            frames.append([child, iter(token.children), foreign, node])
+        return bottom[0]
 
     def __repr__(self):
         return str(self.parse())

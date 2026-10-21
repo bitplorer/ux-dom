@@ -12,6 +12,8 @@
    "tests/05_chaos/test_enterprise_full_battery.py",
    "tests/05_chaos/test_production_trust.py",
    "tests/06_browser/test_sanitized_stream_browser.py",
+   "tests/06_browser/test_tree_construction_browser.py",
+   "tests/07_resilience/test_html_tree_construction.py",
    "tests/07_resilience/test_sanitized_stream.py"
   ],
   "imported_by": {

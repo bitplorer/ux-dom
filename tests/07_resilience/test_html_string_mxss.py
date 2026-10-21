@@ -269,9 +269,12 @@ DANGEROUS_CHILDREN = (
 )
 def test_unwrap_sanitizes_children(src):
     token = tokenize_html(src).children[0]
-    parser = StringToHTML([token])
-    holder = parser._unwrap(token, None) if token.name != "svg" else parser.parse()
-    out = holder.__render__(pretty=False)
+    if token.name == "svg":
+        # ``<img>`` and ``<p>`` break out of the svg (§13.2.6.5), so they are
+        # its siblings: sanitize the whole string.
+        out = _sanitized_html(src)
+    else:
+        out = StringToHTML([token])._unwrap(token, None).__render__(pretty=False)
     low = out.lower()
     for bad in ("<script", "onerror", "onclick", "hx-get", "x-init", "javascript:"):
         assert bad not in low, (src, out)
