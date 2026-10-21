@@ -20,7 +20,6 @@ from ux_dom.dom.src.concurrency import (  # noqa: F401
     default_workers,
     get_concurrency_settings,
     locked_tree,
-    map_parallel,
     multi_tree_lock,
     render_async_gather,
     render_parallel,
@@ -43,6 +42,5 @@ __all__ = [
     "default_workers",
     "render_parallel",
     "build_parallel",
-    "map_parallel",
     "render_async_gather",
 ]

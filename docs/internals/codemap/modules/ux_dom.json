@@ -41,6 +41,7 @@
    "tests/01_core/test_input_value_regressions.py",
    "tests/01_core/test_membership_contract.py",
    "tests/01_core/test_membership_mro_boolean.py",
+   "tests/01_core/test_parallel_first_class.py",
    "tests/01_core/test_parse_whitespace.py",
    "tests/01_core/test_pretty_inline_text.py",
    "tests/01_core/test_pretty_raw_text_verbatim.py",

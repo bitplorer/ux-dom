@@ -43,7 +43,6 @@ __all__ = [
     "default_workers",
     "render_parallel",
     "build_parallel",
-    "map_parallel",
     "render_async_gather",
     "should_parallelize",
 ]
@@ -325,18 +324,18 @@ def render_parallel(
 
 def build_parallel(
     fn: Callable[[T], R],
-    items: Sequence[T],
+    items: Iterable[T],
     *,
     max_workers: Optional[int] = None,
     parallel: Optional[bool] = None,
 ) -> list[R]:
-    """Map ``fn`` over items — parallel when policy allows, else sequential.
+    """Map ``fn`` over any iterable — parallel when policy allows, else sequential.
 
     When called inside ``with tag:``, workers do not share the ContextVar parent
     stack, so children would detach. Whenever a with-frame is open this runs
-    sequentially, overriding an explicit ``parallel=True`` (and so
-    :func:`map_parallel` loses concurrency there too).
+    sequentially, overriding an explicit ``parallel=True``.
     """
+    items = list(items)
     if not items:
         return []
     # Deferred import: dom_tag imports this module at load time.
@@ -351,16 +350,6 @@ def build_parallel(
     with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="uxdom-build") as ex:
         futs = [ex.submit(fn, item) for item in items]
         return [f.result() for f in futs]
-
-
-def map_parallel(
-    fn: Callable[[T], R],
-    items: Iterable[T],
-    *,
-    max_workers: Optional[int] = None,
-    parallel: Optional[bool] = None,
-) -> list[R]:
-    return build_parallel(fn, list(items), max_workers=max_workers, parallel=parallel)
 
 
 async def render_async_gather(
