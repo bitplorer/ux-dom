@@ -13,7 +13,7 @@ from starlette.responses import StreamingResponse as StarletteStreaming
 from ux_dom import __version__
 from ux_dom.dom import div
 from ux_dom.htmx.middleware import HtmxDetails, HtmxMiddleware
-from ux_dom.htmx import Htmx
+from ux_dom.htmx import HtmxRoutes
 from ux_dom.response.starlette import StreamingResponse
 from ux_dom.web_io import WebSocketAdapter, WebSocketEvents
 
@@ -109,7 +109,7 @@ class TestHtmxPrefix(unittest.TestCase):
             put = patch = delete = post
 
         api = API()
-        h = Htmx(api, prefix="/actions")
+        h = HtmxRoutes(api, prefix="/actions")
 
         @h.get
         def counter():
@@ -118,7 +118,7 @@ class TestHtmxPrefix(unittest.TestCase):
         self.assertEqual(api.routes[0], ("GET", "/actions/counter"))
 
         api2 = API()
-        h2 = Htmx(api2)  # default flat for back-compat
+        h2 = HtmxRoutes(api2)
 
         @h2.post
         def save():

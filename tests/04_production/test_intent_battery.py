@@ -18,7 +18,7 @@ from ux_dom.dom.src.dom_tag import get_current
 from ux_dom.dom.src.ext import Tags, StyleTags
 from ux_dom.dom.src.parse_html import tokenize_html
 from ux_dom.dom.uniqueid import uniqueid
-from ux_dom.htmx import Htmx
+from ux_dom.htmx import HtmxRoutes
 from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.plugins.control import NullControl
 from ux_dom.response.starlette import StreamingResponse
@@ -277,7 +277,7 @@ class TestEdges(unittest.TestCase):
             put = patch = delete = post
 
         api = API()
-        h = Htmx(api, prefix="/act")
+        h = HtmxRoutes(api, prefix="/act")
 
         @h.get
         def ping():

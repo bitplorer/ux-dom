@@ -27,7 +27,7 @@ Version: **0.2.0** (ux-dom production line).
 
 - [x] HTMX attrs via Tags dialect (`hx_*`)
 - [x] `HtmxControl` plugin: scripts, partial policy, optional middleware
-- [x] `Htmx` decorator class + `HtmxMiddleware` (module paths stable in 0.1)
+- [x] `HtmxRoutes` decorator class + `HtmxMiddleware` (module paths stable in 0.1)
 - [x] `data-channel-*` attrs for ux-channel peer plane (no core import of channel)
 - [x] `NullControl` for tests
 
