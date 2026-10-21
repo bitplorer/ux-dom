@@ -7,7 +7,6 @@ Brand lines: PyPI ``ux-dom`` · import ``ux_dom`` · CLI ``uxdom``.
 from __future__ import annotations
 
 import importlib.util
-import json
 import platform
 import sys
 from dataclasses import dataclass, field
@@ -56,9 +55,7 @@ class DoctorReport:
 def _find_project(start: Path) -> Optional[Path]:
     cur = start.resolve()
     for p in [cur, *cur.parents]:
-        if (p / ".ux_dom-scaffold.json").exists() or (
-            (p / "app" / "main.py").exists() and (p / "app" / "settings.py").exists()
-        ):
+        if (p / "app" / "main.py").exists() and (p / "app" / "settings.py").exists():
             return p
         if p == p.parent:
             break
@@ -163,21 +160,6 @@ def run_doctor(*, cwd: Optional[Path] = None) -> DoctorReport:
         )
     else:
         report.checks.append(Check("project", True, str(root), "info"))
-        meta = root / ".ux_dom-scaffold.json"
-        if meta.exists():
-            try:
-                data = json.loads(meta.read_text(encoding="utf-8"))
-                report.checks.append(
-                    Check(
-                        "scaffold",
-                        True,
-                        f"template={data.get('template')} channel={data.get('with_channel')}",
-                        "info",
-                    )
-                )
-            except Exception as e:
-                report.checks.append(Check("scaffold", False, str(e), "warn"))
-
         main = root / "app" / "main.py"
         doc = root / "app" / "document.py"
         dtxt = doc.read_text(encoding="utf-8") if doc.is_file() else ""
@@ -235,15 +217,6 @@ def run_doctor(*, cwd: Optional[Path] = None) -> DoctorReport:
                     "warn" if not has_shell else "info",
                 )
             )
-        # Product scaffold is uxcompose. Leftover .ux_dom-scaffold.json is info only.
-        report.checks.append(
-            Check(
-                "product-scaffold",
-                True,
-                "product apps: uxcompose create-app (uxdom does not scaffold)",
-                "info",
-            )
-        )
 
         # Optional dual-copy file is NOT required
         xjs = root / "assets" / "js" / "x_element.js"

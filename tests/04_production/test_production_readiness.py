@@ -184,8 +184,6 @@ class TestScaffoldProductionArtifacts(unittest.TestCase):
                 or "XElement" in (root / "app/document.py").read_text()
             )
             self.assertNotIn("html_elements", doc)
-            # product scaffold metadata is uxcompose, not ux-dom
-            self.assertFalse((root / ".ux_dom-scaffold.json").exists())
 
 
 if __name__ == "__main__":

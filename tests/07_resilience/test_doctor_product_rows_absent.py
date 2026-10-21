@@ -1,6 +1,8 @@
-"""ADR 0003 rule 3 — uxdom doctor and build check no port, DEBUG or .env.
+"""ADR 0003 rule 4 absence lock: uxdom doctor and build check no product rows.
 
-Product readiness is ``uxcompose doctor --prod [--port N]`` (ux-compose #128).
+Rule 3 scope: no port, ``DEBUG``, ``.env`` or scaffold marker. Product readiness is
+``uxcompose doctor --prod [--port N]`` (ux-compose #128); scaffolding is
+``uxcompose create-app``.
 """
 
 from __future__ import annotations
@@ -43,6 +45,18 @@ def test_doctor_reports_no_product_rows(debug_app: Path):
     (debug_app / ".env").write_text("SECRET=x\n", encoding="utf-8")
     names = {c.name for c in run_doctor(cwd=debug_app).checks}
     assert not {n for n in names if n.startswith(("port:", "prod:"))}, names
+
+
+def test_doctor_reads_no_scaffold_marker(debug_app: Path, tmp_path: Path):
+    marker = '{"template": "x", "with_channel": true}'
+    (debug_app / ".ux_dom-scaffold.json").write_text(marker, encoding="utf-8")
+    names = {c.name for c in run_doctor(cwd=debug_app).checks}
+    assert not names & {"scaffold", "product-scaffold"}, names
+
+    bare = tmp_path / "bare"
+    bare.mkdir()
+    (bare / ".ux_dom-scaffold.json").write_text(marker, encoding="utf-8")
+    assert run_doctor(cwd=bare).project_root is None
 
 
 def test_build_has_no_debug_note(debug_app: Path):

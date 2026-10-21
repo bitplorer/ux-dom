@@ -1,6 +1,7 @@
 {
  "ux_dom.cli": {
   "consumers": [
+   "docs/adr/0003-layer-boundary.md",
    "tests/01_core/test_builtin_mro_behaviour.py",
    "tests/01_core/test_full_mro_behaviour_integration.py",
    "tests/01_core/test_host_path_coverage.py",
