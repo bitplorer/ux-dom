@@ -209,14 +209,14 @@ def run_doctor(*, cwd: Optional[Path] = None) -> DoctorReport:
                 )
             )
 
-        # Optional dual-copy file is NOT required
+        # An app copy of x_element.js is never needed: pages load it from the package.
         xjs = root / "assets" / "js" / "x_element.js"
         if xjs.is_file():
             report.checks.append(
                 Check(
                     "assets/js/x_element.js",
                     True,
-                    "present (app dual-copy; package mount is preferred)",
+                    "app copy present; not needed, the package serves /ux-dom/static/x_element.js",
                     "info",
                 )
             )
