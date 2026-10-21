@@ -1,0 +1,33 @@
+{
+ "ux_dom.response.sanitize": {
+  "consumers": [
+   "docs/adr/0002-html-string-sanitizer-policy.md",
+   "docs/security/ATTRIBUTES.md",
+   "tests/06_browser/test_sanitized_stream_browser.py",
+   "tests/07_resilience/test_sanitized_stream.py"
+  ],
+  "imported_by": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.response"
+   ],
+   "type_checking": []
+  },
+  "imports_internal": {
+   "function_level": [],
+   "module_level": [
+    "ux_dom.dom.src.html_string",
+    "ux_dom.dom.src.parse_html"
+   ],
+   "type_checking": []
+  },
+  "layer": "integrations",
+  "path": "src/ux_dom/response/sanitize.py",
+  "public": [
+   "HtmlStreamOverflow",
+   "MAX_BUFFER_CHARS",
+   "sanitize_html",
+   "sanitize_html_stream"
+  ]
+ }
+}

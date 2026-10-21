@@ -1,13 +1,18 @@
 {
  "ux_dom.response": {
   "consumers": [
+   "docs/adr/0002-html-string-sanitizer-policy.md",
    "docs/adr/0003-layer-boundary.md",
    "docs/internals/CORE.md",
    "docs/plans/2026-09-12-extract-by-id.md",
    "docs/plans/2026-09-12-tip-d107209-serialize-surface.md",
+   "docs/reference/API_SURFACE.md",
+   "docs/security/ATTRIBUTES.md",
    "tests/01_core/test_extract_by_id.py",
    "tests/05_chaos/test_enterprise_full_battery.py",
-   "tests/05_chaos/test_production_trust.py"
+   "tests/05_chaos/test_production_trust.py",
+   "tests/06_browser/test_sanitized_stream_browser.py",
+   "tests/07_resilience/test_sanitized_stream.py"
   ],
   "imported_by": {
    "function_level": [],
@@ -17,6 +22,7 @@
   "imports_internal": {
    "function_level": [],
    "module_level": [
+    "ux_dom.response.sanitize",
     "ux_dom.response.serialize",
     "ux_dom.response.starlette"
    ],
@@ -26,6 +32,8 @@
   "path": "src/ux_dom/response/__init__.py",
   "public": [
    "HTMLResponse",
+   "HtmlStreamOverflow",
+   "MAX_BUFFER_CHARS",
    "StreamingResponse",
    "extract_by_id",
    "html_response",
@@ -33,6 +41,8 @@
    "is_stream_renderable",
    "prepare_html_body",
    "prepare_html_stream",
+   "sanitize_html",
+   "sanitize_html_stream",
    "streaming_response",
    "to_html_bytes"
   ]

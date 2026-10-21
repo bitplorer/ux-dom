@@ -83,6 +83,24 @@ is internal and may move; these four names are the supported path.
 | `to_html_bytes` | fn | Tree / Component / str → UTF-8 HTML bytes |
 | `extract_by_id` | fn | Outer-HTML slice for `#id` (C2). `Fragment` builds trees; this extracts. Compose `_fragment_for_target` KEEP until callers USE this. Channel `_guess_target_from_html` is selector leftover — not extract. Not on root `__all__`. |
 
+## Sanitize (`from ux_dom.response import …`)
+
+| Symbol | Kind | Notes |
+|--------|------|--------|
+| `sanitize_html` | fn | Untrusted HTML `str` → sanitized HTML `str`: exactly the `defHTML` nodes rendered with `pretty=False`, nothing added (no trailing newline). A `Markup` (`__html__`) is returned verbatim. |
+| `sanitize_html_stream` | fn | Sync or async iterable of `str` chunks → iterator of the same kind. Joined, the pieces equal `sanitize_html` of the joined chunks, wherever the chunks are split. A `Markup` chunk is verbatim and ends the fragment before it. |
+| `HtmlStreamOverflow` | exc | `ValueError`: more than `max_chars` characters arrived without a safe boundary. The held text is not emitted. |
+| `MAX_BUFFER_CHARS` | const | Default `max_chars`: `1 << 20` characters. |
+
+A stream is buffered up to safe boundaries: points where the tokenizer has
+no open element, tag, comment, raw text or reference. Each stretch between two
+is sanitized as one string, so the sanitizer has one policy for strings and
+streams ([ADR 0002](../adr/0002-html-string-sanitizer-policy.md)). Time is
+linear; memory is the text since the last boundary, at most `max_chars`.
+Text with no boundary (one element left open, a `<!-->` with no later `-->`,
+a run of characters with no space, `;` or `>`) waits for one and fails closed
+past `max_chars`.
+
 HTTP adapters (`HTMLResponse`, …) stay optional. Product delivery is ux-compose.
 
 ---

@@ -8,7 +8,8 @@
 **Date:** 2026-10-20  
 **Scope:** Every path that parses a markup string into ux-dom nodes: `defHTML`,
 `StringToHTML`, `Fragment(str)`, `Component.render()->str`, `HTMLElement`,
-`JinjaElement`, `MarkdownElement`, `to_fragment(str)`, and `srcdoc` strings.
+`JinjaElement`, `MarkdownElement`, `to_fragment(str)`, `srcdoc` strings, and
+`ux_dom.response.sanitize_html` / `sanitize_html_stream` (#121).
 
 ---
 

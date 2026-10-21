@@ -26,6 +26,7 @@ import re
 from collections import abc, deque
 from html import escape
 from html.parser import HTMLParser
+from html.parser import commentclose  # type: ignore[attr-defined]
 from typing import Any, Callable, Iterable, Iterator
 
 
@@ -559,3 +560,111 @@ def tokenize_html(text: str, name: str = "", convert_charrefs: bool = False) -> 
     parser.feed(text)
     parser.close()
     return parser.struct.outmost
+
+
+# A cut must end every reference: ``&notin;`` cut after ``&not`` parses as
+# ``¬in;``. CR is left out because CRLF is one newline.
+_CUT_AFTER = frozenset(">;\t\n\f ")
+# References never change the tree, so the cut finder reads ``&`` as an
+# ordinary character. That keeps it from holding the rest of the input at an
+# unfinished ``&#62b`` as the stdlib parser does (see ``close``).
+_NO_REFERENCES = str.maketrans("&", "\x01")
+# The ``<style`` region of ``_UNFINISHED_NUMERIC[True]``, in two steps.
+_STYLE_START = re.compile(r"<style\b", re.IGNORECASE)
+_STYLE_END = re.compile(r"</style", re.IGNORECASE)
+
+
+class HtmlCuts(HtmlToAst):
+    """Where a growing HTML string can be cut without changing its parse (#121).
+
+    This is the tokenizer itself, fed one piece at a time. ``cut`` is the
+    last offset where everything before it is finished top-level nodes: no
+    open element, no held markup, no raw-text mode, and a character from
+    ``_CUT_AFTER`` just before it. The sanitizer works one top-level node at a
+    time (``defHTML``), so sanitizing the text on each side of a cut gives the
+    same output as sanitizing the whole. Nodes before a cut are discarded, so
+    memory is the text since the last cut.
+
+    Two places where the whole string decides later than a prefix are not
+    cuts: a ``<!-->`` comment before any ``-->`` arrives (see
+    ``parse_comment``), and the ``<style`` regions in which
+    ``_finish_numeric_references`` keeps references as written, which also
+    open where the tokenizer sees no raw text (``<style/>``, an attribute).
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.cut = 0
+        self._fed = 0
+        self._start = 0  # offset of ``rawdata[0]``
+        # ``<style`` regions: closed ``(start, end)`` pairs, and the open one.
+        self._regions: deque = deque()
+        self._open: int | None = None
+        self._in_tag = False
+        self._unscanned = ""  # text from ``_scan`` on, not yet decided
+        self._scan = 0
+
+    def feed(self, data: str) -> None:  # type: ignore[override]
+        self._find_style_regions(data)
+        self._fed += len(data)
+        HTMLParser.feed(self, data.translate(_NO_REFERENCES))
+        self._start = self._fed - len(self.rawdata)
+
+    @property
+    def held(self) -> int:
+        """Length of the unfinished construct the parser is waiting on."""
+        return len(self.rawdata)
+
+    def _find_style_regions(self, data: str) -> None:
+        """Extend the region scan over ``data``; each step keeps < 7 chars."""
+        text, base, pos = self._unscanned + data, self._scan, 0
+        while True:
+            if self._open is None:
+                m = _STYLE_START.search(text, pos)
+                if m is None or m.end() == len(text):  # ``\b`` needs a next char
+                    keep = m.start() if m else max(pos, len(text) - 5)
+                    break
+                self._open, self._in_tag, pos = base + m.start(), True, m.end()
+            if self._in_tag:
+                gt = text.find(">", pos)
+                if gt < 0:
+                    keep = len(text)
+                    break
+                self._in_tag, pos = False, gt + 1
+            m = _STYLE_END.search(text, pos)
+            if m is None:
+                keep = max(pos, len(text) - 6)
+                break
+            self._regions.append((self._open, base + m.start()))
+            self._open, pos = None, m.start()
+        self._unscanned, self._scan = text[keep:], base + keep
+
+    def _in_style_region(self, offset: int) -> bool:
+        # Offsets only grow, so a region that ends before one is done.
+        while self._regions and self._regions[0][1] <= offset:
+            self._regions.popleft()
+        if self._regions and self._regions[0][0] < offset:
+            return True
+        return self._open is not None and offset > self._open
+
+    def parse_comment(self, i: int, report: bool = True) -> int:
+        # Given the whole string, ``<!-->`` ends at the first later ``-->``
+        # and is an empty comment only when there is none. Until a ``-->``
+        # arrives, the comment is unfinished.
+        if commentclose.search(self.rawdata, i + 4) is None:
+            return -1
+        return super().parse_comment(i, report)
+
+    def updatepos(self, i: int, j: int) -> int:
+        # ``goahead`` calls this after each finished construct, with ``j``
+        # the end of it in ``rawdata``.
+        if (
+            j > i
+            and len(self.struct.stack) == 1
+            and self.cdata_elem is None
+            and self.rawdata[j - 1] in _CUT_AFTER
+            and not self._in_style_region(self._start + j)
+        ):
+            self.cut = self._start + j
+            self.struct.clear()
+        return super().updatepos(i, j)
