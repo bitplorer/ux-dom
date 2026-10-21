@@ -10,6 +10,7 @@
    "tests/03_routing_cli/test_scaffold_check.py",
    "tests/03_routing_cli/test_serve_dx.py",
    "tests/03_routing_cli/test_tailwind_command.py",
+   "tests/04_production/test_docs_cli_commands.py",
    "tests/07_resilience/test_build_command_absent.py",
    "tests/07_resilience/test_cli_aliases_absent.py",
    "tests/07_resilience/test_dead_surface_removed.py",

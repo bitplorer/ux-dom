@@ -11,7 +11,7 @@ Pure server HTML. Works **without** ux-channel. For live morph / signed actions:
 Copy into your app (ownable like shadcn)::
 
     uxdom add ui Button
-    uxdom ui list
+    uxdom ui
 """
 
 from __future__ import annotations
