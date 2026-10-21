@@ -159,6 +159,25 @@ style(btn(color="red"))  # <style>.btn{color:red;}</style>
 div(btn(color="red"))    # InvalidNodeContext: btn is a CSS rule; render it inside <style>, not <div>
 ```
 
+A value (a `Keyframes` step's too) stays one CSS value
+([#136](https://github.com/bitplorer/ux-dom/issues/136)). A value or property
+name that could end its declaration or rule raises `InvalidCSSValue` (a
+`ValueError`): `;`, `{` or `}` outside a string, an unclosed string or one with
+a newline, unbalanced `()` / `[]`, a comment, a newline, or a backslash outside
+a string (`\75rl(` spells `url(`). Escapes inside strings (`content: "\201C"`)
+are fine. Each URL a CSS function loads (`url()`, `image-set()`, `src()`,
+`image()`) gets the attribute URL allowlist in any property, custom
+properties included; a value with a refused URL renders as
+`about:invalid#ux-dom-unsafe-url`, so the browser drops that declaration
+([ATTRIBUTES.md](ATTRIBUTES.md), step 6):
+
+```python
+style(btn(color="red} body{background:yellow"))  # InvalidCSSValue
+style(btn(cursor="url(//cdn.example/x.png), auto"))
+# <style>.btn{cursor:about:invalid#ux-dom-unsafe-url;}</style>
+style(btn(font_family="'Courier New', mono", content='"a;b"'))  # unchanged
+```
+
 ## What dedupe does *not* fix
 
 - Two **different** URLs for the same library (e.g. CDN htmx + local htmx)  

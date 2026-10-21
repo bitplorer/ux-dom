@@ -38,7 +38,9 @@ __all__ = [
     "escape",
     "escape_attr_minimal",
     "InvalidAttributeName",
+    "InvalidCSSValue",
     "checked_attr_name",
+    "checked_css_value",
     "checked_tag_name",
     "checked_comment_text",
     "checked_doctype",
@@ -270,6 +272,12 @@ _SAFE_DATA_URL = re.compile(
     r"data:image/(?:%s)(?:[;,]|$)" % "|".join(sorted(_SAFE_DATA_IMAGE_TYPES))
 )
 _SRCSET_SPACE = "\t\n\f\r "
+# CSS functions whose string arguments are URLs (``image-set("a.png" 1x)``).
+# ``url(a.png)`` without quotes is a url token; both get the URL check.
+_CSS_URL_FUNCTIONS = frozenset(
+    {"url", "src", "image", "image-set", "-webkit-image-set"}
+)
+_CSS_ESCAPE = re.compile(r"\\(?:([0-9a-fA-F]{1,6})[ \t\n]?|(.))", re.DOTALL)
 
 
 class CrossOriginURL(str):
@@ -337,6 +345,24 @@ class InvalidMarkupToken(ValueError):
 
 class InvalidNodeContext(ValueError):
     """A node rendered where its raw output would change context (fail closed)."""
+
+
+class InvalidCSSValue(ValueError):
+    """A CSS property or value that could end its declaration (fail closed)."""
+
+
+def checked_css_value(prop, value):
+    """Return ``value`` as text if it is one CSS value, else raise InvalidCSSValue.
+
+    A value whose ``url()`` / ``src()`` / ``image()`` / ``image-set()`` URL
+    fails the URL allowlist renders as ``UNSAFE_URL``, so the browser drops
+    the declaration. ``prop`` must be a plain name (#136).
+    """
+    text = str(value)
+    urls = _css_urls(text)
+    if urls is None or _css_urls(str(prop)) != []:
+        raise InvalidCSSValue(f"{prop}: {text!r} is not one CSS value")
+    return text if all(map(_is_safe_url, urls)) else UNSAFE_URL
 
 
 def checked_comment_text(text):
@@ -411,6 +437,72 @@ def _is_safe_url(text):
     if scheme == "data":
         return _SAFE_DATA_URL.match(probe) is not None
     return scheme in _SAFE_SCHEMES
+
+
+def _css_unescape(text):
+    """Decode CSS escapes (``\\6a`` is ``j``); out-of-range code points become U+FFFD."""
+
+    def char(match):
+        if match[2] is not None:
+            return match[2]
+        code = int(match[1], 16)
+        ok = 0 < code <= 0x10FFFF and not 0xD800 <= code <= 0xDFFF
+        return chr(code) if ok else "\ufffd"
+
+    return _CSS_ESCAPE.sub(char, text)
+
+
+def _css_urls(text, *, declarations=False):
+    """The URLs in ``text``, or ``None`` if it is not one CSS value.
+
+    One value has no ``;``, ``{``, ``}`` or newline outside a string, closed
+    strings with no newline, balanced ``()`` and ``[]``, and no comment or
+    backslash outside a string: an escape there can spell ``\\75rl(``.
+    Escapes inside a string are decoded before the URL check. With
+    ``declarations`` (a ``style`` attribute) a top-level ``;`` and newlines
+    are allowed.
+    """
+    if not declarations and any(c in text for c in "\n\r\f"):
+        return None
+    urls, stack, name, i, end = [], [], "", 0, len(text)
+    while i < end:
+        char = text[i]
+        if char in "\"'":
+            j = i + 1
+            while j < end and text[j] != char:
+                j += text[j] == "\\"
+                if j < end and text[j] in "\n\r\f":
+                    return None
+                j += 1
+            if j >= end:
+                return None
+            if stack and stack[-1] in _CSS_URL_FUNCTIONS:
+                urls.append(_css_unescape(text[i + 1 : j]))
+            i, name = j + 1, ""
+            continue
+        if char in "\\{}" or text.startswith("/*", i):
+            return None
+        if char == ";" and (stack or not declarations):
+            return None
+        if char == "(" and name.lower() == "url":
+            j = i + 1
+            while j < end and text[j] in _SRCSET_SPACE:  # also CSS whitespace
+                j += 1
+            if j < end and text[j] not in "\"'":
+                close = text.find(")", j)
+                url = text[j:close].rstrip(_SRCSET_SPACE)
+                if close < 0 or any(c in "\"'(\\" + _SRCSET_SPACE for c in url):
+                    return None
+                urls.append(url)
+                i, name = close + 1, ""
+                continue
+        if char in "([":
+            stack.append(name.lower() if char == "(" else "[")
+        elif char in ")]" and (not stack or (stack.pop() == "[") != (char == "]")):
+            return None
+        name = name + char if char.isalnum() or char in "-_" or char > "\x7f" else ""
+        i += 1
+    return None if stack else urls
 
 
 def _srcset_urls(text):
@@ -529,7 +621,9 @@ def safe_attr_value(attribute, value, tag=""):
     the C0 controls and spaces that browsers ignore inside a scheme are
     removed. ``srcset`` checks each candidate URL. On an animation ``tag``
     (``_ANIMATION_TAGS``), ``to``/``from``/``by`` and each ``;`` item of
-    ``values`` are checked as URLs too.
+    ``values`` are checked as URLs too. In ``style`` each CSS URL is checked
+    (``url()``, ``image-set()``, ...), and text that is not a declaration
+    list (``_css_urls``) fails closed.
 
     HTML attributes (``srcdoc``) run a string through the same allowlist
     sanitizer as ``defHTML``. A ``__html__`` value (``Markup``) is still the
@@ -552,6 +646,11 @@ def safe_attr_value(attribute, value, tag=""):
     if name in _SRCSET_ATTRIBUTES:
         text = str(value)
         return text if all(map(_is_safe_url, _srcset_urls(text))) else UNSAFE_URL
+    if name == "style":
+        text = str(value)
+        urls = _css_urls(text, declarations=True)
+        ok = urls is not None and all(map(_is_safe_url, urls))
+        return text if ok else UNSAFE_URL
     if name in _ANIMATION_VALUE_ATTRIBUTES and _is_animation_tag(tag):
         text = str(value)
         items = text.split(";") if name == "values" else (text,)

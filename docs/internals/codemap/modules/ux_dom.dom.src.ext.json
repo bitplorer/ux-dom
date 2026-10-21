@@ -172,6 +172,14 @@
       "kind": "function",
       "signature": "(self, name)"
      },
+     "_css_value": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "A nested rule (a ``Keyframes`` step) is CSS already and checks its own values.",
+      "kind": "function",
+      "signature": "(prop, value)"
+     },
      "_render": {
       "doc": "A CSS rule renders inside ``<style>`` or standalone, never as HTML.",
       "kind": "function",

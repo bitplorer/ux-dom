@@ -33,6 +33,7 @@ from ux_dom.dom.src.utils.dom_util import (
     dom_text,
     escape,
     checked_attr_name,
+    checked_css_value,
     checked_tag_name,
     checked_text_state_body,
     escape_attr_minimal,
@@ -1214,12 +1215,19 @@ class StyleTags(Tags):
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely
-                safe = str(safe_attr_value(attribute, value))
+                safe = self._css_value(attribute, value)
                 sb.append(attribute_joiner % (attribute, safe))
 
             if value is None:  # a bare (minimized) attribute
                 sb.append(" %s" % attribute)
         return sb
+
+    @staticmethod
+    def _css_value(prop, value):
+        """A nested rule (a ``Keyframes`` step) is CSS already and checks its own values."""
+        if isinstance(value, StyleTags):
+            return str(value)
+        return checked_css_value(prop, value)
 
     def _render_close_tag(self, /, sb, name, close_tag):
         sb.append(self.right_delimiter)
@@ -1249,7 +1257,7 @@ class StyleTags(Tags):
             if (
                 value is not False and value is not None
             ):  # False values must be omitted completely
-                safe = str(safe_attr_value(attribute, value))
+                safe = self._css_value(attribute, value)
                 r.append(attribute_joiner % (attribute, safe))
 
             if value is None:  # a bare (minimized) attribute

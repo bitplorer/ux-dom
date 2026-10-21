@@ -12,6 +12,7 @@
    "tests/01_core/test_raw_text_elements.py",
    "tests/04_production/test_attribute_docs_match_code.py",
    "tests/04_production/test_intent_battery.py",
+   "tests/06_browser/test_css_value_injection_browser.py",
    "tests/06_browser/test_pretty_inner_text_browser.py",
    "tests/06_browser/test_svg_animation_url_browser.py",
    "tests/07_resilience/test_add_raw_string_absent.py",
@@ -19,6 +20,7 @@
    "tests/07_resilience/test_attr_name_validation.py",
    "tests/07_resilience/test_boolean_attributes.py",
    "tests/07_resilience/test_css_node_context.py",
+   "tests/07_resilience/test_css_value_injection.py",
    "tests/07_resilience/test_foreign_breakout.py",
    "tests/07_resilience/test_foreign_content_raw_text.py",
    "tests/07_resilience/test_html_allowlist.py",
@@ -86,6 +88,7 @@
   "public": [
    "CrossOriginURL",
    "InvalidAttributeName",
+   "InvalidCSSValue",
    "InvalidMarkupToken",
    "InvalidNodeContext",
    "InvalidTagName",
@@ -94,6 +97,7 @@
    "URL_ATTRIBUTES",
    "checked_attr_name",
    "checked_comment_text",
+   "checked_css_value",
    "checked_doctype",
    "checked_tag_name",
    "cross_origin",
@@ -125,6 +129,15 @@
      "ValueError"
     ],
     "doc": "An attribute name that could break out of the tag (fail closed).",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "InvalidCSSValue": {
+    "bases": [
+     "ValueError"
+    ],
+    "doc": "A CSS property or value that could end its declaration (fail closed).",
     "kind": "class",
     "methods": {},
     "public": true
@@ -161,6 +174,18 @@
     "kind": "function",
     "public": false,
     "signature": "(probe)"
+   },
+   "_css_unescape": {
+    "doc": "Decode CSS escapes (``\\6a`` is ``j``); out-of-range code points become U+FFFD.",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_css_urls": {
+    "doc": "The URLs in ``text``, or ``None`` if it is not one CSS value.",
+    "kind": "function",
+    "public": false,
+    "signature": "(text, *, declarations=False)"
    },
    "_is_animation_tag": {
     "doc": "``svg:set`` (an XML prefix) and ``animateMotion`` count, in any case.",
@@ -251,6 +276,12 @@
     "kind": "function",
     "public": true,
     "signature": "(text)"
+   },
+   "checked_css_value": {
+    "doc": "Return ``value`` as text if it is one CSS value, else raise InvalidCSSValue.",
+    "kind": "function",
+    "public": true,
+    "signature": "(prop, value)"
    },
    "checked_doctype": {
     "doc": "Return ``text`` if it is ``name [PUBLIC \"id\" [\"id\"] | SYSTEM \"id\"]``.",
