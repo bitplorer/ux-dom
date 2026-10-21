@@ -55,7 +55,7 @@ class DoctorReport:
 def _find_project(start: Path) -> Optional[Path]:
     cur = start.resolve()
     for p in [cur, *cur.parents]:
-        if (p / "app" / "main.py").exists() and (p / "app" / "settings.py").exists():
+        if (p / "app" / "main.py").is_file():
             return p
         if p == p.parent:
             break
@@ -165,42 +165,33 @@ def run_doctor(*, cwd: Optional[Path] = None) -> DoctorReport:
         dtxt = doc.read_text(encoding="utf-8") if doc.is_file() else ""
         report.checks.append(
             Check(
-                "app/main.py",
-                main.is_file(),
-                str(main),
-                "error" if not main.is_file() else "info",
-            )
-        )
-        report.checks.append(
-            Check(
                 "app/document.py",
                 doc.is_file(),
                 str(doc) if doc.is_file() else "missing document shell",
                 "error" if not doc.is_file() else "info",
             )
         )
-        if main.is_file():
-            mtxt = main.read_text(encoding="utf-8")
-            has_rt = (
-                "XElementRuntime" in mtxt
-                or "XElement(" in mtxt
-                or "xelement=True" in mtxt
-                or "document.mount" in mtxt
+        mtxt = main.read_text(encoding="utf-8")
+        has_rt = (
+            "XElementRuntime" in mtxt
+            or "XElement(" in mtxt
+            or "xelement=True" in mtxt
+            or "document.mount" in mtxt
+        )
+        # document.py may own runtimes
+        has_rt = has_rt or "XElement(" in dtxt or "XElementRuntime" in dtxt
+        report.checks.append(
+            Check(
+                "main:XElementRuntime",
+                has_rt,
+                (
+                    "XElement via Document.use + document.mount"
+                    if has_rt
+                    else "document.use(XElement()) for x_element.js"
+                ),
+                "warn" if not has_rt else "info",
             )
-            # document.py may own runtimes
-            has_rt = has_rt or "XElement(" in dtxt or "XElementRuntime" in dtxt
-            report.checks.append(
-                Check(
-                    "main:XElementRuntime",
-                    has_rt,
-                    (
-                        "XElement via Document.use + document.mount"
-                        if has_rt
-                        else "document.use(XElement()) for x_element.js"
-                    ),
-                    "warn" if not has_rt else "info",
-                )
-            )
+        )
         if doc.is_file():
             has_shell = (
                 "Document(" in dtxt or ".use(" in dtxt or "include_runtimes" in dtxt

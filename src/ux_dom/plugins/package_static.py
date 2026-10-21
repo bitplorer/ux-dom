@@ -90,7 +90,7 @@ class PackageStaticContribution:
     Default ``serve="package_mount"``:
       * ``served_files()`` → exact file routes (safe; no dir listing)
       * tags point at that URL
-      * ``artifacts()`` empty → ``uxdom build`` does **not** duplicate files
+      * ``artifacts()`` empty → nothing is copied into the app
     """
 
     name: str

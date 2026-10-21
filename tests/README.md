@@ -16,7 +16,7 @@ tests/
   browser/                 Playwright harness JS (not pytest modules)
   01_core/                 DOM · Component · membership · render · reactive
   02_document_plugins/     Document · CSP · XElement · UI kit · plugins
-  03_routing_cli/          scaffold · CLI · build · deploy
+  03_routing_cli/          scaffold · CLI · deploy
   04_production/           Hardening · readiness · examples · **production lock**
   05_chaos/                Pentest · stress · races · parsing
   06_browser/              Live Chromium (kit, xelement, auth, pretty text)

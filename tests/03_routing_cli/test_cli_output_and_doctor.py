@@ -39,15 +39,6 @@ def test_add_error_goes_to_stderr():
     assert "kind must be" not in result.stdout
 
 
-def test_product_build_redirect_printed_once(tmp_path: Path, monkeypatch):
-    (tmp_path / "app.py").write_text("# product composition root\n")
-    monkeypatch.chdir(tmp_path)
-    result = CliRunner().invoke(app, ["build"])
-    assert result.exit_code == 2
-    assert (result.stdout + result.stderr).count("Use: uxcompose build") == 1
-    assert "Use: uxcompose build" in result.stderr
-
-
 def test_doctor_broken_ux_channel_is_not_ok(tmp_path: Path, monkeypatch):
     pkg = tmp_path / "ux_channel"
     pkg.mkdir()

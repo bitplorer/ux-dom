@@ -15,7 +15,7 @@ from ux_dom.cli.cli import app as cli_app
 
 ROOT = Path(__file__).resolve().parents[2]
 
-_PRODUCT_CMDS = ("create-app", "serve", "dev", "start", "deploy", "templates")
+_PRODUCT_CMDS = ("create-app", "build", "serve", "dev", "start", "deploy", "templates")
 
 
 class TestProductCliAbsent(unittest.TestCase):
@@ -24,7 +24,7 @@ class TestProductCliAbsent(unittest.TestCase):
         result = runner.invoke(cli_app, ["--help"])
         self.assertEqual(result.exit_code, 0, result.output)
         out = result.output
-        for name in ("doctor", "info", "build", "lint", "profile", "add"):
+        for name in ("doctor", "info", "lint", "profile", "add"):
             self.assertIn(name, out, out)
         # Typer lists commands as bare tokens on their own help lines;
         # also lock via registered command names when available.
@@ -41,7 +41,7 @@ class TestProductCliAbsent(unittest.TestCase):
 
     def test_product_commands_rejected(self):
         runner = CliRunner()
-        for name in ("create-app", "serve", "dev", "start", "deploy"):
+        for name in ("create-app", "build", "serve", "dev", "start", "deploy"):
             result = runner.invoke(cli_app, [name, "--help"])
             self.assertNotEqual(
                 result.exit_code, 0, f"{name} should not be a uxdom command"
@@ -56,14 +56,14 @@ class TestProductCliAbsent(unittest.TestCase):
             from ux_dom.cli.deploy import prepare_deploy  # noqa: F401
 
     def test_product_commands_not_on_uxdom_cli(self):
-        """create-app / deploy / serve belong to uxcompose, not uxdom."""
+        """create-app / build / deploy / serve belong to uxcompose, not uxdom."""
         from typer.main import get_command
 
         from ux_dom.cli.cli import app as cli_app
 
         names = set(get_command(cli_app).commands)
-        self.assertTrue({"add", "build", "doctor"} <= names, names)
-        self.assertFalse({"create-app", "deploy", "serve"} & names, names)
+        self.assertTrue({"add", "doctor"} <= names, names)
+        self.assertFalse({"create-app", "build", "deploy", "serve"} & names, names)
 
 
 class TestCssCompilerNotOnUxDom(unittest.TestCase):

@@ -8,13 +8,11 @@
    "tests/01_core/test_host_path_coverage.py",
    "tests/02_document_plugins/test_safe_static.py",
    "tests/02_document_plugins/test_xelement_runtime.py",
-   "tests/03_routing_cli/test_build_package.py",
    "tests/04_production/test_production_lock.py",
    "tests/04_production/test_production_readiness.py"
   ],
   "imported_by": {
    "function_level": [
-    "ux_dom.cli.build",
     "ux_dom.cli.doctor",
     "ux_dom.plugins.runtime"
    ],

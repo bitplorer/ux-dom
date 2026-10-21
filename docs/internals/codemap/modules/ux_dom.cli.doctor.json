@@ -1,7 +1,9 @@
 {
  "ux_dom.cli.doctor": {
   "consumers": [
+   "tests/01_core/test_host_path_coverage.py",
    "tests/03_routing_cli/test_cli_output_and_doctor.py",
+   "tests/03_routing_cli/test_doctor_project_detection.py",
    "tests/03_routing_cli/test_doctor_tailwind_honest.py",
    "tests/03_routing_cli/test_dx_cli.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
@@ -11,7 +13,6 @@
   ],
   "imported_by": {
    "function_level": [
-    "ux_dom.cli.build",
     "ux_dom.cli.cli"
    ],
    "module_level": [],

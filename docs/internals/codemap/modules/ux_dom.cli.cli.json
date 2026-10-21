@@ -7,9 +7,8 @@
    "tests/03_routing_cli/test_dashboard_dx.py",
    "tests/03_routing_cli/test_dx_cli.py",
    "tests/03_routing_cli/test_profile_dx.py",
-   "tests/03_routing_cli/test_run_build_signature.py",
    "tests/03_routing_cli/test_serve_dx.py",
-   "tests/07_resilience/test_build_bundle_absent.py",
+   "tests/07_resilience/test_build_command_absent.py",
    "tests/07_resilience/test_doctor_product_rows_absent.py",
    "tests/07_resilience/test_f18_directory_router_absent.py",
    "tests/07_resilience/test_ownership_hard_cut.py"
@@ -24,7 +23,6 @@
   "imports_internal": {
    "function_level": [
     "ux_dom.cli.adders",
-    "ux_dom.cli.build",
     "ux_dom.cli.dashboard",
     "ux_dom.cli.doctor",
     "ux_dom.cli.lint",
@@ -40,7 +38,6 @@
   "public": [
    "add_cmd",
    "app",
-   "build_cmd",
    "dashboard_cmd",
    "doctor_cmd",
    "info_cmd",
