@@ -1,12 +1,11 @@
 # Copyright (c) 2026 ux-dom
-"""``uxdom build`` — Document/static verify + optional runnable package.
+"""``uxdom build`` — Document/static verify.
 
 Single-copy model
 -----------------
 1. XElement JS lives only in the installed ux_dom package.
 2. Browser URL: ``/ux-dom/static/x_element.js`` (mounted from site-packages).
 3. Build verifies the package file; does not dual-copy into app assets/.
-4. ``--package`` ships app code + requirements; pip provides library JS at runtime.
 """
 
 from __future__ import annotations
@@ -16,10 +15,7 @@ import subprocess
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Optional
-
-if TYPE_CHECKING:
-    from ux_dom.cli.static_assets import SyncReport
+from typing import Any, Optional
 
 
 @dataclass
@@ -33,7 +29,6 @@ class BuildStep:
 class BuildReport:
     root: Path
     steps: list[BuildStep] = field(default_factory=list)
-    package_path: Optional[Path] = None
 
     @property
     def ok(self) -> bool:
@@ -43,7 +38,6 @@ class BuildReport:
         return {
             "ok": self.ok,
             "root": str(self.root),
-            "package_path": str(self.package_path) if self.package_path else None,
             "steps": [
                 {"name": s.name, "ok": s.ok, "detail": s.detail} for s in self.steps
             ],
@@ -69,10 +63,6 @@ def run_build(
     cwd: Optional[Path] = None,
     skip_import: bool = False,
     skip_static_sync: bool = False,
-    package: bool = False,
-    archive: bool = False,
-    out_dir: Optional[Path] = None,
-    package_name: Optional[str] = None,
 ) -> BuildReport:
     """
     Document/static verify pipeline (not product CSS compile):
@@ -81,7 +71,6 @@ def run_build(
     2. Sync static runtimes (x_element.js) from installed ux_dom
     3. Import ``app.main:app``
     4. Soft doctor
-    5. Optional: materialize ``dist/<name>/`` runnable package
 
     This pipeline never compiles or minifies CSS; product CSS is
     ``uxcompose build``. There are deliberately no ``minify`` /
@@ -100,7 +89,6 @@ def run_build(
     )
 
     # ── static JS sync (package data → project assets/) ──────────────────
-    sync: Optional[SyncReport] = None
     if skip_static_sync:
         report.steps.append(BuildStep("static-sync", True, "skipped"))
     else:
@@ -188,50 +176,6 @@ def run_build(
     except Exception as e:
         report.steps.append(BuildStep("doctor", False, str(e)))
 
-    # ── runnable package ─────────────────────────────────────────────────
-    if package or archive:
-        if not report.ok:
-            report.steps.append(
-                BuildStep(
-                    "package",
-                    False,
-                    "skipped — earlier build steps failed",
-                )
-            )
-        else:
-            try:
-                from ux_dom.cli.static_assets import write_runnable_package
-
-                path = write_runnable_package(
-                    root,
-                    out_dir=out_dir or (root / "dist"),
-                    name=package_name,
-                    archive=archive,
-                    sync=sync,
-                )
-                report.package_path = path
-                # verify package contains x_element.js
-                if path.is_dir():
-                    ok = (
-                        (path / "run.sh").is_file()
-                        and (path / "MANIFEST.json").is_file()
-                        and (path / "app" / "main.py").is_file()
-                    )
-                    report.steps.append(
-                        BuildStep(
-                            "package",
-                            ok,
-                            f"{path} (run.sh + MANIFEST; JS from site-packages)",
-                        )
-                    )
-                else:
-                    # tar.gz
-                    report.steps.append(
-                        BuildStep("package", path.is_file(), f"archive {path}")
-                    )
-            except Exception as e:
-                report.steps.append(BuildStep("package", False, str(e)))
-
     return report
 
 
@@ -240,14 +184,6 @@ def format_build_report(report: BuildReport) -> str:
     for s in report.steps:
         mark = "OK" if s.ok else "FAIL"
         lines.append(f"  [{mark:4}] {s.name}: {s.detail}")
-    if report.package_path:
-        lines.append(f"  package → {report.package_path}")
     lines.append("=" * 48)
     lines.append("BUILD OK" if report.ok else "BUILD FAILED")
-    if report.ok and report.package_path:
-        lines.append(
-            f"Run: cd {report.package_path} && ./run.sh"
-            if report.package_path.is_dir()
-            else f"Extract {report.package_path} then ./run.sh"
-        )
     return "\n".join(lines)

@@ -85,10 +85,6 @@ _PRODUCT_BUILD = (
 def build_cmd(
     skip_import: bool = Option(False, "--skip-import"),
     skip_static_sync: bool = Option(False, "--skip-static-sync"),
-    package: bool = Option(False, "--package", "-p"),
-    archive: bool = Option(False, "--archive"),
-    out_dir: str = Option(None, "--out"),
-    name: str = Option(None, "--name"),
     json_out: bool = Option(False, "--json"),
 ):
     """Document/static verify for pure-dom ``app/main.py`` trees.
@@ -112,10 +108,6 @@ def build_cmd(
         report = run_build(
             skip_import=skip_import,
             skip_static_sync=skip_static_sync,
-            package=package or archive,
-            archive=archive,
-            out_dir=Path(out_dir) if out_dir else None,
-            package_name=name,
         )
     except FileNotFoundError as e:
         ux_dom_logger.error(str(e))

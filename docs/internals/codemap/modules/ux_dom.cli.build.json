@@ -2,12 +2,11 @@
  "ux_dom.cli.build": {
   "consumers": [
    "tests/01_core/test_host_path_coverage.py",
-   "tests/02_document_plugins/test_package_static.py",
    "tests/03_routing_cli/test_build_deploy.py",
    "tests/03_routing_cli/test_build_honest_steps.py",
-   "tests/03_routing_cli/test_build_package.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
    "tests/03_routing_cli/test_run_build_signature.py",
+   "tests/07_resilience/test_build_bundle_absent.py",
    "tests/07_resilience/test_doctor_product_rows_absent.py"
   ],
   "imported_by": {
@@ -26,9 +25,7 @@
     "ux_dom.scripts"
    ],
    "module_level": [],
-   "type_checking": [
-    "ux_dom.cli.static_assets"
-   ]
+   "type_checking": []
   },
   "layer": "cli",
   "path": "src/ux_dom/cli/build.py",

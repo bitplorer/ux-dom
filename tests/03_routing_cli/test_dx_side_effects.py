@@ -6,7 +6,6 @@ Guarantees:
 * add — refuse overwrite without ``--force``
 * product create-app / deploy / serve live on uxcompose (not exercised here)
 * build (default) — no dual-copy of x_element.js into assets/ (single-copy model)
-* package/archive — only when ``--package`` / ``--archive`` requested
 """
 from __future__ import annotations
 
@@ -80,8 +79,6 @@ class TestBuildNoUnintendedWrites(unittest.TestCase):
             rep = run_build(
                 cwd=root,
                 skip_import=True,
-                package=False,
-                archive=False,
             )
             self.assertTrue(rep.ok, rep.to_dict())
             after = _snapshot(root)
@@ -90,23 +87,6 @@ class TestBuildNoUnintendedWrites(unittest.TestCase):
             # no dual-copy of x_element under assets/js from build
             xe = list((root / "assets").rglob("x_element.js")) if (root / "assets").exists() else []
             self.assertEqual(xe, [])
-
-    def test_package_flag_writes_dist_only_when_requested(self):
-        with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "pk", dest=Path(td) / "pk", force=True, with_tailwind=False
-                )
-            )
-            rep = run_build(
-                cwd=root,
-                skip_import=True,
-                package=True,
-                out_dir=Path(td) / "dist-out",
-                package_name="pk",
-            )
-            self.assertTrue(rep.ok, rep.to_dict())
-            self.assertTrue((Path(td) / "dist-out" / "pk").is_dir())
 
 
 if __name__ == "__main__":

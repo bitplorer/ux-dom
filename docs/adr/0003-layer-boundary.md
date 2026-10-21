@@ -5,7 +5,9 @@
 
 **Status:** Accepted. Prod and port pre-flight removed from `uxdom doctor` (rule 4 met by
 ux-compose [#128](https://github.com/bitplorer/ux-compose/pull/128)). Scaffold rows removed
-(rule 4 met by `uxcompose create-app`; [#100](https://github.com/bitplorer/ux-dom/issues/100)).  
+(rule 4 met by `uxcompose create-app`; [#100](https://github.com/bitplorer/ux-dom/issues/100)).
+`uxdom build --package/--archive` removed (rule 4 met by ux-compose
+[#130](https://github.com/bitplorer/ux-compose/pull/130); [#101](https://github.com/bitplorer/ux-dom/issues/101)).  
 **Amended by:** [ADR 0004](0004-no-compat-shims-pre-release.md)  
 **Date:** 2026-10-20  
 **Scope:** Which product features ux-dom may ship. Applies to `src/ux_dom/`, the
@@ -43,13 +45,6 @@ Leftovers of the migration remain in ux-dom. Evidence (audit
   this repo or in any sibling implements them.
 - `pyproject.toml` ships `pytailwindcss`, `uvicorn` and `python-multipart` extras that no
   module imports (#59 row C8).
-- `uxdom build --package/--archive` writes a runnable deploy bundle. Verified by a real run on
-  `3a95deb`: it generates `run.sh` (`exec uvicorn app.main:app`), `requirements.txt`,
-  `MANIFEST.json` and `README.RUN.txt`, copies the app's `app/` and `assets/`, and copies
-  `Dockerfile`, `fly.toml`, `render.yaml`, `railway.json`, `.dockerignore` and `deploy/`
-  **only if they already exist** in the app; it generates none of them. `--archive` adds a
-  `.tar.gz`. The bundle served `GET /` and `/ux-dom/static/x_element.js` with 200. #59 row S4
-  left its owner open.
 - `uxdom doctor` checks a free port, `DEBUG` in `app/settings.py`, `.env`, and a
   `.ux_dom-scaffold.json` marker that nothing writes (#59 rows C7/C12).
 - Docs cited `uxcompose serve` with an app but no mode, and a `--hmr` flag. ux-compose
@@ -96,12 +91,13 @@ Rules:
 
 ### Missing in ux-compose (blocks removal)
 
-Checked against ux-compose `04994da`; the prod and port row re-checked at `830a6ab`:
+Checked against ux-compose `04994da`; the prod and port row re-checked at `830a6ab`, the
+bundle row at `1541b57`:
 
 | Capability | ux-dom today | ux-compose today | Blocks |
 |------------|--------------|------------------|--------|
 | `pytailwindcss` extra | None: `ux-dom[dev]` / `ux-dom[fastapidev]` removed in [#80](https://github.com/bitplorer/ux-dom/pull/80) | `tailwind.py` imports it lazily; `pyproject.toml` declares only `serve` and `dev` extras, neither with `pytailwindcss` | Nothing: waived (see below) |
-| Runnable bundle | `uxdom build --package/--archive` (`dist/<name>/`, `run.sh`, `MANIFEST.json`, tar.gz) | `uxcompose deploy` writes Docker/fly/render/railway/systemd files; nothing writes a runnable dir or archive | Removing `--package/--archive` |
+| Runnable bundle | None: `uxdom build --package/--archive` removed; lock `tests/07_resilience/test_build_bundle_absent.py` | `uxcompose build --package/--archive` ([#130](https://github.com/bitplorer/ux-compose/pull/130)) writes `OUT/NAME/` and `OUT/NAME.tar.gz` for `app.py` apps, refusing an `--out` that is or contains the app | Nothing: shipped |
 | Prod and port pre-flight | None: `uxdom doctor --prod/--port` and the `port:`, `prod:DEBUG`, `prod:.env` rows removed; lock `tests/07_resilience/test_doctor_product_rows_absent.py` | `uxcompose doctor --prod` ([#128](https://github.com/bitplorer/ux-compose/pull/128)) checks `secret`, `DEBUG`, `.env`, `dep:uvicorn`/`dep:fastapi` and `requirements`; `--port N` adds a `port:N` row | Nothing: shipped |
 
 **Waivers recorded:** the owner records each waiver here ("dropped, not ported") before
@@ -137,11 +133,15 @@ ADR 0001); this ADR records the same split from the ux-dom side.
 - Removed: `uxdom doctor --port/--prod` (and `info`'s copies) with the `port:`,
   `prod:DEBUG` and `prod:.env` rows. `uxdom build` runs the pure-dom doctor and no longer
   prints `prod:DEBUG-note`. Product readiness is `uxcompose doctor --prod [--port N]`.
+- Removed: `uxdom build --package/--archive/--out/--name` and `run_build(package=,
+  archive=, out_dir=, package_name=)`. Its bundle path was `<out>/<project name>`, so
+  `--out ..` cleared the project itself ([#101](https://github.com/bitplorer/ux-dom/issues/101)).
+  Runnable bundles are `uxcompose build --package/--archive`.
 - Removed: the `scaffold` and `product-scaffold` rows of `uxdom doctor`, and its
   `.ux_dom-scaffold.json` project detection. Nothing had written that marker since
   `ux_dom.cli.scaffold` was deleted. Scaffolding is `uxcompose create-app`.
-- Prerequisite ux-compose work: a bundle command, unless the owner waives it above.
-  `doctor --prod` shipped in ux-compose #128. The `pytailwindcss` extra is waived.
+- Prerequisite ux-compose work: none left. `doctor --prod` shipped in ux-compose #128 and
+  the bundle in #130. The `pytailwindcss` extra is waived.
 - [internals/SYSTEM.md](../internals/SYSTEM.md) no longer lists `--package` ownership as open.
 - New product-ish code proposed for ux-dom is reviewed against the table above. If
   ux-compose owns the concern, the change goes there.

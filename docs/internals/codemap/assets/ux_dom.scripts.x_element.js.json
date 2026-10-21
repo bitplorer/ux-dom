@@ -59,7 +59,6 @@
    "ux_dom.cli.cli",
    "ux_dom.cli.doctor",
    "ux_dom.cli.lint",
-   "ux_dom.cli.static_assets",
    "ux_dom.diagnostics",
    "ux_dom.dom.htmlelement",
    "ux_dom.dom.src.ws_rpc",
