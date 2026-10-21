@@ -432,7 +432,9 @@ class Tags(dom_tag, dom1core):
                 else:
                     yield ' %s="%s"' % (attribute, escape_attr_minimal(value))
             else:
-                dumped = htmlsafe_json_dumps(value)
+                # The JSON text is what the browser reads (SMIL splits it on
+                # ``;``), so the URL check runs on it, not on the object (#86).
+                dumped = safe_attr_value(attribute, htmlsafe_json_dumps(value), name)
                 yield " %s='%s'" % (
                     attribute,
                     escape(unicode(dumped), quote=False),

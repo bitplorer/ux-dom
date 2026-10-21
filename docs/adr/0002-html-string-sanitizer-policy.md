@@ -120,7 +120,10 @@ allowlist. The locking oracle is
    from Python are not author-trusted the way `on*` handler names are: in a
    URL attribute only relative same-origin URLs, `http:`, `https:`,
    `mailto:`, `tel:`, `sms:` and `data:image/{png,jpeg,jpg,gif,webp,avif}`
-   pass. Anything else renders as `about:invalid#ux-dom-unsafe-url`. `sms:`
+   pass. Anything else renders as `about:invalid#ux-dom-unsafe-url`. The
+   check runs on the final text whatever type was passed: `str(value)`, or
+   the JSON text of a list or dict (`values=["#x;javascript:…//"]` renders
+   JSON that SMIL splits on `;`, and ran script before this). `sms:`
    and `data:image/avif` were added here because neither can run script.
    `srcset` / `imagesrcset` check each candidate URL the same way: nothing ran
    there in Chromium, but the parse is cheap and keeps it equal to `src`.

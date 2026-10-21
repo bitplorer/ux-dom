@@ -1,7 +1,8 @@
 """Live Chromium: SVG animation values cannot set a ``javascript:`` URL (#86).
 
 ``<animate attributeName="href" to="javascript:…">`` inside an SVG ``<a>``
-ran script on click. Every vector below is built with ux-dom tags, rendered,
+ran script on click, as did a list or dict ``values`` whose JSON text SMIL
+splits on ``;``. Every vector below is built with ux-dom tags, rendered,
 loaded and clicked; no page may call ``hit()``. Legitimate SMIL animations
 (opacity, transform, colour, motion, fragment ``href``) must still animate.
 Exact strings: ``tests/07_resilience/test_svg_animation_urls.py``.
@@ -28,6 +29,8 @@ from ux_dom.dom.src.svgtags import (
     svg_tag,
 )
 
+from ux_dom.dom.src.utils.dom_util import lazy
+
 from browser_gate import NODE, require_browser
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -42,6 +45,7 @@ svg_a, svg_set, use = _svg_el("a"), _svg_el("set"), _svg_el("use")
 ANIMATIONS = {
     "animate": animate,
     "set": svg_set,
+    "ANIMATE": _svg_el("ANIMATE"),
     "animateMotion": animateMotion,
     "animateTransform": animateTransform,
 }
@@ -56,6 +60,27 @@ OBFUSCATIONS = {
     "Markup": Markup("javascript:hit()"),
 }
 TIMING = {"dur": "0.05s", "fill": "freeze"}
+SPLIT = "#x;javascript:hit()//"  # SMIL splits on ``;``; ``//`` comments out the rest
+
+
+class _Str:
+    def __init__(self, text):
+        self.text = text
+
+    def __str__(self):
+        return self.text
+
+
+# Every type a value can arrive as; the check must see the text that renders.
+WRAPPERS = {
+    "str": lambda p: p,
+    "Markup": Markup,
+    "list": lambda p: [p],
+    "dict": lambda p: {"a": p},
+    "tuple": lambda p: (p,),
+    "__str__": _Str,
+    "lazy": lambda p: lazy(lambda: p),
+}
 
 
 def _link(anim, target, **values):
@@ -85,6 +110,10 @@ def _vectors():
             out[f"{anim} {target} values list"] = _link(
                 anim, target, values="#a;" + js
             )
+    for anim in ("animate", "set", "ANIMATE"):
+        for name, wrap in WRAPPERS.items():
+            for attr in ("to", "values"):
+                out[f"{anim} href {attr} {name}"] = _link(anim, "href", **{attr: wrap(SPLIT)})
     for anim in ("animateMotion", "animateTransform"):
         out[f"{anim} href to"] = _link(anim, "href", to=OBFUSCATIONS["plain"])
     return out

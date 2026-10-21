@@ -9,6 +9,8 @@ whatever ``attributeName`` says. Browser oracle:
 
 from __future__ import annotations
 
+import re
+
 import pytest
 from markupsafe import Markup
 
@@ -131,3 +133,131 @@ def test_srcset_candidates_refused(value):
 def test_link_imagesrcset_refused():
     html = link(rel="preload", imagesrcset="javascript:x 1x").__render__(pretty=False)
     assert html == f'<link imagesrcset="{UNSAFE_URL}" rel="preload">'
+
+
+# --- Every input type: the check runs on the text that renders (#86 review) ---
+
+from html.parser import HTMLParser  # noqa: E402
+
+from ux_dom.dom.src.dom_tag import dom_tag  # noqa: E402
+from ux_dom.dom.src.utils.dom_util import URL_ATTRIBUTES, lazy  # noqa: E402
+
+PAYLOADS = [
+    "javascript:hit()",
+    "JaVaScRiPt:hit()",
+    "  javascript:hit()",
+    "\x01javascript:hit()",
+    "java\tscript:hit()",
+    "java\nscript:hit()",
+    "java\rscript:hit()",
+    "jav&#97;script:hit()",
+    "vbscript:hit()",
+    "data:text/html,<script>hit()</script>",
+    "#x;javascript:hit()//",
+    "#x ; javascript:hit() ;",
+    "a.png 1x, javascript:hit() 2x",
+]
+
+
+class _Str:
+    def __init__(self, text):
+        self.text = text
+
+    def __str__(self):
+        return self.text
+
+
+class _Html(_Str):
+    def __html__(self):
+        return self.text
+
+
+WRAPPERS = {
+    "str": lambda p: p,
+    "Markup": Markup,
+    "list": lambda p: [p],
+    "list in JSON": lambda p: ["#x;" + p + "//"],
+    "dict": lambda p: {"a": "x;" + p + "//"},
+    "tuple": lambda p: (p,),
+    "__str__": _Str,
+    "__html__": _Html,
+    "lazy": lambda p: lazy(lambda: p),
+}
+ANIMATION_CHECKED = [(t, a) for t in ("animate", "set", "animateMotion", "animateTransform") for a in ("to", "from", "by", "values")]
+URL_CHECKED = [("a", a) for a in sorted(URL_ATTRIBUTES)] + [("img", "srcset"), ("link", "imagesrcset")]
+_SCRIPT_SCHEMES = ("javascript:", "vbscript:", "data:text/html")
+_C0_AND_SPACE = "".join(map(chr, range(0x21)))
+
+
+def _tags_class(name):
+    return type(name, (svg_tag,), {"tagname": name})
+
+
+def _dom_tag_class(name):
+    return type(name, (dom_tag,), {"tagname": name})
+
+
+PATHS = {"Tags": _tags_class, "dom_tag": _dom_tag_class}
+
+
+def _rendered_value(html, attr):
+    found = {}
+
+    class P(HTMLParser):
+        def handle_starttag(self, tag, attrs):
+            found.update(attrs)
+
+    P().feed(html)
+    return found.get(attr)
+
+
+def _browser_runs(tag, attr, value):
+    """Model of the browser: does any URL it reads from ``value`` run script?
+
+    URL parsing drops leading C0 controls and spaces and every tab / LF / CR
+    (WHATWG). SMIL splits ``values`` on ``;``. For srcset it reads
+    the first word after each comma (a candidate's URL; splitting on every
+    comma only adds words). Independent of ``dom_util``.
+    """
+    if not value:
+        return False
+    if attr == "values":
+        items = value.split(";")
+    elif attr.endswith("srcset"):
+        items = [(piece.split() or [""])[0] for piece in value.split(",")]
+    else:
+        items = [value]
+    for item in items:
+        url = re.sub(r"[\t\n\r]", "", item).lstrip(_C0_AND_SPACE).lower()
+        if url.startswith(_SCRIPT_SCHEMES):
+            return True
+    return False
+
+
+@pytest.mark.parametrize("path", PATHS)
+@pytest.mark.parametrize("wrapper", WRAPPERS)
+def test_every_input_type_is_checked_as_rendered(path, wrapper):
+    runs = []
+    for tag, attr in ANIMATION_CHECKED + URL_CHECKED:
+        for payload in PAYLOADS:
+            html = PATHS[path](tag)(**{attr: WRAPPERS[wrapper](payload)}).__render__(pretty=False)
+            value = _rendered_value(html, attr)
+            if _browser_runs(tag, attr, value):
+                runs.append((tag, attr, payload, html))
+    assert runs == []
+
+
+def test_list_values_from_review_refused():
+    for value in (["#x;javascript:hit()//"], {"a": "x;javascript:hit()//"}):
+        html = animate(attributeName="href", values=value).__render__(pretty=False)
+        assert html == f"<animate attributeName=\"href\" values='{UNSAFE_URL}'></animate>"
+
+
+def test_json_values_elsewhere_unchanged():
+    assert div(x_data={"open": False}).__render__(pretty=False) == "<div x-data='{\"open\": false}'></div>"
+    assert animate(values=["0", "1"]).__render__(pretty=False) == "<animate values='[\"0\", \"1\"]'></animate>"
+
+
+@pytest.mark.parametrize("number", [0, 1, 2.5])
+def test_numbers_render_unchanged(number):
+    assert animate(to=number).__render__(pretty=False) == f'<animate to="{number}"></animate>'

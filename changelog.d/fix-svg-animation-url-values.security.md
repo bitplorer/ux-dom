@@ -4,4 +4,5 @@
   `animateTransform`, `to`, `from`, `by` and each `;` item of `values` now get
   the URL allowlist, whatever `attributeName` says; a failing value renders as
   `about:invalid#ux-dom-unsafe-url`. `srcset` / `imagesrcset` check each
-  candidate URL the same way (#86).
+  candidate URL the same way. A list or dict value is checked as the JSON text
+  it renders, so `values=["#x;javascript:…//"]` no longer runs (#86).

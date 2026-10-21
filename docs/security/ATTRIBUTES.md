@@ -16,8 +16,10 @@ Every attribute value goes through these steps when the tree renders.
    can run script). Scheme-relative URLs (`//host/x`, `\\host`, `/\host`)
    are refused: they point at another origin. Anything else renders as
    `about:invalid#ux-dom-unsafe-url`, an inert URL in the style of Google
-   Closure's `about:invalid#zClosurez`. The check runs on `str(value)` (so
-   non-`str` values, `Markup` included, cannot slip past), after HTML
+   Closure's `about:invalid#zClosurez`. The check runs on the text that
+   renders: `str(value)` for any type (`Markup`, numbers, `lazy`, objects
+   with `__str__` or `__html__`), or the JSON text of a list or dict value
+   (SMIL splits that text on `;` too). It runs after HTML
    entities are decoded (`&#106;avascript:`, `javascript&colon;`) and after
    the whitespace and C0 controls browsers ignore in a scheme are removed
    (`java\tscript:`). Letter case is ignored.
@@ -87,7 +89,8 @@ untrusted data only as values.
 
 The checked text is what renders: `safe_attr_value` calls `str(value)` (or
 `__html__()`) once and returns that string, so an object cannot return a safe
-string to the check and a different one to the renderer.
+string to the check and a different one to the renderer. A list or dict value
+is dumped to JSON first, and the JSON text is what gets checked.
 
 **Refused schemes.** Because this is an allow-list, every scheme not listed
 above is refused, including `ftp:`, `file:`, `blob:`, `geo:`, `webcal:`,

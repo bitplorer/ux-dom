@@ -14,6 +14,7 @@
    "tests/04_production/test_attribute_docs_match_code.py",
    "tests/04_production/test_intent_battery.py",
    "tests/06_browser/test_pretty_inner_text_browser.py",
+   "tests/06_browser/test_svg_animation_url_browser.py",
    "tests/07_resilience/test_add_raw_string_absent.py",
    "tests/07_resilience/test_attr_escape_isolation.py",
    "tests/07_resilience/test_attr_name_validation.py",

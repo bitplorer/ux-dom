@@ -23,7 +23,8 @@
    "tests/07_resilience/test_attr_name_validation.py",
    "tests/07_resilience/test_dom_method_shadowing.py",
    "tests/07_resilience/test_jinja_and_string_nonce.py",
-   "tests/07_resilience/test_raw_string_sinks.py"
+   "tests/07_resilience/test_raw_string_sinks.py",
+   "tests/07_resilience/test_svg_animation_urls.py"
   ],
   "imported_by": {
    "function_level": [
