@@ -71,6 +71,7 @@
    "tests/01_core/test_ux_dom.py",
    "tests/02_document_plugins/test_app_host_composition.py",
    "tests/02_document_plugins/test_auto_xelement_definitions.py",
+   "tests/02_document_plugins/test_channel_bridge_opt_in.py",
    "tests/02_document_plugins/test_csp_fields_and_stamp_tags.py",
    "tests/02_document_plugins/test_csp_nonce.py",
    "tests/02_document_plugins/test_csp_policies.py",

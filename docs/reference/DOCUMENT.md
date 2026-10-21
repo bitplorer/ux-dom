@@ -157,6 +157,7 @@ document(Live(), head=[title("Live")], use=[Channel.optional()])
 | App-wide XElement | `document.use(XElement())` once |
 | One admin page needs CSP meta debug | callable in `head=` or `using` not required |
 | One live page needs channel scripts | `document.using(Channel.optional())(…)` |
+| One page mounts ux-channel bridges | `document.using(Channel.optional(bridge=True))(…)`; `ux-bridge.js` ships only then |
 | Parent must stay clean | always prefer `using` / `use=` over `use` on the shared instance |
 
 ### Limits

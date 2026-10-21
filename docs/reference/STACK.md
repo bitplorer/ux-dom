@@ -29,7 +29,7 @@ CSP · SafeStaticFile            CSRF header X-Channel
 | Full page HTML | **ux-dom** `Document` | channel injects scripts via `ch.scripts()` or `UxChannelRuntime` |
 | Live morph / signed actions | **ux-channel** | dom stamps `data-channel-*` via `ch.control(...).as_ux_dom()` |
 | Custom elements | **ux-dom** `XElement` | independent of channel |
-| Widget islands (Chart.js…) | **ux-channel** bridges + `uxBridge` | host element built in dom |
+| Widget islands (Chart.js…) | **ux-channel** bridges + `uxBridge` | host element built in dom; `ux-bridge.js` is opt-in: `Channel(bridge=True)` |
 | CSRF | channel header **always**; host meta **optional** | `ux_channel_ux_dom` helpers |
 | Static JS | **one copy** in site-packages | never dual-copy into app assets |
 
@@ -71,7 +71,7 @@ Each package owns its suite; glue tests live under **ux-channel** `tests/ux_dom_
 | **HTTP static (dom)** | **`/ux-dom/static`** | package JS only |
 | **data attrs** | **`data-channel-*`** / **`data-dom-*`** | owner in the name |
 | **CSRF header** | **`X-Channel: 1`** | channel protocol (host CSRF separate) |
-| JS global | `uxBridge` | bridge helper |
+| JS global | `uxBridge` | bridge helper; only on pages that opt in (`bridge=True`) |
 | Override path | `UX_CHANNEL_PATH` / `config.path` | never hardcode in app HTML |
 
 ### Why not `/ux-channel`?

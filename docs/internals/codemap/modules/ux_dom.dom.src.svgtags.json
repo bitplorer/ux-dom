@@ -7,6 +7,7 @@
    "tests/01_core/test_first_line_feed.py",
    "tests/01_core/test_pretty_raw_text_verbatim.py",
    "tests/01_core/test_raw_text_elements.py",
+   "tests/02_document_plugins/test_channel_bridge_opt_in.py",
    "tests/02_document_plugins/test_document_plugins.py",
    "tests/02_document_plugins/test_document_runtimes_create.py",
    "tests/02_document_plugins/test_document_two_stage.py",

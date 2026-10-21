@@ -3,6 +3,7 @@
   "consumers": [
    "docs/security/ASSETS.md",
    "tests/01_core/test_host_path_coverage.py",
+   "tests/02_document_plugins/test_channel_bridge_opt_in.py",
    "tests/02_document_plugins/test_package_static.py",
    "tests/02_document_plugins/test_package_static_fields.py",
    "tests/02_document_plugins/test_safe_static.py",
@@ -115,7 +116,7 @@
     "doc": "Mirror ``ch.scripts()`` — single copy from installed ux_channel package.",
     "kind": "function",
     "public": true,
-    "signature": "(*, path: str='/ux-channel', bridge: bool=True, inspector: bool=False) -> PackageStaticContribution"
+    "signature": "(*, path: str='/ux-channel', bridge: bool=False, inspector: bool=False) -> PackageStaticContribution"
    }
   }
  }
