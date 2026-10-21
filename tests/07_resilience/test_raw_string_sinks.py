@@ -1,8 +1,8 @@
 """N3: the string sinks #32 left raw go through the same sanitizer.
 
-``escape_string`` falsy (``__escape_string=False``, ``None``, ``0``, ``""``)
-used to append a child string verbatim, so it rendered as live HTML.
-``to_fragment`` fell back to ``str(node)`` for anything else, so ``bytes``
+A string child is text; HTML is added as ``*defHTML(s)`` (the
+``escape_string`` switch that appended it verbatim is gone, see
+``test_escape_param_absent.py``). ``to_fragment`` fell back to ``str(node)`` for anything else, so ``bytes``
 rendered as ``b'<img onerror=…>'``. ``raw()`` / ``Markup`` stay the verbatim
 opt-out (ADR 0002). The CDATA / PI / DOCTYPE rows guard the fix itself: a
 version of it that wrote parsed text unescaped emitted a live ``<img>``.
@@ -16,6 +16,8 @@ import pytest
 from markupsafe import Markup
 
 from ux_dom.dom import div, script
+from ux_dom.dom.htmlelement import HTMLElement
+from ux_dom.dom.src.html_string import defHTML
 from ux_dom.dom.src.utils import raw
 from ux_dom.ui.channel_bridge import to_fragment
 
@@ -50,42 +52,35 @@ def _runnable(out: str) -> list:
     return bad
 
 
-def _unescaped(flag, child) -> str:
-    node = div()
-    node.escape_string = flag
-    node.add(child)
-    return _render(node)
-
-
-@pytest.mark.parametrize("flag", [False, None, 0, ""])
 @pytest.mark.parametrize("payload", PAYLOADS)
-def test_falsy_escape_string_sanitizes(flag, payload):
-    out = _unescaped(flag, payload)
+def test_html_child_via_defhtml_sanitizes(payload):
+    out = _render(div(*defHTML(payload)))
     assert _runnable(out) == [], out
 
 
-def test_kwarg_escape_string_false_sanitizes():
-    out = _render(div(IMG, __escape_string=False))
-    assert out == '<div><img src="x"></div>'
+@pytest.mark.parametrize("payload", PAYLOADS)
+def test_html_element_list_strings_sanitize(payload):
+    out = _render(HTMLElement([payload, payload.encode()]))
+    assert _runnable(out) == [], out
 
 
-def test_escape_string_false_keeps_safe_markup_and_entities():
-    out = _unescaped(False, '<p class="note"><b>Tom &amp; Jerry</b></p>')
+def test_defhtml_child_keeps_safe_markup_and_entities():
+    out = _render(div(*defHTML('<p class="note"><b>Tom &amp; Jerry</b></p>')))
     assert out == '<div><p class="note"><b>Tom &amp; Jerry</b></p></div>'
 
 
 @pytest.mark.parametrize("child", [Markup(IMG), raw(IMG)])
 def test_markup_and_raw_stay_verbatim(child):
-    assert IMG in _unescaped(False, child)
+    assert IMG in _render(HTMLElement([child, div()]))
 
 
 def test_raw_text_element_untouched():
     """script/style children are raw text; no parse, render-time neutralize."""
-    out = _render(script("if (a<b) go()", __escape_string=False))
+    out = _render(script("if (a<b) go()"))
     assert "if (a<b) go()" in out
 
 
-def test_default_escape_string_still_escapes():
+def test_str_child_is_escaped():
     assert _render(div(IMG)) == "<div>&lt;img src=x onerror=alert(1)&gt;</div>"
 
 
@@ -97,8 +92,8 @@ def test_bytes_child_is_utf8_text():
     assert _render(div(IMG.encode())) == "<div>&lt;img src=x onerror=alert(1)&gt;</div>"
 
 
-def test_bytes_child_unescaped_is_sanitized():
-    assert _unescaped(False, IMG.encode()) == '<div><img src="x"></div>'
+def test_bytes_given_to_html_element_is_sanitized():
+    assert _render(HTMLElement(IMG.encode())) == '<img src="x">'
 
 
 def test_invalid_utf8_bytes_child_raises():
@@ -159,15 +154,6 @@ def test_setitem_str_is_escaped():
     node[0] = IMG
     assert _render(node) == "<div>&lt;img src=x onerror=alert(1)&gt;b</div>"
     assert _async_render(node) == _render(node)
-
-
-@pytest.mark.parametrize("payload", PAYLOADS)
-def test_setitem_unescaped_is_sanitized(payload):
-    node = div("a", "b", __escape_string=False)
-    node[-2] = payload
-    out = _render(node)
-    assert _runnable(out) == [], out
-    assert out.endswith("b</div>")
 
 
 def test_setitem_bytes_and_types():
@@ -245,13 +231,6 @@ def test_setitem_sequence_adds_each_element(wrap):
     assert out == "<div>&lt;img src=x onerror=alert(1)&gt;<i>r</i>b</div>"
     assert _async_render(node) == out
     assert "&lt;img" in node.__render__()  # pretty mode renders too
-
-
-@pytest.mark.parametrize("wrap", [list, tuple])
-def test_setitem_sequence_unescaped_is_sanitized(wrap):
-    node = div("a", __escape_string=False)
-    node[0] = wrap([IMG, "<script>alert(1)</script>"])
-    assert _render(node) == '<div><img src="x"></div>'
 
 
 def test_setitem_dom_string_is_escaped_like_add():

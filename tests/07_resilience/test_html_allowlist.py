@@ -110,10 +110,9 @@ REVIEW_PAYLOADS = [
 ]
 
 
-def _render(src: str, escape: bool = True, document: bool = False) -> str:
+def _render(src: str, document: bool = False) -> str:
     return "".join(
-        node.__render__(pretty=False)
-        for node in defHTML(src, escape=escape, document=document)
+        node.__render__(pretty=False) for node in defHTML(src, document=document)
     )
 
 
@@ -218,11 +217,10 @@ def test_document_title_amp_kept_as_written():
         "<title>Tom &amp; Jerry</title>"
         "</head><body></body></html>"
     )
-    for escape in (True, False):
-        out = _render(src, escape=escape, document=True)
-        assert "<title>Tom &amp; Jerry</title>" in out, (escape, out)
-        assert "&amp;amp;" not in out
-        assert "Tomamp" not in out
+    out = _render(src, document=True)
+    assert "<title>Tom &amp; Jerry</title>" in out, out
+    assert "&amp;amp;" not in out
+    assert "Tomamp" not in out
 
 
 def test_leading_whitespace_and_case_are_still_a_document():
@@ -268,11 +266,11 @@ def test_hx_and_unknown_tags_do_not_survive():
     assert _live_bits(out) == []
 
 
-def test_escape_false_entity_split_handler_stays_text():
+def test_entity_split_handler_stays_text():
     """``<&lt;x onfocus`` must not come back as an element. Text stays escaped."""
     payload = "<p><&lt;x autofocus tabindex=1 onfocus=alert(1)></p>"
     for label, out in (
-        ("defHTML", _render(payload, escape=False)),
+        ("defHTML", _render(payload)),
         ("HTMLElement", HTMLElement(payload).__render__(pretty=False)),
     ):
         assert "&lt;" in out, (label, out)
@@ -302,7 +300,6 @@ def test_srcdoc_and_to_fragment_share_the_sanitizer():
 
 
 @pytest.mark.parametrize("payload", REVIEW_PAYLOADS)
-@pytest.mark.parametrize("escape", [True, False])
-def test_review_payload_is_inert(payload, escape):
-    out = _render(payload, escape=escape)
-    assert _live_bits(out) == [], (payload, escape, out)
+def test_review_payload_is_inert(payload):
+    out = _render(payload)
+    assert _live_bits(out) == [], (payload, out)

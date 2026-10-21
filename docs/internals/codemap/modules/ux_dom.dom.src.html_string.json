@@ -15,6 +15,7 @@
    "tests/06_browser/test_pretty_raw_text_browser.py",
    "tests/06_browser/test_sanitizer_svg_browser.py",
    "tests/07_resilience/test_entity_roundtrip.py",
+   "tests/07_resilience/test_escape_param_absent.py",
    "tests/07_resilience/test_html_allowlist.py",
    "tests/07_resilience/test_html_parse_sanitizer.py",
    "tests/07_resilience/test_html_string_mxss.py",
@@ -26,7 +27,6 @@
   ],
   "imported_by": {
    "function_level": [
-    "ux_dom.dom.src.dom_tag",
     "ux_dom.dom.src.utils.dom_util"
    ],
    "module_level": [

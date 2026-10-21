@@ -46,7 +46,7 @@ class TestCharInputValue(unittest.TestCase):
 
 class TestDefHTMLStillSafe(unittest.TestCase):
     def test_img_onerror(self):
-        nodes = defHTML('<img src=x onerror=alert(1)>', escape=True)
+        nodes = defHTML('<img src=x onerror=alert(1)>')
         html = "".join(n.__render__(pretty=False) for n in nodes)
         self.assertNotIn("onerror", html.lower())
 

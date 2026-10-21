@@ -135,7 +135,6 @@ class dom_tag(object):
     is_pretty = True  # False renders the subtree flat. Raw text, <pre>,
     # <option> and <ruby> bodies are flat by tag name (``ext._FLAT_BODIES``).
     is_inline = False
-    escape_string = True
     # Raw text element name ("script" / "style"): string children are stored
     # verbatim (no HTML escaping); end-tag breakouts are neutralized at render
     # time over the joined body (see htmltags._RawTextElement).
@@ -215,7 +214,6 @@ class dom_tag(object):
         # Does not insert newlines on all children if True (recursive attribute)
         self.is_inline = kwargs.pop("__inline", self.is_inline)
         self.is_pretty = kwargs.pop("__pretty", self.is_pretty)
-        self.escape_string = kwargs.pop("__escape_string", self.escape_string)
 
         # Add child elements
         if args:
@@ -467,18 +465,7 @@ class dom_tag(object):
                 # entity-decodes their content, so escaping would corrupt JS/CSS.
                 # Breakouts are neutralized at render time, over the joined body.
                 if not type(self).raw_text:
-                    if getattr(self, "escape_string", True):
-                        obj = escape(obj)
-                    elif not callable(getattr(obj, "__html__", None)):
-                        # escape_string falsy: the string is HTML, so it goes
-                        # through the defHTML allowlist (ADR 0002). Markup is
-                        # the verbatim opt-out. Local import: html_string
-                        # imports Tags, which subclasses dom_tag.
-                        from ux_dom.dom.src.html_string import defHTML
-
-                        for node in defHTML(obj):
-                            self._add_unlocked(node)
-                        continue
+                    obj = escape(obj)
 
                 # we are wrapping str into dom_string because when we use .get method we may
                 # for some reason want to get the parent of the string values in children,
