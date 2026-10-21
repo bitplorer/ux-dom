@@ -97,7 +97,7 @@ bundle row at `1541b57`:
 | Capability | ux-dom today | ux-compose today | Blocks |
 |------------|--------------|------------------|--------|
 | `pytailwindcss` extra | None: `ux-dom[dev]` / `ux-dom[fastapidev]` removed in [#80](https://github.com/bitplorer/ux-dom/pull/80) | `tailwind.py` imports it lazily; `pyproject.toml` declares only `serve` and `dev` extras, neither with `pytailwindcss` | Nothing: waived (see below) |
-| Runnable bundle | None: `uxdom build --package/--archive` removed; lock `tests/07_resilience/test_build_bundle_absent.py` | `uxcompose build --package/--archive` ([#130](https://github.com/bitplorer/ux-compose/pull/130)) writes `OUT/NAME/` and `OUT/NAME.tar.gz` for `app.py` apps, refusing an `--out` that is or contains the app | Nothing: shipped |
+| Runnable bundle | None: `uxdom build --package/--archive` removed; lock `tests/07_resilience/test_build_bundle_absent.py` | `uxcompose build --package/--archive` ([#130](https://github.com/bitplorer/ux-compose/pull/130)) writes `OUT/NAME/` and `OUT/NAME.tar.gz` for `app.py` apps, refusing an `--out` that is or contains the app | Nothing: shipped for `app.py` apps; the lab-only `app/main.py` layout is not ported, by design (see Consequences) |
 | Prod and port pre-flight | None: `uxdom doctor --prod/--port` and the `port:`, `prod:DEBUG`, `prod:.env` rows removed; lock `tests/07_resilience/test_doctor_product_rows_absent.py` | `uxcompose doctor --prod` ([#128](https://github.com/bitplorer/ux-compose/pull/128)) checks `secret`, `DEBUG`, `.env`, `dep:uvicorn`/`dep:fastapi` and `requirements`; `--port N` adds a `port:N` row | Nothing: shipped |
 
 **Waivers recorded:** the owner records each waiver here ("dropped, not ported") before
@@ -137,6 +137,12 @@ ADR 0001); this ADR records the same split from the ux-dom side.
   archive=, out_dir=, package_name=)`. Its bundle path was `<out>/<project name>`, so
   `--out ..` cleared the project itself ([#101](https://github.com/bitplorer/ux-dom/issues/101)).
   Runnable bundles are `uxcompose build --package/--archive`.
+- Not ported, by design: the bundler for the `app/main.py` layout. `uxcompose build`
+  bundles `app.py` apps only. The one live writer of `app/main.py` trees is
+  `uxchannel create-app`, which ux-channel calls a leftover lab, "not the product Cap door;
+  product is `uxcompose create-app`" (ux-channel `d34448c`:
+  `python/src/ux_channel/LAYERS.md:23`, `README.md:83-84,99`). Rule 4 is met because the
+  product capability exists in ux-compose: `uxcompose create-app` → `uxcompose build --package`.
 - Removed: the `scaffold` and `product-scaffold` rows of `uxdom doctor`, and its
   `.ux_dom-scaffold.json` project detection. Nothing had written that marker since
   `ux_dom.cli.scaffold` was deleted. Scaffolding is `uxcompose create-app`.

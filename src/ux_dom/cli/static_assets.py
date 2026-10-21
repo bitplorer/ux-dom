@@ -18,8 +18,6 @@ from typing import Any
 @dataclass
 class SyncedFile:
     rel: str
-    path: Path
-    sha256: str
     bytes: int
     action: str
 
@@ -29,7 +27,6 @@ class SyncReport:
     root: Path
     files: list[SyncedFile] = field(default_factory=list)
     mounts: list[tuple[str, str]] = field(default_factory=list)
-    notes: list[str] = field(default_factory=list)
     errors: list[str] = field(default_factory=list)
 
     @property
@@ -75,7 +72,6 @@ def sync_runtime_assets(
     try:
         for f in hub.served_static_files():
             report.mounts.append((f.url, str(f.path)))
-            report.notes.append(f"safe file {f.url} → {f.path.name}")
     except Exception as e:
         report.errors.append(f"served_static_files: {e}")
 
@@ -85,12 +81,8 @@ def sync_runtime_assets(
         report.files.append(
             SyncedFile(
                 rel=f.disk_path,
-                path=f.path,
-                sha256=f.sha256,
                 bytes=f.size,
                 action=f.action,
             )
         )
-    if not report.mounts and not report.files:
-        report.notes.append("no package mounts or webassets artifacts on hub")
     return report
