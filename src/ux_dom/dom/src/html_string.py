@@ -24,7 +24,6 @@ Unknown elements are unwrapped; custom elements are kept only when named in
 """
 
 import builtins
-import html
 import re
 from collections.abc import Iterable
 import types
@@ -45,9 +44,13 @@ from ux_dom.dom.src.parse_html import (
 )
 from ux_dom.dom.src.utils import dom_text, escape
 from ux_dom.dom.src.utils.dom_util import (
+    UNSAFE_URL,
     InvalidMarkupToken,
+    _probe,
+    _relative_same_origin_probe,
     checked_doctype,
     checked_tag_name,
+    safe_attr_value,
 )
 
 __all__ = ["StringToHTML", "defHTML"]
@@ -121,8 +124,7 @@ _DROP_TAGS = frozenset(
 )
 _DOCUMENT_ONLY_TAGS = frozenset({"link", "meta", "style"})
 
-# Known-safe tags for a fragment. Document mode adds ``_DOCUMENT_ONLY_TAGS``.
-_ALLOWED_TAGS = frozenset(
+_HTML_TAGS = frozenset(
     {
         "a",
         "abbr",
@@ -227,9 +229,13 @@ _ALLOWED_TAGS = frozenset(
         "var",
         "video",
         "wbr",
-        # SVG geometry and paint servers. Animation / foreignObject / math
-        # stay in ``_DROP_TAGS``. Lowercase, as tokenized: ``_SVG_TAG_NAMES``
-        # gives the element's case.
+    }
+)
+# SVG geometry and paint servers. Animation / foreignObject / math stay in
+# ``_DROP_TAGS``. Lowercase, as tokenized: ``_SVG_TAG_NAMES`` gives the
+# element's case.
+_SVG_TAGS = frozenset(
+    {
         "circle",
         "clippath",
         "defs",
@@ -257,6 +263,8 @@ _ALLOWED_TAGS = frozenset(
         "view",
     }
 )
+# Known-safe tags for a fragment. Document mode adds ``_DOCUMENT_ONLY_TAGS``.
+_ALLOWED_TAGS = _HTML_TAGS | _SVG_TAGS
 
 _GLOBAL_ATTRS = frozenset(
     {
@@ -430,35 +438,6 @@ _TAG_ATTRS: dict[str, frozenset[str]] = {
     ),
 }
 
-_SVG_TAGS = frozenset(
-    {
-        "circle",
-        "clippath",
-        "defs",
-        "desc",
-        "ellipse",
-        "g",
-        "line",
-        "lineargradient",
-        "marker",
-        "mask",
-        "path",
-        "pattern",
-        "polygon",
-        "polyline",
-        "radialgradient",
-        "rect",
-        "stop",
-        "svg",
-        "switch",
-        "symbol",
-        "text",
-        "textpath",
-        "tspan",
-        "use",
-        "view",
-    }
-)
 _SVG_ATTRS = frozenset(
     {
         "clip-path",
@@ -528,39 +507,12 @@ _SVG_TAG_NAMES = {
     )
 }
 
-# URL attributes that remain on the allowlist. ``hx-*`` is not here: those
-# attributes are never kept. Scheme checks match the renderer; document
-# ``<link href>`` is stricter (same-origin or https) in ``_link_href_ok``.
-_URL_ATTRS = frozenset(
-    {
-        "href",
-        "src",
-        "xlink:href",
-        "formaction",
-        "action",
-        "poster",
-        "cite",
-        "background",
-    }
-)
-
-
 def _norm_attr_name(key: str) -> str:
     """Match renderer: leading ``_`` is stripped (``_onclick`` → ``onclick``)."""
     k = str(key)
     while k.startswith("_"):
         k = k[1:]
     return k.lower()
-
-
-def _scheme_is_dangerous(value: str) -> bool:
-    # Strip C0/whitespace that browsers ignore before the scheme.
-    cleaned = "".join(ch for ch in value if ch.isprintable() and not ch.isspace())
-    low = cleaned.lower()
-    for bad in ("javascript:", "vbscript:", "data:text/html"):
-        if low.startswith(bad):
-            return True
-    return False
 
 
 def _style_is_dangerous(value: str) -> bool:
@@ -571,20 +523,11 @@ def _style_is_dangerous(value: str) -> bool:
 def _link_href_ok(value: str) -> bool:
     """Document ``<link href>``: relative same-origin, or ``https``.
 
-    ``http://`` (cross-origin; no document origin is known here),
-    protocol-relative ``//host``, and ``javascript:`` fail. This is the
-    document-mode rule. Other URL attributes keep the renderer scheme check.
+    Narrower than the renderer's URL allowlist, which every kept URL attribute
+    passes too: ``http://`` (no document origin is known here) fails.
     """
-    cleaned = "".join(
-        ch for ch in html.unescape(value) if ch.isprintable() and not ch.isspace()
-    )
-    low = cleaned.lower()
-    if not low or low.startswith(("//", "\\\\", "/\\", "\\/")):
-        return False
-    head = re.split(r"[/?#]", low, maxsplit=1)[0]
-    if ":" not in head:
-        return True
-    return head.split(":", 1)[0] == "https"
+    probe = _probe(value)
+    return _relative_same_origin_probe(probe) or probe.startswith("https:")
 
 
 # https://html.spec.whatwg.org/#valid-custom-element-name (ASCII subset).
@@ -720,14 +663,8 @@ def _attr_kept(tag: str, key: str, value) -> bool:
         return True
     if kl == "style" and _style_is_dangerous(value):
         return False
-    if kl in _URL_ATTRS and _scheme_is_dangerous(value):
-        return False
-    if kl == "srcset" and any(
-        _scheme_is_dangerous(candidate.strip())
-        for candidate in value.split(",")
-    ):
-        return False
-    return True
+    # The renderer's URL allowlist (ADR 0002), so a kept URL renders as written.
+    return safe_attr_value(kl, value, tag) != UNSAFE_URL
 
 
 def _filter_attrs(tag: str, attrs: dict) -> dict:

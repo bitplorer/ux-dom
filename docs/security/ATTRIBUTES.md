@@ -279,9 +279,10 @@ gets `colspan`, …). Anything else is dropped, including every `on*` handler
 `x-*` / `@*` / `:*`. `srcdoc` is not an allowed attribute on a parsed tag.
 
 **URLs and style.** A URL attribute that stays on the allowlist (`href`,
-`src`, `action`, `formaction`, …) still drops `javascript:`, `vbscript:`, and
-`data:text/html`. The renderer’s scheme allow-list runs again at serialize
-time. `style` drops `expression(`, `javascript:`, and `vbscript:`.
+`src`, `action`, `formaction`, `srcset`, …) is dropped unless it passes the
+renderer's URL allow-list (step 2 above), so a kept URL renders as written and
+never becomes `about:invalid#ux-dom-unsafe-url` (#126). `style` drops
+`expression(`, `javascript:`, and `vbscript:`.
 
 **Text.** Text is escaped whether `escape` is true or false, so a `<` in a
 text node cannot be parsed again as a tag. Numeric references are re-emitted
