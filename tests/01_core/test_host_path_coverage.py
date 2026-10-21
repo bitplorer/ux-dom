@@ -19,18 +19,14 @@ class TestStaticArtifactAndPackageStatic(unittest.TestCase):
 
         none_a = StaticArtifact(
             key="n",
-            disk_path="x.js",
             public_path="/x.js",
-            loader=lambda: b"1",
             inject="none",
         )
         self.assertIsNone(none_a.html_node())
 
         css = StaticArtifact(
             key="c",
-            disk_path="a.css",
             public_path="/a.css",
-            loader=lambda: b"body{}",
             tag="link",
             content_type="text/css",
         )
@@ -38,9 +34,7 @@ class TestStaticArtifactAndPackageStatic(unittest.TestCase):
 
         js = StaticArtifact(
             key="j",
-            disk_path="a.js",
             public_path="/a.js",
-            loader=lambda: b"1",
             defer=True,
             async_=True,
         )
@@ -50,27 +44,16 @@ class TestStaticArtifactAndPackageStatic(unittest.TestCase):
         from ux_dom.plugins.package_static import static_from_package
 
         # ux_dom.scripts ships x_element.js
-        try:
-            contrib = static_from_package(
-                "ux_dom_scripts",
-                "ux_dom.scripts",
-                ["x_element.js"],
-                resource_prefix="",
-                serve="package_mount",
-            )
-        except Exception:
-            contrib = static_from_package(
-                "ux_dom_scripts",
-                "ux_dom.scripts",
-                [("x_element.js", "head")],
-                resource_prefix="",
-            )
-        arts = list(contrib.artifacts())
-        # may be empty if resource path resolution differs — still exercise API
-        html = contrib.scripts_html()
-        self.assertIsInstance(html, str)
-        list(contrib.document_head())
-        list(contrib.document_body())
+        contrib = static_from_package(
+            "ux_dom_scripts",
+            "ux_dom.scripts",
+            ["x_element.js"],
+            resource_prefix="",
+        )
+        self.assertIn(
+            'src="/ux-pkg/ux_dom_scripts/static/x_element.js"', contrib.scripts_html()
+        )
+        self.assertEqual(list(contrib.document_body()), [])
 
 
 class TestResponseCoverage(unittest.TestCase):
@@ -163,15 +146,11 @@ class TestReloaderSmoke(unittest.TestCase):
 
 
 class TestContributionProtocol(unittest.TestCase):
-    def test_xelement_artifacts(self):
+    def test_xelement_tags_package_url(self):
         from ux_dom import XElement
 
-        xe = XElement()
-        if hasattr(xe, "artifacts"):
-            arts = list(xe.artifacts() or [])
-            self.assertTrue(len(arts) >= 0)
-        if hasattr(xe, "document_head"):
-            list(xe.document_head() or [])
+        head = "".join(str(x) for x in XElement().document_head())
+        self.assertIn('src="/ux-dom/static/x_element.js"', head)
 
 
 if __name__ == "__main__":
@@ -191,15 +170,8 @@ class TestHostLifespan(unittest.TestCase):
 
 
 class TestPackageStaticMore(unittest.TestCase):
-    def test_resolve_and_loader(self):
+    def test_package_dir(self):
         from ux_dom.plugins import package_static as ps
 
-        p = ps.resolve_package_resource("ux_dom.scripts", "x_element.js")
-        self.assertTrue(p.exists())
-        loader = ps.loader_for("ux_dom.scripts", "x_element.js")
-        data = loader()
-        self.assertTrue(
-            data.startswith(b"(") or b"customElements" in data or len(data) > 10
-        )
         root = ps.package_dir("ux_dom.scripts")
         self.assertTrue(root.exists())

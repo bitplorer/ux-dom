@@ -47,12 +47,9 @@
   "imports_internal": {
    "function_level": [
     "ux_dom.dom",
-    "ux_dom.plugins.contribution",
-    "ux_dom.plugins.package_static",
-    "ux_dom.scripts"
+    "ux_dom.plugins.package_static"
    ],
    "module_level": [
-    "ux_dom.plugins.contribution",
     "ux_dom.plugins.safe_static"
    ],
    "type_checking": []
@@ -60,7 +57,6 @@
   "layer": "document",
   "path": "src/ux_dom/plugins/runtime.py",
   "public": [
-   "ServeMode",
    "UxChannelRuntime",
    "XELEMENT_JS_URL",
    "XELEMENT_STATIC_PREFIX",

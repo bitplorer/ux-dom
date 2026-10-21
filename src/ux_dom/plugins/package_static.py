@@ -12,36 +12,17 @@ ux-channel pattern (gold standard)::
     package static/  →  StaticFiles mount  →  ch.scripts() tags in Document
 
 ux-dom mirrors that for every library contribution.
-
-``serve="dual_copy"`` remains as an
-**escape hatch** only (air-gapped tree without site-packages). Prefer
-``package_mount`` (default). This string is **not** ``ux_compose.WebAssets``.
 """
 
 from __future__ import annotations
 
 import importlib
-import warnings
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Literal, Mapping, Sequence
+from typing import Any, Literal, Mapping, Sequence
 
-from ux_dom.plugins.contribution import StaticArtifact
 
-ServeMode = Literal["package_mount", "dual_copy"]
 Inject = Literal["head", "body", "none"]
-
-
-def resolve_package_resource(package: str, resource: str) -> Path:
-    mod = importlib.import_module(package)
-    base = Path(mod.__file__).resolve().parent  # type: ignore[arg-type]
-    path = base / resource
-    if path.is_file():
-        return path
-    alt = base.parent / package.split(".")[0] / resource
-    if alt.is_file():
-        return alt
-    raise FileNotFoundError(f"package resource not found: {package}:{resource}")
 
 
 def package_dir(package: str, subdir: str = "") -> Path:
@@ -51,15 +32,6 @@ def package_dir(package: str, subdir: str = "") -> Path:
     if not d.is_dir():
         raise FileNotFoundError(f"package dir not found: {package}:{subdir or '.'}")
     return d
-
-
-def loader_for(package: str, resource: str) -> Callable[[], bytes]:
-    path = resolve_package_resource(package, resource)
-
-    def _load(p: Path = path) -> bytes:
-        return p.read_bytes()
-
-    return _load
 
 
 @dataclass(frozen=True)
@@ -73,53 +45,26 @@ class PackagedFile:
     kind: Literal["js", "css"] = "js"
     attrs: Mapping[str, str] = field(default_factory=dict)
 
-    def disk_path_under_assets(self, plugin: str) -> str:
-        sub = "js" if self.kind == "js" else "css"
-        return f"assets/{sub}/vendor/{plugin}/{self.public_name}"
-
-    def public_path_webassets(self, plugin: str) -> str:
-        sub = "js" if self.kind == "js" else "css"
-        return f"/assets/{sub}/vendor/{plugin}/{self.public_name}"
-
-
 @dataclass
 class PackageStaticContribution:
     """
     Browser contribution from an **installed** package — single copy.
 
-    Default ``serve="package_mount"``:
       * ``served_files()`` → exact file routes (safe; no dir listing)
-      * tags point at that URL
-      * ``artifacts()`` empty → nothing is copied into the app
+      * tags point at that URL; nothing is copied into the app
     """
 
     name: str
     files: Sequence[PackagedFile]
-    serve: ServeMode = "package_mount"
     public_url_prefix: str = ""
     plugin_kind: str = "contribution"
 
     def __post_init__(self) -> None:
         if not self.public_url_prefix:
             self.public_url_prefix = f"/ux-pkg/{self.name}/static"
-        if self.serve not in ("package_mount", "dual_copy"):
-            raise ValueError(
-                f"PackageStaticContribution({self.name!r}): serve={self.serve!r}; "
-                "use 'package_mount' or 'dual_copy'"
-            )
-        if self.serve == "dual_copy":
-            warnings.warn(
-                f"PackageStaticContribution({self.name!r}): serve='dual_copy' "
-                "is the dual-copy hatch (library JS into app assets/). "
-                "It is NOT ux_compose.assets.WebAssets. Prefer package_mount "
-                "(default) unless you have an air-gapped tree without pip packages.",
-                stacklevel=2,
-            )
 
     def served_files(self):
         """Explicit allowlisted files only (never a directory mount)."""
-        if self.serve != "package_mount":
-            return ()
         from ux_dom.plugins.safe_static import SafeStaticFile
 
         out = []
@@ -141,29 +86,6 @@ class PackageStaticContribution:
         return tuple(out)
 
 
-    def artifacts(self) -> Sequence[StaticArtifact]:
-        if self.serve == "package_mount":
-            return ()
-        arts: list[StaticArtifact] = []
-        for f in self.files:
-            arts.append(
-                StaticArtifact(
-                    key=f.public_name,
-                    disk_path=f.disk_path_under_assets(self.name),
-                    public_path=f.public_path_webassets(self.name),
-                    loader=loader_for(f.package, f.resource),
-                    inject=f.inject,
-                    tag="script" if f.kind == "js" else "link",
-                    defer=f.defer,
-                    async_=f.async_,
-                    attrs=dict(f.attrs),
-                    content_type=(
-                        "application/javascript" if f.kind == "js" else "text/css"
-                    ),
-                )
-            )
-        return tuple(arts)
-
     def document_head(self) -> Sequence[Any]:
         return self._tags("head")
 
@@ -171,8 +93,6 @@ class PackageStaticContribution:
         return self._tags("body")
 
     def _tags(self, placement: str) -> list[Any]:
-        if self.serve != "package_mount":
-            return []  # artifacts auto-tag
         from ux_dom.dom import link, script
 
         out: list[Any] = []
@@ -194,9 +114,6 @@ class PackageStaticContribution:
         return out
 
     def scripts_html(self) -> str:
-        if self.serve != "package_mount":
-            nodes = [a.html_node() for a in self.artifacts()]
-            return "\n".join(str(n) for n in nodes if n is not None)
         return "\n".join(
             str(n) for n in list(self.document_head()) + list(self.document_body())
         )
@@ -207,7 +124,6 @@ def static_from_package(
     package: str,
     resources: Sequence[str | tuple[str, Inject]],
     *,
-    serve: ServeMode = "package_mount",
     public_url_prefix: str = "",
     inject_default: Inject = "head",
     resource_prefix: str = "static/",
@@ -239,14 +155,12 @@ def static_from_package(
     return PackageStaticContribution(
         name=name,
         files=files,
-        serve=serve,
         public_url_prefix=public_url_prefix,
     )
 
 
 def ux_channel_static(
     *,
-    serve: ServeMode = "package_mount",
     path: str = "/ux-channel",
     bridge: bool = True,
     inspector: bool = False,
@@ -261,6 +175,5 @@ def ux_channel_static(
         "ux_channel",
         "ux_channel",
         resources,
-        serve=serve,
         public_url_prefix=f"{path.rstrip('/')}/static",
     )

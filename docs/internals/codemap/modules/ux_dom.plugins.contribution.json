@@ -6,13 +6,9 @@
    "tests/07_resilience/test_dead_surface_removed.py"
   ],
   "imported_by": {
-   "function_level": [
-    "ux_dom.plugins.runtime"
-   ],
+   "function_level": [],
    "module_level": [
-    "ux_dom.plugins",
-    "ux_dom.plugins.package_static",
-    "ux_dom.plugins.runtime"
+    "ux_dom.plugins"
    ],
    "type_checking": []
   },
@@ -29,9 +25,7 @@
    "ContributionPlugin",
    "Inject",
    "StaticArtifact",
-   "TagKind",
-   "artifact_from_callable",
-   "artifact_from_path"
+   "TagKind"
   ]
  }
 }

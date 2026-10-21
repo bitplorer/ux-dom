@@ -3,12 +3,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Literal, Optional, Sequence
+from typing import Any, Optional, Sequence
 
-from ux_dom.plugins.contribution import StaticArtifact
 from ux_dom.plugins.safe_static import SafeStaticFile
-
-ServeMode = Literal["package_mount", "dual_copy"]
 
 XELEMENT_STATIC_PREFIX = "/ux-dom/static"
 XELEMENT_JS_URL = f"{XELEMENT_STATIC_PREFIX}/x_element.js"
@@ -25,16 +22,7 @@ class XElementRuntime:
     plugin_kind = "contribution"
     name = "ux_dom.xelement"
 
-    def __init__(self, *, serve: ServeMode = "package_mount") -> None:
-        if serve not in ("package_mount", "dual_copy"):
-            raise ValueError(
-                f"XElementRuntime(serve={serve!r}); use 'package_mount' or 'dual_copy'"
-            )
-        self.serve = serve
-
     def served_files(self) -> Sequence[SafeStaticFile]:
-        if self.serve != "package_mount":
-            return ()
         return (
             SafeStaticFile.from_package(
                 "ux_dom.scripts",
@@ -46,26 +34,7 @@ class XElementRuntime:
         )
 
 
-    def artifacts(self) -> Sequence[StaticArtifact]:
-        if self.serve == "package_mount":
-            return ()
-        from ux_dom.plugins.contribution import artifact_from_callable
-        from ux_dom.scripts import x_element_js_text
-
-        return (
-            artifact_from_callable(
-                key="runtime",
-                disk_path="assets/js/x_element.js",
-                public_path="/assets/js/x_element.js",
-                loader=x_element_js_text,
-                inject="head",
-                defer=True,
-            ),
-        )
-
     def document_head(self) -> Sequence[Any]:
-        if self.serve != "package_mount":
-            return ()
         from ux_dom.dom import script
 
         return (script(src=XELEMENT_JS_URL, defer=True),)
@@ -93,7 +62,6 @@ class UxChannelRuntime:
     def __init__(
         self,
         *,
-        serve: ServeMode = "package_mount",
         path: str = "/ux-channel",
         bridge: bool = True,
         inspector: bool = False,
@@ -122,10 +90,7 @@ class UxChannelRuntime:
                 "UxChannelRuntime requires ux-channel "
                 "(pip install 'ux-channel>=0.1.0')"
             ) from e
-        self._inner = ux_channel_static(
-            serve=serve, path=path, bridge=bridge, inspector=inspector
-        )
-        self.serve = serve
+        self._inner = ux_channel_static(path=path, bridge=bridge, inspector=inspector)
         self.path = path
         self.mount_via_ux_dom = mount_via_ux_dom
 
@@ -141,9 +106,6 @@ class UxChannelRuntime:
             return ()
         return self._inner.served_files()
 
-
-    def artifacts(self) -> Sequence[StaticArtifact]:
-        return self._inner.artifacts()
 
     def document_head(self) -> Sequence[Any]:
         return self._inner.document_head()

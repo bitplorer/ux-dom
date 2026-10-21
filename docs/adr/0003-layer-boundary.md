@@ -150,8 +150,8 @@ install stays small. ux-compose records the same split from its side (its ADR 00
   pure-dom project by `app/main.py` alone, the file its project rows read; `app/settings.py`
   no longer counts ([#106](https://github.com/bitplorer/ux-dom/issues/106)). Doctor reads
   the project and never imports it. The asset writer behind it (`PluginHub.materialize`,
-  `App.materialize_assets`) went too: ux-dom writes no files, and a `serve="dual_copy"`
-  app ships its `/assets/…` files itself.
+  `App.materialize_assets`) went too, and with it the `serve="dual_copy"` mode whose tags
+  pointed at the files it wrote: library JS is served only from the package mount.
 - Removed: the `scaffold` and `product-scaffold` rows of `uxdom doctor`, and its
   `.ux_dom-scaffold.json` project detection. Nothing had written that marker since
   `ux_dom.cli.scaffold` was deleted. Scaffolding is `uxcompose create-app`.

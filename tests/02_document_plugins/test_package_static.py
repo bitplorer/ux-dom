@@ -21,7 +21,6 @@ import sys
 class TestSingleCopyXElement(unittest.TestCase):
     def test_no_artifacts_by_default(self):
         xe = XElementRuntime()
-        self.assertEqual(list(xe.artifacts()), [])
         files = list(xe.served_files())
         self.assertEqual(len(files), 1)
         self.assertEqual(files[0].url, XELEMENT_JS_URL)
@@ -87,7 +86,6 @@ class TestUxChannelSingleCopy(unittest.TestCase):
         rt = UxChannelRuntime.optional()
         if rt is None:
             self.skipTest("uxchannel not installed")
-        self.assertEqual(list(rt.artifacts()), [])
         # default: tags only; channel host serves bytes
         self.assertEqual(list(rt.served_files()), [])
         html = "".join(str(x) for x in rt.document_head())

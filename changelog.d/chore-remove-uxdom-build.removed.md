@@ -11,4 +11,13 @@
   ``App.materialize_assets``, ``MaterializeReport``, ``MaterializedFile`` and
   ``StaticArtifact.bytes`` are removed. Nothing but ``uxdom build`` / ``static_assets``
   reached them. Mounted package files are ``safe_static.collect_served_files(hub)``.
-  ``serve="dual_copy"`` still emits the ``/assets/…`` tags; the app ships those files.
+- **BREAKING: no ``serve="dual_copy"`` (#109; AGENTS.md "What not to invent").** With
+  the writer gone its ``/assets/…`` tags pointed at files nothing wrote. The ``serve``
+  parameter of ``XElementRuntime``, ``UxChannelRuntime``, ``PackageStaticContribution``,
+  ``static_from_package`` and ``ux_channel_static`` is removed (passing it is a
+  ``TypeError``), with ``ServeMode``, their ``artifacts()`` methods,
+  ``package_static.loader_for`` / ``resolve_package_resource``,
+  ``PackagedFile.disk_path_under_assets`` / ``public_path_webassets``, the
+  ``StaticArtifact.disk_path`` / ``loader`` fields and ``artifact_from_path`` /
+  ``artifact_from_callable``. Library JS is served only from the package mount
+  (``/ux-dom/static/x_element.js``). Lock: ``test_no_deprecations.py``.

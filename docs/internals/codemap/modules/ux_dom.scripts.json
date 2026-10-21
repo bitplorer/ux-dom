@@ -9,12 +9,12 @@
    "tests/02_document_plugins/test_safe_static.py",
    "tests/02_document_plugins/test_xelement_runtime.py",
    "tests/04_production/test_production_lock.py",
-   "tests/04_production/test_production_readiness.py"
+   "tests/04_production/test_production_readiness.py",
+   "tests/07_resilience/test_no_deprecations.py"
   ],
   "imported_by": {
    "function_level": [
-    "ux_dom.cli.doctor",
-    "ux_dom.plugins.runtime"
+    "ux_dom.cli.doctor"
    ],
    "module_level": [],
    "type_checking": []

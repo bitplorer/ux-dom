@@ -40,20 +40,15 @@ class TestContributionHub(unittest.TestCase):
 
     def test_app_owned_js_contribution_is_auto_tagged(self):
         """A contribution's artifacts become shell tags (ux-dom writes no files)."""
-        from ux_dom.plugins.contribution import artifact_from_path
+        from ux_dom.plugins.contribution import StaticArtifact
 
         class DemoJs:
             plugin_kind = "contribution"
             name = "demo"
 
-            def __init__(self, path):
-                self.art = artifact_from_path(
-                    plugin="demo",
-                    key="p.js",
-                    path=path,
-                    disk_path="assets/js/vendor/demo/p.js",
-                    public_path="/assets/js/vendor/demo/p.js",
-                    inject="body",
+            def __init__(self):
+                self.art = StaticArtifact(
+                    key="p.js", public_path="/assets/js/vendor/demo/p.js", inject="body"
                 )
 
             def artifacts(self):
@@ -65,16 +60,11 @@ class TestContributionHub(unittest.TestCase):
             def document_body(self):
                 return ()
 
-        with TemporaryDirectory() as td:
-            src = Path(td) / "p.js"
-            src.write_text("console.log(1)", encoding="utf-8")
-            hub = PluginHub()
-            set_hub(hub)
-            hub.add_contribution(DemoJs(src))
-            _, body = hub.shell_fragments()
-            self.assertIn(
-                'src="/assets/js/vendor/demo/p.js"', "".join(str(x) for x in body)
-            )
+        hub = PluginHub()
+        set_hub(hub)
+        hub.add_contribution(DemoJs())
+        _, body = hub.shell_fragments()
+        self.assertIn('src="/assets/js/vendor/demo/p.js"', "".join(str(x) for x in body))
 
 
 class TestScaffoldServesPackageJs(unittest.TestCase):

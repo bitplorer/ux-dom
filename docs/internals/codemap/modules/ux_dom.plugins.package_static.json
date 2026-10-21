@@ -22,9 +22,7 @@
     "ux_dom.dom",
     "ux_dom.plugins.safe_static"
    ],
-   "module_level": [
-    "ux_dom.plugins.contribution"
-   ],
+   "module_level": [],
    "type_checking": []
   },
   "layer": "document",
@@ -33,10 +31,7 @@
    "Inject",
    "PackageStaticContribution",
    "PackagedFile",
-   "ServeMode",
-   "loader_for",
    "package_dir",
-   "resolve_package_resource",
    "static_from_package",
    "ux_channel_static"
   ]

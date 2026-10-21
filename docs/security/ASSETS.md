@@ -48,17 +48,6 @@ Product CSS minify and runnable bundles (`--package` / `--archive`): `uxcompose 
 - Verifies installed `x_element.js` contract via `uxdom doctor`  
 - At runtime, mounts resolve from site-packages  
 
-## Escape hatch (usually avoid)
-
-```python
-XElementRuntime(serve="dual_copy")  # tags point at /assets/js/x_element.js
-UxChannelRuntime(serve="dual_copy")
-```
-
-Only for air-gapped trees that ship without site-packages (rare; not recommended).
-ux-dom emits the tags but writes no files: you ship the file yourself, e.g.
-`x_element_js().save(file_or_dir=assets_js_dir)` ([XELEMENT.md](../reference/XELEMENT.md)).
-
 ## Third-party libraries
 
 ```python
@@ -67,8 +56,7 @@ from ux_dom.plugins import static_from_package
 document.use(static_from_package(
     "mycharts",
     "mycharts",
-    ["runtime.js"],          # mycharts/static/runtime.js
-    serve="package_mount",   # default — single copy
+    ["runtime.js"],          # mycharts/static/runtime.js — single copy
 ))
 ```
 
