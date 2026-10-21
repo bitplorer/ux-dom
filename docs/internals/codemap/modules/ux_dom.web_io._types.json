@@ -3,6 +3,9 @@
   "consumers": [
    "tests/07_resilience/test_web_io_aliases_absent.py"
   ],
+  "doc": "web_io shared typing aliases and constants.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -12,11 +15,21 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": false,
   "layer": "integrations",
   "path": "src/ux_dom/web_io/_types.py",
   "public": [
@@ -24,6 +37,7 @@
    "Receive",
    "Scope",
    "Send"
-  ]
+  ],
+  "symbols": {}
  }
 }

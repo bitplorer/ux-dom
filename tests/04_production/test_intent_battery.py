@@ -1,4 +1,5 @@
 """End-to-end intent checks: scaffolded apps behave as product docs claim."""
+
 from __future__ import annotations
 
 from markupsafe import Markup

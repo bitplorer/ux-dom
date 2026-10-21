@@ -1,0 +1,76 @@
+{
+ "docs/reference/XELEMENT.md": {
+  "claims": [
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom.htmlelement:CustomElement"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom.htmlelement:WebComponent"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:div"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:script"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:slot"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:template"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.scripts:x_element_js"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:XElement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom.htmlelement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.scripts"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/dom/htmlelement.py"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/scripts/__init__.py"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/scripts/x_element.js"
+   }
+  ]
+ }
+}

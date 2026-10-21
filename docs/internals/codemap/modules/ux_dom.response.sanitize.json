@@ -8,12 +8,27 @@
    "tests/07_resilience/test_html_tree_construction.py",
    "tests/07_resilience/test_sanitized_stream.py"
   ],
+  "doc": "Sanitize an HTML string, or a stream of HTML string chunks (#121).",
+  "exported_as": [],
+  "features": [
+   "sanitized-stream"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.response"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -23,6 +38,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "integrations",
   "path": "src/ux_dom/response/sanitize.py",
   "public": [
@@ -30,6 +46,85 @@
    "MAX_BUFFER_CHARS",
    "sanitize_html",
    "sanitize_html_stream"
-  ]
+  ],
+  "symbols": {
+   "HtmlStreamOverflow": {
+    "bases": [
+     "ValueError"
+    ],
+    "doc": "A stream held more than ``max_chars`` characters without a safe boundary.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "_Buffer": {
+    "bases": [],
+    "doc": "Text since the last safe boundary, and the cut finder that reads it.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, max_chars: int) -> None"
+     },
+     "_feed": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_reset": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_take": {
+      "doc": "Sanitize and drop the text before the last boundary.",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "close": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> T.Iterator[str]"
+     },
+     "push": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, chunk: str) -> T.Iterator[str]"
+     }
+    },
+    "public": false
+   },
+   "_async_stream": {
+    "doc": "",
+    "kind": "async function",
+    "public": false,
+    "signature": "(chunks: T.AsyncIterable[str], max_chars: int) -> T.AsyncIterator[str]"
+   },
+   "_sync_stream": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(chunks: T.Iterable[str], max_chars: int) -> T.Iterator[str]"
+   },
+   "_trusted": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(value: T.Any) -> T.Optional[str]"
+   },
+   "sanitize_html": {
+    "doc": "Sanitized HTML for one string: ``defHTML`` rendered, nothing added.",
+    "kind": "function",
+    "public": true,
+    "signature": "(html: str) -> str"
+   },
+   "sanitize_html_stream": {
+    "doc": "Sanitize a sync or async iterable of ``str`` chunks.",
+    "kind": "function",
+    "public": true,
+    "signature": "(chunks: Chunks, *, max_chars: int=MAX_BUFFER_CHARS) -> T.Union[T.Iterator[str], T.AsyncIterator[str]]"
+   }
+  }
  }
 }

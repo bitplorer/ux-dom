@@ -53,6 +53,9 @@
    "tests/browser/x_element_harness.mjs",
    "tests/browser/x_element_shadow_ws_harness.mjs"
   ],
+  "features": [
+   "xelement-runtime"
+  ],
   "layer": "document",
   "path": "src/ux_dom/scripts/x_element.js",
   "referenced_by": [

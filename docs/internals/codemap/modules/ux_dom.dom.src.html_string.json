@@ -30,6 +30,11 @@
    "tests/07_resilience/test_svg_animation_urls.py",
    "tests/07_resilience/test_text_state_parents.py"
   ],
+  "doc": "Parse HTML strings into ux-dom nodes (defHTML) and related helpers.",
+  "exported_as": [],
+  "features": [
+   "sanitizer"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.dom.src.utils.dom_util"
@@ -41,6 +46,21 @@
     "ux_dom.ui.channel_bridge"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "builtins",
+     "collections.abc",
+     "dataclasses",
+     "html.entities",
+     "re",
+     "types",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -56,11 +76,152 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/html_string.py",
   "public": [
    "StringToHTML",
    "defHTML"
-  ]
+  ],
+  "symbols": {
+   "StringToHTML": {
+    "bases": [
+     "object"
+    ],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__repr__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "_add_text": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, tag, text: str, *, already_escaped: bool)"
+     },
+     "_build": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, tag)"
+     },
+     "_child_parser": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, tokens, foreign: bool=False) -> 'StringToHTML'"
+     },
+     "_unwrap": {
+      "doc": "Sanitize ``token``'s children into ``tag`` (or a new holder).",
+      "kind": "function",
+      "signature": "(self, token, tag)"
+     },
+     "parse": {
+      "doc": "Sanitize the tokens into ``tag``; the result is ``tag`` or, when",
+      "kind": "function",
+      "signature": "(self, tag: T.Optional[ext.Tags]=None) -> T.Union[str, ext.Tags, None]"
+     }
+    },
+    "public": true
+   },
+   "_attr_kept": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(tag: str, key: str, value) -> bool"
+   },
+   "_custom_allowed": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(name: str, rules: frozenset[str]) -> bool"
+   },
+   "_custom_element_rules": {
+    "doc": "Validate ``allow_custom_elements``: exact names or a ``prefix-*``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(names: T.Optional[Iterable[str]]) -> frozenset[str]"
+   },
+   "_filter_attrs": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(tag: str, attrs: dict) -> dict"
+   },
+   "_link_attrs": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(attrs: dict) -> dict | None"
+   },
+   "_link_href_ok": {
+    "doc": "Document ``<link href>``: relative same-origin, or ``https``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(value: str) -> bool"
+   },
+   "_meta_attrs": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(attrs: dict) -> dict | None"
+   },
+   "_norm_attr_name": {
+    "doc": "Match renderer: leading ``_`` is stripped (``_onclick`` → ``onclick``).",
+    "kind": "function",
+    "public": false,
+    "signature": "(key: str) -> str"
+   },
+   "_reference_text": {
+    "doc": "Re-emit a character reference as already-escaped text.",
+    "kind": "function",
+    "public": false,
+    "signature": "(token: Char | Entity) -> str"
+   },
+   "_sanitized_html": {
+    "doc": "String form of ``defHTML``. Not a second sanitizer and not public.",
+    "kind": "function",
+    "public": false,
+    "signature": "(raw_string, *, document: bool=False, allow_custom_elements: T.Optional[Iterable[str]]=None) -> str"
+   },
+   "_style_is_dangerous": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(value: str) -> bool"
+   },
+   "_style_text": {
+    "doc": "Document ``<style>`` text, verbatim, or ``None`` to drop the element.",
+    "kind": "function",
+    "public": false,
+    "signature": "(token) -> T.Optional[str]"
+   },
+   "_tag_allowed": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(name: str, document: bool, custom: frozenset[str]) -> bool"
+   },
+   "create_dynamic_element": {
+    "doc": "Build (or reuse) a Tags subclass for unknown HTML/custom tag names.",
+    "kind": "function",
+    "public": false,
+    "signature": "(tag_name: str) -> T.Type[ext.Tags]"
+   },
+   "defHTML": {
+    "doc": "Parse an HTML string into sanitized ux-dom nodes.",
+    "kind": "function",
+    "public": true,
+    "signature": "(raw_string, *, document: bool=False, allow_custom_elements: T.Optional[Iterable[str]]=None) -> T.List[ext.Tags]"
+   }
+  }
  }
 }

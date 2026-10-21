@@ -1,0 +1,71 @@
+{
+ "AGENTS.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add ui"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add …"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor | lint | profile | add"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "src/ux_dom/__init__.py"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.cli"
+   },
+   {
+    "kind": "module",
+    "resolved": false,
+    "text": "ux_dom.cli.scaffold"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.plugins"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.ui"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/scripts/x_element.js"
+   }
+  ]
+ }
+}

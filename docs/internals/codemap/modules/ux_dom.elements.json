@@ -5,12 +5,22 @@
    "tests/06_browser/test_boolean_state_browser.py",
    "tests/07_resilience/test_boolean_attributes.py"
   ],
+  "doc": "Typed form field components (chars, integers, dates, ...). Optional helpers.",
+  "exported_as": [],
+  "features": [
+   "elements"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.elements.integers"
    ],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -25,6 +35,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "components",
   "path": "src/ux_dom/elements/__init__.py",
   "public": [
@@ -73,6 +84,7 @@
    "TextInput",
    "TimeInput",
    "WeekInput"
-  ]
+  ],
+  "symbols": {}
  }
 }

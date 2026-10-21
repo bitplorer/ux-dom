@@ -136,6 +136,11 @@
    "tests/fixtures/auth_xelements.py",
    "tests/helpers.py"
   ],
+  "doc": "Concrete HTML tag classes bound to Tags MRO (div, span, input, ...).",
+  "exported_as": [],
+  "features": [
+   "tag-tree"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -149,6 +154,15 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "re"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [
     "ux_dom.dom.src.utils.dom_util"
@@ -160,6 +174,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/htmltags.py",
   "public": [
@@ -277,6 +292,1183 @@
    "var",
    "video",
    "wbr"
-  ]
+  ],
+  "symbols": {
+   "DocType": {
+    "bases": [
+     "extension.SingleTemplates"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": ":param template_text:",
+      "kind": "function",
+      "signature": "(self, template_text='html', *dom_elements)"
+     }
+    },
+    "public": true
+   },
+   "_RawTextElement": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "Raw text element (``script`` / ``style``, HTML spec §13.1.2).",
+    "kind": "class",
+    "methods": {
+     "_render_children": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, sb, indent_level, indent_str, pretty, _seen=None)"
+     }
+    },
+    "public": false
+   },
+   "_attr_names": {
+    "doc": "ASCII-lowercase ``name -> value`` of the attributes ``node`` renders.",
+    "kind": "function",
+    "public": false,
+    "signature": "(node)"
+   },
+   "_cdata": {
+    "doc": "``text`` as one CDATA section; a ``]]>`` in it is split across two.",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_end_tag": {
+    "doc": "The stack after the parser reads end tag ``name`` (§13.2.6.5, §13.2.6.4.7).",
+    "kind": "function",
+    "public": false,
+    "signature": "(stack, name)"
+   },
+   "_end_tag_written": {
+    "doc": "False if ``node`` writes no end tag, or #91 escapes it: a ``title`` /",
+    "kind": "function",
+    "public": false,
+    "signature": "(node, name)"
+   },
+   "_ends_breakout": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(entry)"
+   },
+   "_feed": {
+    "doc": "The parser states after the tags ``node`` writes.",
+    "kind": "function",
+    "public": false,
+    "signature": "(stacks, node, seen=frozenset())"
+   },
+   "_finish": {
+    "doc": "``_feed`` that resumes the replay of a node already on a render path.",
+    "kind": "function",
+    "public": false,
+    "signature": "(stacks, node, memo)"
+   },
+   "_foreign_open": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(stacks)"
+   },
+   "_html_encoding": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(node, every=True)"
+   },
+   "_html_rules": {
+    "doc": "True if the parser handles start tag ``name`` by the HTML rules when",
+    "kind": "function",
+    "public": false,
+    "signature": "(top, name)"
+   },
+   "_parsed_namespace": {
+    "doc": "``\"html\"``, ``\"svg\"`` or ``\"math\"``: the namespace an HTML parser gives",
+    "kind": "function",
+    "public": false,
+    "signature": "(node)"
+   },
+   "_replay": {
+    "doc": "The parser states after ``children``. Earlier siblings matter only",
+    "kind": "function",
+    "public": false,
+    "signature": "(stacks, children, memo)"
+   },
+   "_settle": {
+    "doc": "Distinct parser states, each with the state in which the HTML elements",
+    "kind": "function",
+    "public": false,
+    "signature": "(stacks)"
+   },
+   "_special": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(entry)"
+   },
+   "_start_tag": {
+    "doc": "``(namespace, stack)`` after the parser reads the start tag of ``el``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(stack, name, el)"
+   },
+   "_states_before": {
+    "doc": "The parser states before ``child``, whose parent's record is ``rec``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(rec, child, memo)"
+   },
+   "a": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "If the a element has an href attribute, then it represents a hyperlink (a",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "abbr": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The abbr element represents an abbreviation or acronym, optionally with its",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "address": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The address element represents the contact information for its nearest",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "area": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The area element represents either a hyperlink with some text and a",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "article": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The article element represents a self-contained composition in a document,",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "aside": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The aside element represents a section of a page that consists of content",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "audio": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "An audio element represents a sound or audio stream.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "b": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The b element represents a span of text to which attention is being drawn for",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "base": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The base element allows authors to specify the document base URL for the",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "bdi": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The bdi element represents a span of text that is to be isolated from its",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "bdo": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The bdo element represents explicit text directionality formatting control",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "blockquote": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The blockquote element represents a section that is quoted from another",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "body": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The body element represents the main content of the document.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "br": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The br element represents a line break.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "button": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The button element represents a button. If the element is not disabled, then",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "canvas": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The canvas element provides scripts with a resolution-dependent bitmap",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "caption": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The caption element represents the title of the table that is its parent, if",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "cite": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The cite element represents the title of a work (e.g. a book, a paper, an",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "code": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The code element represents a fragment of computer code. This could be an XML",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "col": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "If a col element has a parent and that is a colgroup element that itself has",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "colgroup": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The colgroup element represents a group of one or more columns in the table",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "command": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The command element represents a command that the user can invoke.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "comment": {
+    "bases": [
+     "extension.SingleTemplates"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, comments)"
+     }
+    },
+    "public": true
+   },
+   "datalist": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The datalist element represents a set of option elements that represent",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "dd": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The dd element represents the description, definition, or value, part of a",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "del_": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The del element represents a removal from the document.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "details": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The details element represents a disclosure widget from which the user can",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "dfn": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The dfn element represents the defining instance of a term. The paragraph,",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "div": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The div element has no special meaning at all. It represents its children. It",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "dl": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The dl element represents an association list consisting of zero or more",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "dt": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The dt element represents the term, or name, part of a term-description group",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "em": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The em element represents stress emphasis of its contents.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "embed": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The embed element represents an integration point for an external (typically",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "fieldset": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The fieldset element represents a set of form controls optionally grouped",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "figcaption": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The figcaption element represents a caption or legend for the rest of the",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "figure": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The figure element represents some flow content, optionally with a caption,",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "font": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The font element represents the font in a html .",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "footer": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The footer element represents a footer for its nearest ancestor sectioning",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "form": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The form element represents a collection of form-associated elements, some of",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "h1": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "Represents the highest ranking heading.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "h2": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "Represents the second-highest ranking heading.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "h3": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "Represents the third-highest ranking heading.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "h4": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "Represents the fourth-highest ranking heading.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "h5": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "Represents the fifth-highest ranking heading.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "h6": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "Represents the sixth-highest ranking heading.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "head": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The head element represents a collection of metadata for the document.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "header": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The header element represents a group of introductory or navigational aids.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "hgroup": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The hgroup element represents the heading of a section. The element is used",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "hr": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The hr element represents a paragraph-level thematic break, e.g. a scene",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "html": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The html element represents the root of an HTML document.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "html_tag": {
+    "bases": [
+     "extension.Tags"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "Creates a new html tag instance.",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     }
+    },
+    "public": false
+   },
+   "i": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The i element represents a span of text in an alternate voice or mood, or",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "iframe": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The iframe element represents a nested browsing context.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "img": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "An img element represents an image.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "input_": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The input element represents a typed data field, usually with a form control",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "ins": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The ins element represents an addition to the document.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "kbd": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The kbd element represents user input (typically keyboard input, although it",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "keygen": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The keygen element represents a key pair generator control. When the",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "label": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The label represents a caption in a user interface. The caption can be",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "legend": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The legend element represents a caption for the rest of the contents of the",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "li": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The li element represents a list item. If its parent element is an ol, ul, or",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "link": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The link element allows authors to link their document to other resources.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "main": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The main content area of a document includes content that is unique to that",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "map_": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The map element, in conjunction with any area element descendants, defines an",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "mark": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The mark element represents a run of text in one document marked or",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "menu": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The menu element represents a list of commands.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "meta": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The meta element represents various kinds of metadata that cannot be",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "meter": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The meter element represents a scalar measurement within a known range, or a",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "nav": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The nav element represents a section of a page that links to other pages or",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "noscript": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The noscript element represents nothing if scripting is enabled, and",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "object_": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The object element can represent an external resource, which, depending on",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "ol": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The ol element represents a list of items, where the items have been",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "optgroup": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The optgroup element represents a group of option elements with a common",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "option": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The option element represents an option in a select element or as part of a",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "output": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The output element represents the result of a calculation.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "p": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The p element represents a paragraph.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "param": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The param element defines parameters for plugins invoked by object elements.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "pre": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The pre element represents a block of preformatted text, in which structure",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "progress": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The progress element represents the completion progress of a task. The",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "q": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The q element represents some phrasing content quoted from another source.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "rp": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The rp element can be used to provide parentheses around a ruby text",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "rt": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The rt element marks the ruby text component of a ruby annotation.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "ruby": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The ruby element allows one or more spans of phrasing content to be marked",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "s": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The s element represents contents that are no longer accurate or no longer",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "samp": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The samp element represents (sample) output from a program or computing",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "script": {
+    "bases": [
+     "_RawTextElement"
+    ],
+    "doc": "The script element allows authors to include dynamic script and data blocks",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "section": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The section element represents a generic section of a document or",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "select": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The select element represents a control for selecting amongst a set of",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "slot": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The slot element represents a slot.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "small": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The small element represents side comments such as small print.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "source": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The source element allows authors to specify multiple alternative media",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "span": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The span element doesn't mean anything on its own, but can be useful when",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "strong": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The strong element represents strong importance for its contents.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "style": {
+    "bases": [
+     "_RawTextElement"
+    ],
+    "doc": "The style element allows authors to embed style information in their",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "sub": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The sub element represents a subscript.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "summary": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The summary element represents a summary, caption, or legend for the rest of",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "sup": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The sup element represents a superscript.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "table": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The table element represents data with more than one dimension, in the form",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "tbody": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The tbody element represents a block of rows that consist of a body of data",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "td": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The td element represents a data cell in a table.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "template": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The template element represents a template.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "textarea": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The textarea element represents a multiline plain text edit control for the",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "tfoot": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The tfoot element represents the block of rows that consist of the column",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "th": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The th element represents a header cell in a table.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "thead": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The thead element represents the block of rows that consist of the column",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "time_": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The time element represents either a time on a 24 hour clock, or a precise",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "title": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The title element represents the document's title or name. Authors should use",
+    "kind": "class",
+    "methods": {
+     "_get_text": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "_set_text": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, text)"
+     }
+    },
+    "public": true
+   },
+   "tr": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The tr element represents a row of cells in a table.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "track": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The track element allows authors to specify explicit external timed text",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "u": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The u element represents a span of text with an unarticulated, though",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "ul": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The ul element represents a list of items, where the order of the items is",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "var": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The var element represents a variable. This could be an actual variable in a",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "video": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "A video element is used for playing videos or movies, and audio files with",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "wbr": {
+    "bases": [
+     "html_tag"
+    ],
+    "doc": "The wbr element represents a line break opportunity.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   }
+  }
  }
 }

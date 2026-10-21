@@ -10,6 +10,11 @@
    "tests/04_production/test_production_stability.py",
    "tests/05_chaos/test_enterprise_full_battery.py"
   ],
+  "doc": "Design tokens and class-merge helpers (operational craft, Tailwind utility based).",
+  "exported_as": [],
+  "features": [
+   "ui-kit"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.ui.channel_bridge"
@@ -53,6 +58,17 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "json",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [
@@ -60,6 +76,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/tokens.py",
   "public": [
@@ -75,6 +92,56 @@
    "target",
    "type_scale",
    "variants"
-  ]
+  ],
+  "symbols": {
+   "channel_action": {
+    "doc": "``data-channel-action`` / ``data-args`` for a server-side select; none without an action.",
+    "kind": "function",
+    "public": false,
+    "signature": "(action: str | None, **args: Any) -> dict[str, str]"
+   },
+   "cn": {
+    "doc": "Merge class fragments (truthy strings only).",
+    "kind": "function",
+    "public": true,
+    "signature": "(*parts: Optional[str | Iterable[str] | bool]) -> str"
+   },
+   "dialog_panel": {
+    "doc": "``role=\"dialog\"`` panel with an optional title (``<root_id>-title``), body and footer.",
+    "kind": "function",
+    "public": false,
+    "signature": "(*, root_id: str, title: str, body: Any, footer: Any, className: str)"
+   },
+   "field_classes": {
+    "doc": "Shared control chrome for Input / Select / DatePicker / Textarea alignment.",
+    "kind": "function",
+    "public": true,
+    "signature": "(*, className: str='', invalid: bool=False, height: str='min-h-11 h-11') -> str"
+   },
+   "nav_button": {
+    "doc": "Prev / Next control for Carousel and Pagination. A disabled button carries no action.",
+    "kind": "function",
+    "public": false,
+    "signature": "(label: str, *, action: str | None, args: dict[str, Any], disabled: bool=False, **attrs: Any)"
+   },
+   "overlay_id": {
+    "doc": "Root id of an overlay: the caller's ``id=`` or ``overlay``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(attrs: dict[str, Any]) -> str"
+   },
+   "overlay_root": {
+    "doc": "Morph target shared by Dialog / Sheet / Command (``id`` and channel id default to ``overlay``).",
+    "kind": "function",
+    "public": false,
+    "signature": "(attrs: dict[str, Any], *children: Any, open: bool)"
+   },
+   "variants": {
+    "doc": "Pick classes from a variant table.",
+    "kind": "function",
+    "public": true,
+    "signature": "(table: dict[str, dict[str, str]], **chosen: str) -> str"
+   }
+  }
  }
 }

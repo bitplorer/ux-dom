@@ -5,12 +5,25 @@
    "tests/02_document_plugins/test_ui_battery.py",
    "tests/02_document_plugins/test_ui_kit_dedupe.py"
   ],
+  "doc": "ToastHost — morph target for notices. Server list is authority.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -21,11 +34,44 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/toast.py",
   "public": [
    "ToastHost",
    "ToastItem"
-  ]
+  ],
+  "symbols": {
+   "ToastHost": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "Morph-safe notices region. Items from Host Ops (ux-behavior ``notify``).",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, items: Sequence[Mapping[str, Any] | str]=(), *, label: str='Notifications', empty: Any=None, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "ToastItem": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, text: str='', *, level: str='info', className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

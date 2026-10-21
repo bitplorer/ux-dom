@@ -7,12 +7,26 @@
    "tests/04_production/test_p95_profiling.py",
    "tests/07_resilience/test_build_parallel_context.py"
   ],
+  "doc": "Tree locks + internal parallel helpers for **ux-dom**.",
+  "exported_as": [],
+  "features": [
+   "concurrency"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.profile"
    ],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -21,6 +35,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "support",
   "path": "src/ux_dom/concurrency.py",
   "public": [
@@ -37,6 +52,7 @@
    "root_of",
    "should_parallelize",
    "tree_lock_for"
-  ]
+  ],
+  "symbols": {}
  }
 }

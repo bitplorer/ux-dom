@@ -4,12 +4,25 @@
    "examples/ux_kit/app/routes/index.py",
    "tests/04_production/test_production_stability.py"
   ],
+  "doc": "Select — matches Input height (min-h-11).",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -20,10 +33,28 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/select.py",
   "public": [
    "Select"
-  ]
+  ],
+  "symbols": {
+   "Select": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, options: Sequence[tuple[str, str]]=(), value: str | None=None, className: str='', invalid: bool=False, **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

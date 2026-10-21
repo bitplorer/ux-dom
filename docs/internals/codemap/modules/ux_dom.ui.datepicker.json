@@ -4,12 +4,25 @@
    "examples/ux_kit/app/routes/index.py",
    "tests/02_document_plugins/test_ui_battery.py"
   ],
+  "doc": "DatePicker — native type=date. No Litepicker injection.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -20,10 +33,28 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/datepicker.py",
   "public": [
    "DatePicker"
-  ]
+  ],
+  "symbols": {
+   "DatePicker": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "::",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, name: str | None=None, value: str='', min: str | None=None, max: str | None=None, disabled: bool=False, invalid: bool=False, required: bool=False, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

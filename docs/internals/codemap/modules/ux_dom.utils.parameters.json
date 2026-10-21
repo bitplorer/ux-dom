@@ -3,6 +3,9 @@
   "consumers": [
    "tests/04_production/test_production_hardening.py"
   ],
+  "doc": "Parameter/introspection helpers for CLI and diagnostics.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -10,15 +13,128 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "inspect",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "support",
   "path": "src/ux_dom/utils/parameters.py",
   "public": [
    "Parameters"
-  ]
+  ],
+  "symbols": {
+   "Parameters": {
+    "bases": [
+     "object"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__call__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, func: Callable, args: bool=True, kwargs: bool=True, in_single_kwargs: bool=True)"
+     },
+     "__str__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "annotations": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "args": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "default": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, param_name)"
+     },
+     "kwargs": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "parameters": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "pos_arg": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "signature": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "var_arg": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "var_arg_name": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     }
+    },
+    "public": true
+   },
+   "_parameters": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(func_signature)"
+   }
+  }
  }
 }

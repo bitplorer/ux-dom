@@ -1,0 +1,11 @@
+{
+ "docs/internals/PRETTY_STREAM.md": {
+  "claims": [
+   {
+    "kind": "env",
+    "resolved": true,
+    "text": "UI_DOM_PRETTY_STREAM"
+   }
+  ]
+ }
+}

@@ -51,12 +51,37 @@
    "tests/07_resilience/test_xhtml_mode_absent.py",
    "tests/helpers.py"
   ],
+  "doc": "Document — **single source of truth** for the HTML shell.",
+  "exported_as": [
+   "ux_dom:Document"
+  ],
+  "features": [
+   "document"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.settings"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "functools",
+     "types"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "annotationlib",
+     "dataclasses",
+     "inspect",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -72,10 +97,134 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/settings/document.py",
   "public": [
    "Document"
-  ]
+  ],
+  "symbols": {
+   "Document": {
+    "bases": [
+     "object"
+    ],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "Two-stage HTML shell — **order is deliberate** (see HtmlDocument.render).",
+    "kind": "class",
+    "methods": {
+     "__call__": {
+      "doc": "Stage B: page content + optional call-time head/body.",
+      "kind": "function",
+      "signature": "(self, *args, head=None, body=None, use=None, **kwargs) -> HtmlDocument"
+     },
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_call_ctx": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **kwargs: T.Any) -> dict"
+     },
+     "_eval_list": {
+      "doc": "Expand list/tuple; invoke stage hooks only; keep tags/strings/dicts.",
+      "kind": "function",
+      "signature": "(self, items: T.Any, ctx: dict) -> list"
+     },
+     "_is_stage_hook": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "Lambdas/functions only — never dom_tag (tags are also callable).",
+      "kind": "function",
+      "signature": "(obj: T.Any) -> bool"
+     },
+     "_runtime_common_head_body": {
+      "doc": "Runtime tags for stage A only (common_head / common_body).",
+      "kind": "function",
+      "signature": "(self) -> tuple[list, list]"
+     },
+     "_stamp_if_nonce": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, nodes: list) -> list"
+     },
+     "_validate_runtime": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, rt: T.Any) -> None"
+     },
+     "clear_runtimes": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> 'Document'"
+     },
+     "copy": {
+      "doc": "Shallow-copy head/body lists and the runtime list.",
+      "kind": "function",
+      "signature": "(self) -> 'Document'"
+     },
+     "for_app": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, app: T.Any=None, *, head: T.Any=None, body: T.Any=None, hub: T.Any=None, **kwargs: T.Any) -> 'Document'"
+     },
+     "mount": {
+      "doc": "Apply this document's runtimes to an ASGI app (startup only).",
+      "kind": "function",
+      "signature": "(self, app: T.Any) -> T.Any"
+     },
+     "resolved_body": {
+      "doc": "Debug: common_body only (stage A).",
+      "kind": "function",
+      "signature": "(self) -> list"
+     },
+     "resolved_head": {
+      "doc": "Debug: common_head only (stage A), not call-time head.",
+      "kind": "function",
+      "signature": "(self) -> list"
+     },
+     "runtime_tags": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> tuple[list, list]"
+     },
+     "runtimes": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> list"
+     },
+     "use": {
+      "doc": "Attach runtimes on **this instance** (mutates shared shell).",
+      "kind": "function",
+      "signature": "(self, *runtimes: T.Any) -> 'Document'"
+     },
+     "using": {
+      "doc": "Return a copy with extra runtimes; do not mutate this instance.",
+      "kind": "function",
+      "signature": "(self, *runtimes: T.Any) -> 'Document'"
+     }
+    },
+    "public": true
+   },
+   "_accepts": {
+    "doc": "True if ``fn``'s signature binds these arguments (decided before calling).",
+    "kind": "function",
+    "public": false,
+    "signature": "(fn: T.Callable, *args: T.Any, **kwargs: T.Any) -> bool"
+   },
+   "_as_list": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(value: T.Any) -> list"
+   }
+  }
  }
 }

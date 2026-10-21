@@ -117,3 +117,84 @@ exclude_lines = [
   "raise NotImplementedError",
 ]
 fail_under = 70
+
+# Code map (scripts/codemap.py, docs/internals/CODEMAP.md). Paths are repo-relative.
+[tool.codemap]
+packages = ["src/ux_dom"]
+out_dir = "docs/internals/codemap"
+assets = ["src/ux_dom/**/*.js", "src/ux_dom/**/*.css"]
+features = "docs/internals/features.toml"
+domain = "docs/internals/domain.toml"
+narrative = [
+  "docs/internals/ARCHITECTURE.md",
+  "docs/internals/SYSTEM.md",
+  "docs/internals/MODULE_MAP.md",
+]
+# Docs whose reference-style claims are indexed and resolved against the code
+# (findings only, never failed; see CODEMAP.md "Doc claims").
+claims_docs = ["README.md", "AGENTS.md", "START_HERE.md", "CONTRIBUTING.md", "INSTALL.md", "docs"]
+# ADRs and plans are history: they name removed code on purpose.
+claims_exclude = ["docs/archive", "docs/plans", "docs/adr"]
+# The map's own doc and tests name modules only to describe the map; counting
+# them would churn shards whenever an example or allowlist there changes.
+self_files = [
+  "docs/internals/CODEMAP.md",
+  "tests/04_production/test_codemap.py",
+  "tests/04_production/test_codemap_fixtures.py",
+]
+# Known module-level cycle, ledger E4 (https://github.com/bitplorer/ux-dom/issues/59).
+allowed_cycles = [["ux_dom.dom.src.dom_tag", "ux_dom.dom.src.utils.dom_util"]]
+# Rule-breaking edges accepted on purpose: "importer -> imported". Say why.
+layer_exceptions = [
+  # The Htmx Document facade installs HtmxMiddleware for its host.
+  "ux_dom.plugins.control.htmx -> ux_dom.htmx.middleware",
+]
+
+[tool.codemap.consumers]
+docs = [".md"]
+examples = [".py", ".md", ".html", ".js", ".mjs"]
+standalone = [".py", ".md", ".html", ".js", ".mjs"]
+tests = [".py", ".md", ".html", ".js", ".mjs"]
+
+[tool.codemap.public_api]
+rule = "all_or_derived"
+packages = ["ux_dom"]
+
+# Module prefix -> layer (longest prefix wins; the package root ``ux_dom``
+# matches only itself, and a module matching nothing fails the build). Extends
+# the package ontology in AGENTS.md: dom (tags / serialize), document
+# (Document, contributions, runtime facades, package static), components
+# (typed trees on top of dom), ui (optional kit), cli (pure-dom Typer CLI),
+# integrations (HTTP / ASGI / IO adapters), support (shared helpers).
+[tool.codemap.layers]
+"ux_dom" = "root"
+"ux_dom.__main__" = "cli"
+"ux_dom.alpinejs" = "components"
+"ux_dom.cli" = "cli"
+"ux_dom.concurrency" = "support"
+"ux_dom.diagnostics" = "support"
+"ux_dom.dom" = "dom"
+"ux_dom.elements" = "components"
+"ux_dom.htmx" = "integrations"
+"ux_dom.plugins" = "document"
+"ux_dom.profiling" = "support"
+"ux_dom.response" = "integrations"
+"ux_dom.scripts" = "document"
+"ux_dom.settings" = "document"
+"ux_dom.slots" = "components"
+"ux_dom.ui" = "ui"
+"ux_dom.utils" = "support"
+"ux_dom.web_io" = "integrations"
+
+# Layer -> other layers it may import at module or function level (its own
+# layer is always allowed; TYPE_CHECKING imports are exempt). ``dom`` is ledger
+# E9 (#59). The rest pin today's graph so any new cross-layer edge is reviewed.
+[tool.codemap.layer_rules]
+cli = ["document", "dom", "root", "support", "ui"]
+components = ["dom"]
+document = ["dom"]
+dom = ["support"]
+integrations = ["document", "dom"]
+root = ["components", "document", "dom"]
+support = ["dom"]
+ui = ["dom", "root"]

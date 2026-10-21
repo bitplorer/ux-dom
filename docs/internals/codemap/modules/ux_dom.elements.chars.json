@@ -4,12 +4,30 @@
    "tests/01_core/test_input_value_regressions.py",
    "tests/07_resilience/test_f16_ux_valio_elements.py"
   ],
+  "doc": "Typed form elements: chars. Optional higher-level inputs over HTML tags.",
+  "exported_as": [],
+  "features": [
+   "elements"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.elements"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "dataclasses",
+     "typing"
+    ],
+    "ux-valio": [
+     "ux_valio"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -18,6 +36,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "components",
   "path": "src/ux_dom/elements/chars.py",
   "public": [
@@ -30,6 +49,265 @@
    "PasswordInput",
    "SearchInput",
    "TextInput"
-  ]
+  ],
+  "symbols": {
+   "CharField": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, label, name, placeholder, type, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "CharFieldSet": {
+    "bases": [
+     "component.Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, legend: CharLegend, *fields: component.Component, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "CharInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "cast2int": {
+      "decorators": [
+       "max_length_field.post_validate",
+       "min_length_field.post_validate"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, value)"
+     },
+     "password_spell_check_false": {
+      "decorators": [
+       "spell_check_field.post_validate"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, value)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name: str=None, placeholder: str='', spell_check: str='true', type: str='text', min_length: str=None, max_length: str=None, pattern: str=None, className: str='', value: str=None, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "CharInputValidator": {
+    "bases": [
+     "Validator"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": false
+   },
+   "CharLabel": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, label: str, *args, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "CharLabelValidator": {
+    "bases": [
+     "Validator"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": false
+   },
+   "CharLegend": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, label, *args, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "EmailInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name: str=None, placeholder: str='', spell_check: str='true', min_length: str='null', max_length: str='null', pattern: str='null', className: str='', **kwargs)"
+     }
+    },
+    "public": false
+   },
+   "HiddenInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name: str=None, placeholder: str='', spell_check: str='true', min_length: str='null', max_length: str='null', pattern: str='null', className: str='', **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "PasswordInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name, placeholder, spell_check, min_length, max_length, pattern, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "SearchInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name: str=None, placeholder: str='', spell_check: str='true', min_length: str='null', max_length: str='null', pattern: str='null', className: str='', **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "TextInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name: str=None, placeholder: str='', spell_check: str='true', min_length: str=None, max_length: str=None, pattern: str=None, className: str='', value: str=None, **kwargs)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

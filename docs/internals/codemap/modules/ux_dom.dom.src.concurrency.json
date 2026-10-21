@@ -9,6 +9,11 @@
    "tests/05_chaos/test_tree_concurrency_safety.py",
    "tests/07_resilience/test_build_parallel_context.py"
   ],
+  "doc": "Per-tree locks + parallel rendering with **opt-in / opt-out** policy.",
+  "exported_as": [],
+  "features": [
+   "concurrency"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.dom.src.ext"
@@ -21,6 +26,23 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "asyncio",
+     "concurrent.futures",
+     "contextlib",
+     "dataclasses",
+     "os",
+     "threading",
+     "typing",
+     "weakref"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [
     "ux_dom.dom.src.dom_tag"
@@ -28,6 +50,7 @@
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/concurrency.py",
   "public": [
@@ -44,6 +67,129 @@
    "root_of",
    "should_parallelize",
    "tree_lock_for"
-  ]
+  ],
+  "symbols": {
+   "ConcurrencySettings": {
+    "bases": [],
+    "decorators": [
+     "dataclass(frozen=True)"
+    ],
+    "doc": "Process-level concurrency policy for ux-dom.",
+    "kind": "class",
+    "methods": {
+     "from_env": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls) -> 'ConcurrencySettings'"
+     }
+    },
+    "public": true
+   },
+   "_env_bool": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(name: str, default: bool) -> bool"
+   },
+   "_env_int": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(name: str, default: Optional[int]) -> Optional[int]"
+   },
+   "_render_one": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(node: Any, pretty: bool) -> str"
+   },
+   "_shared_pool": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(max_workers: Optional[int]=None) -> ThreadPoolExecutor"
+   },
+   "build_parallel": {
+    "doc": "Map ``fn`` over any iterable — parallel when policy allows, else sequential.",
+    "kind": "function",
+    "public": true,
+    "signature": "(fn: Callable[[T], R], items: Iterable[T], *, max_workers: Optional[int]=None, parallel: Optional[bool]=None) -> list[R]"
+   },
+   "configure_concurrency": {
+    "doc": "Opt-in / opt-out parallel behaviour without changing call sites.",
+    "kind": "function",
+    "public": true,
+    "signature": "(*, parallel_enabled: Optional[bool]=None, max_workers: Optional[int]=None, min_items_for_parallel: Optional[int]=None, tree_locks_enabled: Optional[bool]=None, reset_pool: bool=True) -> ConcurrencySettings"
+   },
+   "default_workers": {
+    "doc": "Sensible worker count (min 2, max 32), honoring ``max_workers`` policy.",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> int"
+   },
+   "get_concurrency_settings": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> ConcurrencySettings"
+   },
+   "locked_tree": {
+    "decorators": [
+     "contextmanager"
+    ],
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(node: Any) -> Iterator[None]"
+   },
+   "multi_tree_lock": {
+    "decorators": [
+     "contextmanager"
+    ],
+    "doc": "Acquire root locks (no-op context if tree locks disabled by policy).",
+    "kind": "function",
+    "public": true,
+    "signature": "(*nodes: Any) -> Iterator[None]"
+   },
+   "render_async_gather": {
+    "doc": "Async render many trees; sequential await when parallel policy is off.",
+    "kind": "async function",
+    "public": true,
+    "signature": "(nodes: Sequence[Any], *, pretty: bool=False, chunk_size: int=64, parallel: Optional[bool]=None) -> list[str]"
+   },
+   "render_parallel": {
+    "doc": "Render many trees — parallel when policy allows, else sequential.",
+    "kind": "function",
+    "public": true,
+    "signature": "(nodes: Sequence[Any], *, pretty: bool=False, max_workers: Optional[int]=None, parallel: Optional[bool]=None) -> list[str]"
+   },
+   "reset_concurrency_settings": {
+    "doc": "Restore settings from environment (tests / process recycle).",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> ConcurrencySettings"
+   },
+   "root_of": {
+    "doc": "Walk ``parent`` links to the tree root (cycle-safe).",
+    "kind": "function",
+    "public": true,
+    "signature": "(node: Any) -> Any"
+   },
+   "should_parallelize": {
+    "doc": "Whether multi-item helpers should use a pool (policy + kwargs).",
+    "kind": "function",
+    "public": true,
+    "signature": "(n_items: int, *, max_workers: Optional[int]=None, parallel: Optional[bool]=None) -> bool"
+   },
+   "tree_lock_for": {
+    "doc": "Return the re-entrant lock for ``node``'s tree root.",
+    "kind": "function",
+    "public": true,
+    "signature": "(node: Any) -> threading.RLock"
+   }
+  }
  }
 }

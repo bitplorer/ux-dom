@@ -18,7 +18,11 @@ _SKIP = {"CHANGELOG.md"}
 
 
 def _files() -> list[Path]:
-    out = [p for p in ROOT.rglob("*.md") if not {".git", ".venv", "node_modules", "changelog.d"} & set(p.parts)]
+    out = [
+        p
+        for p in ROOT.rglob("*.md")
+        if not {".git", ".venv", "node_modules", "changelog.d"} & set(p.parts)
+    ]
     out += list((ROOT / "src" / "ux_dom").rglob("*.py"))
     return [p for p in out if p.name not in _SKIP]
 

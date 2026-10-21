@@ -6,12 +6,27 @@
    "tests/02_document_plugins/test_ui_kit_dedupe.py",
    "tests/04_production/test_production_stability.py"
   ],
+  "doc": "Dialog — Channel-first overlay panel (no Alpine by default).",
+  "exported_as": [],
+  "features": [
+   "ui-kit"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -22,10 +37,28 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/dialog.py",
   "public": [
    "Dialog"
-  ]
+  ],
+  "symbols": {
+   "Dialog": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "Server-rendered dialog panel. Authority for open lives on Channel.",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *, open: bool=False, title: str='', body: Any=None, footer: Any=None, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

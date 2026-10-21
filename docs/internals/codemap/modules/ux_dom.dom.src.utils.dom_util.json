@@ -31,6 +31,13 @@
    "tests/07_resilience/test_unsafe_url_attrs.py",
    "tests/07_resilience/test_xelement_ws_url_attrs.py"
   ],
+  "doc": "Utility classes for creating dynamic html documents",
+  "exported_as": [],
+  "features": [
+   "escaping",
+   "raw-text-safety",
+   "url-policy"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.dom.src.htmltags"
@@ -47,6 +54,20 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "subprocess"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "html",
+     "re"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [
     "ux_dom.dom.src.html_string"
@@ -57,6 +78,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/utils/dom_util.py",
   "public": [
@@ -85,6 +107,278 @@
    "unescape",
    "url_escape",
    "url_unescape"
-  ]
+  ],
+  "symbols": {
+   "CrossOriginURL": {
+    "bases": [
+     "str"
+    ],
+    "doc": "A URL the author allows to point at another origin (see ``cross_origin``).",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "InvalidAttributeName": {
+    "bases": [
+     "ValueError"
+    ],
+    "doc": "An attribute name that could break out of the tag (fail closed).",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "InvalidMarkupToken": {
+    "bases": [
+     "ValueError"
+    ],
+    "doc": "Comment or doctype text that would end the token early (fail closed).",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "InvalidNodeContext": {
+    "bases": [
+     "ValueError"
+    ],
+    "doc": "A node rendered where its raw output would change context (fail closed).",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "InvalidTagName": {
+    "bases": [
+     "ValueError"
+    ],
+    "doc": "A tag name that could break out of the tag (fail closed).",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "_cross_origin_probe": {
+    "doc": "``probe`` is already noise-stripped. http/https/ws/wss, or a relative URL.",
+    "kind": "function",
+    "public": false,
+    "signature": "(probe)"
+   },
+   "_is_animation_tag": {
+    "doc": "``svg:set`` (an XML prefix) and ``animateMotion`` count, in any case.",
+    "kind": "function",
+    "public": false,
+    "signature": "(tag)"
+   },
+   "_is_protocol_relative": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(probe)"
+   },
+   "_is_safe_cross_origin_url": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_is_safe_url": {
+    "doc": "True for relative same-host URLs, allow-listed schemes, raster data: images.",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_is_same_origin_url": {
+    "doc": "True for relative URLs that stay on this origin (no scheme, no ``//host``).",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_js_ws_tokens": {
+    "doc": "Split the way htmx 1.9.2 does: trim and ``/\\s+/`` on the ECMAScript set.",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_probe": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_relative_same_origin_probe": {
+    "doc": "``probe`` is already noise-stripped. Relative only: no scheme, no ``//``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(probe)"
+   },
+   "_srcdoc_value": {
+    "doc": "Sanitize string srcdoc with the HTML-string allowlist.",
+    "kind": "function",
+    "public": false,
+    "signature": "(value)"
+   },
+   "_srcset_urls": {
+    "doc": "The URL of each image candidate, as HTML's \"parse a srcset attribute\".",
+    "kind": "function",
+    "public": false,
+    "signature": "(text)"
+   },
+   "_sse_ws_directive": {
+    "doc": "True for ``swap``/``send`` whose name matches ``[A-Za-z0-9_.-]+``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(probe)"
+   },
+   "_sse_ws_value_ok": {
+    "doc": "htmx 1.9.2 splits the value on JavaScript whitespace, then ``connect:``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(text, *, cross)"
+   },
+   "boolean_attr_value": {
+    "doc": "``True`` stays, ``False`` / ``None`` become ``False`` (omitted); else ``TypeError``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(name, value)"
+   },
+   "checked_attr_name": {
+    "doc": "Return ``name`` as text, or raise InvalidAttributeName.",
+    "kind": "function",
+    "public": true,
+    "signature": "(name)"
+   },
+   "checked_comment_text": {
+    "doc": "Return ``text`` if it is valid HTML comment text, else raise.",
+    "kind": "function",
+    "public": true,
+    "signature": "(text)"
+   },
+   "checked_doctype": {
+    "doc": "Return ``text`` if it is ``name [PUBLIC \"id\" [\"id\"] | SYSTEM \"id\"]``.",
+    "kind": "function",
+    "public": true,
+    "signature": "(text)"
+   },
+   "checked_tag_name": {
+    "doc": "Return ``name`` as text, or raise InvalidTagName.",
+    "kind": "function",
+    "public": true,
+    "signature": "(name)"
+   },
+   "checked_text_state_body": {
+    "doc": "The body of RCDATA / RAWTEXT element ``name`` with no ``</name`` in it.",
+    "kind": "function",
+    "public": false,
+    "signature": "(body, name)"
+   },
+   "cross_origin": {
+    "doc": "Opt one htmx/SSE/WebSocket URL out of the same-origin rule.",
+    "kind": "function",
+    "public": true,
+    "signature": "(url)"
+   },
+   "dom_text": {
+    "bases": [
+     "dom_tag"
+    ],
+    "doc": "Just a string. useful for inside context managers",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, _text, escape=True)"
+     },
+     "_render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, sb, *a, **kw)"
+     }
+    },
+    "public": true
+   },
+   "escape": {
+    "doc": "Escape HTML special chars; strip C0 controls in attribute mode.",
+    "kind": "function",
+    "public": true,
+    "signature": "(data, quote=True)"
+   },
+   "escape_attr_minimal": {
+    "doc": "Escape only ``&`` and ``\"``: the least that keeps a value inside ``\"...\"``.",
+    "kind": "function",
+    "public": true,
+    "signature": "(data)"
+   },
+   "include": {
+    "doc": "includes the contents of a file on disk.",
+    "kind": "function",
+    "public": true,
+    "signature": "(f)"
+   },
+   "lazy": {
+    "bases": [
+     "dom_tag"
+    ],
+    "doc": "delays function execution until rendered",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, func, *args, **kwargs)"
+     },
+     "__new__": {
+      "doc": "Need to reset this special method or else",
+      "kind": "function",
+      "signature": "(_cls, *args, **kwargs)"
+     },
+     "_render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, sb, *a, **kw)"
+     }
+    },
+    "public": true
+   },
+   "neutralize_raw_text": {
+    "doc": "Make text safe as the content of a raw text element without escaping it.",
+    "kind": "function",
+    "public": true,
+    "signature": "(data, tagname)"
+   },
+   "raw": {
+    "doc": "Inserts a raw string into the DOM. Unsafe.",
+    "kind": "function",
+    "public": true,
+    "signature": "(s)"
+   },
+   "safe_attr_value": {
+    "doc": "Return ``value``, or UNSAFE_URL if it is not safe for ``attribute``.",
+    "kind": "function",
+    "public": true,
+    "signature": "(attribute, value, tag='')"
+   },
+   "system": {
+    "doc": "pipes the output of a program",
+    "kind": "function",
+    "public": true,
+    "signature": "(cmd, data=None)"
+   },
+   "unescape": {
+    "doc": "unescapes html entities. the opposite of escape.",
+    "kind": "function",
+    "public": true,
+    "signature": "(data)"
+   },
+   "url_escape": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(data)"
+   },
+   "url_unescape": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(data)"
+   }
+  }
  }
 }

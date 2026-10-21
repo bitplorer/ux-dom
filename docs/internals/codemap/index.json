@@ -2,13 +2,1083 @@
  "assets": {
   "ux_dom/scripts/x_element.js": "document"
  },
+ "coupling": {
+  "Jinja2": {
+   "distinct_names": 2,
+   "hard_coupling": [],
+   "import_sites": 2,
+   "importing_modules": [
+    "ux_dom.dom.src.ext",
+    "ux_dom.dom.src.jinjatags"
+   ],
+   "port_candidates": []
+  },
+  "MarkupSafe": {
+   "distinct_names": 1,
+   "hard_coupling": [],
+   "import_sites": 1,
+   "importing_modules": [
+    "ux_dom.dom.src.ext"
+   ],
+   "port_candidates": []
+  },
+  "fastapi": {
+   "distinct_names": 1,
+   "hard_coupling": [],
+   "import_sites": 1,
+   "importing_modules": [
+    "ux_dom.plugins.safe_static"
+   ],
+   "port_candidates": [
+    "fastapi.responses:Response"
+   ]
+  },
+  "marko": {
+   "distinct_names": 1,
+   "hard_coupling": [],
+   "import_sites": 1,
+   "importing_modules": [
+    "ux_dom.dom.src.component"
+   ],
+   "port_candidates": []
+  },
+  "starlette": {
+   "distinct_names": 4,
+   "hard_coupling": [
+    "subclass ux_dom.response.starlette.HTMLResponse(starlette.responses:HTMLResponse)",
+    "subclass ux_dom.response.starlette.StreamingResponse(starlette.responses:StreamingResponse)"
+   ],
+   "import_sites": 4,
+   "importing_modules": [
+    "ux_dom.plugins.safe_static",
+    "ux_dom.response.starlette"
+   ],
+   "port_candidates": [
+    "starlette.background:BackgroundTask"
+   ]
+  },
+  "typer": {
+   "distinct_names": 3,
+   "hard_coupling": [],
+   "import_sites": 1,
+   "importing_modules": [
+    "ux_dom.cli.cli"
+   ],
+   "port_candidates": []
+  },
+  "ux-channel": {
+   "distinct_names": 3,
+   "hard_coupling": [],
+   "import_sites": 4,
+   "importing_modules": [
+    "ux_dom.cli.doctor",
+    "ux_dom.ui.channel_bridge"
+   ],
+   "port_candidates": []
+  },
+  "ux-valio": {
+   "distinct_names": 7,
+   "hard_coupling": [
+    "subclass ux_dom.elements.booleans.BooleanInputValidator(ux_valio:Validator)",
+    "subclass ux_dom.elements.booleans.BooleanLabelValidator(ux_valio:Validator)",
+    "subclass ux_dom.elements.chars.CharInputValidator(ux_valio:Validator)",
+    "subclass ux_dom.elements.chars.CharLabelValidator(ux_valio:Validator)",
+    "subclass ux_dom.elements.integers.IntegerInputValidator(ux_valio:Validator)",
+    "subclass ux_dom.elements.integers.IntegerLabelValidator(ux_valio:Validator)",
+    "subclass ux_dom.elements.integers.IntegerNumberInputValidator(ux_valio:Validator)",
+    "subclass ux_dom.elements.integers.IntegerRangeInputValidator(ux_valio:Validator)"
+   ],
+   "import_sites": 7,
+   "importing_modules": [
+    "ux_dom.elements.booleans",
+    "ux_dom.elements.buttons",
+    "ux_dom.elements.chars",
+    "ux_dom.elements.enums",
+    "ux_dom.elements.floats",
+    "ux_dom.elements.integers"
+   ],
+   "port_candidates": []
+  }
+ },
  "cycles_module_level": [
   [
    "ux_dom.dom.src.dom_tag",
    "ux_dom.dom.src.utils.dom_util"
   ]
  ],
- "generator": "scripts/codemap.py",
+ "doc_claims": {
+  "code_ahead": [
+   "feature html-parser: its docs name none of its modules or symbols",
+   "feature pretty-render: its docs name none of its modules or symbols",
+   "feature raw-text-safety: its docs name none of its modules or symbols",
+   "public_api ux_dom:SlotElement"
+  ],
+  "docs_ahead": [
+   "AGENTS.md: module `ux_dom.cli.scaffold`",
+   "docs/reference/API_SURFACE.md: module `ux_dom.routing`",
+   "docs/reference/HYPERMEDIA.md: env `KIT_URL`",
+   "docs/reference/ROUTING.md: module `ux_dom.routing`",
+   "docs/reference/STACK.md: env `UX_CHANNEL_PATH`"
+  ],
+  "summary": {
+   "claims": 332,
+   "docs": 76,
+   "unresolved": 5
+  }
+ },
+ "domain": {
+  "depends_on": {
+   "Jinja2": {
+    "imports": [
+     "jinja2"
+    ],
+    "names": [
+     "jinja2.sandbox:SandboxedEnvironment",
+     "jinja2.utils:htmlsafe_json_dumps"
+    ]
+   },
+   "MarkupSafe": {
+    "imports": [
+     "markupsafe"
+    ],
+    "names": [
+     "markupsafe:Markup"
+    ]
+   },
+   "fastapi": {
+    "imports": [
+     "fastapi"
+    ],
+    "names": [
+     "fastapi.responses:Response"
+    ]
+   },
+   "marko": {
+    "imports": [
+     "marko"
+    ],
+    "names": [
+     "marko:convert"
+    ]
+   },
+   "starlette": {
+    "imports": [
+     "starlette"
+    ],
+    "names": [
+     "starlette.background:BackgroundTask",
+     "starlette.responses:HTMLResponse",
+     "starlette.responses:Response",
+     "starlette.responses:StreamingResponse"
+    ]
+   },
+   "typer": {
+    "imports": [
+     "typer"
+    ],
+    "names": [
+     "typer:Option",
+     "typer:Typer",
+     "typer:echo"
+    ]
+   },
+   "ux-channel": {
+    "imports": [
+     "ux_channel"
+    ],
+    "names": [
+     "ux_channel",
+     "ux_channel.components.primitive:region_attrs",
+     "ux_channel.html:action_attrs"
+    ]
+   },
+   "ux-valio": {
+    "imports": [
+     "ux_valio"
+    ],
+    "names": [
+     "ux_valio:EnumValidator",
+     "ux_valio:IntegerEnumValidator",
+     "ux_valio:Pattern",
+     "ux_valio:SetOf",
+     "ux_valio:StringEnumValidator",
+     "ux_valio:StringValidator",
+     "ux_valio:Validator"
+    ]
+   }
+  },
+  "domain": "ux-dom is the single source of truth for building, sanitizing and serializing HTML/SVG trees and the Document that wraps them.",
+  "non_goals": {
+   "field-validation": {
+    "keywords": [
+     "validator"
+    ],
+    "owner": "ux-valio"
+   },
+   "intent-cap-result": {
+    "keywords": [
+     "cap",
+     "intent"
+    ],
+    "owner": "ux-channel"
+   },
+   "morph-state": {
+    "keywords": [
+     "morph"
+    ],
+    "owner": "ux-behavior"
+   },
+   "motion-ir": {
+    "keywords": [
+     "presence",
+     "transition"
+    ],
+    "owner": "ux-motion"
+   },
+   "product-lifecycle": {
+    "keywords": [
+     "deploy",
+     "hmr",
+     "reloader",
+     "router",
+     "scaffold",
+     "tailwind",
+     "webassets"
+    ],
+    "owner": "ux-compose"
+   },
+   "wire-codecs": {
+    "keywords": [
+     "codec",
+     "wire"
+    ],
+    "owner": "ux-channel"
+   }
+  },
+  "owns": {
+   "components": {
+    "modules": [
+     "ux_dom.dom.src.component"
+    ],
+    "symbols": [
+     "ux_dom:Component",
+     "ux_dom:Fragment",
+     "ux_dom:ReactiveComponent"
+    ]
+   },
+   "csp-nonces": {
+    "modules": [
+     "ux_dom.plugins.csp"
+    ],
+    "symbols": [
+     "ux_dom.plugins.csp:stamp_tree",
+     "ux_dom:Csp"
+    ]
+   },
+   "document-contributions": {
+    "modules": [
+     "ux_dom.plugins.contribution",
+     "ux_dom.plugins.dedupe",
+     "ux_dom.settings.document"
+    ],
+    "symbols": [
+     "ux_dom.plugins.contribution:ContributionPlugin",
+     "ux_dom:Document"
+    ]
+   },
+   "dom-tree": {
+    "modules": [
+     "ux_dom.dom.src.dom_tag",
+     "ux_dom.dom.src.ext",
+     "ux_dom.dom.src.htmltags",
+     "ux_dom.dom.src.svgtags"
+    ],
+    "symbols": [
+     "ux_dom.dom:div",
+     "ux_dom.dom:dom_tag"
+    ]
+   },
+   "html-escaping": {
+    "modules": [
+     "ux_dom.dom.src.utils.dom_util"
+    ],
+    "symbols": [
+     "ux_dom.dom:escape",
+     "ux_dom.dom:raw"
+    ]
+   },
+   "html-parsing": {
+    "modules": [
+     "ux_dom.dom.src.parse_html"
+    ],
+    "symbols": [
+     "ux_dom.dom.src.parse_html:tokenize_html"
+    ]
+   },
+   "html-sanitization": {
+    "modules": [
+     "ux_dom.dom.src.html_string",
+     "ux_dom.response.sanitize"
+    ],
+    "symbols": [
+     "ux_dom.dom:defHTML",
+     "ux_dom.response.sanitize:sanitize_html",
+     "ux_dom.response.sanitize:sanitize_html_stream"
+    ]
+   },
+   "html-serialization": {
+    "modules": [
+     "ux_dom.dom.src.dom_tag",
+     "ux_dom.dom.src.ext"
+    ],
+    "symbols": [
+     "ux_dom.dom.src.dom_tag:dom_tag.__render__"
+    ]
+   },
+   "package-static": {
+    "modules": [
+     "ux_dom.plugins.package_static",
+     "ux_dom.plugins.safe_static"
+    ],
+    "symbols": [
+     "ux_dom.plugins.safe_static:install_safe_static"
+    ]
+   },
+   "pure-dom-cli": {
+    "modules": [
+     "ux_dom.cli",
+     "ux_dom.cli.cli"
+    ],
+    "symbols": [
+     "ux_dom.cli:app"
+    ]
+   },
+   "ui-kit": {
+    "modules": [
+     "ux_dom.ui",
+     "ux_dom.ui.catalog"
+    ],
+    "symbols": [
+     "ux_dom.ui.catalog:CATALOG"
+    ]
+   },
+   "url-attribute-policy": {
+    "modules": [
+     "ux_dom.dom.src.utils.dom_util"
+    ],
+    "symbols": [
+     "ux_dom.dom.src.utils.dom_util:safe_attr_value"
+    ]
+   },
+   "xelement-runtime": {
+    "modules": [
+     "ux_dom.dom.htmlelement",
+     "ux_dom.plugins.runtime",
+     "ux_dom.scripts"
+    ],
+    "symbols": [
+     "ux_dom.dom.htmlelement:XElement",
+     "ux_dom:XElement"
+    ]
+   }
+  },
+  "public_api": [
+   "ux_dom.dom",
+   "ux_dom.dom:defHTML",
+   "ux_dom.dom:dom_tag",
+   "ux_dom.dom:escape",
+   "ux_dom.dom:raw",
+   "ux_dom.plugins",
+   "ux_dom.response",
+   "ux_dom.response.sanitize:sanitize_html",
+   "ux_dom.response.sanitize:sanitize_html_stream",
+   "ux_dom.ui",
+   "ux_dom:Channel",
+   "ux_dom:Component",
+   "ux_dom:Csp",
+   "ux_dom:Document",
+   "ux_dom:Fragment",
+   "ux_dom:Htmx",
+   "ux_dom:ReactiveComponent",
+   "ux_dom:XElement"
+  ]
+ },
+ "entry_points": {
+  "asgi": [],
+  "entry_points": {},
+  "main_modules": [
+   "ux_dom.__main__"
+  ],
+  "scripts": {
+   "uxdom": "ux_dom.cli:app"
+  }
+ },
+ "external_usage": {
+  "Jinja2": [
+   "jinja2.sandbox:SandboxedEnvironment",
+   "jinja2.utils:htmlsafe_json_dumps"
+  ],
+  "MarkupSafe": [
+   "markupsafe:Markup"
+  ],
+  "fastapi": [
+   "fastapi.responses:Response"
+  ],
+  "marko": [
+   "marko:convert"
+  ],
+  "starlette": [
+   "starlette.background:BackgroundTask",
+   "starlette.responses:HTMLResponse",
+   "starlette.responses:Response",
+   "starlette.responses:StreamingResponse"
+  ],
+  "typer": [
+   "typer:Option",
+   "typer:Typer",
+   "typer:echo"
+  ],
+  "ux-channel": [
+   "ux_channel",
+   "ux_channel.components.primitive:region_attrs",
+   "ux_channel.html:action_attrs"
+  ],
+  "ux-valio": [
+   "ux_valio:EnumValidator",
+   "ux_valio:IntegerEnumValidator",
+   "ux_valio:Pattern",
+   "ux_valio:SetOf",
+   "ux_valio:StringEnumValidator",
+   "ux_valio:StringValidator",
+   "ux_valio:Validator"
+  ]
+ },
+ "features": {
+  "alpine": {
+   "docs": [
+    "docs/reference/XELEMENT.md"
+   ],
+   "modules": [
+    "ux_dom.alpinejs",
+    "ux_dom.alpinejs.dataset",
+    "ux_dom.dom.htmlelement"
+   ],
+   "purpose": "Alpine.js integration: AlpineElement/AlpineComponent and data-attribute merging helpers.",
+   "symbols": [
+    "ux_dom.alpinejs.dataset:DataSet",
+    "ux_dom.alpinejs.dataset:MergeAlpineAttributes",
+    "ux_dom.dom.htmlelement:AlpineComponent"
+   ],
+   "tests": [
+    "tests/01_core/test_alpine_dataset_merge.py"
+   ]
+  },
+  "channel-bridge": {
+   "docs": [
+    "docs/reference/STACK.md",
+    "docs/reference/UI.md"
+   ],
+   "modules": [
+    "ux_dom.plugins.control.channel",
+    "ux_dom.plugins.runtime",
+    "ux_dom.ui.channel_bridge"
+   ],
+   "purpose": "Optional ux-channel hooks: the Channel runtime facade, ChannelControl, and UI channel attributes.",
+   "symbols": [
+    "ux_dom.plugins.control.channel:ChannelControl",
+    "ux_dom.plugins.runtime:UxChannelRuntime",
+    "ux_dom:Channel"
+   ],
+   "tests": [
+    "tests/02_document_plugins/test_document_runtimes_create.py"
+   ]
+  },
+  "cli": {
+   "docs": [
+    "docs/guides/CLI.md"
+   ],
+   "modules": [
+    "ux_dom.__main__",
+    "ux_dom.cli",
+    "ux_dom.cli.adders",
+    "ux_dom.cli.cli",
+    "ux_dom.cli.dashboard",
+    "ux_dom.cli.doctor",
+    "ux_dom.cli.lint",
+    "ux_dom.cli.profile",
+    "ux_dom.profiling"
+   ],
+   "purpose": "The pure-dom `uxdom` CLI: doctor, lint, profile, dashboard, add and ui.",
+   "symbols": [
+    "ux_dom.cli.adders:add_component",
+    "ux_dom.cli.adders:add_xelement",
+    "ux_dom.cli.doctor:run_doctor",
+    "ux_dom.cli.lint:lint_project",
+    "ux_dom.cli.profile:run_profile",
+    "ux_dom.cli:app"
+   ],
+   "tests": [
+    "tests/03_routing_cli/test_cli_output_and_doctor.py",
+    "tests/03_routing_cli/test_dashboard_dx.py",
+    "tests/03_routing_cli/test_dx_cli.py",
+    "tests/03_routing_cli/test_profile_dx.py"
+   ]
+  },
+  "components": {
+   "docs": [
+    "docs/reference/COMPONENTS.md",
+    "docs/reference/REACTIVE.md"
+   ],
+   "modules": [
+    "ux_dom.dom.jinja",
+    "ux_dom.dom.src.component",
+    "ux_dom.dom.src.jinjatags"
+   ],
+   "purpose": "Component, Fragment and ReactiveComponent: typed trees with render(), class merging and Markdown.",
+   "symbols": [
+    "ux_dom.dom.src.component:Component",
+    "ux_dom.dom.src.component:Fragment",
+    "ux_dom.dom.src.component:MergeClassAttribute",
+    "ux_dom.dom.src.component:ReactiveComponent",
+    "ux_dom:Component"
+   ],
+   "tests": [
+    "tests/01_core/test_component_capabilities.py",
+    "tests/01_core/test_reactive_component.py",
+    "tests/01_core/test_snippets_fragment.py",
+    "tests/07_resilience/test_markdown_render_kwarg.py"
+   ]
+  },
+  "concurrency": {
+   "docs": [
+    "docs/internals/CONCURRENCY.md"
+   ],
+   "modules": [
+    "ux_dom.concurrency",
+    "ux_dom.dom.src.concurrency"
+   ],
+   "purpose": "Per-root tree locks and opt-in parallel render/build of independent subtrees.",
+   "symbols": [
+    "ux_dom.dom.src.concurrency:configure_concurrency",
+    "ux_dom.dom.src.concurrency:render_parallel",
+    "ux_dom.dom.src.concurrency:tree_lock_for"
+   ],
+   "tests": [
+    "tests/01_core/test_concurrency_patterns.py",
+    "tests/01_core/test_parallel_first_class.py",
+    "tests/05_chaos/test_tree_concurrency_safety.py"
+   ]
+  },
+  "csp": {
+   "docs": [
+    "docs/security/CSP.md"
+   ],
+   "modules": [
+    "ux_dom.plugins.csp"
+   ],
+   "purpose": "Per-request CSP nonces, policy presets, header building, tree stamping and the Csp facade/middleware.",
+   "symbols": [
+    "ux_dom.plugins.csp:Csp",
+    "ux_dom.plugins.csp:CspMiddleware",
+    "ux_dom.plugins.csp:CspPolicy",
+    "ux_dom.plugins.csp:build_csp_header",
+    "ux_dom.plugins.csp:resolve_nonce",
+    "ux_dom.plugins.csp:stamp_tree",
+    "ux_dom:Csp"
+   ],
+   "tests": [
+    "tests/02_document_plugins/test_csp_auto_prod.py",
+    "tests/02_document_plugins/test_csp_nonce.py",
+    "tests/02_document_plugins/test_csp_policies.py",
+    "tests/02_document_plugins/test_csp_resolve_nonce.py",
+    "tests/07_resilience/test_jinja_and_string_nonce.py"
+   ]
+  },
+  "document": {
+   "docs": [
+    "docs/internals/DOCUMENT_AND_APP.md",
+    "docs/reference/DOCUMENT.md",
+    "docs/reference/DOCUMENT_TWO_STAGE.md"
+   ],
+   "modules": [
+    "ux_dom.dom.htmldocument",
+    "ux_dom.plugins.contribution",
+    "ux_dom.plugins.dedupe",
+    "ux_dom.plugins.hub",
+    "ux_dom.plugins.shell",
+    "ux_dom.settings.document"
+   ],
+   "purpose": "Document: the HTML head/body SSoT, two-stage resolution, and .use() runtime contributions.",
+   "symbols": [
+    "ux_dom.dom.htmldocument:HtmlDocument",
+    "ux_dom.plugins.contribution:ContributionPlugin",
+    "ux_dom.plugins.dedupe:dedupe_dom_nodes",
+    "ux_dom.settings.document:Document",
+    "ux_dom.settings.document:Document.use",
+    "ux_dom:Document"
+   ],
+   "tests": [
+    "tests/02_document_plugins/test_document_plugins.py",
+    "tests/02_document_plugins/test_document_two_stage.py",
+    "tests/02_document_plugins/test_document_using.py",
+    "tests/02_document_plugins/test_script_dedupe.py"
+   ]
+  },
+  "elements": {
+   "docs": [
+    "docs/ship/CAPABILITIES.md"
+   ],
+   "modules": [
+    "ux_dom.elements",
+    "ux_dom.elements.booleans",
+    "ux_dom.elements.buttons",
+    "ux_dom.elements.chars",
+    "ux_dom.elements.dates",
+    "ux_dom.elements.enums",
+    "ux_dom.elements.floats",
+    "ux_dom.elements.integers"
+   ],
+   "purpose": "Typed form-field components whose fields are validated with ux-valio validators.",
+   "tests": [
+    "tests/01_core/test_float_legend.py",
+    "tests/01_core/test_input_value_regressions.py",
+    "tests/07_resilience/test_f16_ux_valio_elements.py"
+   ]
+  },
+  "escaping": {
+   "docs": [
+    "docs/security/ATTRIBUTES.md"
+   ],
+   "modules": [
+    "ux_dom.dom.src.utils.dom_util"
+   ],
+   "purpose": "Escape text and attribute values, validate tag/attribute names, and render boolean attributes.",
+   "symbols": [
+    "ux_dom.dom.src.utils.dom_util:boolean_attr_value",
+    "ux_dom.dom.src.utils.dom_util:checked_attr_name",
+    "ux_dom.dom.src.utils.dom_util:checked_tag_name",
+    "ux_dom.dom.src.utils.dom_util:escape",
+    "ux_dom.dom.src.utils.dom_util:raw"
+   ],
+   "tests": [
+    "tests/01_core/test_escape_single_quote.py",
+    "tests/07_resilience/test_attr_escape_isolation.py",
+    "tests/07_resilience/test_attr_name_validation.py",
+    "tests/07_resilience/test_boolean_attributes.py"
+   ]
+  },
+  "html-parser": {
+   "docs": [
+    "docs/adr/0002-html-string-sanitizer-policy.md"
+   ],
+   "modules": [
+    "ux_dom.dom.src.parse_html"
+   ],
+   "purpose": "Tokenize an HTML string into an AST (stdlib HTMLParser) with charref and whitespace fidelity.",
+   "symbols": [
+    "ux_dom.dom.src.parse_html:HtmlToAst",
+    "ux_dom.dom.src.parse_html:tokenize_html"
+   ],
+   "tests": [
+    "tests/01_core/test_parse_whitespace.py",
+    "tests/05_chaos/test_parsing_chaos.py",
+    "tests/06_browser/test_parse_whitespace_browser.py",
+    "tests/07_resilience/test_entity_roundtrip.py"
+   ]
+  },
+  "htmx": {
+   "docs": [
+    "docs/reference/HYPERMEDIA.md"
+   ],
+   "modules": [
+    "ux_dom.htmx",
+    "ux_dom.htmx.middleware",
+    "ux_dom.plugins.control.htmx",
+    "ux_dom.web_io._events"
+   ],
+   "purpose": "htmx integration: the Htmx Document control, request details middleware and HtmxRoutes events.",
+   "symbols": [
+    "ux_dom.htmx.middleware:HtmxDetails",
+    "ux_dom.htmx.middleware:HtmxMiddleware",
+    "ux_dom.htmx:HtmxRoutes",
+    "ux_dom.plugins.control.htmx:HtmxControl",
+    "ux_dom:Htmx"
+   ],
+   "tests": [
+    "tests/02_document_plugins/test_htmx_route_and_partial.py",
+    "tests/02_document_plugins/test_htmx_ws_stream.py",
+    "tests/07_resilience/test_htmx_routes_single_name.py"
+   ]
+  },
+  "package-static": {
+   "docs": [
+    "docs/security/SAFE_STATIC.md"
+   ],
+   "modules": [
+    "ux_dom.plugins.package_static",
+    "ux_dom.plugins.safe_static"
+   ],
+   "purpose": "Serve allowlisted package files (x_element.js, ux-channel assets) with fail-loud mounting.",
+   "symbols": [
+    "ux_dom.plugins.package_static:PackageStaticContribution",
+    "ux_dom.plugins.safe_static:SafeStaticFile",
+    "ux_dom.plugins.safe_static:UnsafeStaticError",
+    "ux_dom.plugins.safe_static:install_safe_static"
+   ],
+   "tests": [
+    "tests/02_document_plugins/test_package_static.py",
+    "tests/02_document_plugins/test_safe_static.py",
+    "tests/07_resilience/test_mount_fail_loud.py"
+   ]
+  },
+  "pretty-render": {
+   "docs": [
+    "docs/internals/PRETTY_STREAM.md"
+   ],
+   "modules": [
+    "ux_dom.dom.src.ext"
+   ],
+   "purpose": "Pretty-printed output that never changes rendered text: inline neighbours, block layout, verbatim bodies.",
+   "symbols": [
+    "ux_dom.dom.src.ext:Tags._render_children"
+   ],
+   "tests": [
+    "tests/01_core/test_pretty_inline_text.py",
+    "tests/01_core/test_pretty_raw_text_verbatim.py",
+    "tests/01_core/test_pretty_stream.py",
+    "tests/06_browser/test_pretty_inner_text_browser.py",
+    "tests/06_browser/test_pretty_raw_text_browser.py"
+   ]
+  },
+  "raw-text-safety": {
+   "docs": [
+    "docs/security/SCRIPT_INJECTION.md"
+   ],
+   "modules": [
+    "ux_dom.dom.src.ext",
+    "ux_dom.dom.src.utils.dom_util"
+   ],
+   "purpose": "Keep script/style/textarea/title and foreign (SVG/MathML) bodies from breaking out of their text state.",
+   "symbols": [
+    "ux_dom.dom.src.ext:_text_state_name",
+    "ux_dom.dom.src.utils.dom_util:VERBATIM_ELEMENTS",
+    "ux_dom.dom.src.utils.dom_util:checked_text_state_body",
+    "ux_dom.dom.src.utils.dom_util:neutralize_raw_text"
+   ],
+   "tests": [
+    "tests/01_core/test_raw_text_elements.py",
+    "tests/06_browser/test_foreign_breakout_browser.py",
+    "tests/07_resilience/test_foreign_breakout.py",
+    "tests/07_resilience/test_foreign_content_raw_text.py",
+    "tests/07_resilience/test_text_state_parents.py"
+   ]
+  },
+  "renderer": {
+   "docs": [
+    "docs/internals/RENDER_PHASES.md"
+   ],
+   "modules": [
+    "ux_dom.dom.src.dom_tag",
+    "ux_dom.dom.src.ext"
+   ],
+   "purpose": "Serialize a tree to an HTML string or async token stream via __render__ / __async_render__.",
+   "symbols": [
+    "ux_dom.dom.src.dom_tag:dom_tag.__render__",
+    "ux_dom.dom.src.dom_tag:dom_tag._render",
+    "ux_dom.dom.src.ext:Tags._render"
+   ],
+   "tests": [
+    "tests/01_core/test_async_render_parity.py",
+    "tests/01_core/test_render_phases.py",
+    "tests/01_core/test_streaming_and_attrs.py"
+   ]
+  },
+  "response-adapters": {
+   "docs": [
+    "docs/plans/2026-09-12-extract-by-id.md"
+   ],
+   "modules": [
+    "ux_dom.response",
+    "ux_dom.response.serialize",
+    "ux_dom.response.starlette"
+   ],
+   "purpose": "Optional HTML/streaming response helpers: body preparation, extract_by_id, Starlette responses.",
+   "symbols": [
+    "ux_dom.response.serialize:extract_by_id",
+    "ux_dom.response.serialize:to_html_bytes",
+    "ux_dom.response.starlette:HTMLResponse",
+    "ux_dom.response.starlette:StreamingResponse"
+   ],
+   "tests": [
+    "tests/01_core/test_extract_by_id.py",
+    "tests/01_core/test_response_decorators.py"
+   ]
+  },
+  "sanitized-stream": {
+   "docs": [
+    "docs/adr/0002-html-string-sanitizer-policy.md"
+   ],
+   "modules": [
+    "ux_dom.response.sanitize"
+   ],
+   "purpose": "Sanitize HTML strings and bounded (sync or async) HTML chunk streams through the sanitizer.",
+   "symbols": [
+    "ux_dom.response.sanitize:HtmlStreamOverflow",
+    "ux_dom.response.sanitize:sanitize_html",
+    "ux_dom.response.sanitize:sanitize_html_stream"
+   ],
+   "tests": [
+    "tests/06_browser/test_sanitized_stream_browser.py",
+    "tests/07_resilience/test_sanitized_stream.py"
+   ]
+  },
+  "sanitizer": {
+   "docs": [
+    "docs/adr/0002-html-string-sanitizer-policy.md"
+   ],
+   "modules": [
+    "ux_dom.dom.src.html_string",
+    "ux_dom.dom.src.parse_html"
+   ],
+   "purpose": "Turn untrusted HTML strings into allowlisted ux-dom trees (defHTML / StringToHTML).",
+   "symbols": [
+    "ux_dom.dom.src.html_string:StringToHTML",
+    "ux_dom.dom.src.html_string:defHTML"
+   ],
+   "tests": [
+    "tests/06_browser/test_sanitizer_svg_browser.py",
+    "tests/07_resilience/test_html_allowlist.py",
+    "tests/07_resilience/test_html_parse_sanitizer.py",
+    "tests/07_resilience/test_html_string_mxss.py",
+    "tests/07_resilience/test_html_svg_names.py"
+   ]
+  },
+  "slots": {
+   "docs": [
+    "docs/reference/XELEMENT.md"
+   ],
+   "modules": [
+    "ux_dom.slots",
+    "ux_dom.slots.custom_element_slot",
+    "ux_dom.slots.slots",
+    "ux_dom.slots.web_component_slot"
+   ],
+   "purpose": "Slot helpers for custom elements and web components.",
+   "symbols": [
+    "ux_dom.slots.custom_element_slot:SlotElement",
+    "ux_dom.slots.slots:Slots",
+    "ux_dom.slots.web_component_slot:WebComponentSlot"
+   ],
+   "tests": [
+    "tests/01_core/test_custom_elements_auth_complex.py"
+   ]
+  },
+  "tag-tree": {
+   "docs": [
+    "docs/internals/CORE.md",
+    "docs/internals/MEMBERSHIP.md",
+    "docs/internals/MEMORY_TREE.md"
+   ],
+   "modules": [
+    "ux_dom.dom",
+    "ux_dom.dom.src.csstags",
+    "ux_dom.dom.src.dom1core",
+    "ux_dom.dom.src.dom_tag",
+    "ux_dom.dom.src.ext",
+    "ux_dom.dom.src.htmltags",
+    "ux_dom.dom.src.svgtags",
+    "ux_dom.dom.uniqueid"
+   ],
+   "purpose": "Build HTML trees from tag classes and `with` blocks, with per-root locks and node membership.",
+   "symbols": [
+    "ux_dom.dom.src.dom_tag:attr",
+    "ux_dom.dom.src.dom_tag:dom_tag",
+    "ux_dom.dom.src.dom_tag:get_current",
+    "ux_dom.dom.src.ext:Tags",
+    "ux_dom.dom:div"
+   ],
+   "tests": [
+    "tests/01_core/test_contextvar_stack.py",
+    "tests/01_core/test_membership_contract.py",
+    "tests/01_core/test_tree_ownership.py",
+    "tests/07_resilience/test_single_tag_registry.py"
+   ]
+  },
+  "ui-kit": {
+   "docs": [
+    "docs/reference/UI.md"
+   ],
+   "modules": [
+    "ux_dom.ui",
+    "ux_dom.ui.button",
+    "ux_dom.ui.catalog",
+    "ux_dom.ui.dialog",
+    "ux_dom.ui.tokens"
+   ],
+   "purpose": "Optional copy-in Tailwind UI kit and its component catalog.",
+   "symbols": [
+    "ux_dom.ui.catalog:CATALOG",
+    "ux_dom.ui.catalog:list_components"
+   ],
+   "tests": [
+    "tests/02_document_plugins/test_ui_battery.py",
+    "tests/02_document_plugins/test_ui_kit.py",
+    "tests/06_browser/test_kit_browser_deep.py"
+   ]
+  },
+  "url-policy": {
+   "docs": [
+    "docs/security/ATTRIBUTES.md",
+    "docs/security/WHY_JS_URL.md"
+   ],
+   "modules": [
+    "ux_dom.dom.src.utils.dom_util"
+   ],
+   "purpose": "Neutralize unsafe URLs in URL-bearing attributes (schemes, srcset, SVG animation values, htmx sse/ws).",
+   "symbols": [
+    "ux_dom.dom.src.utils.dom_util:UNSAFE_URL",
+    "ux_dom.dom.src.utils.dom_util:URL_ATTRIBUTES",
+    "ux_dom.dom.src.utils.dom_util:cross_origin",
+    "ux_dom.dom.src.utils.dom_util:safe_attr_value"
+   ],
+   "tests": [
+    "tests/06_browser/test_svg_animation_url_browser.py",
+    "tests/07_resilience/test_htmx_same_origin.py",
+    "tests/07_resilience/test_svg_animation_urls.py",
+    "tests/07_resilience/test_unsafe_url_attrs.py",
+    "tests/07_resilience/test_xelement_ws_url_attrs.py"
+   ]
+  },
+  "web-io": {
+   "docs": [
+    "docs/internals/MODULE_MAP.md"
+   ],
+   "modules": [
+    "ux_dom.dom.src.ws_rpc",
+    "ux_dom.web_io",
+    "ux_dom.web_io._adapter",
+    "ux_dom.web_io._events",
+    "ux_dom.web_io._protocol"
+   ],
+   "purpose": "Low-level WebSocket adapter, client handler and event managers.",
+   "symbols": [
+    "ux_dom.web_io._adapter:WebSocketAdapter",
+    "ux_dom.web_io._adapter:WebSocketClientHandler",
+    "ux_dom.web_io._protocol:WebSocketProtocol"
+   ],
+   "tests": [
+    "tests/01_core/test_web_io_client_handler.py"
+   ]
+  },
+  "xelement-runtime": {
+   "assets": [
+    "ux_dom/scripts/x_element.js"
+   ],
+   "docs": [
+    "docs/reference/XELEMENT.md",
+    "docs/reference/XELEMENT_AUTO_DEFINITIONS.md"
+   ],
+   "modules": [
+    "ux_dom.dom.htmldocument",
+    "ux_dom.dom.htmlelement",
+    "ux_dom.plugins.runtime",
+    "ux_dom.scripts"
+   ],
+   "purpose": "XElement custom elements: Python definitions, auto-collected templates, and the x_element.js runtime.",
+   "symbols": [
+    "ux_dom.dom.htmlelement:CustomElement",
+    "ux_dom.dom.htmlelement:WebComponent",
+    "ux_dom.dom.htmlelement:XElement",
+    "ux_dom.dom.htmlelement:XElementRegistry",
+    "ux_dom.plugins.runtime:XElementRuntime",
+    "ux_dom:XElement"
+   ],
+   "tests": [
+    "tests/02_document_plugins/test_auto_xelement_definitions.py",
+    "tests/02_document_plugins/test_xelement_runtime.py",
+    "tests/06_browser/test_xelement_browser.py",
+    "tests/07_resilience/test_shadowroot_only.py"
+   ]
+  }
+ },
+ "generator": {
+  "name": "codemap",
+  "sha256": "b8fc853ee27b634ac463b630ef3935419a136b806f6ee80779eb116753c1dd84",
+  "version": "2.0.0"
+ },
+ "layer_exceptions": [
+  "ux_dom.plugins.control.htmx -> ux_dom.htmx.middleware"
+ ],
+ "layer_graph": {
+  "cli": [
+   "document",
+   "dom",
+   "root",
+   "support",
+   "ui"
+  ],
+  "components": [
+   "dom"
+  ],
+  "document": [
+   "dom",
+   "integrations"
+  ],
+  "dom": [
+   "support"
+  ],
+  "integrations": [
+   "document",
+   "dom"
+  ],
+  "root": [
+   "components",
+   "document",
+   "dom"
+  ],
+  "support": [
+   "dom"
+  ],
+  "ui": [
+   "dom",
+   "root"
+  ]
+ },
+ "layer_rules": {
+  "cli": [
+   "document",
+   "dom",
+   "root",
+   "support",
+   "ui"
+  ],
+  "components": [
+   "dom"
+  ],
+  "document": [
+   "dom"
+  ],
+  "dom": [
+   "support"
+  ],
+  "integrations": [
+   "document",
+   "dom"
+  ],
+  "root": [
+   "components",
+   "document",
+   "dom"
+  ],
+  "support": [
+   "dom"
+  ],
+  "ui": [
+   "dom",
+   "root"
+  ]
+ },
+ "layer_violations": [],
  "layers": {
   "ux_dom": "root",
   "ux_dom.__main__": "cli",
@@ -147,17 +1217,41 @@
   "ux_dom.web_io._protocol": "integrations",
   "ux_dom.web_io._types": "integrations"
  },
- "public_api": {
-  "Component": "ux_dom.dom.src.component",
-  "Csp": "ux_dom.plugins.csp",
-  "Document": "ux_dom.settings.document",
-  "Fragment": "ux_dom.dom.src.component",
-  "MergeClassAttribute": "ux_dom.dom.src.component",
-  "ReactiveComponent": "ux_dom.dom.src.component",
-  "SlotElement": "ux_dom.slots.custom_element_slot",
-  "Slots": "ux_dom.slots.slots",
-  "WebComponentSlot": "ux_dom.slots.web_component_slot",
-  "x_slot": "ux_dom.slots.custom_element_slot"
+ "narrative_docs": [
+  "docs/internals/ARCHITECTURE.md",
+  "docs/internals/SYSTEM.md",
+  "docs/internals/MODULE_MAP.md"
+ ],
+ "non_goal_warnings": [
+  "field-validation: ux_dom.elements.booleans:BooleanInputValidator",
+  "field-validation: ux_dom.elements.booleans:BooleanLabelValidator",
+  "field-validation: ux_dom.elements.chars:CharInputValidator",
+  "field-validation: ux_dom.elements.chars:CharLabelValidator",
+  "field-validation: ux_dom.elements.integers:IntegerInputValidator",
+  "field-validation: ux_dom.elements.integers:IntegerLabelValidator",
+  "field-validation: ux_dom.elements.integers:IntegerNumberInputValidator",
+  "field-validation: ux_dom.elements.integers:IntegerRangeInputValidator",
+  "product-lifecycle: ux_dom.plugins.protocols:HmrPlugin"
+ ],
+ "packages": {
+  "ux_dom": "src/ux_dom"
  },
- "schema": 1
+ "projects": [
+  "pyproject.toml"
+ ],
+ "public_api": {
+  "ux_dom": {
+   "Component": "ux_dom.dom.src.component",
+   "Csp": "ux_dom.plugins.csp",
+   "Document": "ux_dom.settings.document",
+   "Fragment": "ux_dom.dom.src.component",
+   "MergeClassAttribute": "ux_dom.dom.src.component",
+   "ReactiveComponent": "ux_dom.dom.src.component",
+   "SlotElement": "ux_dom.slots.custom_element_slot",
+   "Slots": "ux_dom.slots.slots",
+   "WebComponentSlot": "ux_dom.slots.web_component_slot",
+   "x_slot": "ux_dom.slots.custom_element_slot"
+  }
+ },
+ "schema": 2
 }

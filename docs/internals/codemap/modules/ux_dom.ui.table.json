@@ -5,12 +5,25 @@
    "tests/02_document_plugins/test_ui_battery.py",
    "tests/02_document_plugins/test_ui_kit.py"
   ],
+  "doc": "Table — operational dark surface hierarchy.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -21,6 +34,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/table.py",
   "public": [
@@ -32,6 +46,128 @@
    "TableHead",
    "TableHeader",
    "TableRow"
-  ]
+  ],
+  "symbols": {
+   "Table": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "TableBody": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "TableCaption": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "TableCell": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "TableEmpty": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, col_span: int=1, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "TableHead": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', sorted: str | None=None, **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "TableHeader": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "TableRow": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

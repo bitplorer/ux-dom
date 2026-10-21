@@ -17,10 +17,24 @@
    "tests/02_document_plugins/test_ui_kit_defects.py",
    "tests/04_production/test_production_stability.py"
   ],
+  "doc": "ux-dom UI kit — Channel-first, shadcn-inspired (optional, Tailwind utilities).",
+  "exported_as": [],
+  "features": [
+   "ui-kit"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -63,6 +77,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/__init__.py",
   "public": [
@@ -133,6 +148,7 @@
    "textarea_classes",
    "type_scale",
    "variants"
-  ]
+  ],
+  "symbols": {}
  }
 }

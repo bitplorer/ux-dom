@@ -4,6 +4,11 @@
    "tests/03_routing_cli/test_profile_dx.py",
    "tests/07_resilience/test_cli_aliases_absent.py"
   ],
+  "doc": "``uxdom profile`` — first-class DX: p95 latency + self-time profile artifacts.",
+  "exported_as": [],
+  "features": [
+   "cli"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.cli",
@@ -11,6 +16,17 @@
    ],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "pathlib",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -21,11 +37,26 @@
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "cli",
   "path": "src/ux_dom/cli/profile.py",
   "public": [
    "format_profile_report",
    "run_profile"
-  ]
+  ],
+  "symbols": {
+   "format_profile_report": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(report: dict[str, Any]) -> str"
+   },
+   "run_profile": {
+    "doc": "Run the standard ux-dom p95 suite; return latency report dict.",
+    "kind": "function",
+    "public": true,
+    "signature": "(*, out: Path | None=None, rounds: int=60, warmup: int=6, profile_rounds: int=30) -> dict[str, Any]"
+   }
+  }
  }
 }

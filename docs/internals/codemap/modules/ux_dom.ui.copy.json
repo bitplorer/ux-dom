@@ -7,12 +7,29 @@
    "tests/02_document_plugins/test_ui_kit_defects.py",
    "tests/04_production/test_production_stability.py"
   ],
+  "doc": "Copy UI kit sources into an app (shadcn-style ownable components).",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.cli"
    ],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "ast",
+     "importlib",
+     "pathlib",
+     "re",
+     "shutil"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -21,11 +38,71 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/copy.py",
   "public": [
    "UiCopyError",
    "copy_component"
-  ]
+  ],
+  "symbols": {
+   "UiCopyError": {
+    "bases": [
+     "RuntimeError"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "_accepts": {
+    "doc": "Keywords from ``keywords`` that function ``fn`` does not accept.",
+    "kind": "function",
+    "public": false,
+    "signature": "(fn: ast.AST, keywords: set[str]) -> set[str]"
+   },
+   "_copy": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(key: str, dest_dir: Path, force: bool, seen: set[str]) -> Path"
+   },
+   "_defined": {
+    "doc": "Top-level names a module defines, mapped to their defining node.",
+    "kind": "function",
+    "public": false,
+    "signature": "(tree: ast.Module) -> dict[str, ast.AST]"
+   },
+   "_deps": {
+    "doc": "Catalog stems that ``src`` imports as ``from ux_dom.ui.<stem> import``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(src: Path) -> set[str]"
+   },
+   "_keywords_used": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(tree: ast.AST, name: str) -> set[str]"
+   },
+   "_kit_imports": {
+    "doc": "``{stem: names}`` for every ``from ux_dom.ui.<stem> import names``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(tree: ast.AST) -> dict[str, set[str]]"
+   },
+   "_stale_kit_files": {
+    "doc": "What ``src`` needs from kit files already in ``dest_dir`` that they lack.",
+    "kind": "function",
+    "public": false,
+    "signature": "(src: Path, dest_dir: Path) -> list[str]"
+   },
+   "copy_component": {
+    "doc": "Copy a ``ux_dom.ui`` module into ``dest_dir`` for local ownership.",
+    "kind": "function",
+    "public": true,
+    "signature": "(name: str, *, dest_dir: Path, force: bool=False) -> Path"
+   }
+  }
  }
 }

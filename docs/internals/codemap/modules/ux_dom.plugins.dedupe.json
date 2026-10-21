@@ -7,6 +7,11 @@
    "tests/02_document_plugins/test_script_dedupe.py",
    "tests/07_resilience/test_raw_string_sinks.py"
   ],
+  "doc": "Deduplicate script/link tags by src/href — prevent double injection.",
+  "exported_as": [],
+  "features": [
+   "document"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.plugins.hub",
@@ -18,6 +23,17 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "re",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [
@@ -25,12 +41,45 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/dedupe.py",
   "public": [
    "dedupe_dom_nodes",
    "extract_script_srcs",
    "resource_key"
-  ]
+  ],
+  "symbols": {
+   "_norm": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(url: str) -> str"
+   },
+   "_resource": {
+    "doc": "``(tag, rel, url)`` when *node* is itself a ``script[src]`` / ``link[href]``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(node: Any) -> tuple[str, str, str] | None"
+   },
+   "dedupe_dom_nodes": {
+    "doc": "Keep first node per (tag, rel, url) resource; preserve relative order.",
+    "kind": "function",
+    "public": true,
+    "signature": "(nodes: Iterable[Any]) -> List[Any]"
+   },
+   "extract_script_srcs": {
+    "doc": "Debug helper: list script/link URLs in order after flatten.",
+    "kind": "function",
+    "public": true,
+    "signature": "(*html_parts: Any) -> list[str]"
+   },
+   "resource_key": {
+    "doc": "Stable key for a DOM node if it loads an external resource.",
+    "kind": "function",
+    "public": true,
+    "signature": "(node: Any) -> str | None"
+   }
+  }
  }
 }

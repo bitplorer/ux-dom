@@ -5,12 +5,30 @@
    "tests/07_resilience/test_boolean_attributes.py",
    "tests/07_resilience/test_f16_ux_valio_elements.py"
   ],
+  "doc": "Typed form elements: booleans. Optional higher-level inputs over HTML tags.",
+  "exported_as": [],
+  "features": [
+   "elements"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.elements"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "dataclasses",
+     "typing"
+    ],
+    "ux-valio": [
+     "ux_valio"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -22,6 +40,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "components",
   "path": "src/ux_dom/elements/booleans.py",
   "public": [
@@ -31,6 +50,172 @@
    "BooleanLegend",
    "CheckboxInput",
    "RadioInput"
-  ]
+  ],
+  "symbols": {
+   "BooleanField": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "input_id": {
+      "decorators": [
+       "input_id.setter"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, id)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, label, name, type, checked, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "BooleanInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name, type, checked, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "BooleanInputValidator": {
+    "bases": [
+     "Validator"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": false
+   },
+   "BooleanLabel": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, label: str, *args, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "BooleanLabelValidator": {
+    "bases": [
+     "Validator"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": false
+   },
+   "BooleanLegend": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, label: str, *args, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "CheckboxInput": {
+    "bases": [
+     "BooleanInput"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name, checked, className, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "RadioInput": {
+    "bases": [
+     "BooleanInput"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, name, checked, className, **kwargs)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

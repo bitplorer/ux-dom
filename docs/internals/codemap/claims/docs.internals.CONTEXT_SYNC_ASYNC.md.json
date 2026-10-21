@@ -1,0 +1,36 @@
+{
+ "docs/internals/CONTEXT_SYNC_ASYNC.md": {
+  "claims": [
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom.src.dom_tag:attr"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom.src.dom_tag:context_stack"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom.src.dom_tag:get_current"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.plugins.csp:get_nonce"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom.src.dom_tag"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.plugins.csp"
+   }
+  ]
+ }
+}

@@ -1,0 +1,11 @@
+{
+ "docs/DOCUMENTATION.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom"
+   }
+  ]
+ }
+}

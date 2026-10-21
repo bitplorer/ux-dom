@@ -15,6 +15,9 @@
    "tests/05_chaos/test_production_trust.py",
    "tests/07_resilience/test_top_level_facades.py"
   ],
+  "doc": "Control-plane plugins (browser interaction scripts).",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [
     "ux_dom.plugins.hub"
@@ -23,6 +26,11 @@
     "ux_dom"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -33,12 +41,14 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/control/__init__.py",
   "public": [
    "ChannelControl",
    "HtmxControl",
    "NullControl"
-  ]
+  ],
+  "symbols": {}
  }
 }

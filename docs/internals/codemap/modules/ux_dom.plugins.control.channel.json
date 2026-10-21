@@ -1,6 +1,11 @@
 {
  "ux_dom.plugins.control.channel": {
   "consumers": [],
+  "doc": "ChannelControl — stack-native control plane (semantic data-ux-* attrs).",
+  "exported_as": [],
+  "features": [
+   "channel-bridge"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -8,15 +13,66 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/control/channel.py",
   "public": [
    "ChannelControl"
-  ]
+  ],
+  "symbols": {
+   "ChannelControl": {
+    "bases": [],
+    "doc": "Semantic control plane: data-ux-action / data-ux-arg-*.",
+    "kind": "class",
+    "methods": {
+     "artifacts": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "document_body": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "document_head": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "mount": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, app: Any, **kwargs: Any) -> None"
+     },
+     "partial_policy": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, request: Any) -> str"
+     },
+     "wire": {
+      "doc": "Return kwargs safe to splat onto a tag (data-ux-*).",
+      "kind": "function",
+      "signature": "(self, action: Any=None, **kwargs: Any) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

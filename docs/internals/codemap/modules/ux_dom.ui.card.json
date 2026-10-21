@@ -7,12 +7,25 @@
    "tests/02_document_plugins/test_ui_kit.py",
    "tests/04_production/test_production_stability.py"
   ],
+  "doc": "UI kit component: card — L1 operational surface.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -23,6 +36,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/card.py",
   "public": [
@@ -32,6 +46,98 @@
    "CardFooter",
    "CardHeader",
    "CardTitle"
-  ]
+  ],
+  "symbols": {
+   "Card": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "CardContent": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "CardDescription": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "CardFooter": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "CardHeader": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   },
+   "CardTitle": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

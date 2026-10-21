@@ -1,0 +1,16 @@
+{
+ "INSTALL.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "src/ux_dom"
+   }
+  ]
+ }
+}

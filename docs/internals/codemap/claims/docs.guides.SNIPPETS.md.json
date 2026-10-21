@@ -1,0 +1,151 @@
+{
+ "docs/guides/SNIPPETS.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add component Card"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add ui Button"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom lint"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom profile"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom ui"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:button"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:div"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:h1"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:h2"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:li"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:p"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:section"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:span"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:ul"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:Button"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:Card"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:CardContent"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:CardHeader"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:CardTitle"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Component"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Csp"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Document"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Fragment"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:Htmx"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:ReactiveComponent"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom:XElement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.ui"
+   }
+  ]
+ }
+}

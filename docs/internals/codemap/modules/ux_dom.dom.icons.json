@@ -69,12 +69,20 @@
    "tests/07_resilience/test_text_state_parents.py",
    "tests/fixtures/auth_xelements.py"
   ],
+  "doc": "Optional icon helpers for demos and UI kit.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.dom"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -84,6 +92,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/icons.py",
   "public": [
@@ -157,6 +166,23 @@
    "user_following_icon",
    "verified_icon",
    "youtube_icon"
-  ]
+  ],
+  "symbols": {
+   "Icons": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, version='1.1', id='Layer_1', x='0px', y='0px', viewBox='0 0 512 512', style='enable-background:new 0 0 512 512;', xmlns='http://www.w3.org/2000/svg', xmlns_xlink='http://www.w3.org/1999/xlink', xml_space='preserve', **kwargs)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

@@ -10,6 +10,12 @@
    "tests/01_core/test_render_phases.py",
    "tests/04_production/test_production_hardening.py"
   ],
+  "doc": "HTML document shell — two-stage head/body placement + auto XElement defs.",
+  "exported_as": [],
+  "features": [
+   "document",
+   "xelement-runtime"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -17,6 +23,16 @@
     "ux_dom.settings.document"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -28,10 +44,131 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/htmldocument.py",
   "public": [
    "HtmlDocument"
-  ]
+  ],
+  "symbols": {
+   "Body": {
+    "bases": [
+     "component.Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     }
+    },
+    "public": false
+   },
+   "Head": {
+    "bases": [
+     "component.Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     }
+    },
+    "public": false
+   },
+   "HtmlDocument": {
+    "bases": [
+     "component.Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__checks__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, element)"
+     },
+     "__enter__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__exit__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, type, value, traceback)"
+     },
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "__pre_render__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "_asset_tag": {
+      "doc": "Tag for a ``head=`` / ``body=`` asset (str path or attr dict).",
+      "kind": "function",
+      "signature": "(self, item, default)"
+     },
+     "_collect_xelement_definitions": {
+      "doc": "Auto-collect custom-element definitions from the live tree.",
+      "kind": "function",
+      "signature": "(self, search_element: dom_tag) -> None"
+     },
+     "_definition_tag_name": {
+      "doc": "Return ``x-tagname`` / ``tag_name`` for a definition node, if any.",
+      "kind": "function",
+      "signature": "(self, node: dom_tag)"
+     },
+     "_is_under_definitions_slot": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, node: dom_tag) -> bool"
+     },
+     "_may_shift_Body_to_body": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "_may_shift_Head_to_head": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "_register_definition": {
+      "doc": "Ensure one definition per ``x-tagname`` under the definitions slot.",
+      "kind": "function",
+      "signature": "(self, definition, seen: set) -> None"
+     },
+     "_render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, sb, indent_level=1, indent_str='  ', pretty=True, _seen=None)"
+     },
+     "_walk_render_tokens": {
+      "doc": "Token walk with pre_render once — pretty path must not double-run it.",
+      "kind": "function",
+      "signature": "(self, indent_level, indent_str, pretty, _seen=None)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, head=None, body=None, common_head=None, common_body=None, **kwargs)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

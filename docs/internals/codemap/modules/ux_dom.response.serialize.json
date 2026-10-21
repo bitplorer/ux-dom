@@ -8,6 +8,11 @@
    "tests/01_core/test_extract_by_id.py",
    "tests/07_resilience/test_jinja_and_string_nonce.py"
   ],
+  "doc": "Pure HTML prepare/serialize — no FastAPI/Starlette imports.",
+  "exported_as": [],
+  "features": [
+   "response-adapters"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -15,6 +20,17 @@
     "ux_dom.response.starlette"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "re",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -25,6 +41,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "integrations",
   "path": "src/ux_dom/response/serialize.py",
   "public": [
@@ -34,6 +51,74 @@
    "prepare_html_body",
    "prepare_html_stream",
    "to_html_bytes"
-  ]
+  ],
+  "symbols": {
+   "_async_bytes_chunks": {
+    "doc": "",
+    "kind": "async function",
+    "public": false,
+    "signature": "(data: bytes) -> AsyncIterator[bytes]"
+   },
+   "_async_str_chunks": {
+    "doc": "",
+    "kind": "async function",
+    "public": false,
+    "signature": "(data: str) -> AsyncIterator[str]"
+   },
+   "_element_end": {
+    "doc": "Exclusive index of the element that opens at ``html[start]`` (``<``).",
+    "kind": "function",
+    "public": false,
+    "signature": "(html: str, start: int) -> int | None"
+   },
+   "_open_tag_id": {
+    "doc": "Return the ``id`` attribute of one start tag, ignoring quoted values.",
+    "kind": "function",
+    "public": false,
+    "signature": "(open_tag: str) -> str | None"
+   },
+   "_skip_quoted": {
+    "doc": "Advance from ``start`` (a ``>`` search) past the next unquoted ``>``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(html: str, start: int) -> int"
+   },
+   "extract_by_id": {
+    "doc": "Return the outer-HTML slice for ``#target_id``.",
+    "kind": "function",
+    "public": true,
+    "signature": "(html: str, target_id: str) -> str"
+   },
+   "is_html_renderable": {
+    "doc": "dom_tag trees or any object exposing ``__render__`` (e.g. Compose Component).",
+    "kind": "function",
+    "public": true,
+    "signature": "(content: Any) -> bool"
+   },
+   "is_stream_renderable": {
+    "doc": "dom_tag trees or any object exposing ``__async_render__``.",
+    "kind": "function",
+    "public": true,
+    "signature": "(content: Any) -> bool"
+   },
+   "prepare_html_body": {
+    "doc": "Stamp CSP nonces on trees, then expand ``__render__``. No framework types.",
+    "kind": "function",
+    "public": true,
+    "signature": "(content: Any) -> Any"
+   },
+   "prepare_html_stream": {
+    "doc": "Normalize constructor input to an async iterable body. No Starlette.",
+    "kind": "function",
+    "public": true,
+    "signature": "(html_content: Any) -> Any"
+   },
+   "to_html_bytes": {
+    "doc": "Tree/Component/str → UTF-8 HTML bytes (framework-agnostic).",
+    "kind": "function",
+    "public": true,
+    "signature": "(content: Any, *, encoding: str='utf-8') -> bytes"
+   }
+  }
  }
 }

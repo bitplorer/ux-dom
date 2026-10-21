@@ -1,0 +1,21 @@
+{
+ "CONTRIBUTING.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add component|ui|xelement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "src/ux_dom"
+   }
+  ]
+ }
+}

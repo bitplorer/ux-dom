@@ -4,6 +4,9 @@
    "docs/internals/MODULE_MAP.md",
    "tests/07_resilience/test_f18_directory_router_absent.py"
   ],
+  "doc": "Human-friendly diagnostic helpers for common ux-dom mistakes.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -11,17 +14,47 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "support",
   "path": "src/ux_dom/diagnostics.py",
   "public": [
    "xelement_light_with_shadow",
    "xelement_missing_tagname",
    "xelement_shadow_missing"
-  ]
+  ],
+  "symbols": {
+   "xelement_light_with_shadow": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(cls_name: str, element_qual: str) -> str"
+   },
+   "xelement_missing_tagname": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(cls_name: str, element_qual: str) -> str"
+   },
+   "xelement_shadow_missing": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(cls_name: str, element_qual: str) -> str"
+   }
+  }
  }
 }

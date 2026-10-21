@@ -4,6 +4,11 @@
    "tests/03_routing_cli/test_speedscope_weights.py",
    "tests/04_production/test_p95_profiling.py"
   ],
+  "doc": "Internal / maintainer profiling helpers (not a day-1 user API).",
+  "exported_as": [],
+  "features": [
+   "cli"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.profile"
@@ -11,11 +16,30 @@
    "module_level": [],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "cProfile",
+     "dataclasses",
+     "io",
+     "json",
+     "pathlib",
+     "pstats",
+     "statistics",
+     "time",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "support",
   "path": "src/ux_dom/profiling.py",
   "public": [
@@ -25,6 +49,60 @@
    "profile_cprofile",
    "run_suite",
    "write_html_report"
-  ]
+  ],
+  "symbols": {
+   "LatencyReport": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "to_dict": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "_percentile": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(sorted_vals: Sequence[float], p: float) -> float"
+   },
+   "cprofile_to_speedscope": {
+    "doc": "Minimal speedscope \"sampled\" profile from cProfile stats.",
+    "kind": "function",
+    "public": true,
+    "signature": "(stats: pstats.Stats, *, name: str='ux-dom') -> dict[str, Any]"
+   },
+   "measure_latency": {
+    "doc": "Wall-clock latency distribution for a zero-arg callable.",
+    "kind": "function",
+    "public": true,
+    "signature": "(fn: Callable[[], Any], *, name: str='op', rounds: int=100, warmup: int=10) -> LatencyReport"
+   },
+   "profile_cprofile": {
+    "doc": "Run ``fn`` under cProfile; return Stats + text dump.",
+    "kind": "function",
+    "public": true,
+    "signature": "(fn: Callable[[], Any], *, name: str='op', rounds: int=50) -> tuple[pstats.Stats, str]"
+   },
+   "run_suite": {
+    "doc": "Run latency + cProfile + speedscope for a list of (name, fn).",
+    "kind": "function",
+    "public": true,
+    "signature": "(benches: Sequence[tuple[str, Callable[[], Any]]], *, out_dir: Path, title: str, rounds: int=80, warmup: int=8, profile_rounds: int=40) -> dict[str, Any]"
+   },
+   "write_html_report": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(path: Path, *, title: str, latencies: Sequence[LatencyReport], pstats_text: str='', notes: str='') -> Path"
+   }
+  }
  }
 }

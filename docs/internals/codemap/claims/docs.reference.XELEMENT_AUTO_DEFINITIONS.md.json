@@ -1,0 +1,16 @@
+{
+ "docs/reference/XELEMENT_AUTO_DEFINITIONS.md": {
+  "claims": [
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.XElement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom.htmlelement.CustomElement"
+   }
+  ]
+ }
+}

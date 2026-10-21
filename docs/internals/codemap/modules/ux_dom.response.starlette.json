@@ -29,12 +29,32 @@
    "tests/07_resilience/test_extras_match_imports.py",
    "tests/helpers.py"
   ],
+  "doc": "Starlette/FastAPI response **adapter** for ux-dom trees.",
+  "exported_as": [],
+  "features": [
+   "response-adapters"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.response"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "starlette": [
+     "starlette.background",
+     "starlette.responses"
+    ],
+    "stdlib": [
+     "functools",
+     "inspect",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -43,6 +63,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "integrations",
   "path": "src/ux_dom/response/starlette.py",
   "public": [
@@ -50,6 +71,61 @@
    "StreamingResponse",
    "html_response",
    "streaming_response"
-  ]
+  ],
+  "symbols": {
+   "HTMLResponse": {
+    "bases": [
+     "StarletteHTMLResponse"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, html_content: T.Any, status_code: int=200, headers: T.Optional[dict]=None, media_type: T.Optional[str]=None, background: T.Optional[BackgroundTask]=None) -> None"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, content: T.Any) -> bytes"
+     }
+    },
+    "public": true
+   },
+   "StreamingResponse": {
+    "bases": [
+     "StarletteStreamingResponse"
+    ],
+    "doc": "Stream HTML (or raw bytes) to the client.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, html_content, status_code: int=200, headers: T.Optional[dict]=None, media_type: T.Optional[str]=None, background: T.Optional[BackgroundTask]=None) -> None"
+     }
+    },
+    "public": true
+   },
+   "_response_decorator": {
+    "doc": "Wrap ``endpoint`` so renderable results become ``response_cls``.",
+    "kind": "function",
+    "public": false,
+    "signature": "(endpoint: T.Optional[T.Callable[..., T.Any]], is_renderable: T.Callable[[T.Any], bool], response_cls: T.Callable[[T.Any], T.Any]) -> T.Callable[..., T.Any]"
+   },
+   "html_response": {
+    "doc": "Decorator: renderable endpoint results become :class:`HTMLResponse`.",
+    "kind": "function",
+    "public": true,
+    "signature": "(endpoint: T.Optional[T.Callable[..., T.Any]]=None) -> T.Callable[..., T.Any]"
+   },
+   "streaming_response": {
+    "doc": "Decorator: stream-renderable endpoint results become :class:`StreamingResponse`.",
+    "kind": "function",
+    "public": true,
+    "signature": "(endpoint: T.Optional[T.Callable[..., T.Any]]=None) -> T.Callable[..., T.Any]"
+   }
+  }
  }
 }

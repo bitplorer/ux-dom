@@ -1,0 +1,46 @@
+{
+ "docs/internals/ARCHITECTURE.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor | lint | profile | add"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/cli/adders.py"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/dom/htmldocument.py"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/dom/htmlelement.py"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/dom/src/component.py"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/dom/src/ext.py"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/plugins/safe_static.py"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/settings/document.py"
+   }
+  ]
+ }
+}

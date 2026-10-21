@@ -13,6 +13,12 @@
    "tests/07_resilience/test_html_string_mxss.py",
    "tests/07_resilience/test_html_tree_construction.py"
   ],
+  "doc": "A simple but complete HTML to Abstract Syntax Tree (AST) parser.",
+  "exported_as": [],
+  "features": [
+   "html-parser",
+   "sanitizer"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -21,11 +27,28 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "collections",
+     "html",
+     "html.parser",
+     "inspect",
+     "itertools",
+     "re",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/parse_html.py",
   "public": [
@@ -47,6 +70,582 @@
    "VoidTag",
    "XTag",
    "tokenize_html"
-  ]
+  ],
+  "symbols": {
+   "Attribute": {
+    "bases": [
+     "dict"
+    ],
+    "doc": "This class holds the tags's attributes.",
+    "kind": "class",
+    "methods": {
+     "__getitem__": {
+      "doc": "If self doesn't have the key it returns ''.",
+      "kind": "function",
+      "signature": "(self, key: str) -> str"
+     },
+     "__str__": {
+      "doc": "Return a htmlized representation for attributes.",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "classes": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "Return 'class' attribute as list.",
+      "kind": "function",
+      "signature": "(self) -> list[str]"
+     }
+    },
+    "public": true
+   },
+   "Char": {
+    "bases": [
+     "TerminalElement"
+    ],
+    "doc": "Represent character codes like: `&#0`",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **kwargs) -> str"
+     }
+    },
+    "public": true
+   },
+   "Comment": {
+    "bases": [
+     "TerminalElement"
+    ],
+    "doc": "Represent HTML comments",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **kwargs) -> str"
+     }
+    },
+    "public": true
+   },
+   "Data": {
+    "bases": [
+     "TerminalElement"
+    ],
+    "doc": "Represent data inside xml/html documents, like raw text.",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **kwargs) -> str"
+     }
+    },
+    "public": true
+   },
+   "Declaration": {
+    "bases": [
+     "TerminalElement"
+    ],
+    "doc": "Represent declarations, like `<!DOCTYPE html>`",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **kwargs) -> str"
+     }
+    },
+    "public": true
+   },
+   "Element": {
+    "bases": [
+     "abc.MutableSequence"
+    ],
+    "doc": "An Element of the xml/html document.",
+    "kind": "class",
+    "methods": {
+     "__delitem__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, index: int)"
+     },
+     "__eq__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, item: Any) -> bool"
+     },
+     "__getitem__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, index: int) -> Element"
+     },
+     "__init__": {
+      "doc": "Initialise the element.",
+      "kind": "function",
+      "signature": "(self, name: str='', attr: dict | None=None) -> None"
+     },
+     "__iter__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Iterator[Element]"
+     },
+     "__len__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> int"
+     },
+     "__repr__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "__setitem__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, index: int, value: Element)"
+     },
+     "__str__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "children": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "Return copy of children.",
+      "kind": "function",
+      "signature": "(self) -> list[Element]"
+     },
+     "deepcopy": {
+      "doc": "Recursively copy and remove parent.",
+      "kind": "function",
+      "signature": "(self) -> Element"
+     },
+     "find": {
+      "doc": "Find all elements that match name and specific attributes.",
+      "kind": "function",
+      "signature": "(self, identifier: str | type[Element], attrs: dict | None=None, classes: Iterable[str] | None=None, include_self: bool=False, recurse: bool=True) -> Iterator[Element]"
+     },
+     "insert": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, index: int, value: Element)"
+     },
+     "parent": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "Return parent.",
+      "kind": "function",
+      "signature": "(self) -> Element | None"
+     },
+     "render": {
+      "doc": "Returns a HTML string representation of the element.",
+      "kind": "function",
+      "signature": "(self, tag_overrides: dict[str, Callable[[Element, dict], str]] | None=None, **kwargs) -> str"
+     },
+     "reset_children": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, children: list[Element], deepcopy: bool=False)"
+     },
+     "strip": {
+      "doc": "Return copy with all `Data` tokens",
+      "kind": "function",
+      "signature": "(self, inplace: bool=False, recurse: bool=False) -> Element"
+     },
+     "walk": {
+      "doc": "Walk through the xml/html AST.",
+      "kind": "function",
+      "signature": "(self, include_self: bool=False) -> Iterator[Element]"
+     }
+    },
+    "public": true
+   },
+   "Entity": {
+    "bases": [
+     "TerminalElement"
+    ],
+    "doc": "Represent entities like `&amp`",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **kwargs) -> str"
+     }
+    },
+    "public": true
+   },
+   "HtmlCuts": {
+    "bases": [
+     "HtmlToAst"
+    ],
+    "doc": "Where a growing HTML string can be cut without changing its parse (#121).",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_find_style_regions": {
+      "doc": "Extend the region scan over ``data``; each step keeps < 7 chars.",
+      "kind": "function",
+      "signature": "(self, data: str) -> None"
+     },
+     "_in_style_region": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, offset: int) -> bool"
+     },
+     "feed": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, data: str) -> None"
+     },
+     "held": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "Length of the unfinished construct the parser is waiting on.",
+      "kind": "function",
+      "signature": "(self) -> int"
+     },
+     "parse_comment": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, i: int, report: bool=True) -> int"
+     },
+     "updatepos": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, i: int, j: int) -> int"
+     }
+    },
+    "public": true
+   },
+   "HtmlToAst": {
+    "bases": [
+     "HTMLParser"
+    ],
+    "doc": "The tokenizer class.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, name: str='', convert_charrefs: bool=False)"
+     },
+     "_reference": {
+      "doc": "Keep only a well-formed reference name; the rest is plain text.",
+      "kind": "function",
+      "signature": "(self, kind, valid: re.Pattern[str], lead: str, name: str)"
+     },
+     "close": {
+      "doc": "Finish the input, keeping a reference that ends it (``AT&T``).",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "feed": {
+      "doc": "Parse the source string (param name matches ``HTMLParser.feed``).",
+      "kind": "function",
+      "signature": "(self, data: str) -> Root"
+     },
+     "handle_charref": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, name: str)"
+     },
+     "handle_comment": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, data: str)"
+     },
+     "handle_data": {
+      "doc": "Nest data onto the tree.",
+      "kind": "function",
+      "signature": "(self, data: str)"
+     },
+     "handle_decl": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, decl: str)"
+     },
+     "handle_endtag": {
+      "doc": "When found a closing tag then makes it point to the right scope.",
+      "kind": "function",
+      "signature": "(self, tag: str)"
+     },
+     "handle_entityref": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, name: str)"
+     },
+     "handle_pi": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, data: str)"
+     },
+     "handle_startendtag": {
+      "doc": "``<tag/>``: the flag ends only void, foreign and raw text elements.",
+      "kind": "function",
+      "signature": "(self, tag: str, attrs)"
+     },
+     "handle_starttag": {
+      "doc": "When found an opening tag then nest it onto the tree.",
+      "kind": "function",
+      "signature": "(self, tag: str, attrs)"
+     },
+     "unknown_decl": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, data: str)"
+     }
+    },
+    "public": true
+   },
+   "Pi": {
+    "bases": [
+     "TerminalElement"
+    ],
+    "doc": "Represent processing instructions like `<?xml-stylesheet ?>`",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **kwargs) -> str"
+     }
+    },
+    "public": true
+   },
+   "Root": {
+    "bases": [
+     "Element"
+    ],
+    "doc": "The root of the AST tree.",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "Returns a string HTML representation of the structure.",
+      "kind": "function",
+      "signature": "(self, **kwargs) -> str"
+     }
+    },
+    "public": true
+   },
+   "Tag": {
+    "bases": [
+     "Element"
+    ],
+    "doc": "Represent xml/html tags under the form: <name key=\"value\" ...> ... </name>.",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, tag_overrides: dict[str, Callable[[Element, dict], str]] | None=None, **kwargs) -> str"
+     }
+    },
+    "public": true
+   },
+   "TerminalElement": {
+    "bases": [
+     "Element"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, data: str)"
+     },
+     "__repr__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     },
+     "deepcopy": {
+      "doc": "Copy and remove parent.",
+      "kind": "function",
+      "signature": "(self) -> TerminalElement"
+     }
+    },
+    "public": true
+   },
+   "Tree": {
+    "bases": [],
+    "doc": "The engine class to generate the AST tree.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "Initialise Tree",
+      "kind": "function",
+      "signature": "(self, name: str='')"
+     },
+     "_body_start": {
+      "doc": "The \"in body\" rules (§13.2.6.4.7) that close elements before a",
+      "kind": "function",
+      "signature": "(self, name: str) -> bool"
+     },
+     "_close_p": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_current_is": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *names: str) -> bool"
+     },
+     "_generate_implied_end_tags": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, but: str='') -> None"
+     },
+     "_html_at": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "Whether a start tag at foreign ``node`` follows the HTML rules.",
+      "kind": "function",
+      "signature": "(node: Element, name: str) -> bool"
+     },
+     "_in_scope": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key: str, scope: str='scope') -> bool"
+     },
+     "_insert": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, kind, name: str, attrs, namespace: str='html') -> Element"
+     },
+     "_pop": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_pop_to": {
+      "doc": "Pop the element at ``index`` and every element above it.",
+      "kind": "function",
+      "signature": "(self, index: int) -> None"
+     },
+     "_pos": {
+      "doc": "Position of the nearest open element listed under ``key``, or -1.",
+      "kind": "function",
+      "signature": "(self, key: str) -> int"
+     },
+     "_push": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, node: Element) -> None"
+     },
+     "_table_start": {
+      "doc": "The table insertion modes (§13.2.6.4.9-15) for a start tag.",
+      "kind": "function",
+      "signature": "(self, name: str) -> bool"
+     },
+     "clear": {
+      "doc": "Clear the outmost and stack for a new parsing.",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "end": {
+      "doc": "An end tag: close the element it names where the spec does.",
+      "kind": "function",
+      "signature": "(self, name: str) -> None"
+     },
+     "last": {
+      "doc": "Return the last pointer which point to the actual tag scope.",
+      "kind": "function",
+      "signature": "(self) -> Element"
+     },
+     "nest_terminal": {
+      "doc": "Nest the data onto the tree.",
+      "kind": "function",
+      "signature": "(self, klass: type[TerminalElement], data: str)"
+     },
+     "start": {
+      "doc": "A start tag: close what it implies, then insert it.",
+      "kind": "function",
+      "signature": "(self, name: str, attrs, *, void: bool=False, self_closing=False)"
+     }
+    },
+    "public": true
+   },
+   "VoidTag": {
+    "bases": [
+     "Element"
+    ],
+    "doc": "Represent tags with no children, only start tag, like `<img src=\"t.gif\" >`",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, **kwargs) -> str"
+     }
+    },
+    "public": true
+   },
+   "XTag": {
+    "bases": [
+     "Element"
+    ],
+    "doc": "Represent XHTML style tags with no children, like `<img src=\"t.gif\" />`",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, tag_overrides: dict[str, Callable[[Element, dict], str]] | None=None, **kwargs) -> str"
+     }
+    },
+    "public": true
+   },
+   "_finish_numeric_reference": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(match: re.Match[str]) -> str"
+   },
+   "_finish_numeric_references": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(text: str, *, keep_style: bool) -> str"
+   },
+   "_is_integration_point": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(namespace: str, name: str, attrs: dict) -> bool"
+   },
+   "_normalize_attrs": {
+    "doc": "HTMLParser may pass list[tuple[str, str|None]]; coerce to dict.",
+    "kind": "function",
+    "public": false,
+    "signature": "(attrs) -> dict"
+   },
+   "_stack_keys": {
+    "doc": "The stack indexes ``node`` is listed in while it is open (see ``Tree``).",
+    "kind": "function",
+    "public": false,
+    "signature": "(node: Element) -> tuple[str, ...]"
+   },
+   "tokenize_html": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(text: str, name: str='', convert_charrefs: bool=False) -> Root"
+   }
+  }
  }
 }

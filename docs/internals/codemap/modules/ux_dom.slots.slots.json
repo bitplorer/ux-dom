@@ -6,12 +6,28 @@
    "examples/xelement_kit/app/routes/slots.py",
    "tests/02_document_plugins/test_hypermedia_surface.py"
   ],
+  "doc": "Multi-slot WebComponent helper. Prefer WebComponent + slot() for new code.",
+  "exported_as": [
+   "ux_dom:Slots"
+  ],
+  "features": [
+   "slots"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.slots"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "dataclasses"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -21,10 +37,46 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "components",
   "path": "src/ux_dom/slots/slots.py",
   "public": [
    "Slots"
-  ]
+  ],
+  "symbols": {
+   "Slots": {
+    "bases": [
+     "WebComponent"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "Declarative multi-slot shadow component.",
+    "kind": "class",
+    "methods": {
+     "__call__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "__new__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, *args, **kwargs)"
+     },
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, tag_name, slot_names, classes, css)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

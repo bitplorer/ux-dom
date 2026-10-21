@@ -1,12 +1,31 @@
 {
  "ux_dom.cli.dashboard": {
   "consumers": [],
+  "doc": "``uxdom dashboard`` — p95 latency report rendered as one self-contained page.",
+  "exported_as": [],
+  "features": [
+   "cli"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.cli"
    ],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "html",
+     "json",
+     "pathlib",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -15,11 +34,54 @@
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "cli",
   "path": "src/ux_dom/cli/dashboard.py",
   "public": [
    "run_dashboard",
    "write_dom_dashboard"
-  ]
+  ],
+  "symbols": {
+   "_Panel": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": false
+   },
+   "_esc": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(s: Any) -> str"
+   },
+   "_render_panel": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(p: _Panel) -> str"
+   },
+   "_svg_bars": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(latencies: list[dict], *, width: int=640, height: int=220) -> str"
+   },
+   "run_dashboard": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(*, out: Path | None=None, rounds: int=40, warmup: int=4, profile_rounds: int=15) -> dict[str, Any]"
+   },
+   "write_dom_dashboard": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(out_dir: Path, report: dict[str, Any]) -> Path"
+   }
+  }
  }
 }

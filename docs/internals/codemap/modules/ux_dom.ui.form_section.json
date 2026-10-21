@@ -3,12 +3,25 @@
   "consumers": [
    "tests/02_document_plugins/test_ui_kit_defects.py"
   ],
+  "doc": "FormSection — pattern for labeled field groups.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -19,10 +32,28 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/form_section.py",
   "public": [
    "FormSection"
-  ]
+  ],
+  "symbols": {
+   "FormSection": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *children: Any, title: str='', description: str='', className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

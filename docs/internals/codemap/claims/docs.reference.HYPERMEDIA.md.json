@@ -1,0 +1,76 @@
+{
+ "docs/reference/HYPERMEDIA.md": {
+  "claims": [
+   {
+    "kind": "env",
+    "resolved": false,
+    "text": "KIT_URL"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom.htmlelement:AlpineComponent"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom.src.jinjatags:For"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom.src.jinjatags:Var"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:div"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:li"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.dom:template"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom.htmlelement"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom.src.jinjatags"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.slots"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.slots.Slots"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.slots.WebComponentSlot"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom/htmx/middleware.py"
+   }
+  ]
+ }
+}

@@ -30,6 +30,12 @@
    "tests/07_resilience/test_svg_animation_urls.py",
    "tests/07_resilience/test_xhtml_mode_absent.py"
   ],
+  "doc": "In-memory DOM node model: children, attributes, membership, serialize.",
+  "exported_as": [],
+  "features": [
+   "renderer",
+   "tag-tree"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.dom.src.concurrency",
@@ -53,6 +59,26 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "asyncio"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "collections",
+     "collections.abc",
+     "contextlib",
+     "contextvars",
+     "copy",
+     "functools",
+     "numbers",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [
@@ -61,6 +87,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/dom_tag.py",
   "public": [
@@ -71,6 +98,314 @@
    "get_current",
    "multi_tree_lock",
    "tree_lock_for"
-  ]
+  ],
+  "symbols": {
+   "_clear_with_stack_if_empty": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "()"
+   },
+   "_get_with_stack": {
+    "doc": "Stack for the current Context; create a **new** list only when needed.",
+    "kind": "function",
+    "public": false,
+    "signature": "()"
+   },
+   "_peek_with_stack": {
+    "doc": "Return the active stack list, or None if no with-frame is open.",
+    "kind": "function",
+    "public": false,
+    "signature": "()"
+   },
+   "attr": {
+    "doc": "Set attributes on the current active tag context",
+    "kind": "function",
+    "public": true,
+    "signature": "(*args, **kwargs)"
+   },
+   "context_stack": {
+    "doc": "Copy of active build frames (empty if no with/async with).",
+    "kind": "function",
+    "public": true,
+    "signature": "()"
+   },
+   "detached_build": {
+    "decorators": [
+     "contextmanager"
+    ],
+    "doc": "Build nodes that join no open ``with`` frame (the caller attaches them).",
+    "kind": "function",
+    "public": false,
+    "signature": "()"
+   },
+   "dom_string": {
+    "bases": [
+     "str"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "dom_tag": {
+    "bases": [
+     "object"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__aenter__": {
+      "doc": "Push construction frame (async ``async with``) — same ContextVar.",
+      "kind": "async function",
+      "signature": "(self)"
+     },
+     "__aexit__": {
+      "doc": "Pop construction frame (async ``async with``).",
+      "kind": "async function",
+      "signature": "(self, type, value, traceback)"
+     },
+     "__async_render__": {
+      "doc": "Phase **serialize** (async): walk the finished tree → token stream.",
+      "kind": "async function",
+      "signature": "(self, indent='  ', pretty=True, *, chunk_size: int=8)"
+     },
+     "__bool__": {
+      "doc": "Node **object** existence — always True.",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__call__": {
+      "doc": "tag instance is being used as a decorator.",
+      "kind": "function",
+      "signature": "(self, func)"
+     },
+     "__contains__": {
+      "doc": "``item in node`` ≡ own match **or** a hit under the subtree.",
+      "kind": "function",
+      "signature": "(self, item)"
+     },
+     "__enter__": {
+      "doc": "Push construction frame (sync ``with``) — ContextVar stack.",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__exit__": {
+      "doc": "Pop construction frame and adopt unused children.",
+      "kind": "function",
+      "signature": "(self, type, value, traceback)"
+     },
+     "__getitem__": {
+      "doc": "Returns the stored value of the specified attribute or child",
+      "kind": "function",
+      "signature": "(self, key)"
+     },
+     "__iadd__": {
+      "doc": "Reflexive binary addition simply adds tag as a child.",
+      "kind": "function",
+      "signature": "(self, obj)"
+     },
+     "__init__": {
+      "doc": "Creates a new tag. Child tags should be passed as arguments and attributes",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "__init_subclass__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, **kwargs)"
+     },
+     "__iter__": {
+      "doc": "Iterates over child elements.",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__len__": {
+      "doc": "Number of child elements.",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__new__": {
+      "doc": "Check if bare tag is being used as a decorator",
+      "kind": "function",
+      "signature": "(_cls, *args, **kwargs)"
+     },
+     "__render__": {
+      "doc": "Phase **serialize** (sync): walk the finished tree → HTML string.",
+      "kind": "function",
+      "signature": "(self, indent='  ', pretty=True)"
+     },
+     "__repr__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__str__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "_add": {
+      "doc": "Add new child tags (internal attach path; see :meth:`add`).",
+      "kind": "function",
+      "signature": "(self, *args)"
+     },
+     "_add_to_ctx": {
+      "doc": "Attach this node to the innermost active with / async with frame.",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "_add_unlocked": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args)"
+     },
+     "_attr_matches": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "Attribute filter for ``get``.",
+      "kind": "function",
+      "signature": "(node, attrs)"
+     },
+     "_clean_attrs": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, kwargs)"
+     },
+     "_clear": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "_clear_unlocked": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "_delete_attribute": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key)"
+     },
+     "_delete_attribute_unlocked": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key)"
+     },
+     "_find": {
+      "doc": "Yield matches depth-first (lazy) — no intermediate full lists.",
+      "kind": "function",
+      "signature": "(self, tag=None, **kwargs)"
+     },
+     "_match_nodes": {
+      "doc": "Yield ``node`` (and Component ``_entry`` if distinct) when they match.",
+      "kind": "function",
+      "signature": "(self, node, tag, attrs)"
+     },
+     "_matches": {
+      "doc": "Scope: **this node only** (plus Component transparent ``_entry``).",
+      "kind": "function",
+      "signature": "(self, tag=None, **kwargs)"
+     },
+     "_remove": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, obj)"
+     },
+     "_render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, sb, indent_level=0, indent_str='  ', pretty=True, _seen=None)"
+     },
+     "_render_children": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, sb, indent_level, indent_str, pretty, _seen=None)"
+     },
+     "_replace_children": {
+      "doc": "Atomically replace all children (clear + add under one tree lock).",
+      "kind": "function",
+      "signature": "(self, *args)"
+     },
+     "_set_attribute": {
+      "doc": "Add or update the value of an attribute, or replace a child by index.",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     },
+     "_set_attribute_unlocked": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     },
+     "_setdocument": {
+      "doc": "Creates a reference to the parent document to allow for partial-tree",
+      "kind": "function",
+      "signature": "(self, doc)"
+     },
+     "_setdocument_unlocked": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, doc)"
+     },
+     "_tagname": {
+      "doc": "The element name: an instance or class ``tagname``, else the class",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "_type_matches": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "Type / name match for one node (no recursion).",
+      "kind": "function",
+      "signature": "(node, tag)"
+     },
+     "_walk_render_tokens": {
+      "doc": "Yield HTML tokens while walking the tree (sync generator).",
+      "kind": "function",
+      "signature": "(self, indent_level, indent_str, pretty, _seen=None)"
+     },
+     "add": {
+      "doc": "Add child tags / strings / attr dicts. Public alias of :meth:`_add`.",
+      "kind": "function",
+      "signature": "(self, *args)"
+     },
+     "clean_attribute": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "Normalize attribute names for shorthand and work arounds for limitations",
+      "kind": "function",
+      "signature": "(cls, attribute)"
+     },
+     "clean_pair": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "This will call `clean_attribute` on the attribute and also allows for the",
+      "kind": "function",
+      "signature": "(cls, attribute, value)"
+     },
+     "get": {
+      "doc": "Find nodes matching ``tag``/attrs: **own root + entire subtree**.",
+      "kind": "function",
+      "signature": "(self, tag=None, **kwargs)"
+     },
+     "matches": {
+      "doc": "Own-scope match (this node + Component ``_entry``); see :meth:`_matches`.",
+      "kind": "function",
+      "signature": "(self, tag=None, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "get_current": {
+    "doc": "Current tag in the active build stack (sync with or async with).",
+    "kind": "function",
+    "public": true,
+    "signature": "(default=_get_current_none)"
+   }
+  }
  }
 }

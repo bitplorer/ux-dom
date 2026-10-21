@@ -101,6 +101,9 @@
    "tests/07_resilience/test_xhtml_mode_absent.py",
    "tests/helpers.py"
   ],
+  "doc": "ux-dom — Python hypermedia **render** layer (tree → HTML / stream).",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.doctor"
@@ -143,6 +146,11 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [
@@ -155,6 +163,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "root",
   "path": "src/ux_dom/__init__.py",
   "public": [
@@ -168,6 +177,7 @@
    "Slots",
    "WebComponentSlot",
    "x_slot"
-  ]
+  ],
+  "symbols": {}
  }
 }

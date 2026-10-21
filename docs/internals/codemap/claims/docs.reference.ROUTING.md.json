@@ -1,0 +1,16 @@
+{
+ "docs/reference/ROUTING.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add route"
+   },
+   {
+    "kind": "module",
+    "resolved": false,
+    "text": "ux_dom.routing"
+   }
+  ]
+ }
+}

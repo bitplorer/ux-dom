@@ -11,12 +11,36 @@
    "tests/07_resilience/test_doctor_product_rows_absent.py",
    "tests/07_resilience/test_extras_match_imports.py"
   ],
+  "doc": "``uxdom doctor`` — environment and project health checks.",
+  "exported_as": [],
+  "features": [
+   "cli"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.cli"
    ],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {
+    "ux-channel": [
+     "ux_channel"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "importlib.util",
+     "pathlib",
+     "platform",
+     "sys",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -26,6 +50,7 @@
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "cli",
   "path": "src/ux_dom/cli/doctor.py",
   "public": [
@@ -34,6 +59,60 @@
    "DoctorReport",
    "format_report",
    "run_doctor"
-  ]
+  ],
+  "symbols": {
+   "Check": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "DoctorReport": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "ok": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> bool"
+     },
+     "to_dict": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "_find_project": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(start: Path) -> Optional[Path]"
+   },
+   "format_report": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(report: DoctorReport) -> str"
+   },
+   "run_doctor": {
+    "doc": "Collect environment + optional project checks.",
+    "kind": "function",
+    "public": true,
+    "signature": "(*, cwd: Optional[Path]=None) -> DoctorReport"
+   }
+  }
  }
 }

@@ -7,12 +7,22 @@
    "examples/xelement_kit/app/routes/slots.py",
    "tests/02_document_plugins/test_hypermedia_surface.py"
   ],
+  "doc": "Slot helpers for XElement / WebComponent.",
+  "exported_as": [],
+  "features": [
+   "slots"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -23,6 +33,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "components",
   "path": "src/ux_dom/slots/__init__.py",
   "public": [
@@ -30,6 +41,7 @@
    "Slots",
    "WebComponentSlot",
    "x_slot"
-  ]
+  ],
+  "symbols": {}
  }
 }

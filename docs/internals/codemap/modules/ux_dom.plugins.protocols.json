@@ -3,6 +3,9 @@
   "consumers": [
    "tests/07_resilience/test_f18_directory_router_absent.py"
   ],
+  "doc": "Extension contracts for ux-dom plugins (stdlib typing only).",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -11,11 +14,22 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/protocols.py",
   "public": [
@@ -26,6 +40,146 @@
    "PartialPolicy",
    "ResponsePlugin",
    "StylePlugin"
-  ]
+  ],
+  "symbols": {
+   "AssetsPlugin": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "layout": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, base_dir: Any, **kwargs: Any) -> Any"
+     }
+    },
+    "public": true
+   },
+   "ControlPlugin": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "Hypermedia control plane (HTMX, ux-channel, stack, null).",
+    "kind": "class",
+    "methods": {
+     "document_body": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "document_head": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Sequence[Any]"
+     },
+     "mount": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, app: Any, **kwargs: Any) -> None"
+     },
+     "partial_policy": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, request: Any) -> PartialPolicy"
+     },
+     "wire": {
+      "doc": "Return kwargs safe to splat onto a tag (hx_* or data_channel_*).",
+      "kind": "function",
+      "signature": "(self, action: Any=None, **kwargs: Any) -> dict[str, Any]"
+     }
+    },
+    "public": true
+   },
+   "HmrPlugin": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "asgi_route": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Optional[tuple[str, Any]]"
+     },
+     "client_script": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     }
+    },
+    "public": true
+   },
+   "HostPlugin": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "Mount ux-dom onto a web framework (FastAPI, Starlette, raw ASGI).",
+    "kind": "class",
+    "methods": {
+     "mount": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, app: Any, *, settings: Any=None, **kwargs: Any) -> Any"
+     }
+    },
+    "public": true
+   },
+   "ResponsePlugin": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "Turn Component / dom_tag into framework HTTP responses.",
+    "kind": "class",
+    "methods": {
+     "wrap": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, endpoint: Callable[..., Any]) -> Callable[..., Any]"
+     }
+    },
+    "public": true
+   },
+   "StylePlugin": {
+    "bases": [
+     "Protocol"
+    ],
+    "decorators": [
+     "runtime_checkable"
+    ],
+    "doc": "CSS pipeline (Tailwind, Uno, none).",
+    "kind": "class",
+    "methods": {
+     "build": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self, *, watch: bool=False) -> Any"
+     },
+     "stylesheet_href": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> str"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

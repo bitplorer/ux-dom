@@ -6,6 +6,11 @@
    "tests/02_document_plugins/test_ui_kit_defects.py",
    "tests/04_production/test_production_stability.py"
   ],
+  "doc": "Registry of ux-dom UI kit components (for CLI + docs + doctor).",
+  "exported_as": [],
+  "features": [
+   "ui-kit"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.cli"
@@ -15,11 +20,22 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/catalog.py",
   "public": [
@@ -28,6 +44,29 @@
    "UiEntry",
    "list_components",
    "runtime_for"
-  ]
+  ],
+  "symbols": {
+   "UiEntry": {
+    "bases": [
+     "TypedDict"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "list_components": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(*, channel: bool | None=None) -> list[UiEntry]"
+   },
+   "runtime_for": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(name: str) -> str | None"
+   }
+  }
  }
 }

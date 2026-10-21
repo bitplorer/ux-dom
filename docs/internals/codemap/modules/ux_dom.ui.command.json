@@ -1,12 +1,25 @@
 {
  "ux_dom.ui.command": {
   "consumers": [],
+  "doc": "Command — palette shell. Open via ux-behavior ``open(\"command\")``.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -17,10 +30,28 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/command.py",
   "public": [
    "Command"
-  ]
+  ],
+  "symbols": {
+   "Command": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "items: (id, label) pairs already filtered by Host/preview.",
+      "kind": "function",
+      "signature": "(self, *, open: bool=False, query: str='', items: Sequence[tuple[str, str]]=(), placeholder: str='Type a command…', className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

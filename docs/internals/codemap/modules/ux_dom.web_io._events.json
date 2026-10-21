@@ -15,6 +15,12 @@
    "tests/05_chaos/test_stress_races_js_pipeline.py",
    "tests/07_resilience/test_web_io_aliases_absent.py"
   ],
+  "doc": "web_io event types/internals. Private; subject to change.",
+  "exported_as": [],
+  "features": [
+   "htmx",
+   "web-io"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -23,17 +29,234 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "asyncio",
+     "collections",
+     "functools",
+     "inspect",
+     "typing",
+     "warnings"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": false,
   "layer": "integrations",
   "path": "src/ux_dom/web_io/_events.py",
   "public": [
    "BaseEventManager",
    "HtmxEvents",
    "WebSocketEvents"
-  ]
+  ],
+  "symbols": {
+   "BaseEventManager": {
+    "bases": [
+     "object"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "__aiter__": {
+      "doc": "",
+      "kind": "async function",
+      "signature": "(self)"
+     },
+     "__contains__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event_name)"
+     },
+     "__getitem__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event_name: str)"
+     },
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "_event_callbacks": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event_name: str)"
+     },
+     "_on": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity: str, event_name: str)"
+     },
+     "get_events": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity: str) -> Dict[str, List[Callable]]"
+     },
+     "register_event": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event_name)"
+     },
+     "registered_activities": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Dict[str, Dict[str, List[Callable]]]"
+     },
+     "registered_events": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "set_event": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, activity: str, event_name_or_method: Union[str, CALLABLE]) -> CALLABLE"
+     }
+    },
+    "public": true
+   },
+   "HtmxEvents": {
+    "bases": [
+     "BaseEventManager"
+    ],
+    "doc": "HTMX activity helpers.",
+    "kind": "class",
+    "methods": {
+     "delete": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event: Union[str, Callable]) -> Callable"
+     },
+     "delete_events": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "get": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event: Union[str, Callable]) -> Callable"
+     },
+     "patch": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event: Union[str, Callable]) -> Callable"
+     },
+     "patch_events": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "post": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event: Union[str, Callable]) -> Callable"
+     },
+     "post_events": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "put": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event: Union[str, Callable]) -> Callable"
+     },
+     "put_events": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     }
+    },
+    "public": true
+   },
+   "WebSocketEvents": {
+    "bases": [
+     "BaseEventManager"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "connect_events": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Dict[str, List[Callable]]"
+     },
+     "disconnect_events": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Dict[str, List[Callable]]"
+     },
+     "on_connect": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, method: CALLABLE) -> CALLABLE"
+     },
+     "on_disconnect": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, method: CALLABLE) -> CALLABLE"
+     },
+     "on_receive": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event_name_or_method: Union[str, CALLABLE]) -> CALLABLE"
+     },
+     "on_relay": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, event_name_or_method: Union[str, CALLABLE]) -> CALLABLE"
+     },
+     "receive_events": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Dict[str, List[Callable]]"
+     },
+     "relay_events": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Dict[str, List[Callable]]"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

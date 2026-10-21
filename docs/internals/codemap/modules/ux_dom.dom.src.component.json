@@ -76,6 +76,16 @@
    "tests/07_resilience/test_xhtml_mode_absent.py",
    "tests/helpers.py"
   ],
+  "doc": "Component, Fragment, ReactiveComponent — application building blocks.",
+  "exported_as": [
+   "ux_dom:Component",
+   "ux_dom:Fragment",
+   "ux_dom:MergeClassAttribute",
+   "ux_dom:ReactiveComponent"
+  ],
+  "features": [
+   "components"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -97,6 +107,30 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {
+    "stdlib": [
+     "dataclasses"
+    ]
+   },
+   "module_level": {
+    "marko": [
+     "marko"
+    ],
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "functools",
+     "inspect",
+     "json",
+     "pathlib",
+     "textwrap",
+     "typing",
+     "warnings"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [
@@ -113,6 +147,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/component.py",
   "public": [
@@ -120,6 +155,284 @@
    "Fragment",
    "MergeClassAttribute",
    "ReactiveComponent"
-  ]
+  ],
+  "symbols": {
+   "Component": {
+    "bases": [
+     "extension.Tags"
+    ],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "Composable UI unit: implement ``render`` and return a DOM tree.",
+    "kind": "class",
+    "methods": {
+     "__checks__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, element: Union[dom_tag, extension.Tags]) -> Union[dom_tag, extension.Tags]"
+     },
+     "__contains__": {
+      "doc": "Own class/instance existence + subtree (see ``dom_tag``).",
+      "kind": "function",
+      "signature": "(self, item)"
+     },
+     "__dir__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Iterable[str]"
+     },
+     "__eq__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, other) -> bool"
+     },
+     "__getitem__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key)"
+     },
+     "__hash__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> int"
+     },
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "__iter__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__len__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__new__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, *args, **kwargs)"
+     },
+     "_add": {
+      "doc": "Adding tags to a component appends them to the render.",
+      "kind": "function",
+      "signature": "(self, *args)"
+     },
+     "_asdict": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, exclude=None) -> dict"
+     },
+     "_clear": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "_delete_attribute": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key)"
+     },
+     "_ensure_init_chain": {
+      "decorators": [
+       "staticmethod"
+      ],
+      "doc": "Wrap dataclass-generated ``__init__`` so ``render`` still runs.",
+      "kind": "function",
+      "signature": "(cls: type) -> None"
+     },
+     "_find": {
+      "doc": "Search this Component: match self + ``_entry``, then descendants.",
+      "kind": "function",
+      "signature": "(self, tag=None, **kwargs)"
+     },
+     "_from_file": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, file_name: Union[str, Path]) -> str"
+     },
+     "_set_attribute": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     },
+     "call": {
+      "doc": "This is basically a placeholder for using websocket communications.",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "from_file": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, file_name: Union[str, Path]) -> 'Component'"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs) -> Union[dom_tag, extension.Tags, str]"
+     },
+     "script": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "to_dict": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, exclude=None) -> dict"
+     }
+    },
+    "public": true
+   },
+   "Fragment": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "Transparent group: renders children only, fans attributes onto them.",
+    "kind": "class",
+    "methods": {
+     "_add": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args)"
+     },
+     "_add_attrs_to_child": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, child: Union[extension.Tags, dom_tag], *, apply_unique: bool=True)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "MergeClassAttribute": {
+    "bases": [
+     "Fragment"
+    ],
+    "doc": "Merging the attributes with subcontexts via ux_dom.dom.src.dom_tag.attr",
+    "kind": "class",
+    "methods": {
+     "_merge_class_attr": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     },
+     "_set_attribute": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     }
+    },
+    "public": true
+   },
+   "ReactiveComponent": {
+    "bases": [
+     "Component"
+    ],
+    "decorators": [
+     "dataclass(eq=False)"
+    ],
+    "doc": "Component that re-renders when field state changes.",
+    "kind": "class",
+    "methods": {
+     "__init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "__post_init__": {
+      "doc": "Dataclass hook: ensure render ran, then snapshot field state.",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "_attach_render_result": {
+      "doc": "Attach ``render()`` output the same way ``Component.__init__`` does.",
+      "kind": "function",
+      "signature": "(self, elements) -> None"
+     },
+     "_check_states_and_update": {
+      "doc": "Re-render when dataclass field snapshot differs from last commit.",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_check_states_and_update_locked": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     },
+     "_get_param": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, function, new_kwargs)"
+     },
+     "_get_states": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> dict"
+     },
+     "_re_render": {
+      "doc": "Rebuild tree from current state.",
+      "kind": "function",
+      "signature": "(self, **states) -> extension.Tags"
+     },
+     "_render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, sb, indent_level=1, indent_str='  ', pretty=True, _seen=None)"
+     },
+     "_render_call": {
+      "doc": "Invoke ``render`` with resolved args/kwargs from state dict.",
+      "kind": "function",
+      "signature": "(self, states: dict)"
+     },
+     "_set_attribute": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, key, value)"
+     },
+     "_snapshot_states": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> None"
+     }
+    },
+    "public": true
+   },
+   "_markdown_converter": {
+    "doc": "Resolve ``markdown=`` (when ``render`` does not take it) to a converter.",
+    "kind": "function",
+    "public": false,
+    "signature": "(value, owner: str)"
+   },
+   "_render_declares_markdown": {
+    "decorators": [
+     "lru_cache(maxsize=None)"
+    ],
+    "doc": "True when ``render`` declares a keyword-passable ``markdown`` parameter.",
+    "kind": "function",
+    "public": false,
+    "signature": "(render) -> bool"
+   },
+   "_string_child": {
+    "doc": "A ``Markup`` (``__html__``) string is trusted; any other is sanitized.",
+    "kind": "function",
+    "public": false,
+    "signature": "(arg: str)"
+   }
+  }
  }
 }

@@ -18,12 +18,22 @@
    "tests/07_resilience/test_f18_directory_router_absent.py",
    "tests/07_resilience/test_ownership_hard_cut.py"
   ],
+  "doc": "uxdom CLI entry — pure Document/render tooling.",
+  "exported_as": [],
+  "features": [
+   "cli"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.__main__"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -32,10 +42,12 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "cli",
   "path": "src/ux_dom/cli/__init__.py",
   "public": [
    "app"
-  ]
+  ],
+  "symbols": {}
  }
 }

@@ -11,6 +11,11 @@
    "tests/05_chaos/test_production_trust.py",
    "tests/05_chaos/test_stress_races_js_pipeline.py"
   ],
+  "doc": "Process-local unique ids for DOM nodes and tests (not crypto-secure).",
+  "exported_as": [],
+  "features": [
+   "tag-tree"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -18,15 +23,58 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "datetime",
+     "random",
+     "threading"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/uniqueid.py",
   "public": [
    "uniqueid"
-  ]
+  ],
+  "symbols": {
+   "_UniqueId": {
+    "bases": [],
+    "doc": "Callable + iterator unique id source.",
+    "kind": "class",
+    "methods": {
+     "__call__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__iter__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "__next__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     }
+    },
+    "public": false
+   },
+   "_uniqueid": {
+    "doc": "generate a decimal unique id of at most 25 digits: int() of the 20-character",
+    "kind": "function",
+    "public": false,
+    "signature": "()"
+   }
+  }
  }
 }

@@ -140,6 +140,11 @@
    "tests/fixtures/auth_xelements.py",
    "tests/helpers.py"
   ],
+  "doc": "HTML/SVG/Jinja tag surface for ux-dom.",
+  "exported_as": [],
+  "features": [
+   "tag-tree"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.profile",
@@ -192,6 +197,11 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [
@@ -213,6 +223,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/__init__.py",
   "public": [
@@ -540,6 +551,7 @@
    "view",
    "wbr",
    "youtube_icon"
-  ]
+  ],
+  "symbols": {}
  }
 }

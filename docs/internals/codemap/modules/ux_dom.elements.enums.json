@@ -3,12 +3,30 @@
   "consumers": [
    "tests/07_resilience/test_f16_ux_valio_elements.py"
   ],
+  "doc": "Typed form elements: enums. Optional higher-level inputs over HTML tags.",
+  "exported_as": [],
+  "features": [
+   "elements"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.elements"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "enum",
+     "typing"
+    ],
+    "ux-valio": [
+     "ux_valio"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -18,6 +36,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "components",
   "path": "src/ux_dom/elements/enums.py",
   "public": [
@@ -25,6 +44,68 @@
    "EnumInput",
    "EnumLabel",
    "IntegerEnumInput"
-  ]
+  ],
+  "symbols": {
+   "CharEnumInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, options, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "EnumInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, options, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "EnumLabel": {
+    "bases": [
+     "component.Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, label, *args, **kwargs)"
+     }
+    },
+    "public": true
+   },
+   "IntegerEnumInput": {
+    "bases": [
+     "component.Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, options, **kwargs)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

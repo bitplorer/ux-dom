@@ -3,6 +3,11 @@
   "consumers": [
    "docs/internals/MODULE_MAP.md"
   ],
+  "doc": "DOM Level-1-ish helpers mixed into tags (query, id, childNodes).",
+  "exported_as": [],
+  "features": [
+   "tag-tree"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
@@ -10,15 +15,109 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/dom1core.py",
   "public": [
    "dom1core"
-  ]
+  ],
+  "symbols": {
+   "dom1core": {
+    "bases": [
+     "object"
+    ],
+    "doc": "Implements the Document Object Model (Core) Level 1",
+    "kind": "class",
+    "methods": {
+     "appendChild": {
+      "doc": "DOM API: Add an item to the end of the children list.",
+      "kind": "function",
+      "signature": "(self, obj)"
+     },
+     "childNodes": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "firstChild": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "getElementById": {
+      "doc": "DOM API: Returns single element with matching id value.",
+      "kind": "function",
+      "signature": "(self, id)"
+     },
+     "getElementsByTagName": {
+      "doc": "DOM API: Returns all tags that match name.",
+      "kind": "function",
+      "signature": "(self, name)"
+     },
+     "lastChild": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "nextSibling": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Union[dom1core, None]"
+     },
+     "ownerDocument": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "parentNode": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "DOM API: Returns the parent tag of the current element.",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "previousSibling": {
+      "decorators": [
+       "property"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> Union[dom1core, None]"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

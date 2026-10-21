@@ -14,18 +14,28 @@
    "tests/07_resilience/test_single_tag_registry.py",
    "tests/07_resilience/test_tag_names_no_builtin_shadow.py"
   ],
+  "doc": "Low-level DOM implementation (tags, Component, serialize).",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "dom",
   "path": "src/ux_dom/dom/src/__init__.py",
-  "public": []
+  "public": [],
+  "symbols": {}
  }
 }

@@ -6,6 +6,11 @@
    "tests/03_routing_cli/test_dx_side_effects.py",
    "tests/07_resilience/test_shadowroot_only.py"
   ],
+  "doc": "``uxdom lint`` — static checks for XElement conventions (dev).",
+  "exported_as": [],
+  "features": [
+   "cli"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.cli.cli"
@@ -13,16 +18,54 @@
    "module_level": [],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "pathlib",
+     "re",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "cli",
   "path": "src/ux_dom/cli/lint.py",
   "public": [
    "LintIssue",
    "lint_project"
-  ]
+  ],
+  "symbols": {
+   "LintIssue": {
+    "bases": [],
+    "decorators": [
+     "dataclass"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "_find_app_root": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(start: Optional[Path]=None) -> Optional[Path]"
+   },
+   "lint_project": {
+    "doc": "",
+    "kind": "function",
+    "public": true,
+    "signature": "(root: Optional[Path]=None) -> list[LintIssue]"
+   }
+  }
  }
 }

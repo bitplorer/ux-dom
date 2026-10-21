@@ -7,12 +7,27 @@
    "tests/02_document_plugins/test_script_dedupe.py",
    "tests/07_resilience/test_shell_helper_aliases_absent.py"
   ],
+  "doc": "Low-level hub → head/body tag lists.",
+  "exported_as": [],
+  "features": [
+   "document"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.plugins"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [
@@ -24,10 +39,19 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/shell.py",
   "public": [
    "shell_fragments"
-  ]
+  ],
+  "symbols": {
+   "shell_fragments": {
+    "doc": "Head/body nodes from hub contributions (+ optional extras).",
+    "kind": "function",
+    "public": true,
+    "signature": "(hub: Optional[PluginHub]=None, *extra_head: Any, extra_body: Sequence[Any]=(), dedupe: bool=True) -> tuple[list[Any], list[Any]]"
+   }
+  }
  }
 }

@@ -1,0 +1,56 @@
+{
+ "docs/internals/CORE.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom doctor"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom lint"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom profile"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom.htmldocument"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom.src.component"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom.src.dom_tag"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.dom.src.ext.Tags"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.plugins.control"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.response"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.settings.document"
+   }
+  ]
+ }
+}

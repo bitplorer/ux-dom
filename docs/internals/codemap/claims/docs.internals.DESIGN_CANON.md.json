@@ -1,0 +1,11 @@
+{
+ "docs/internals/DESIGN_CANON.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add component|xelement|ui"
+   }
+  ]
+ }
+}

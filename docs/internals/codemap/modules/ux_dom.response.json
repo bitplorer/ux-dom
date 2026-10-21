@@ -16,10 +16,20 @@
    "tests/07_resilience/test_html_tree_construction.py",
    "tests/07_resilience/test_sanitized_stream.py"
   ],
+  "doc": "Response boundary (optional adapters around domain serialize).",
+  "exported_as": [],
+  "features": [
+   "response-adapters"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {},
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -30,6 +40,7 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "integrations",
   "path": "src/ux_dom/response/__init__.py",
   "public": [
@@ -47,6 +58,7 @@
    "sanitize_html_stream",
    "streaming_response",
    "to_html_bytes"
-  ]
+  ],
+  "symbols": {}
  }
 }

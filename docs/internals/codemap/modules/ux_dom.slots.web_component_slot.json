@@ -4,12 +4,30 @@
    "docs/reference/HYPERMEDIA.md",
    "tests/02_document_plugins/test_hypermedia_surface.py"
   ],
+  "doc": "Advanced Alpine-assisted multi-slot WebComponent helper.",
+  "exported_as": [
+   "ux_dom:WebComponentSlot"
+  ],
+  "features": [
+   "slots"
+  ],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.slots"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -20,10 +38,46 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "components",
   "path": "src/ux_dom/slots/web_component_slot.py",
   "public": [
    "WebComponentSlot"
-  ]
+  ],
+  "symbols": {
+   "WebComponentSlot": {
+    "bases": [
+     "XElement"
+    ],
+    "decorators": [
+     "dataclass(eq=False, kw_only=True)"
+    ],
+    "doc": "Alpine-assisted slot host (definition uses ``x_slot`` inside shadow).",
+    "kind": "class",
+    "methods": {
+     "__call__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, *args, **kwargs)"
+     },
+     "__new__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, *args, **kwargs)"
+     },
+     "__post_init__": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self)"
+     },
+     "render": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self, tag_name, slot_names, classes, css, slot_class)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }

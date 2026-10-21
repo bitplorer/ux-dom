@@ -17,7 +17,7 @@ ux_dom/
 
 Product scaffold + DirectoryRoutes is **uxcompose** ([DX.md](../guides/DX.md)).
 This package does not ship `CreateProject`, `DirectoryRoutes`, `WebAssets`, or `TailwindCommand`.
-ux-dom ships no file router (`ux_dom.routing` removed, F-18).
+ux-dom ships no file router (its routing module was removed, F-18).
 
 | Path | Role | Public? |
 |------|------|---------|

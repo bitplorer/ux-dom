@@ -11,6 +11,11 @@
    "tests/05_chaos/test_pentest_chaos.py",
    "tests/07_resilience/test_mount_fail_loud.py"
   ],
+  "doc": "Safe package-static serving — **explicit files only**, never raw filesystem roots.",
+  "exported_as": [],
+  "features": [
+   "package-static"
+  ],
   "imported_by": {
    "function_level": [
     "ux_dom.plugins.hub",
@@ -22,11 +27,34 @@
    ],
    "type_checking": []
   },
+  "imports_external": {
+   "function_level": {
+    "fastapi": [
+     "fastapi.responses"
+    ],
+    "starlette": [
+     "starlette.responses"
+    ]
+   },
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "dataclasses",
+     "importlib",
+     "mimetypes",
+     "pathlib",
+     "re",
+     "typing"
+    ]
+   },
+   "type_checking": {}
+  },
   "imports_internal": {
    "function_level": [],
    "module_level": [],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "document",
   "path": "src/ux_dom/plugins/safe_static.py",
   "public": [
@@ -37,6 +65,89 @@
    "collect_served_files",
    "install_safe_static",
    "require_safe_static"
-  ]
+  ],
+  "symbols": {
+   "SafeStaticFile": {
+    "bases": [],
+    "decorators": [
+     "dataclass(frozen=True)"
+    ],
+    "doc": "One allowlisted file: public URL → package-owned path.",
+    "kind": "class",
+    "methods": {
+     "from_package": {
+      "decorators": [
+       "classmethod"
+      ],
+      "doc": "",
+      "kind": "function",
+      "signature": "(cls, package: str, resource: str, *, url: str, plugin: str='', content_type: Optional[str]=None) -> 'SafeStaticFile'"
+     },
+     "read_bytes": {
+      "doc": "",
+      "kind": "function",
+      "signature": "(self) -> bytes"
+     }
+    },
+    "public": true
+   },
+   "UnsafeStaticError": {
+    "bases": [
+     "ValueError"
+    ],
+    "doc": "Raised when a static registration would be unsafe.",
+    "kind": "class",
+    "methods": {},
+    "public": true
+   },
+   "_package_root": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(package: str) -> Path"
+   },
+   "_validate_file_under_package": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(file_path: Path, package_root: Path) -> Path"
+   },
+   "_validate_resource": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(resource: str) -> str"
+   },
+   "_validate_url": {
+    "doc": "",
+    "kind": "function",
+    "public": false,
+    "signature": "(url: str) -> str"
+   },
+   "allowlist_summary": {
+    "doc": "Introspection for doctor / docs.",
+    "kind": "function",
+    "public": true,
+    "signature": "() -> dict[str, Any]"
+   },
+   "collect_served_files": {
+    "doc": "Gather ``served_files()`` from all hub contributions; validate each.",
+    "kind": "function",
+    "public": true,
+    "signature": "(hub: Any) -> list[SafeStaticFile]"
+   },
+   "install_safe_static": {
+    "doc": "Register exact-path GET/HEAD routes. Never directory StaticFiles.",
+    "kind": "function",
+    "public": true,
+    "signature": "(app: Any, files: Sequence[SafeStaticFile]) -> int"
+   },
+   "require_safe_static": {
+    "doc": "``install_safe_static`` that also raises when 0 of N routes installed.",
+    "kind": "function",
+    "public": true,
+    "signature": "(app: Any, files: Sequence[SafeStaticFile], *, caller: str) -> int"
+   }
+  }
  }
 }

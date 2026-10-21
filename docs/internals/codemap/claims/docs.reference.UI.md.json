@@ -1,0 +1,81 @@
+{
+ "docs/reference/UI.md": {
+  "claims": [
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add ui Button"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add ui Button          # copy into app/components/ui/ (edit freely)"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add ui Card --force"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add ui Carousel"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom add ui Slider"
+   },
+   {
+    "kind": "cli",
+    "resolved": true,
+    "text": "uxdom ui"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:Badge"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:Button"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:Card"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:CardContent"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:CardHeader"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:CardTitle"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
+    "text": "ux_dom.ui:Input"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.ui"
+   },
+   {
+    "kind": "module",
+    "resolved": true,
+    "text": "ux_dom.ui.channel_bridge"
+   }
+  ]
+ }
+}

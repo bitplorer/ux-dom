@@ -1,12 +1,25 @@
 {
  "ux_dom.ui.status_strip": {
   "consumers": [],
+  "doc": "StatusStrip — pattern for desk status chips + message.",
+  "exported_as": [],
+  "features": [],
   "imported_by": {
    "function_level": [],
    "module_level": [
     "ux_dom.ui"
    ],
    "type_checking": []
+  },
+  "imports_external": {
+   "function_level": {},
+   "module_level": {
+    "stdlib": [
+     "__future__",
+     "typing"
+    ]
+   },
+   "type_checking": {}
   },
   "imports_internal": {
    "function_level": [],
@@ -18,10 +31,28 @@
    ],
    "type_checking": []
   },
+  "is_public": true,
   "layer": "ui",
   "path": "src/ux_dom/ui/status_strip.py",
   "public": [
    "StatusStrip"
-  ]
+  ],
+  "symbols": {
+   "StatusStrip": {
+    "bases": [
+     "Component"
+    ],
+    "doc": "",
+    "kind": "class",
+    "methods": {
+     "render": {
+      "doc": "items: (label, badge_variant) pairs.",
+      "kind": "function",
+      "signature": "(self, *, items: Sequence[tuple[str, str]]=(), message: str='', className: str='', **attrs: Any)"
+     }
+    },
+    "public": true
+   }
+  }
  }
 }
