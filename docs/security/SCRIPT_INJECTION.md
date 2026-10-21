@@ -110,7 +110,10 @@ closed an element early (`<div>` closes a `<p>`, `<img>` is void, `<a>`
 closes an `<a>`), the tree does not say which, so the body stays CDATA unless
 it is raw text in every case: `math(mi(p(div(), mglyph(style(...)))))` is
 CDATA. That never runs script; at worst the browser is in HTML and the CSS or
-JS gets a literal `<![CDATA[`. Nest HTML under `foreignObject`.
+JS gets a literal `<![CDATA[`. An element no HTML rule closes early (`span`,
+`div`, an unknown name such as `desc` or `mi`) stays open until its own end
+tag, so `svg(desc(desc(), script(...)))` is raw text. Nest HTML under
+`foreignObject`.
 
 **A `raw()` / `Markup` string that opens `<svg>` or `<math>` is author trust
 (ADR 0002).** The tree does not model a context opened by a string, so

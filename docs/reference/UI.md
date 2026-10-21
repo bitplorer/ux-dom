@@ -34,7 +34,7 @@ Card(
 CLI:
 
 ```bash
-uxdom ui list
+uxdom ui
 uxdom add ui Button          # copy into app/components/ui/ (edit freely)
 uxdom add ui Card --force
 uxdom add ui Slider

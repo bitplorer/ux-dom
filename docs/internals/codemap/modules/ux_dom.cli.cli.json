@@ -8,6 +8,7 @@
    "tests/03_routing_cli/test_dx_cli.py",
    "tests/03_routing_cli/test_profile_dx.py",
    "tests/03_routing_cli/test_serve_dx.py",
+   "tests/04_production/test_docs_cli_commands.py",
    "tests/07_resilience/test_build_command_absent.py",
    "tests/07_resilience/test_cli_aliases_absent.py",
    "tests/07_resilience/test_doctor_product_rows_absent.py",

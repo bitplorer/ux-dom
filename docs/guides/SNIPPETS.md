@@ -230,7 +230,7 @@ Product CSS minify is `uxcompose build` (`ux_compose.tailwind`).
 uxdom add copies markup you own. uxcompose create-app | build | serve | deploy remains the product path.
 
 ```bash
-uxdom ui list
+uxdom ui
 uxdom add ui Button
 uxdom add component Card
 uxdom doctor
