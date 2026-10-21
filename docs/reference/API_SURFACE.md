@@ -58,9 +58,14 @@ is internal and may move; these four names are the supported path.
 
 - **SVG:** `ux_dom.dom` has a class for every SVG 2 element except `a`,
   `script` and `style`, which are the HTML classes. Names keep their case
-  (`linearGradient`, `foreignObject`, `feDropShadow`). `set_` writes `<set>`;
-  the trailing `_` keeps the builtin `set` free, as with `input_`. Every SVG
-  element is written with an end tag.
+  (`linearGradient`, `foreignObject`, `feDropShadow`). Every SVG element is
+  written with an end tag.
+- **Builtin names:** a tag whose name is a Python builtin or keyword gets a
+  trailing `_` and still writes its element: `input_`, `object_`, `map_`,
+  `del_`, `set_`, `filter_`. `from ux_dom.dom import *` shadows no builtin.
+  The one exception is `time_`: `time` is not a builtin, but the `_` keeps the
+  stdlib `time` module free. Lock:
+  `tests/07_resilience/test_tag_names_no_builtin_shadow.py`.
 - **MathML:** no classes. No caller in ux-dom or its sibling repos builds
   MathML ([#104](https://github.com/bitplorer/ux-dom/issues/104)), so none
   are added ([ADR 0004](../adr/0004-no-compat-shims-pre-release.md)). Author

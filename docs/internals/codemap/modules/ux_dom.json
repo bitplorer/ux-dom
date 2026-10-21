@@ -94,6 +94,7 @@
    "tests/07_resilience/test_py2_residue_absent.py",
    "tests/07_resilience/test_shadowroot_only.py",
    "tests/07_resilience/test_shell_helper_aliases_absent.py",
+   "tests/07_resilience/test_tag_names_no_builtin_shadow.py",
    "tests/07_resilience/test_text_state_parents.py",
    "tests/07_resilience/test_top_level_facades.py",
    "tests/07_resilience/test_web_io_aliases_absent.py",

@@ -37,7 +37,8 @@ HTML_VOID = {
 
 # Every element in ``svgtags``, as the classes are named (SVG 2 element index,
 # without ``a`` / ``script`` / ``style``, which are the HTML classes). ``set_``
-# writes ``<set>``: a trailing ``_`` keeps a builtin name free, as ``input_``.
+# and ``filter_`` write ``<set>`` / ``<filter>``: a trailing ``_`` keeps a builtin
+# name free, as ``input_``.
 SVG_ELEMENTS = [
     "svg",
     "animate",
@@ -74,7 +75,7 @@ SVG_ELEMENTS = [
     "tspan",
     "use",
     "view",
-    "filter",
+    "filter_",
     "feBlend",
     "feColorMatrix",
     "feComponentTransfer",

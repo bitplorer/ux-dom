@@ -187,7 +187,7 @@ __all__ = [
     "tspan",
     "use",
     "view",
-    "filter",
+    "filter_",
     "feBlend",
     "feColorMatrix",
     "feComponentTransfer",
@@ -528,7 +528,12 @@ class view(svg_tag):
 
 
 # FILTERS
-class filter(svg_tag):
+class filter_(svg_tag):
+    """
+    The <filter> element defines a filter effect.
+    Written ``filter_`` (like ``set_``) so it does not shadow the builtin ``filter``.
+    """
+
     pass
 
 
