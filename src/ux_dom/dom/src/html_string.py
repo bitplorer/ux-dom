@@ -837,8 +837,8 @@ class StringToHTML(object):
                 continue
 
             if not token.name:
-                # Comments are dropped: ``--!>`` and friends end a comment
-                # differently in Python and in a browser.
+                # Comments are dropped: where one ends is where parsers
+                # have disagreed (``--!>``, ``<!-->``).
                 if isinstance(token, Comment):
                     continue
                 # Data, kept as written: whitespace between inline tags

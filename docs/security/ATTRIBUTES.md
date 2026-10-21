@@ -276,8 +276,9 @@ from a browser's: the adoption agency for formatting elements
 end tag, and the context element (a `<tr>` outside a table is kept, since
 the fragment may be inserted into one).
 
-**Comments** are dropped. A browser ends a comment at `--!>` and in other
-places Python does not, so a kept comment can carry live markup.
+**Comments** are dropped. The parser ends a comment where a browser does
+(`--!>`, `<!-->`, `<!--->`; #124), but a kept comment is only one parser
+difference away from carrying live markup.
 
 **Custom elements** are kept only when the caller names them:
 `defHTML(s, allow_custom_elements=["x-counter"])` or a `"x-*"` prefix pattern.

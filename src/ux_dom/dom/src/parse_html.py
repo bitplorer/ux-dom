@@ -25,7 +25,6 @@ import re
 from collections import abc, deque
 from html import escape, unescape
 from html.parser import HTMLParser
-from html.parser import commentclose  # type: ignore[attr-defined]
 import typing as T
 from typing import Any, Callable, Iterable, Iterator
 
@@ -838,6 +837,23 @@ class HtmlToAst(HTMLParser):
     def handle_comment(self, data: str):  # type: ignore[override]
         self.struct.nest_terminal(Comment, data)
 
+    def parse_comment(self, i: int, report: bool = True) -> int:
+        """End the ``<!--`` comment at ``i`` where a browser ends it, or -1.
+
+        The stdlib's own rule is a private, version-dependent detail, and it
+        reads ``<!-->x-->`` as one comment where a browser reads an empty
+        comment then the text ``x-->``.
+        """
+        start = i + 4
+        match = _COMMENT_ABRUPT_END.match(self.rawdata, start)
+        if match is None:
+            match = _COMMENT_END.search(self.rawdata, start)
+            if match is None:
+                return -1
+        if report:
+            self.handle_comment(self.rawdata[start : match.start()])
+        return match.end()
+
     def close(self) -> None:
         """Finish the input, keeping a reference that ends it (``AT&T``).
 
@@ -856,6 +872,10 @@ class HtmlToAst(HTMLParser):
         super().close()
 
 
+# WHATWG comment states: ``>`` or ``->`` right after ``<!--`` ends an empty
+# comment; otherwise the first ``-->`` or ``--!>`` ends it.
+_COMMENT_ABRUPT_END = re.compile(r"-?>")
+_COMMENT_END = re.compile(r"--!?>")
 _CHARREF = r"[0-9]+|[xX][0-9a-fA-F]+"
 _ENTITYREF = r"[a-zA-Z][-.a-zA-Z0-9]*"
 _CHARREF_NAME = re.compile(_CHARREF)
@@ -930,11 +950,10 @@ class HtmlCuts(HtmlToAst):
     same output as sanitizing the whole. Nodes before a cut are discarded, so
     memory is the text since the last cut.
 
-    Two places where the whole string decides later than a prefix are not
-    cuts: a ``<!-->`` comment before any ``-->`` arrives (see
-    ``parse_comment``), and the ``<style`` regions in which
-    ``_finish_numeric_references`` keeps references as written, which also
-    open where the tokenizer sees no raw text (``<style/>``, an attribute).
+    The ``<style`` regions in which ``_finish_numeric_references`` keeps
+    references as written are not cuts: the whole string decides them later
+    than a prefix, and they also open where the tokenizer sees no raw text
+    (``<style/>``, an attribute).
     """
 
     def __init__(self) -> None:
@@ -991,14 +1010,6 @@ class HtmlCuts(HtmlToAst):
         if self._regions and self._regions[0][0] < offset:
             return True
         return self._open is not None and offset > self._open
-
-    def parse_comment(self, i: int, report: bool = True) -> int:
-        # Given the whole string, ``<!-->`` ends at the first later ``-->``
-        # and is an empty comment only when there is none. Until a ``-->``
-        # arrives, the comment is unfinished.
-        if commentclose.search(self.rawdata, i + 4) is None:
-            return -1
-        return super().parse_comment(i, report)
 
     def updatepos(self, i: int, j: int) -> int:
         # ``goahead`` calls this after each finished construct, with ``j``

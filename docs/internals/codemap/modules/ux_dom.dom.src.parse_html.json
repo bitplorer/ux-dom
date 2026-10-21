@@ -8,8 +8,10 @@
    "tests/01_core/test_parse_whitespace.py",
    "tests/04_production/test_intent_battery.py",
    "tests/05_chaos/test_parsing_chaos.py",
+   "tests/06_browser/test_comment_end_browser.py",
    "tests/06_browser/test_parse_whitespace_browser.py",
    "tests/06_browser/test_tree_construction_browser.py",
+   "tests/07_resilience/test_comment_end.py",
    "tests/07_resilience/test_entity_roundtrip.py",
    "tests/07_resilience/test_html_string_mxss.py",
    "tests/07_resilience/test_html_tree_construction.py"
@@ -319,11 +321,6 @@
       "kind": "function",
       "signature": "(self) -> int"
      },
-     "parse_comment": {
-      "doc": "",
-      "kind": "function",
-      "signature": "(self, i: int, report: bool=True) -> int"
-     },
      "updatepos": {
       "doc": "",
       "kind": "function",
@@ -403,6 +400,11 @@
       "doc": "When found an opening tag then nest it onto the tree.",
       "kind": "function",
       "signature": "(self, tag: str, attrs)"
+     },
+     "parse_comment": {
+      "doc": "End the ``<!--`` comment at ``i`` where a browser ends it, or -1.",
+      "kind": "function",
+      "signature": "(self, i: int, report: bool=True) -> int"
      },
      "unknown_decl": {
       "doc": "",
