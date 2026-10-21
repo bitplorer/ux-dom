@@ -40,6 +40,14 @@ Every attribute value goes through these steps when the tree renders.
    sanitizer as `defHTML` (document mode included). A non-string value that
    implements `__html__` stays verbatim. Either way the renderer still
    attribute-escapes the result.
+6. **CSS URLs.** In `style`, each URL a CSS function loads (`_CSS_URL_FUNCTIONS`:
+   `url(...)` quoted or not, and each string in `image-set(...)`, `src(...)`,
+   `image(...)`) gets the check of step 2, after CSS escapes in a string are
+   decoded (`"jav\61script:"`). Text the check cannot read as a declaration
+   list fails closed too: a comment, a backslash outside a string, an
+   unclosed string or bracket, `{` or `}`. Either way the whole value
+   becomes the inert URL, which the browser ignores
+   ([#136](https://github.com/bitplorer/ux-dom/issues/136)).
 
 The sets, as `ux_dom.dom.src.utils.dom_util` defines them
 (`tests/04_production/test_attribute_docs_match_code.py` keeps this table
@@ -53,6 +61,7 @@ equal to the code):
 | `_ANIMATION_VALUE_ATTRIBUTES` | `by`, `from`, `to`, `values` |
 | `_SAFE_SCHEMES` | `http`, `https`, `mailto`, `sms`, `tel` |
 | `_SAFE_DATA_IMAGE_TYPES` | `avif`, `gif`, `jpeg`, `jpg`, `png`, `webp` |
+| `_CSS_URL_FUNCTIONS` | `-webkit-image-set`, `image`, `image-set`, `src`, `url` |
 | `SAME_ORIGIN_URL_ATTRIBUTES` | `data-hx-delete`, `data-hx-get`, `data-hx-patch`, `data-hx-post`, `data-hx-put`, `data-hx-sse`, `data-hx-ws`, `data-sse-connect`, `data-ws-connect`, `hx-delete`, `hx-get`, `hx-patch`, `hx-post`, `hx-put`, `hx-sse`, `hx-ws`, `sse-connect`, `ws-connect` |
 | `HTML_ATTRIBUTES` | `srcdoc` |
 | `BOOLEAN_ATTRIBUTES` | `allowfullscreen`, `alpha`, `async`, `autofocus`, `autoplay`, `checked`, `controls`, `default`, `defer`, `disabled`, `formnovalidate`, `headingreset`, `inert`, `ismap`, `itemscope`, `loop`, `multiple`, `muted`, `nomodule`, `novalidate`, `open`, `playsinline`, `readonly`, `required`, `reversed`, `selected`, `shadowrootclonable`, `shadowrootcustomelementregistry`, `shadowrootdelegatesfocus`, `shadowrootserializable` |
@@ -120,13 +129,19 @@ Out of scope: Alpine bindings such as `:href` / `x-bind:href` hold JavaScript
 expressions, not URLs; never put untrusted text in them.
 
 `safe_attr_value(attribute, value, tag="")` is the single implementation.
-Every renderer calls it (`dom_tag`, `ext.Tags`, `ext.StyleTags`); the HTML
-renderers pass the element name as `tag` for the animation rule (step 4).
+Every HTML renderer calls it (`dom_tag`, `ext.Tags`) and passes the element
+name as `tag` for the animation rule (step 4). A CSS rule (`ext.StyleTags`)
+writes declarations, not attributes: `checked_css_value` gives each value the
+CSS URL check of step 6 and raises `InvalidCSSValue` for a value or property
+name that could end its declaration (see
+[SCRIPT_INJECTION.md](SCRIPT_INJECTION.md)).
 
 Tests: `tests/07_resilience/test_unsafe_url_attrs.py`,
 `tests/07_resilience/test_svg_animation_urls.py`,
-`tests/07_resilience/test_adversarial_render.py`; Chromium oracle:
-`tests/06_browser/test_svg_animation_url_browser.py`.
+`tests/07_resilience/test_adversarial_render.py`,
+`tests/07_resilience/test_css_value_injection.py`; Chromium oracles:
+`tests/06_browser/test_svg_animation_url_browser.py`,
+`tests/06_browser/test_css_value_injection_browser.py`.
 
 
 ## htmx / SSE / WebSocket URLs

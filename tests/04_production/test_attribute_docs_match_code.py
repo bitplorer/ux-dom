@@ -1,4 +1,4 @@
-"""docs/security/ATTRIBUTES.md lists exactly the attribute sets the renderer uses (#86, #122)."""
+"""docs/security/ATTRIBUTES.md lists exactly the attribute sets the renderer uses (#86, #122, #136)."""
 
 from __future__ import annotations
 
@@ -19,6 +19,7 @@ SETS = [
     "_ANIMATION_VALUE_ATTRIBUTES",
     "_SAFE_SCHEMES",
     "_SAFE_DATA_IMAGE_TYPES",
+    "_CSS_URL_FUNCTIONS",
     "SAME_ORIGIN_URL_ATTRIBUTES",
     "HTML_ATTRIBUTES",
     "BOOLEAN_ATTRIBUTES",

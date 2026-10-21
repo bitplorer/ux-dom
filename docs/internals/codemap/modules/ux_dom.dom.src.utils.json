@@ -39,6 +39,7 @@
   "public": [
    "CrossOriginURL",
    "InvalidAttributeName",
+   "InvalidCSSValue",
    "InvalidMarkupToken",
    "InvalidNodeContext",
    "InvalidTagName",
@@ -47,6 +48,7 @@
    "URL_ATTRIBUTES",
    "checked_attr_name",
    "checked_comment_text",
+   "checked_css_value",
    "checked_doctype",
    "checked_tag_name",
    "cross_origin",
