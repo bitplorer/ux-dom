@@ -5,8 +5,6 @@
    "docs/reference/COMPONENTS.md",
    "examples/ux_dom_only/realtime_kit/app.py",
    "examples/ux_kit/app/routes/index.py",
-   "examples/with_ux_channel/live_cart/app.py",
-   "examples/with_ux_channel/market_board/app.py",
    "examples/xelement_kit/app/components/light_dom.py",
    "examples/xelement_kit/app/components/shadow_dom.py",
    "examples/xelement_kit/app/components/x_widgets.py",

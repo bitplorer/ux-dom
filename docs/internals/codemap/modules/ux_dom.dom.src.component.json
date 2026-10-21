@@ -14,8 +14,6 @@
    "docs/ship/CAPABILITIES.md",
    "examples/ux_dom_only/realtime_kit/app.py",
    "examples/ux_kit/app/routes/index.py",
-   "examples/with_ux_channel/live_cart/app.py",
-   "examples/with_ux_channel/market_board/app.py",
    "examples/xelement_kit/app/routes/alpine.py",
    "examples/xelement_kit/app/routes/htmx.py",
    "examples/xelement_kit/app/routes/index.py",
