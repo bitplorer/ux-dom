@@ -96,9 +96,9 @@ class TestCriticalXSS(unittest.TestCase):
             html = Box(t=payload).__render__(pretty=False)
             self.assertNotIn("<script>", html.lower())
 
-    def test_defhtml_escape_strips_handlers(self):
+    def test_defhtml_strips_handlers(self):
         for payload in self.PAYLOADS:
-            nodes = defHTML(f"<div>{payload}</div>", escape=True)
+            nodes = defHTML(f"<div>{payload}</div>")
             html = "".join(n.__render__(pretty=False) for n in nodes)
             self.assertNotRegex(html, r"(?i)<script[\s>]")
             self.assertNotRegex(html, r"(?i)\son\w+\s*=")

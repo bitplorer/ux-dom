@@ -182,13 +182,13 @@ One allowlist. `defHTML`, `Fragment(str)`, `Component.render()->str`,
 `HTMLElement`, `JinjaElement`, `MarkdownElement`, `to_fragment(str)`, and
 `srcdoc` all use it. Strings stay HTML: known-safe tags are kept and
 sanitized, they are not turned into plain text. String HTML is always
-sanitized: `escape=False` does not bypass the allowlist; the ignored parameter is
-pending removal ([ADR 0004](../adr/0004-no-compat-shims-pre-release.md)). Trusted markup uses `raw()` / `Markup` (verbatim). A
-`__html__` value is checked before the `str` check, so a `Markup` (a `str`
-subclass) passed to `to_fragment`, `srcdoc`, `Fragment`, or returned from
-`Component.render()` stays verbatim. A string child added to a tag whose
-`escape_string` is falsy (`__escape_string=False`, as on `HTMLElement`) is
-HTML and goes through the same allowlist; a `Markup` child stays verbatim.
+sanitized and has no `escape` parameter. Trusted markup uses `raw()` /
+`Markup` (verbatim). A `__html__` value is checked before the `str` check, so
+a `Markup` (a `str` subclass) passed to `to_fragment`, `srcdoc`, `Fragment`,
+or returned from `Component.render()` stays verbatim. A string child added to
+a tag is text; to add a string as HTML, add `*defHTML(s)`. `HTMLElement`,
+`JinjaElement` and `MarkdownElement` do that for each string in the list,
+tuple or generator they are given (a `Markup` stays verbatim).
 `bytes` (a child or `to_fragment(bytes)`) are strict UTF-8 first, then the
 `str` path; `bytearray` / `memoryview` children and `to_fragment` of any
 other object without `__render__` raise `TypeError` (no `str(obj)`

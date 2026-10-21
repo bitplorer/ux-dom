@@ -54,6 +54,7 @@ from __future__ import annotations
 import sys
 from dataclasses import dataclass
 from pathlib import Path
+from types import GeneratorType
 
 from ux_dom.dom.src import component
 from ux_dom.dom.src.ext import DoubleTags
@@ -81,15 +82,38 @@ __all__ = [
 # ---------------------------------------------------------------------------
 
 
+def _html(value):
+    """What an HTML wrapper's ``render`` returns: strings in it are HTML.
+
+    ``Component`` parses a returned ``str`` itself (and converts Markdown).
+    Each ``str`` or ``bytes`` inside a returned list, tuple or generator, and
+    returned ``bytes``, goes through ``defHTML`` here; ``Markup`` stays
+    verbatim (ADR 0002). Anywhere else a string child is text.
+    """
+    if isinstance(value, str):
+        return value
+    return _html_item(value)
+
+
+def _html_item(value):
+    if isinstance(value, (list, tuple, GeneratorType)):
+        return [_html_item(item) for item in value]
+    if isinstance(value, bytes):
+        value = value.decode("utf-8")
+    if isinstance(value, str):
+        return component._string_child(value)
+    return value
+
+
 @dataclass(eq=False)
 class HTMLElement(component.Component):
-    """Thin Component that wraps arbitrary markup / paths without escaping.
+    """Thin Component that wraps markup strings, tags or file paths.
 
-    Prefer concrete tags (``div``, ``span``, …) for normal UI. Use this when
-    you need a Component boundary around pre-built HTML or file content.
+    A string it is given is HTML: sanitized by ``defHTML`` (``Markup`` is kept
+    verbatim). Prefer concrete tags (``div``, ``span``, …) for normal UI. Use
+    this when you need a Component boundary around pre-built HTML or file
+    content.
     """
-
-    escape_string = False
 
     def __init__(self, *args, **kwargs):
         super(HTMLElement, self).__init__(*args, **kwargs)
@@ -98,8 +122,8 @@ class HTMLElement(component.Component):
         super(HTMLElement, self).__post_init__(*args, **kwargs)
 
     def render(self, elem_or_str_or_path):
-        # Pass-through: no extra wrapping — caller owns the tree shape.
-        return elem_or_str_or_path
+        # No extra wrapping: the caller owns the tree shape.
+        return _html(elem_or_str_or_path)
 
     def __and__(self, other):
         return super().__and__(other)
@@ -547,10 +571,8 @@ class AlpineComponent(AlpineElement, XElement):
 class JinjaElement(component.Component):
     """Render a Jinja fragment via ``render_jinja`` when called with options."""
 
-    escape_string = False
-
     def render(self, elem_or_str_or_path):
-        return elem_or_str_or_path
+        return _html(elem_or_str_or_path)
 
     def __call__(self, **options):
         return render_jinja(self, **options)
@@ -559,8 +581,7 @@ class JinjaElement(component.Component):
 class MarkdownElement(component.Component):
     """Component whose string children are treated as Markdown (when enabled)."""
 
-    escape_string = False
     string_is_markdown = True
 
     def render(self, elem_or_str_or_path):
-        return elem_or_str_or_path
+        return _html(elem_or_str_or_path)

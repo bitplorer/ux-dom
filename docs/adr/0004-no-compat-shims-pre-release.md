@@ -36,7 +36,7 @@ each shim is dead code that hides the real API and needs its own tests.
 Known examples in this repo, removed by the shim-purge train
 ([#59](https://github.com/bitplorer/ux-dom/issues/59)): the `App.fastapi` /
 `ProductHostMoved` tombstones, `uxdom info` (an alias of `uxdom doctor`), the ignored
-`escape=` parameter on `defHTML` / `StringToHTML` / `to_fragment` (see
+`escape=` parameter on `defHTML` / `StringToHTML` (see
 [ADR 0002](0002-html-string-sanitizer-policy.md)), and the moved-doc stubs under `docs/`
 (including `docs/design/`).
 

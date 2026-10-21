@@ -35,40 +35,32 @@ class TestFragmentXDataFailClosed(unittest.TestCase):
         self.assertTrue(isinstance(html, str))
 
 
-class TestDefHTMLEscapeSanitizes(unittest.TestCase):
-    def test_script_stripped_when_escape_true(self):
-        nodes = defHTML("<script>alert(1)</script><p>ok</p>", escape=True)
+class TestDefHTMLSanitizes(unittest.TestCase):
+    def test_script_stripped(self):
+        # Verbatim opt-out is raw(), which never enters defHTML.
+        nodes = defHTML("<script>alert(1)</script><p>ok</p>")
         html = "".join(n.__render__(pretty=False) for n in nodes)
         self.assertNotIn("<script>", html)
         self.assertIn("<p>", html)
         self.assertIn("ok", html)
 
-    def test_script_stripped_even_when_escape_false(self):
-        # Text is escaped on this path too, so a raw ``<`` cannot reopen a tag.
-        # Verbatim opt-out is raw(), which never enters defHTML.
-        nodes = defHTML("<script>alert(1)</script><p>ok</p>", escape=False)
-        html = "".join(n.__render__(pretty=False) for n in nodes)
-        self.assertNotIn("<script>", html)
-        self.assertIn("<p>", html)
-
-    def test_onclick_stripped_when_escape_true(self):
-        nodes = defHTML('<div onclick="alert(1)">x</div>', escape=True)
+    def test_onclick_stripped(self):
+        nodes = defHTML('<div onclick="alert(1)">x</div>')
         html = "".join(n.__render__(pretty=False) for n in nodes)
         self.assertNotIn("onclick", html.lower())
         self.assertIn(">x<", html)
 
     def test_javascript_href_stripped(self):
-        nodes = defHTML('<a href="javascript:alert(1)">x</a>', escape=True)
+        nodes = defHTML('<a href="javascript:alert(1)">x</a>')
         html = "".join(n.__render__(pretty=False) for n in nodes)
         self.assertNotIn("javascript:", html.lower())
 
 
 class TestComponentMarkdownXSS(unittest.TestCase):
-    def test_markdown_script_not_executable_when_escape(self):
+    def test_markdown_script_not_executable(self):
         @dataclass(eq=False)
         class MD(Component):
             string_is_markdown = True
-            escape_string = True
 
             def render(self):
                 return "<script>alert(1)</script>\n\n# Hi"

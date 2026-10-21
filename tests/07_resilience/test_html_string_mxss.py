@@ -323,15 +323,14 @@ def test_custom_element_allowlist_cannot_revive_dropped_tags():
     assert out == "<x-a></x-a>"
 
 
-# --- escape=False never bypasses sanitizing -------------------------------
+# --- dangerous children never survive ---------------------------------------
 
 
-@pytest.mark.parametrize("escape", [True, False])
-def test_escape_flag_never_bypasses_sanitizing(escape):
-    out = _render(defHTML(NOSCRIPT_COMMENT + DANGEROUS_CHILDREN, escape=escape))
+def test_dangerous_children_are_sanitized():
+    out = _render(defHTML(NOSCRIPT_COMMENT + DANGEROUS_CHILDREN))
     low = out.lower()
     for bad in ("<script", "onerror", "onclick", "<noscript", "<!--"):
-        assert bad not in low, (escape, out)
+        assert bad not in low, out
 
 
 # --- the one in-package document-mode caller ---------------------------------

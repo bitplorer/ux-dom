@@ -98,10 +98,6 @@ class TestBreakout(unittest.TestCase):
             self.assertEqual(len(_end_tags(html, "script")), 1)
             self.assertIn("<span>", html)
 
-    def test_escape_string_false_still_neutralized(self):
-        s = script("</script>", __escape_string=False)
-        self.assertEqual(s.__render__(pretty=False), "<script><\\/script></script>")
-
 
 def _all_modes(node):
     """(label, html) for sync/async x pretty/compact."""
@@ -238,31 +234,27 @@ class TestCspNonce(unittest.TestCase):
 
 class TestParseConsistency(unittest.TestCase):
     # String HTML is sanitized (ADR 0002): a fragment drops <style> and every
-    # mode drops <script>, whatever ``escape`` says. Document mode is the
-    # caller's keyword and keeps <style> text verbatim; the render-time
-    # raw-text guard still applies to that element.
+    # mode drops <script>. Document mode is the caller's keyword and keeps
+    # <style> text verbatim; the render-time raw-text guard still applies to
+    # that element.
 
     def test_defhtml_style_verbatim_in_document_mode(self):
-        for esc in (True, False):
-            with self.subTest(escape=esc):
-                html = "".join(
-                    e.__render__(pretty=False)
-                    for e in defHTML(
-                        "<html><head><style>a > b{c:d}</style></head></html>",
-                        escape=esc,
-                        document=True,
-                    )
-                )
-                self.assertIn("<style>a > b{c:d}</style>", html)
-                fragment = "".join(
-                    e.__render__(pretty=False)
-                    for e in defHTML("<style>a > b{c:d}</style>", escape=esc)
-                )
-                self.assertEqual(fragment, "")
+        html = "".join(
+            e.__render__(pretty=False)
+            for e in defHTML(
+                "<html><head><style>a > b{c:d}</style></head></html>",
+                document=True,
+            )
+        )
+        self.assertIn("<style>a > b{c:d}</style>", html)
+        fragment = "".join(
+            e.__render__(pretty=False) for e in defHTML("<style>a > b{c:d}</style>")
+        )
+        self.assertEqual(fragment, "")
 
     def test_defhtml_drops_script_in_every_mode(self):
         src = '<script>if (a < b && c) { s = "<!--"; }</script>'
-        for kw in ({"escape": False}, {"escape": True}, {"document": True}):
+        for kw in ({}, {"document": True}):
             with self.subTest(**kw):
                 html = "".join(e.__render__(pretty=False) for e in defHTML(src, **kw))
                 self.assertNotIn("script", html)

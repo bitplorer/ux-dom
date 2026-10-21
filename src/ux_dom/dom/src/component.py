@@ -19,7 +19,6 @@ import json
 import warnings
 from dataclasses import asdict, dataclass, field
 from functools import lru_cache
-from html import unescape
 from pathlib import Path
 from textwrap import dedent
 from typing import Iterable, List, Union
@@ -94,7 +93,6 @@ class Component(extension.Tags):
     parent: Union["dom_tag", None] = field(init=False, default=None)
     document: Union["dom_tag", None] = field(init=False, default=None)
     files_directory: Union[str, Path, None] = field(init=False, default=None)
-    escape_string: bool = field(init=False, default=True)
     string_is_markdown: bool = field(init=False, default=False)
 
     # NOTE: do not key off id(cls) — CPython reuses ids after GC and would
@@ -178,27 +176,17 @@ class Component(extension.Tags):
 
         elif isinstance(child, str):
             if self.string_is_markdown:
-                child = (
-                    md_convert(child)
-                    if self.escape_string
-                    else unescape(md_convert(child))
-                )
-            child = defHTML(child, escape=self.escape_string)
+                child = md_convert(child)
+            child = defHTML(child)
 
         elif isinstance(child, Path):
             string_is_markdown = child.suffix == ".md"
             child = self._from_file(child)
             if string_is_markdown:
-                child = (
-                    md_convert(child)
-                    if self.escape_string
-                    else unescape(md_convert(child))
-                )
+                child = md_convert(child)
             # An author's HTML file may be a whole page, so it is the one
             # caller that opts into document mode. Strings never do.
-            child = defHTML(
-                child, escape=self.escape_string, document=not string_is_markdown
-            )
+            child = defHTML(child, document=not string_is_markdown)
 
         if isinstance(child, (list, tuple)) and len(child) == 1:
             child = child[0]
@@ -351,7 +339,6 @@ class Component(extension.Tags):
             "parent",
             "attributes",
             "files_directory",
-            "escape_string",
             "string_is_markdown",
         ]
         return {key: value for key, value in asdict(self).items() if key not in exclude}

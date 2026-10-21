@@ -7,11 +7,10 @@
 """Parse HTML strings into ux-dom nodes (defHTML) and related helpers.
 
 One allowlist sanitizer. Safe tags and their attributes are kept; everything
-else is stripped. String HTML is always sanitized: ``escape`` is accepted for
-compatibility and never bypasses the allowlist. Text is escaped on both
-``escape`` settings so a ``<`` in text cannot reopen a tag. Character
-references are re-emitted here (``&amp;``, ``&#39;``) and are not passed
-through ``escape()``. Trusted markup uses ``raw()`` / ``Markup``.
+else is stripped. String HTML is always sanitized, and text is escaped so a
+``<`` in text cannot reopen a tag. Character references are re-emitted here
+(``&amp;``, ``&#39;``) and are not passed through ``escape()``. Trusted
+markup uses ``raw()`` / ``Markup``.
 
 Elements a browser parses as raw text (``noscript``, ``xmp``, ``template``
 content, …) and comments are dropped: the Python parser reads them as markup,
@@ -783,8 +782,6 @@ class StringToHTML(object):
 
     html_string_or_token: T.Union[str, Element, list[Element], ext.Tags]
     modules: list[types.ModuleType] = field(default_factory=list)
-    # Accepted for compatibility. String HTML is always sanitized.
-    escape: bool = field(default=True)
     # Chosen by the caller, never inferred from the input.
     document: bool = field(default=False)
     allow_custom_elements: T.Optional[Iterable[str]] = field(default=None)
@@ -818,7 +815,6 @@ class StringToHTML(object):
         return StringToHTML(
             tokens,
             modules=self.modules,
-            escape=self.escape,
             document=self.document,
             allow_custom_elements=self._custom,
             foreign=self.foreign or foreign,
@@ -828,7 +824,7 @@ class StringToHTML(object):
         with tag or ext.PlaceholderTag() as tag:  # type: ignore[assignment]
             # ``already_escaped`` text must not go through ``escape()`` again.
             # Character references are in that bucket. Raw data is escaped
-            # first, on both escape settings, so ``<`` cannot reopen a tag.
+            # first, so ``<`` cannot reopen a tag.
             dom_text(text, escape=False if already_escaped else True)
         return tag
 
@@ -964,15 +960,13 @@ class StringToHTML(object):
 # evaluation is to cache the method where it is used.
 def defHTML(
     raw_string,
-    escape=True,
     *,
     document: bool = False,
     allow_custom_elements: T.Optional[Iterable[str]] = None,
 ) -> T.List[ext.Tags]:  # noqa
     """Parse an HTML string into sanitized ux-dom nodes.
 
-    String HTML is always sanitized. ``escape`` is accepted for compatibility
-    and does not bypass the allowlist; trusted markup uses ``raw()`` /
+    String HTML is always sanitized; trusted markup uses ``raw()`` /
     ``Markup``. ``document=True`` (caller's choice, never inferred) keeps the
     doctype and safe ``meta`` / ``link`` / ``style``. ``allow_custom_elements``
     names custom elements (``"x-counter"``) or a ``"prefix-*"`` pattern to
@@ -988,7 +982,6 @@ def defHTML(
     for token in tokens:
         element = StringToHTML(
             [token],
-            escape=escape,
             document=document,
             allow_custom_elements=custom,
         ).parse()
@@ -1002,7 +995,6 @@ def defHTML(
 
 def _sanitized_html(
     raw_string,
-    escape=True,
     *,
     document: bool = False,
     allow_custom_elements: T.Optional[Iterable[str]] = None,
@@ -1012,7 +1004,6 @@ def _sanitized_html(
         element.__render__(pretty=False)
         for element in defHTML(
             raw_string,
-            escape=escape,
             document=document,
             allow_custom_elements=allow_custom_elements,
         )
