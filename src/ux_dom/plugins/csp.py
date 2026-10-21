@@ -729,19 +729,3 @@ class Csp:
         if not self.enabled or app is None:
             return
         app.add_middleware(CspMiddleware, policy=self.to_policy())
-
-
-CspNonce = Csp
-
-
-def shell_fragments_nonced(
-    hub: Any = None,
-    *extra_head: Any,
-    extra_body: Sequence[Any] = (),
-    dedupe: bool = True,
-) -> tuple[list[Any], list[Any]]:
-    """Explicit helper; normal ``shell_fragments`` already stamps when nonce is set."""
-    from ux_dom.plugins.shell import shell_fragments
-
-    head, body = shell_fragments(hub, *extra_head, extra_body=extra_body, dedupe=dedupe)
-    return stamp_nonce(head), stamp_nonce(body)

@@ -89,6 +89,7 @@
    "tests/07_resilience/test_foreign_content_raw_text.py",
    "tests/07_resilience/test_markdown_render_kwarg.py",
    "tests/07_resilience/test_ownership_hard_cut.py",
+   "tests/07_resilience/test_shell_helper_aliases_absent.py",
    "tests/07_resilience/test_text_state_parents.py",
    "tests/07_resilience/test_top_level_facades.py",
    "tests/07_resilience/test_xhtml_mode_absent.py",

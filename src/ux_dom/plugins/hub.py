@@ -163,19 +163,6 @@ def _mount_package_static(app: Any, hub: PluginHub) -> None:
     require_safe_static(app, files, caller="App.build")
 
 
-class ProductHostMoved(RuntimeError):
-    """App.fastapi is not a host. Product host is ux-compose."""
-
-    def __init__(self, message: str | None = None):
-        super().__init__(
-            message
-            or (
-                "App.fastapi() is not the product path. "
-                "Use: uxcompose create-app / ux_compose.build(host=)."
-            )
-        )
-
-
 @dataclass
 class App:
     """Feature registry + ASGI wiring — **not** the HTML shell.
@@ -292,13 +279,6 @@ class App:
 
         return self.use(Csp(**kwargs))
 
-    def fastapi(self, **kwargs: Any) -> "App":
-        raise ProductHostMoved()
-
-    def plugins(self, *plugins: Any) -> "App":
-        """Alias of ``use(*plugins)`` — read as “install these features”."""
-        return self.use(*plugins)
-
     def use_host(self, plugin: HostPlugin) -> "App":
         self.hub.add_host(plugin)
         return self
@@ -319,10 +299,6 @@ class App:
         """Low-level: ``(head_tags, body_tags)`` from hub. Prefer Document."""
         return self.hub.shell_fragments()
 
-    def runtime_tags(self) -> tuple[list[Any], list[Any]]:
-        """Alias of ``shell_fragments`` — clearer name (head, body)."""
-        return self.hub.shell_fragments()
-
     def build(self, asgi: Any = None) -> Any:
         """Publish hub → leftover asgi → Document.mount (if any) → controls.
 
@@ -341,9 +317,9 @@ class App:
             )
             self._built = app
         if app is None:
-            raise ProductHostMoved(
-                "leftover plugins.App.build() does not create a host. "
-                "Pass asgi=FastAPI() or use ux_compose.build(host=)."
+            raise TypeError(
+                "App.build() needs asgi= (e.g. FastAPI()); "
+                "product apps use ux_compose.build(host=)."
             )
         # Document is SSoT: it mounts its own runtimes/static/middleware
         doc = self.document

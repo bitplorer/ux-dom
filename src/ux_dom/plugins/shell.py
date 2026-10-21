@@ -2,7 +2,7 @@
 """Low-level hub → head/body tag lists.
 
 Prefer ``Document(...).use(...)`` in app code (SSoT).
-``shell_fragments`` / ``runtime_tags`` are low-level list helpers only.
+``shell_fragments`` is a low-level list helper only.
 """
 
 from __future__ import annotations
@@ -10,20 +10,6 @@ from __future__ import annotations
 from typing import Any, Optional, Sequence
 
 from ux_dom.plugins.hub import PluginHub, get_hub
-
-
-def runtime_tags(
-    hub: Optional[PluginHub] = None,
-    *extra_head: Any,
-    extra_body: Sequence[Any] = (),
-    dedupe: bool = True,
-) -> tuple[list[Any], list[Any]]:
-    """
-    Return ``(head_tags, body_tags)`` from the App hub.
-
-    Same as ``shell_fragments`` — preferred name for clarity.
-    """
-    return shell_fragments(hub, *extra_head, extra_body=extra_body, dedupe=dedupe)
 
 
 def shell_fragments(

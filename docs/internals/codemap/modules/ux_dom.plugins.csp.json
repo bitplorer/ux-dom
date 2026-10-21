@@ -27,6 +27,7 @@
    "tests/07_resilience/test_jinja_and_string_nonce.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/07_resilience/test_raw_string_sinks.py",
+   "tests/07_resilience/test_shell_helper_aliases_absent.py",
    "tests/07_resilience/test_top_level_facades.py",
    "tests/helpers.py"
   ],
@@ -44,9 +45,7 @@
    "type_checking": []
   },
   "imports_internal": {
-   "function_level": [
-    "ux_dom.plugins.shell"
-   ],
+   "function_level": [],
    "module_level": [
     "ux_dom.dom.src.dom_tag"
    ],
@@ -57,7 +56,6 @@
   "public": [
    "Csp",
    "CspMiddleware",
-   "CspNonce",
    "CspPolicy",
    "bind_nonce_to_scope",
    "build_csp_header",
@@ -70,7 +68,6 @@
    "reset_nonce",
    "resolve_nonce",
    "set_nonce",
-   "shell_fragments_nonced",
    "stamp_nonce",
    "stamp_tree"
   ]

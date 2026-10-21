@@ -20,6 +20,7 @@
    "tests/07_resilience/test_mount_fail_loud.py",
    "tests/07_resilience/test_ownership_hard_cut.py",
    "tests/07_resilience/test_plugin_errors_propagate.py",
+   "tests/07_resilience/test_shell_helper_aliases_absent.py",
    "tests/conftest.py"
   ],
   "imported_by": {
@@ -50,7 +51,6 @@
   "public": [
    "App",
    "PluginHub",
-   "ProductHostMoved",
    "get_hub",
    "set_hub"
   ]
