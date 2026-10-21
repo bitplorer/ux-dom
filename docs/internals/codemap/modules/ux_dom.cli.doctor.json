@@ -5,7 +5,6 @@
    "tests/03_routing_cli/test_doctor_tailwind_honest.py",
    "tests/03_routing_cli/test_dx_cli.py",
    "tests/03_routing_cli/test_dx_side_effects.py",
-   "tests/03_routing_cli/test_scaffold_check.py",
    "tests/03_routing_cli/test_serve_dx.py",
    "tests/07_resilience/test_doctor_product_rows_absent.py",
    "tests/07_resilience/test_extras_match_imports.py"

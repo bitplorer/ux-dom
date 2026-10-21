@@ -4,7 +4,8 @@
 > Map: [INDEX.md](../INDEX.md).
 
 **Status:** Accepted. Prod and port pre-flight removed from `uxdom doctor` (rule 4 met by
-ux-compose [#128](https://github.com/bitplorer/ux-compose/pull/128)).  
+ux-compose [#128](https://github.com/bitplorer/ux-compose/pull/128)). Scaffold rows removed
+(rule 4 met by `uxcompose create-app`; [#100](https://github.com/bitplorer/ux-dom/issues/100)).  
 **Amended by:** [ADR 0004](0004-no-compat-shims-pre-release.md)  
 **Date:** 2026-10-20  
 **Scope:** Which product features ux-dom may ship. Applies to `src/ux_dom/`, the
@@ -136,6 +137,9 @@ ADR 0001); this ADR records the same split from the ux-dom side.
 - Removed: `uxdom doctor --port/--prod` (and `info`'s copies) with the `port:`,
   `prod:DEBUG` and `prod:.env` rows. `uxdom build` runs the pure-dom doctor and no longer
   prints `prod:DEBUG-note`. Product readiness is `uxcompose doctor --prod [--port N]`.
+- Removed: the `scaffold` and `product-scaffold` rows of `uxdom doctor`, and its
+  `.ux_dom-scaffold.json` project detection. Nothing had written that marker since
+  `ux_dom.cli.scaffold` was deleted. Scaffolding is `uxcompose create-app`.
 - Prerequisite ux-compose work: a bundle command, unless the owner waives it above.
   `doctor --prod` shipped in ux-compose #128. The `pytailwindcss` extra is waived.
 - [internals/SYSTEM.md](../internals/SYSTEM.md) no longer lists `--package` ownership as open.
