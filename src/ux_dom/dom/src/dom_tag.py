@@ -948,7 +948,7 @@ class dom_tag(object):
         for attribute, value in sorted(self.attributes.items()):
             if value is not False:  # False values must be omitted completely
                 attribute = checked_attr_name(attribute)
-                safe = safe_attr_value(attribute, value)
+                safe = safe_attr_value(attribute, value, name)
                 sb.append(' %s="%s"' % (attribute, escape(unicode(safe), True)))
 
         sb.append(" />" if self.is_single and xhtml else ">")

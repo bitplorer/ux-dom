@@ -4,7 +4,7 @@
 > Map: [INDEX.md](../INDEX.md).
 
 **Status:** Accepted  
-**Amended by:** [ADR 0004](0004-no-compat-shims-pre-release.md)  
+**Amended by:** [ADR 0004](0004-no-compat-shims-pre-release.md); [URL values from Python](#amendment-url-values-from-python-86) (2026-10-21)  
 **Date:** 2026-10-20  
 **Scope:** Every path that parses a markup string into ux-dom nodes: `defHTML`,
 `StringToHTML`, `Fragment(str)`, `Component.render()->str`, `HTMLElement`,
@@ -92,3 +92,54 @@ behaviour. Each opt-in names exactly what it widens, at the call site.
   page passed there loses its doctype, `meta`, `link`, and `style`.
 - Rules and tests: [security/ATTRIBUTES.md](../security/ATTRIBUTES.md),
   `tests/07_resilience/test_html_string_mxss.py`.
+
+## Amendment: URL values from Python (#86)
+
+**Date:** 2026-10-21 · **Issue:** [#86](https://github.com/bitplorer/ux-dom/issues/86)
+
+**Context.** `<svg><a><animate attributeName="href" to="javascript:…"/></a></svg>`,
+built with ux-dom tags, ran script on click in Chromium (found in
+[#85](https://github.com/bitplorer/ux-dom/pull/85)). A Chromium click matrix
+over every URL-bearing construct on the tag path (HTML `href`, `src`,
+`action`, `formaction`, `iframe`/`object`/`embed`, `meta` refresh, SVG `a`,
+`use`, `image`, `feImage`, `script`, MathML `href`, `srcset`, `ping`, …,
+with case, space, control-character, tab/LF/CR, entity and `Markup`
+variants) found one vector that executed: SVG `animate` / `set` setting `href`
+through `to`, `from` or `values`, in every obfuscation except entities (which
+the renderer escapes). Everything else was already refused by the URL
+allowlist. The locking oracle is
+`tests/06_browser/test_svg_animation_url_browser.py`.
+
+**Decision.**
+
+1. **`__html__` / `Markup` means "trusted as HTML", not "trusted as a URL".**
+   A `Markup` value in a URL attribute gets the same check as any string.
+   `Markup` stays verbatim only where the value is HTML (`srcdoc`, children,
+   fragments).
+2. **URL values from Python fail closed through an allowlist.** Values passed
+   from Python are not author-trusted the way `on*` handler names are: in a
+   URL attribute only relative same-origin URLs, `http:`, `https:`,
+   `mailto:`, `tel:`, `sms:` and `data:image/{png,jpeg,jpg,gif,webp,avif}`
+   pass. Anything else renders as `about:invalid#ux-dom-unsafe-url`. `sms:`
+   and `data:image/avif` were added here because neither can run script.
+   `srcset` / `imagesrcset` check each candidate URL the same way: nothing ran
+   there in Chromium, but the parse is cheap and keeps it equal to `src`.
+3. **Animation values are URLs.** On `animate`, `set`, `animateMotion` and
+   `animateTransform`, `to`, `from`, `by` and each `;`-separated item of
+   `values` get the URL check, whatever `attributeName` says. Parsing
+   `attributeName` (case, XML prefixes, `xlink:href` aliases) is fragile;
+   ordinary animation values (`0;1`, `rgb(…)`, `10px`, `#id`) have no scheme
+   and pass as relative URLs, so checking them all costs nothing legitimate.
+4. **Deliberately refused, opt-in deferred.** `data:image/svg+xml`, `blob:`,
+   `ftp:` and custom schemes stay refused. A typed `SafeURL` opt-in is planned
+   only when a real caller needs one; no caller in ux-dom or its siblings does
+   today.
+
+`meta content` is not checked: a `javascript:` or `data:text/html` refresh URL
+did not run in Chromium, and `content` on other `meta` elements is free text.
+
+**Consequences.** `safe_attr_value` takes the element name (`tag`) so the
+animation rule can see its element. The full list of checked attributes and
+allowed schemes lives in [security/ATTRIBUTES.md](../security/ATTRIBUTES.md),
+and `tests/04_production/test_attribute_docs_match_code.py` keeps it equal to
+the code. Exact strings: `tests/07_resilience/test_svg_animation_urls.py`.

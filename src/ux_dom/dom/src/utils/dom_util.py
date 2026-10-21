@@ -221,12 +221,25 @@ _SSE_WS_NAME_CHARS = frozenset("abcdefghijklmnopqrstuvwxyz0123456789_.-")
 # sanitized by the HTML-string allowlist. A ``__html__`` opt-in (``Markup``)
 # stays verbatim.
 HTML_ATTRIBUTES = frozenset({"srcdoc"})
+# Comma-separated image candidates: each candidate's URL gets the URL check.
+_SRCSET_ATTRIBUTES = frozenset({"srcset", "imagesrcset"})
+# SMIL animation elements can set any attribute, ``href`` included (#86). Their
+# ``to``/``from``/``by`` and each ``;`` item of ``values`` get the URL check
+# whatever ``attributeName`` says. Ordinary values (``0;1``, ``10px``) have no
+# scheme, so they pass as relative URLs. Names are lowercased.
+_ANIMATION_TAGS = frozenset({"animate", "set", "animatemotion", "animatetransform"})
+_ANIMATION_VALUE_ATTRIBUTES = frozenset({"to", "from", "by", "values"})
 UNSAFE_URL = "about:invalid#ux-dom-unsafe-url"
 _URL_NOISE = re.compile(r"[\x00-\x20\x7f]+")
-# Allow-list, not deny-list: anything not listed here fails closed.
-_SAFE_SCHEMES = frozenset({"http", "https", "mailto", "tel"})
+# Allow-list, not deny-list: anything not listed here fails closed. Only
+# schemes and image types that cannot run script belong here.
+_SAFE_SCHEMES = frozenset({"http", "https", "mailto", "tel", "sms"})
+_SAFE_DATA_IMAGE_TYPES = frozenset({"png", "jpeg", "jpg", "gif", "webp", "avif"})
 _CROSS_ORIGIN_SCHEMES = frozenset({"http", "https", "ws", "wss"})
-_SAFE_DATA_URL = re.compile(r"data:image/(?:png|jpeg|jpg|gif|webp)(?:[;,]|$)")
+_SAFE_DATA_URL = re.compile(
+    r"data:image/(?:%s)(?:[;,]|$)" % "|".join(sorted(_SAFE_DATA_IMAGE_TYPES))
+)
+_SRCSET_SPACE = "\t\n\f\r "
 
 
 class CrossOriginURL(str):
@@ -370,6 +383,33 @@ def _is_safe_url(text):
     return scheme in _SAFE_SCHEMES
 
 
+def _srcset_urls(text):
+    """The URL of each image candidate, as HTML's "parse a srcset attribute".
+
+    A URL is a run of non-space characters, so a comma inside it (``data:``)
+    stays; trailing commas end the candidate. Otherwise the descriptors run to
+    the next comma outside parentheses.
+    """
+    urls, pos, end = [], 0, len(text)
+    while True:
+        while pos < end and (text[pos] in _SRCSET_SPACE or text[pos] == ","):
+            pos += 1
+        if pos >= end:
+            return urls
+        start = pos
+        while pos < end and text[pos] not in _SRCSET_SPACE:
+            pos += 1
+        url = text[start:pos]
+        urls.append(url.rstrip(","))
+        if url.endswith(","):
+            continue
+        in_parens = False
+        while pos < end and (in_parens or text[pos] != ","):
+            if text[pos] in "()":
+                in_parens = text[pos] == "("
+            pos += 1
+
+
 def _relative_same_origin_probe(probe):
     """``probe`` is already noise-stripped. Relative only: no scheme, no ``//``."""
     if not probe or _is_protocol_relative(probe):
@@ -450,13 +490,16 @@ def _sse_ws_value_ok(text, *, cross):
     return True
 
 
-def safe_attr_value(attribute, value):
+def safe_attr_value(attribute, value, tag=""):
     """Return ``value``, or UNSAFE_URL if it is not safe for ``attribute``.
 
     URL attributes keep only relative URLs, ``http``, ``https``, ``mailto``,
-    ``tel`` and ``data:image/{png,jpeg,gif,webp}`` (never SVG). The check runs
-    on ``str(value)`` after HTML entities are decoded and the C0 controls and
-    spaces that browsers ignore inside a scheme are removed.
+    ``tel``, ``sms`` and ``data:image/{png,jpeg,jpg,gif,webp,avif}`` (never
+    SVG). The check runs on ``str(value)`` after HTML entities are decoded and
+    the C0 controls and spaces that browsers ignore inside a scheme are
+    removed. ``srcset`` checks each candidate URL. On an animation ``tag``
+    (``_ANIMATION_TAGS``), ``to``/``from``/``by`` and each ``;`` item of
+    ``values`` are checked as URLs too.
 
     HTML attributes (``srcdoc``) run a string through the same allowlist
     sanitizer as ``defHTML``. A ``__html__`` value (``Markup``) is still the
@@ -476,12 +519,24 @@ def safe_attr_value(attribute, value):
         if isinstance(value, CrossOriginURL):
             return text if _is_safe_cross_origin_url(text) else UNSAFE_URL
         return text if _is_same_origin_url(text) else UNSAFE_URL
+    if name in _SRCSET_ATTRIBUTES:
+        text = str(value)
+        return text if all(map(_is_safe_url, _srcset_urls(text))) else UNSAFE_URL
+    if name in _ANIMATION_VALUE_ATTRIBUTES and _is_animation_tag(tag):
+        text = str(value)
+        items = text.split(";") if name == "values" else (text,)
+        return text if all(map(_is_safe_url, items)) else UNSAFE_URL
     if name not in URL_ATTRIBUTES:
         return value
     # Stringify once and return that text: re-stringifying ``value`` later
     # could yield something other than what was checked.
     text = str(value)
     return text if _is_safe_url(text) else UNSAFE_URL
+
+
+def _is_animation_tag(tag):
+    """``svg:set`` (an XML prefix) and ``animateMotion`` count, in any case."""
+    return str(tag).rsplit(":", 1)[-1].lower() in _ANIMATION_TAGS
 
 
 def _srcdoc_value(value):

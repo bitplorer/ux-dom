@@ -411,6 +411,7 @@ class Tags(dom_tag, dom1core):
 
     def _iter_html_attrs(self, indent_level=None, indent_str=None, pretty=None):
         """Yield HTML attribute fragments (list-render and token-walk share this)."""
+        name = self._clean_name(self._tagname())
         for attribute, value in sorted(self.attributes.items()):
             if attribute in getattr(self, "CONTROL_ATTRS", ()):
                 continue
@@ -425,7 +426,7 @@ class Tags(dom_tag, dom1core):
                     value, indent_level, indent_str, pretty
                 )
             if not isinstance(value, (dict, list)):
-                value = safe_attr_value(attribute, value)
+                value = safe_attr_value(attribute, value, name)
                 if self.safe_attributes.get(attribute, True):
                     yield ' %s="%s"' % (attribute, escape(unicode(value), True))
                 else:

@@ -1,6 +1,7 @@
 {
  "ux_dom.dom.src.utils": {
   "consumers": [
+   "tests/04_production/test_attribute_docs_match_code.py",
    "tests/07_resilience/test_html_parse_sanitizer.py",
    "tests/07_resilience/test_htmx_same_origin.py",
    "tests/07_resilience/test_jinja_and_string_nonce.py",

@@ -122,6 +122,7 @@
    "tests/07_resilience/test_plugin_errors_propagate.py",
    "tests/07_resilience/test_raw_string_sinks.py",
    "tests/07_resilience/test_single_tag_registry.py",
+   "tests/07_resilience/test_svg_animation_urls.py",
    "tests/07_resilience/test_text_state_parents.py",
    "tests/07_resilience/test_unsafe_url_attrs.py",
    "tests/fixtures/auth_xelements.py",
