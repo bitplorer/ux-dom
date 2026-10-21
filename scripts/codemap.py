@@ -8,6 +8,7 @@ Usage::
     python scripts/codemap.py --check          # exit 1: stale shards / broken refs
     python scripts/codemap.py --module pkg.x   # print one module's entry
     python scripts/codemap.py --feature ID     # print one feature and its modules
+    python scripts/codemap.py --claims DOC     # print one doc's claims with lines
 
 This file is identical in every repo that vendors it; everything repo-specific
 lives in ``[tool.codemap]`` of a ``pyproject.toml`` (the repo root's, else the
@@ -68,9 +69,7 @@ CONFIG_KEYS = {
     "features",
     "domain",
     "narrative",
-    "projects",
     "distributions",
-    "asgi",
     "claims_docs",
     "claims_exclude",
 }
@@ -118,7 +117,6 @@ class Config:
     narrative: list[str] = field(default_factory=list)
     projects: list[Path] = field(default_factory=list)
     distributions: dict[str, str] = field(default_factory=dict)
-    asgi: list[str] = field(default_factory=list)
     claims_docs: list[str] = field(default_factory=list)
     claims_exclude: list[str] = field(default_factory=list)
 
@@ -130,7 +128,15 @@ class Config:
         return p.relative_to(self.root).as_posix()
 
     def is_internal(self, dotted: str) -> bool:
-        return dotted.partition(".")[0] in self.names
+        return _in_packages(dotted, self.names)
+
+    def roots_pattern(self) -> str:
+        """Regex alternation of the package names, for citation scanners."""
+        return "|".join(sorted(map(re.escape, self.names)))
+
+
+def _in_packages(dotted: str, packages: set[str]) -> bool:
+    return dotted.partition(".")[0] in packages
 
 
 def _find_config(root: Path) -> Path:
@@ -191,19 +197,16 @@ def load_config(root: Path, config_path: Path | None = None) -> Config:
         raise SystemExit(
             f"codemap: public_api.rule {rule!r} is not all_or_derived|all_only"
         )
-    projects = raw.get("projects")
-    if projects is None:
-        # The config's own pyproject plus the nearest pyproject above each
-        # package, so every sub-project's entry points are read.
-        found = {source} if source.name == "pyproject.toml" else set()
-        for pkg in packages:
-            for d in pkg.path.parents:
-                if (d / "pyproject.toml").is_file():
-                    found.add(d / "pyproject.toml")
-                    break
-                if d == root:
-                    break
-        projects = sorted(f.relative_to(root).as_posix() for f in found)
+    # Entry points come from the config's pyproject plus the nearest pyproject
+    # above each package, so every sub-project of a multi-project repo counts.
+    projects = {source} if source.name == "pyproject.toml" else set()
+    for pkg in packages:
+        for d in pkg.path.parents:
+            if (d / "pyproject.toml").is_file():
+                projects.add(d / "pyproject.toml")
+                break
+            if d == root:
+                break
     features = raw.get("features")
     domain = raw.get("domain")
     return Config(
@@ -223,9 +226,8 @@ def load_config(root: Path, config_path: Path | None = None) -> Config:
         features=root / features if features else None,
         domain=root / domain if domain else None,
         narrative=list(raw.get("narrative", [])),
-        projects=[root / p for p in projects],
+        projects=sorted(projects),
         distributions=dict(raw.get("distributions", {})),
-        asgi=list(raw.get("asgi", [])),
         claims_docs=list(raw.get("claims_docs", [])),
         claims_exclude=list(raw.get("claims_exclude", [])),
     )
@@ -270,17 +272,21 @@ def _walk(base: Path, exts: tuple[str, ...]) -> list[Path]:
 
 
 def tracked_files(cfg: Config, tops: list[str]) -> list[Path] | None:
-    """Git-tracked files under *tops*, or None outside a git checkout."""
+    """Git-tracked files under *tops*; None when *cfg.root* is not a git
+    checkout (or git is not installed). A git failure inside a checkout raises:
+    silently walking instead would count untracked files."""
+    if not (cfg.root / ".git").exists():
+        return None
     try:
-        listed = subprocess.run(
+        proc = subprocess.run(
             ["git", "ls-files", "-z", "--", *tops],
             cwd=cfg.root,
             capture_output=True,
             check=True,
-        ).stdout.decode("utf-8")
-    except (OSError, subprocess.CalledProcessError):
+        )
+    except FileNotFoundError:
         return None
-    return [cfg.root / rel for rel in listed.split("\0") if rel]
+    return [cfg.root / rel for rel in proc.stdout.decode("utf-8").split("\0") if rel]
 
 
 def consumer_files(cfg: Config) -> list[Path]:
@@ -372,15 +378,10 @@ def _top_level_stmts(body: list[ast.stmt]) -> list[ast.stmt]:
     return out
 
 
-def _doc_line(node: ast.AST) -> str:
-    doc = (
-        ast.get_docstring(node, clean=True)
-        if isinstance(
-            node, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)
-        )
-        else None
-    )
-    for line in (doc or "").splitlines():
+def _doc_line(
+    node: ast.Module | ast.ClassDef | ast.FunctionDef | ast.AsyncFunctionDef,
+) -> str:
+    for line in (ast.get_docstring(node) or "").splitlines():
         if line.strip():
             return line.strip()
     return ""
@@ -462,8 +463,10 @@ class ModuleInfo:
         self.ext_used: set[str] = set()
         # Top-level import name -> number of import statements.
         self.ext_sites: dict[str, int] = {}
-        # "isinstance pkg.m(mod:Name)" / "subclass pkg.m.Cls(mod:Name)".
-        self.ext_hard: set[str] = set()
+        # (foreign ref, "isinstance pkg.m" / "subclass pkg.m.Cls") pairs.
+        self.ext_hard: set[tuple[str, str]] = set()
+        self._ext_refs: dict[str, str] = {}  # local name -> "module:Name"
+        self._ext_mods: dict[str, set[str]] = {}  # local name -> imported modules
         self.ext_annotated: set[str] = set()  # names seen in type annotations
         self._scan()
         self._scan_external_usage()
@@ -475,7 +478,7 @@ class ModuleInfo:
         return str(self.path)
 
     def _internal(self, dotted: str) -> bool:
-        return dotted.partition(".")[0] in self.packages
+        return _in_packages(dotted, self.packages)
 
     # -- import resolution
     def _base(self, node: ast.ImportFrom) -> str:
@@ -539,6 +542,7 @@ class ModuleInfo:
                 internal, external = self._targets(n)
                 self.imports[kind] |= internal
                 self.external[kind] |= external
+                self._bind_external(n)
 
         for st in _top_level_stmts(self.tree.body):
             if id(st) in tc_ids:
@@ -619,31 +623,29 @@ class ModuleInfo:
                 if name:
                     self.commands.add(name)
 
-    def _scan_external_usage(self) -> None:
-        """Collect which foreign names this module uses, and how (see CODEMAP.md)."""
-        refs: dict[str, str] = {}  # local name -> "module:Name"
-        mods: dict[str, set[str]] = {}  # local name -> imported dotted modules
-        for n in ast.walk(self.tree):
-            if isinstance(n, ast.Import):
-                for a in n.names:
-                    if self._internal(a.name):
-                        continue
+    def _bind_external(self, n: ast.Import | ast.ImportFrom) -> None:
+        """Record the local names a foreign import binds, and count the site."""
+        if isinstance(n, ast.Import):
+            for a in n.names:
+                if not self._internal(a.name):
                     top = a.name.partition(".")[0]
                     self.ext_sites[top] = self.ext_sites.get(top, 0) + 1
-                    local = a.asname or top
-                    mods.setdefault(local, set()).add(a.name)
-            elif isinstance(n, ast.ImportFrom):
-                base = self._base(n)
-                if not base or self._internal(base):
-                    continue
-                top = base.partition(".")[0]
-                self.ext_sites[top] = self.ext_sites.get(top, 0) + 1
-                for a in n.names:
-                    if a.name == "*":
-                        self.ext_used.add(f"{base}:*")
-                    else:
-                        refs[a.asname or a.name] = f"{base}:{a.name}"
-                        self.ext_used.add(f"{base}:{a.name}")
+                    self._ext_mods.setdefault(a.asname or top, set()).add(a.name)
+            return
+        base = self._base(n)
+        if not base or self._internal(base):
+            return
+        top = base.partition(".")[0]
+        self.ext_sites[top] = self.ext_sites.get(top, 0) + 1
+        for a in n.names:
+            ref = f"{base}:{a.name}"
+            self.ext_used.add(ref)
+            if a.name != "*":
+                self._ext_refs[a.asname or a.name] = ref
+
+    def _scan_external_usage(self) -> None:
+        """Collect which foreign names this module uses, and how (see CODEMAP.md)."""
+        refs, mods = self._ext_refs, self._ext_mods
 
         def resolve(node: ast.AST) -> str | None:
             if isinstance(node, ast.Name):
@@ -694,7 +696,7 @@ class ModuleInfo:
                 for b in n.bases:
                     ref = resolve(b)
                     if ref:
-                        self.ext_hard.add(f"subclass {self.name}.{n.name}({ref})")
+                        self.ext_hard.add((ref, f"subclass {self.name}.{n.name}"))
             if (
                 isinstance(n, ast.Call)
                 and isinstance(n.func, ast.Name)
@@ -707,7 +709,7 @@ class ModuleInfo:
                 for t in types:
                     ref = resolve(t)
                     if ref:
-                        self.ext_hard.add(f"{n.func.id} {self.name}({ref})")
+                        self.ext_hard.add((ref, f"{n.func.id} {self.name}"))
         for dotted in mods.values():
             for m in dotted:
                 if m not in accessed:
@@ -759,11 +761,12 @@ class CodeMap:
             for m, p in self.mods.items()
         }
         self._public: dict[str, list[str]] = {}
-        self._public_api_cache: dict[str, dict[str, str]] = {}
         self.problems: list[str] = [
             f"__all__: {e}" for i in self.info.values() for e in i.all_errors
         ]
         self.notices: list[str] = []  # unconfigured / empty sections (not failures)
+        roots = cfg.roots_pattern()
+        self._citation_re = re.compile(rf"(?:{roots})(?:\.\w+)*(?::\w+(?:\.\w+)*)?")
         self._import_dist: dict[str, str] = {}  # from depends_on ``imports``
         self.claim_lines: dict[str, list[dict]] = {}  # doc -> claims with lines
 
@@ -866,7 +869,7 @@ class CodeMap:
         * a bare package root counts only via ``import pkg`` / ``from pkg import``;
         * an asset counts when its file name (``x_element.js``) appears.
         """
-        roots = "|".join(sorted(map(re.escape, self.cfg.names)))
+        roots = self.cfg.roots_pattern()
         dotted_re = re.compile(rf"(?<![\w.])(?:{roots})(?:\.[A-Za-z_]\w*)+")
         from_re = re.compile(
             rf"from[ \t]+((?:{roots})(?:\.\w+)*)[ \t]+import[ \t]*"
@@ -968,18 +971,13 @@ class CodeMap:
                 self._check_ref(
                     f"entry point {where}.{name}", ref.split("[")[0].strip()
                 )
-        asgi = sorted(
-            {a for i in self.info.values() for a in i.asgi} | set(self.cfg.asgi)
-        )
-        for ref in self.cfg.asgi:
-            self._check_ref("config asgi", ref)
         return {
             "scripts": dict(sorted(scripts.items())),
             "entry_points": {
                 g: dict(sorted(t.items())) for g, t in sorted(groups.items())
             },
             "main_modules": sorted(m for m in self.mods if m.endswith(".__main__")),
-            "asgi": asgi,
+            "asgi": sorted(a for i in self.info.values() for a in i.asgi),
         }
 
     def _check_ref(self, what: str, ref: str) -> None:
@@ -1033,18 +1031,12 @@ class CodeMap:
             return {}
         with path.open("rb") as fh:
             entries = tomllib.load(fh).get("feature", [])
-        out: dict[str, dict] = {}
-        for i, f in enumerate(entries):
-            fid = f.get("id", "")
-            where = f"{rel}: feature {fid or f'#{i}'}"
+        out = self._entries(rel, entries, FEATURE_KEYS, "id", "feature")
+        for fid, f in out.items():
+            where = f"{rel}: feature {fid}"
             if not FEATURE_ID.fullmatch(fid):
                 self.problems.append(f"{where}: id must match {FEATURE_ID.pattern}")
-            if fid in out:
-                self.problems.append(f"{where}: duplicate id")
-            for key in sorted(set(f) - FEATURE_KEYS):
-                self.problems.append(f"{where}: unknown key {key!r}")
-            purpose = f.get("purpose", "")
-            if not purpose.strip() or "\n" in purpose.strip():
+            if not _one_line(f.get("purpose", "")):
                 self.problems.append(f"{where}: purpose must be one non-empty line")
             if not f.get("modules"):
                 self.problems.append(f"{where}: needs at least one module")
@@ -1069,10 +1061,27 @@ class CodeMap:
                     err = self._path_ref(ref)
                     if err:
                         self.problems.append(f"{where}: {key} {ref}: {err}")
-            out[fid] = {
-                k: (sorted(f[k]) if isinstance(f[k], list) else f[k])
-                for k in FEATURE_KEYS & set(f)
-                if k != "id"
+        return out
+
+    def _entries(
+        self, rel: str, items: list, keys: set[str], idkey: str, what: str
+    ) -> dict[str, dict]:
+        """``[[what]]`` tables keyed by *idkey*, lists sorted. Missing or
+        duplicate ids and unknown keys are problems."""
+        out: dict[str, dict] = {}
+        for i, item in enumerate(items):
+            ident = item.get(idkey, "")
+            where = f"{rel}: {what} {ident or f'#{i}'}"
+            if not ident:
+                self.problems.append(f"{where}: needs {idkey!r}")
+            if ident in out:
+                self.problems.append(f"{where}: duplicate")
+            for key in sorted(set(item) - keys):
+                self.problems.append(f"{where}: unknown key {key!r}")
+            out[ident] = {
+                k: sorted(v) if isinstance(v, list) else v
+                for k, v in item.items()
+                if k != idkey
             }
         return dict(sorted(out.items()))
 
@@ -1099,31 +1108,13 @@ class CodeMap:
         for key in sorted(set(raw) - DOMAIN_KEYS):
             self.problems.append(f"{rel}: unknown key {key!r}")
         sentence = raw.get("domain", "")
-        if not sentence.strip() or "\n" in sentence.strip():
+        if not _one_line(sentence):
             self.problems.append(f"{rel}: domain must be one non-empty sentence")
         for ref in raw.get("public_api", []):
             if not self._ref_ok(ref):
                 self.problems.append(f"{rel}: public_api {ref}: does not exist")
 
-        def table(items: list, keys: set[str], idkey: str, what: str) -> dict:
-            out: dict[str, dict] = {}
-            for i, item in enumerate(items):
-                ident = item.get(idkey, "")
-                where = f"{rel}: {what} {ident or f'#{i}'}"
-                if not ident:
-                    self.problems.append(f"{where}: needs {idkey!r}")
-                if ident in out:
-                    self.problems.append(f"{where}: duplicate")
-                for key in sorted(set(item) - keys):
-                    self.problems.append(f"{where}: unknown key {key!r}")
-                out[ident] = {
-                    k: sorted(v) if isinstance(v, list) else v
-                    for k, v in item.items()
-                    if k != idkey
-                }
-            return dict(sorted(out.items()))
-
-        owns = table(raw.get("owns", []), OWNS_KEYS, "concept", "owns")
+        owns = self._entries(rel, raw.get("owns", []), OWNS_KEYS, "concept", "owns")
         for concept, entry in owns.items():
             if not entry.get("modules"):
                 self.problems.append(
@@ -1132,13 +1123,13 @@ class CodeMap:
             for ref in [*entry.get("modules", []), *entry.get("symbols", [])]:
                 if not self._ref_ok(ref):
                     self.problems.append(f"{rel}: owns {concept}: {ref} does not exist")
-        non_goals = table(
-            raw.get("non_goals", []), NON_GOAL_KEYS, "concept", "non_goal"
+        non_goals = self._entries(
+            rel, raw.get("non_goals", []), NON_GOAL_KEYS, "concept", "non_goal"
         )
         for concept in set(owns) & set(non_goals):
             self.problems.append(f"{rel}: {concept} is both owned and a non-goal")
-        depends = table(
-            raw.get("depends_on", []), DEPENDS_KEYS, "distribution", "depends_on"
+        depends = self._entries(
+            rel, raw.get("depends_on", []), DEPENDS_KEYS, "distribution", "depends_on"
         )
         # ``imports`` (a top-level import name, or a list) maps imports to the
         # distribution, so usage is attributed to the declared distribution.
@@ -1199,7 +1190,7 @@ class CodeMap:
         usage: dict[str, set[str]] = {}
         sites: dict[str, int] = {}
         importers: dict[str, set[str]] = {}
-        hard: dict[str, set[str]] = {}
+        hard: dict[str, set[tuple[str, str]]] = {}
         annotated: dict[str, set[str]] = {}
         users: dict[tuple[str, str], set[str]] = {}
         for m, info in self.info.items():
@@ -1211,20 +1202,21 @@ class CodeMap:
                 d = self.dist_of(ref)
                 usage.setdefault(d, set()).add(ref)
                 users.setdefault((d, ref), set()).add(m)
-            for h in info.ext_hard:
-                ref = h.rpartition("(")[2].rstrip(")")
-                hard.setdefault(self.dist_of(ref), set()).add(h)
+            for ref, how in info.ext_hard:
+                hard.setdefault(self.dist_of(ref), set()).add((ref, how))
             for ref in info.ext_annotated:
                 annotated.setdefault(self.dist_of(ref), set()).add(ref)
         usage.pop("stdlib", None)
         coupling = {}
         for d in sorted(usage):
-            hard_refs = {h.rpartition("(")[2].rstrip(")") for h in hard.get(d, ())}
+            hard_refs = {ref for ref, _ in hard.get(d, ())}
             coupling[d] = {
                 "import_sites": sites.get(d, 0),
-                "importing_modules": len(importers.get(d, ())),
+                "importing_modules": sorted(importers.get(d, ())),
                 "distinct_names": len(usage[d]),
-                "hard_coupling": sorted(hard.get(d, ())),
+                "hard_coupling": sorted(
+                    f"{how}({ref})" for ref, how in hard.get(d, ())
+                ),
                 "port_candidates": sorted(annotated.get(d, set()) - hard_refs),
             }
 
@@ -1329,7 +1321,6 @@ class CodeMap:
         else why not. Citations: a dotted module or symbol reached through a
         module, ``module:symbol``, or a path from an import root
         (``pkg/a.py``) or the repo root (``src/pkg/a.py``)."""
-        roots = "|".join(sorted(map(re.escape, self.cfg.names)))
         span = span.strip()
         if "/" in span and re.fullmatch(r"[\w.\-/]+/?", span):
             head = span.partition("/")[0]
@@ -1340,7 +1331,7 @@ class CodeMap:
                 if span == prefix or span.startswith(prefix + "/"):
                     return "" if (self.cfg.root / span).exists() else "no such path"
             return None
-        if not re.fullmatch(rf"(?:{roots})(?:\.\w+)*(?::\w+(?:\.\w+)*)?", span):
+        if not self._citation_re.fullmatch(span):
             return None
         mod, sep, name = span.partition(":")
         if sep:
@@ -1402,12 +1393,12 @@ class CodeMap:
         return sorted(set(out))
 
     def doc_claims(
-        self, entry_points: dict, features: dict, charter: dict
+        self, entry_points: dict, features: dict, charter: dict, public_api: dict
     ) -> tuple[dict, dict]:
         """``({doc: [claim]}, findings)``: what the docs claim, resolved
         against the code (heuristic; recorded, never failed). See CODEMAP.md."""
         cfg = self.cfg
-        roots = "|".join(sorted(map(re.escape, cfg.names)))
+        roots = cfg.roots_pattern()
         dotted_re = re.compile(rf"(?<![\w./-])(?:{roots})(?:\.\w+)+(?::\w+(?:\.\w+)*)?")
         import_re = re.compile(
             rf"^\s*from\s+((?:{roots})(?:\.\w+)*)\s+import\s+\(?([\w\s,]+)"
@@ -1531,7 +1522,7 @@ class CodeMap:
 
         code_ahead = set()
         if corpus:
-            for pkg, api in self._public_api_cache.items():
+            for pkg, api in public_api.items():
                 for name in api:
                     if not mentioned(name):
                         code_ahead.add(f"public_api {pkg}:{name}")
@@ -1614,7 +1605,6 @@ class CodeMap:
                 self.problems.append(f"public_api: package {pkg} is not mapped")
                 continue
             api = {n: self.defining_module(pkg, n) for n in self.public(pkg)}
-            self._public_api_cache[pkg] = api
             public_api[pkg] = api
             for n, home in api.items():
                 if home in exported:
@@ -1682,13 +1672,9 @@ class CodeMap:
         narrative = self.narrative()
         usage, coupling, non_goal_warnings = self.external_usage(charter)
         entry_points = self.entry_points()
-        claims, doc_findings = self.doc_claims(entry_points, features, charter)
-
-        dists: dict[str, set[str]] = {}
-        for m, info in self.info.items():
-            for targets in info.external.values():
-                for t in targets:
-                    dists.setdefault(self.dist_of(t), set()).add(m)
+        claims, doc_findings = self.doc_claims(
+            entry_points, features, charter, public_api
+        )
 
         return {
             "schema": SCHEMA,
@@ -1706,9 +1692,6 @@ class CodeMap:
             "public_api": public_api,
             "entry_points": entry_points,
             "cycles_module_level": cycles,
-            "external_distributions": {
-                d: sorted(ms) for d, ms in sorted(dists.items()) if d != "stdlib"
-            },
             "features": features,
             "narrative_docs": narrative,
             "domain": charter,
@@ -1767,6 +1750,10 @@ class CodeMap:
 # --------------------------------------------------------------------- shards
 
 
+def _one_line(text: str) -> bool:
+    return bool(text.strip()) and "\n" not in text.strip()
+
+
 def _words(identifier: str) -> list[str]:
     """``HtmxRoutes`` / ``intent_codec`` -> lower-case words."""
     spaced = re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", identifier)
@@ -1795,7 +1782,6 @@ INDEX_SECTIONS = (
     "public_api",
     "entry_points",
     "cycles_module_level",
-    "external_distributions",
     "features",
     "narrative_docs",
     "domain",
@@ -1955,9 +1941,9 @@ def main(argv: list[str] | None = None) -> int:
 
     expected = shards(data)
     where = cfg.rel(cfg.out_dir)
-    for note in cm.notices:  # unconfigured or empty sections: say so
+    for note in cm.notices:
         print(f"codemap: note: {note}")
-    if data["non_goal_warnings"]:  # heuristic: reported, never failed
+    if data["non_goal_warnings"]:
         print(
             f"codemap: {len(data['non_goal_warnings'])} non-goal warning(s) "
             f"(index.json non_goal_warnings); review, do not silence"

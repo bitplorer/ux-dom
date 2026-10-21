@@ -144,6 +144,17 @@ class TestCodeMap(unittest.TestCase):
         finally:
             scratch.unlink()
 
+    def test_git_failure_inside_a_checkout_is_not_swallowed(self):
+        # Falling back to a walk would silently count untracked files.
+        with tempfile.TemporaryDirectory() as tmp:
+            (Path(tmp) / ".git").write_text("not a repository\n", encoding="utf-8")
+            cfg = self.codemap.load_config(ROOT)
+            cfg.root = Path(tmp)
+            with self.assertRaises(subprocess.CalledProcessError):
+                self.codemap.tracked_files(cfg, ["tests"])
+            (Path(tmp) / ".git").unlink()
+            self.assertIsNone(self.codemap.tracked_files(cfg, ["tests"]))
+
     def test_only_if_type_checking_body_is_type_only(self):
         src = textwrap.dedent("""
             import typing
@@ -196,8 +207,6 @@ class TestCodeMap(unittest.TestCase):
                 (msg,) = info.all_errors
                 self.assertRegex(msg, r"m\.py:\d+: ")
                 self.assertIn("must be a literal list/tuple of strings", msg)
-        # The end-to-end finding (--check exits 1 naming file:line) is covered
-        # by test_codemap_fixtures.TestCheckFailures.test_dynamic_all_is_a_finding.
 
     def test_doc_edit_without_claim_change_keeps_map_fresh(self):
         # Claims shards carry no line numbers: a blank line must not go stale.

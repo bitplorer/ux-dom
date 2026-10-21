@@ -7,21 +7,28 @@
    "distinct_names": 2,
    "hard_coupling": [],
    "import_sites": 2,
-   "importing_modules": 2,
+   "importing_modules": [
+    "ux_dom.dom.src.ext",
+    "ux_dom.dom.src.jinjatags"
+   ],
    "port_candidates": []
   },
   "MarkupSafe": {
    "distinct_names": 1,
    "hard_coupling": [],
    "import_sites": 1,
-   "importing_modules": 1,
+   "importing_modules": [
+    "ux_dom.dom.src.ext"
+   ],
    "port_candidates": []
   },
   "fastapi": {
    "distinct_names": 1,
    "hard_coupling": [],
    "import_sites": 1,
-   "importing_modules": 1,
+   "importing_modules": [
+    "ux_dom.plugins.safe_static"
+   ],
    "port_candidates": [
     "fastapi.responses:Response"
    ]
@@ -30,7 +37,9 @@
    "distinct_names": 1,
    "hard_coupling": [],
    "import_sites": 1,
-   "importing_modules": 1,
+   "importing_modules": [
+    "ux_dom.dom.src.component"
+   ],
    "port_candidates": []
   },
   "starlette": {
@@ -40,7 +49,10 @@
     "subclass ux_dom.response.starlette.StreamingResponse(starlette.responses:StreamingResponse)"
    ],
    "import_sites": 4,
-   "importing_modules": 2,
+   "importing_modules": [
+    "ux_dom.plugins.safe_static",
+    "ux_dom.response.starlette"
+   ],
    "port_candidates": [
     "starlette.background:BackgroundTask"
    ]
@@ -49,14 +61,19 @@
    "distinct_names": 3,
    "hard_coupling": [],
    "import_sites": 1,
-   "importing_modules": 1,
+   "importing_modules": [
+    "ux_dom.cli.cli"
+   ],
    "port_candidates": []
   },
   "ux-channel": {
    "distinct_names": 3,
    "hard_coupling": [],
    "import_sites": 4,
-   "importing_modules": 2,
+   "importing_modules": [
+    "ux_dom.cli.doctor",
+    "ux_dom.ui.channel_bridge"
+   ],
    "port_candidates": []
   },
   "ux-valio": {
@@ -72,7 +89,14 @@
     "subclass ux_dom.elements.integers.IntegerRangeInputValidator(ux_valio:Validator)"
    ],
    "import_sites": 7,
-   "importing_modules": 6,
+   "importing_modules": [
+    "ux_dom.elements.booleans",
+    "ux_dom.elements.buttons",
+    "ux_dom.elements.chars",
+    "ux_dom.elements.enums",
+    "ux_dom.elements.floats",
+    "ux_dom.elements.integers"
+   ],
    "port_candidates": []
   }
  },
@@ -388,40 +412,6 @@
   "scripts": {
    "uxdom": "ux_dom.cli:app"
   }
- },
- "external_distributions": {
-  "Jinja2": [
-   "ux_dom.dom.src.ext",
-   "ux_dom.dom.src.jinjatags"
-  ],
-  "MarkupSafe": [
-   "ux_dom.dom.src.ext"
-  ],
-  "fastapi": [
-   "ux_dom.plugins.safe_static"
-  ],
-  "marko": [
-   "ux_dom.dom.src.component"
-  ],
-  "starlette": [
-   "ux_dom.plugins.safe_static",
-   "ux_dom.response.starlette"
-  ],
-  "typer": [
-   "ux_dom.cli.cli"
-  ],
-  "ux-channel": [
-   "ux_dom.cli.doctor",
-   "ux_dom.ui.channel_bridge"
-  ],
-  "ux-valio": [
-   "ux_dom.elements.booleans",
-   "ux_dom.elements.buttons",
-   "ux_dom.elements.chars",
-   "ux_dom.elements.enums",
-   "ux_dom.elements.floats",
-   "ux_dom.elements.integers"
-  ]
  },
  "external_usage": {
   "Jinja2": [
@@ -1013,7 +1003,7 @@
  },
  "generator": {
   "name": "codemap",
-  "sha256": "9845146ba84f722a98d5ac6a600cc162dd750a65e8dcb904982e11493df9012e",
+  "sha256": "63c62966b63ebbf892f7346e8832f8593dd3bcc32e24c5e7abc984c139315c85",
   "version": "2.0.0"
  },
  "layer_exceptions": [

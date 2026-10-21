@@ -238,7 +238,6 @@ class TestLayouts(unittest.TestCase):
         self.assertTrue(eng["symbols"]["helper"]["public"])  # no __all__: derived
         self.assertIn("tests/test_engine.py", eng["consumers"])
         self.assertIn("alpha.cli", eng["imported_by"]["module_level"])
-        # Lookups
         proc = run(repo, "--feature", "engine")
         self.assertEqual(proc.returncode, 0, proc.stderr)
         self.assertIn('"module_map"', proc.stdout)
@@ -362,7 +361,7 @@ class TestLayouts(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
         idx = index(repo)
         self.assertEqual(sorted(idx["packages"]), ["host_pkg", "surface_pkg"])
-        # No ``projects`` given: each package's own pyproject is read too.
+        # Each package's own pyproject is read, not only the config's.
         self.assertEqual(
             idx["projects"], ["host/pyproject.toml", "surface/pyproject.toml"]
         )

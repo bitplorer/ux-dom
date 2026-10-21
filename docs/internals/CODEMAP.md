@@ -79,19 +79,18 @@ demand.
 |-----|---------|
 | `schema`, `generator` | Map schema (2); generator `name`, `version`, `sha256` of `scripts/codemap.py`. |
 | `packages` | Import name → package directory. |
-| `projects` | pyprojects read for entry points. |
+| `projects` | pyprojects read for entry points: the config's own, plus the nearest pyproject above each package, so a multi-project repo such as cek-python contributes every sub-project. |
 | `layers`, `layer_rules`, `layer_exceptions` | The config, echoed. |
 | `layer_graph` | Layer → other layers it imports at runtime (module or function level). |
 | `layer_violations` | Runtime edges a `layer_rules` entry forbids that `layer_exceptions` does not accept. Must be empty. |
 | `public_api` | Per package in `public_api.packages`: each public root name → defining module, following re-exports, star imports and `X = Y` aliases. |
-| `entry_points` | `scripts` (`[project.scripts]`, `gui-scripts`, `[tool.poetry.scripts]` from `projects`), `entry_points` (`[project.entry-points.*]`), `main_modules` (`*.__main__`), `asgi` (module-level `x = FastAPI(…)` / `Starlette` / `Litestar` / `Quart`, plus config `asgi`). Internal targets are validated. |
+| `entry_points` | `scripts` (`[project.scripts]`, `gui-scripts`, `[tool.poetry.scripts]` from `projects`), `entry_points` (`[project.entry-points.*]`), `main_modules` (`*.__main__`), `asgi` (module-level `x = FastAPI(…)` / `Starlette` / `Litestar` / `Quart`). Internal targets are validated. |
 | `cycles_module_level` | Import SCCs larger than one, module-level edges only. |
-| `external_distributions` | Distribution → internal modules importing it. |
 | `features` | The validated `features.toml`, by id. |
 | `narrative_docs` | Docs whose citations were verified. |
 | `domain` | The validated `domain.toml`: `domain`, `public_api`, `owns`, `non_goals`, `depends_on`. |
 | `external_usage` | Distribution → foreign names used (`module:Name`, or a bare module when only the module object is used). |
-| `coupling` | Per distribution, recorded and never failed: `import_sites`, `importing_modules`, `distinct_names`, `hard_coupling` (`isinstance` / `issubclass` against, or subclassing of, a foreign name), `port_candidates` (foreign names used in annotations and never subclassed or isinstance-checked, where a Protocol could stand in). |
+| `coupling` | Per distribution, recorded and never failed: `import_sites`, `importing_modules` (the internal modules importing it), `distinct_names`, `hard_coupling` (`isinstance` / `issubclass` against, or subclassing of, a foreign name), `port_candidates` (foreign names used in annotations and never subclassed or isinstance-checked, where a Protocol could stand in). |
 | `non_goal_warnings` | Heuristic hits for `domain.toml` non-goals (warnings only). |
 | `doc_claims` | `summary` (`docs`, `claims`, `unresolved`), `docs_ahead` and `code_ahead` findings (see [Doc claims](#doc-claims)). Recorded, never failed. |
 
@@ -168,9 +167,7 @@ resolve every config path against `python/` instead.
 | `features` | none | Path of the features registry. |
 | `domain` | none | Path of the domain charter. |
 | `narrative` | `[]` | Human-written docs whose citations are verified. |
-| `projects` | the config's pyproject plus the nearest pyproject above each package | pyprojects read for entry points (listed in `index.json` `projects`). The default covers multi-project repos such as cek-python. |
 | `distributions` | `{}` | Import name → distribution name where they differ, for repos without a charter. With a charter, prefer `depends_on.imports`; a conflicting pair is a problem. |
-| `asgi` | `[]` | Extra `module:attr` ASGI apps (validated). |
 | `claims_docs` | `[]` | Markdown files or directories whose claims are indexed. |
 | `claims_exclude` | `[]` | Paths under `claims_docs` to skip (history such as ADRs or archives, which name removed code on purpose). |
 
