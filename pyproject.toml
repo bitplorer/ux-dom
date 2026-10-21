@@ -145,10 +145,7 @@ self_files = [
 # Known module-level cycle, ledger E4 (https://github.com/bitplorer/ux-dom/issues/59).
 allowed_cycles = [["ux_dom.dom.src.dom_tag", "ux_dom.dom.src.utils.dom_util"]]
 # Rule-breaking edges accepted on purpose: "importer -> imported". Say why.
-layer_exceptions = [
-  # The Htmx Document facade installs HtmxMiddleware for its host.
-  "ux_dom.plugins.control.htmx -> ux_dom.htmx.middleware",
-]
+layer_exceptions = []
 
 [tool.codemap.consumers]
 docs = [".md"]
@@ -175,7 +172,6 @@ packages = ["ux_dom"]
 "ux_dom.diagnostics" = "support"
 "ux_dom.dom" = "dom"
 "ux_dom.elements" = "components"
-"ux_dom.htmx" = "integrations"
 "ux_dom.plugins" = "document"
 "ux_dom.profiling" = "support"
 "ux_dom.response" = "integrations"
@@ -184,7 +180,6 @@ packages = ["ux_dom"]
 "ux_dom.slots" = "components"
 "ux_dom.ui" = "ui"
 "ux_dom.utils" = "support"
-"ux_dom.web_io" = "integrations"
 
 # Layer -> other layers it may import at module or function level (its own
 # layer is always allowed; TYPE_CHECKING imports are exempt). ``dom`` is ledger

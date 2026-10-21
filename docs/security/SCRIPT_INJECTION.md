@@ -42,7 +42,6 @@ One entry per `plugin.name` on the hub.
 | Runtime | Tags | Bytes |
 |---------|------|-------|
 | XElement | `XElementRuntime` → shell_fragments | SafeStaticFile |
-| HTMX CDN | `HtmxControl` body | CDN |
 | uxchannel | `UxChannelRuntime` **or** `ch.scripts()` — **pick one** | channel mount |
 
 Scaffold: document uses `shell_fragments` only; live routes do **not** also

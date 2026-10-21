@@ -15,7 +15,7 @@ the **ASGI app** (`mount`), never by guesswork.
 
 ```text
 Document(head=…, body=…)     Stage A chrome  →  common_head / common_body
-  .use(XElement(), Htmx())   Stage A runtimes →  tags into common_* by placement
+  .use(XElement(), Csp())    Stage A runtimes →  tags into common_* by placement
   .mount(app)                ASGI only        →  static routes + middleware
   (*content, head=…, body=…) Stage B          →  page head first, content, then common body
 ```
@@ -93,7 +93,6 @@ Document(
 ```python
 document = Document(head=[...], body=[]).use(
     XElement(),              # → common_head + SafeStaticFile route
-    Htmx(middleware=True),   # → common_body + HtmxMiddleware
     Csp(),                   # → middleware only (no tags)
 )
 ```
@@ -112,7 +111,6 @@ document = Document(head=[...], body=[]).use(
 | Runtime | DOM | ASGI (`mount`) |
 |---------|-----|----------------|
 | `XElement` | `<script>` in common_head | `GET /ux-dom/static/x_element.js` |
-| `Htmx` | CDN scripts in common_body | optional HtmxMiddleware |
 | `Channel` | script tags in common_head | usually channel `attach`, not ux_dom |
 | `Csp` | (none) | CSP nonce middleware |
 
@@ -124,7 +122,7 @@ Does **not** mutate the shared shell.
 
 ```python
 # shared
-document = Document(...).use(XElement(), Htmx())
+document = Document(...).use(XElement())
 
 # most pages
 return document(Home(), head=[title("Home")])
@@ -156,10 +154,9 @@ document(Live(), head=[title("Live")], use=[Channel.optional()])
 
 | Case | Pattern |
 |------|---------|
-| App-wide XElement + HTMX | `document.use(XElement(), Htmx())` once |
+| App-wide XElement | `document.use(XElement())` once |
 | One admin page needs CSP meta debug | callable in `head=` or `using` not required |
 | One live page needs channel scripts | `document.using(Channel.optional())(…)` |
-| Replace HTMX version on one page | `using(Htmx(version="2.0.4"))` (same name replaces on **child** only) |
 | Parent must stay clean | always prefer `using` / `use=` over `use` on the shared instance |
 
 ### Limits
@@ -181,7 +178,7 @@ document.mount(app)
 ### What it does (in order)
 
 1. For each runtime: collect `served_files()` → install allowlisted routes (`SafeStaticFile`)
-2. For each runtime: call `runtime.mount(app)` if present (CSP, HTMX middleware, …)
+2. For each runtime: call `runtime.mount(app)` if present (CSP middleware, …)
 3. For each runtime: `package_static_mounts()` directory mounts if any (rare)
 
 ### What it does **not** do
@@ -215,12 +212,12 @@ Prefer that over wide `StaticFiles` directory mounts for library JS.
 # document.py
 from ux_dom import Document
 from ux_dom.dom import meta, title
-from ux_dom import Htmx, XElement
+from ux_dom import XElement
 
 document = Document(
     head=[meta(charset="utf-8")],
     body=[],
-).use(XElement(), Htmx(middleware=True))
+).use(XElement())
 
 def page(*content, page_title="App"):
     return document(*content, head=[title(page_title)])
@@ -257,7 +254,7 @@ app = (
 ### Case C — Page-local channel scripts
 
 ```python
-# shared document.use has XElement + Htmx only
+# shared document.use has XElement only
 # live route:
 return document.using(Channel.optional(mount_via_ux_dom=False))(
     LiveView(),
@@ -277,7 +274,7 @@ document = Document(
         else None,
     ],
     body=[],
-).use(XElement(), Htmx(), Csp(strict_dynamic=True))
+).use(XElement(), Csp(strict_dynamic=True))
 
 app = FastAPI()
 document.mount(app)  # CSP middleware
@@ -357,9 +354,8 @@ document(*content, head=..., body=..., page_title=...)  # render page
 ### Runtime order (recommended)
 
 1. **XElement** — JS in head  
-2. **Htmx** — scripts in body  
-3. **Channel.optional()** — if installed  
-4. **Csp.auto()** — middleware only; last among shell plugins is fine  
+2. **Channel.optional()** — if installed  
+3. **Csp.auto()** — middleware only; last among shell plugins is fine  
 
 ### page() helper (scaffold)
 

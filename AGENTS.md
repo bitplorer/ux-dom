@@ -42,6 +42,7 @@ Do not analogize this layer to React / Next / htmx as its identity.
 - A second document factory on `App`
 - Dual-copy of library JS into `assets/js/` (package URL is SSoT)
 - Intent / Cap / Result types in this package
+- A second transport or HTMX runtime (htmx script, middleware, routes, WebSocket adapters): ux-channel owns transport; HTMX / Alpine support is attribute rendering only
 - Motion IR or Channel codecs
 - Flat `docs/XELEMENT.md` (nested paths only; see `tests/04_production/test_docs_integrity.py`)
 - Compatibility shims / aliases / tombstones before the first release ([ADR 0004](docs/adr/0004-no-compat-shims-pre-release.md))
@@ -63,7 +64,7 @@ Do not analogize this layer to React / Next / htmx as its identity.
 |---------|------|
 | `ux_dom` | Document, Component, runtimes |
 | `ux_dom.dom` | Tags / serialize |
-| `ux_dom` (top level) | XElement, Htmx, Csp, Channel facades (over `ux_dom.plugins`) |
+| `ux_dom` (top level) | XElement, Csp, Channel facades (over `ux_dom.plugins`) |
 | `ux_dom.plugins` | Document contributions (not product App path) |
 | `ux_dom.cli` | Pure-dom Typer CLI |
 | `ux_dom.ui` | Optional kit |

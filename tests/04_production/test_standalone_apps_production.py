@@ -10,7 +10,6 @@ from fastapi.testclient import TestClient
 from standalone.htmx_stream_app.app import SearchBox, create_app as htmx_app
 from standalone.mcp_app.app import create_app as mcp_app
 from standalone.sse_app.app import create_app as sse_app
-from standalone.ws_app.app import create_app as ws_app
 from ux_dom.dom import div
 
 
@@ -42,49 +41,6 @@ class TestSSEApp(unittest.TestCase):
 
         with concurrent.futures.ThreadPoolExecutor(12) as ex:
             self.assertTrue(all(ex.map(hit, range(30))))
-
-
-class TestWSApp(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.client = TestClient(ws_app())
-
-    def test_page_and_protocol(self):
-        self.assertIn("WS Counter", self.client.get("/").text)
-        with self.client.websocket_connect("/ws/counter") as ws:
-            hello = ws.receive_json()
-            self.assertEqual(hello.get("event"), "hello")
-            ws.send_json({"event": "bump", "data": {"delta": 3}})
-            msg = ws.receive_json()
-            self.assertEqual(msg["data"]["n"], 3)
-            ws.send_json({"event": "reset", "data": {}})
-            self.assertEqual(ws.receive_json()["data"]["n"], 0)
-
-    def test_isolation_and_cleanup(self):
-        cms = []
-        for _ in range(6):
-            cm = self.client.websocket_connect("/ws/counter")
-            w = cm.__enter__()
-            w.receive_json()
-            cms.append((cm, w))
-        ns = []
-        for i, (_, w) in enumerate(cms):
-            w.send_json({"event": "bump", "data": {"delta": i + 1}})
-            ns.append(w.receive_json()["data"]["n"])
-        self.assertEqual(ns, list(range(1, 7)))
-        for cm, _ in cms:
-            cm.__exit__(None, None, None)
-        h = self.client.get("/health").json()
-        self.assertEqual(h.get("instances"), 0)
-        self.assertEqual(h.get("connections"), 0)
-
-    def test_malformed_data_without_event_keeps_connection(self):
-        with self.client.websocket_connect("/ws/counter") as ws:
-            ws.receive_json()  # hello
-            ws.send_json({"data": {"x": 1}})  # no event — must not kill conn
-            ws.send_json({"event": "get", "data": {}})
-            msg = ws.receive_json()
-            self.assertEqual(msg.get("event"), "update")
 
 
 class TestMCPApp(unittest.TestCase):

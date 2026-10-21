@@ -11,7 +11,7 @@ Every block is meant to run (or to be the exact fragment you drop into a running
 
 ### Public names in this cookbook
 
-`Document`, `Component`, `XElement`, `Htmx`, `Csp`, `div`, `h1`, `p`, `button`, `section`, `h2`, `ul`, `li`, `Fragment`, `span`, `dataclass`, `ReactiveComponent`, `Button`, `Card`, `CardHeader`, `CardTitle`, `CardContent`
+`Document`, `Component`, `XElement`, `Csp`, `div`, `h1`, `p`, `button`, `section`, `h2`, `ul`, `li`, `Fragment`, `span`, `dataclass`, `ReactiveComponent`, `Button`, `Card`, `CardHeader`, `CardTitle`, `CardContent`
 
 ## Contents
 
@@ -22,7 +22,7 @@ Every block is meant to run (or to be the exact fragment you drop into a running
 - [Fragment fans attrs onto children](#dom-fragment)
 - [ReactiveComponent re-renders on field change](#dom-reactive)
 - [Optional UI kit (Button / Card)](#dom-ui-kit)
-- [XElement + Htmx contributions](#dom-htmx)
+- [HTMX attributes (opt-in)](#dom-htmx)
 - [Page routes (product — ux-compose)](#dom-routes)
 - [Pure-dom CLI](#dom-cli)
 - [Copy-in UI kit via CLI](#dom-add-ui)
@@ -54,12 +54,11 @@ Serialize SSoT is tree.__render__() / tree.__async_render__(). Document.use stam
 
 ```python
 from ux_dom import Document, Component
-from ux_dom import XElement, Htmx, Csp
+from ux_dom import XElement, Csp
 from ux_dom.dom import div, h1, p, button, section
 
 document = Document(head=[], body=[]).use(
     XElement(),
-    Htmx(),
     Csp.auto(),
 )
 
@@ -172,24 +171,21 @@ card = Card(
 print(card.render().__render__())
 ```
 
-### XElement + Htmx contributions
+### HTMX attributes (opt-in)
 
 <a id="dom-htmx"></a>
 
-Document.use stamps contributions. HTMX is never auto-attached by ux-compose; opt in here. Product serve stays on uxcompose.
+ux-dom renders `hx_*` kwargs as `hx-*` attributes and nothing more. Loading htmx and serving partial routes is your app's job; live transport is ux-channel.
 
 ```python
 from ux_dom import Document
-from ux_dom import XElement, Htmx, Csp
-from ux_dom.dom import div
+from ux_dom.dom import button, div, script
 
-document = Document(head=[], body=[]).use(
-    XElement(),
-    Htmx(),
-    Csp.auto(),
-)
-html = document(div("Hi", id="view")).__render__()
-print("script" in html.lower() or "csp" in html.lower() or html)
+document = Document(head=[], body=[script(src="https://unpkg.com/htmx.org@2.0.4")])
+html = document(
+    button("Load", hx_get="/panel", hx_target="#view"), div(id="view")
+).__render__()
+print('hx-get="/panel"' in html)
 ```
 
 ### Page routes (product — ux-compose)

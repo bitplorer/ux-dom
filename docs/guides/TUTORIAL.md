@@ -21,11 +21,11 @@ Page units live in `routes/`. `render()` returns ux-dom tag trees.
 
 ```python
 from ux_dom import Document, Component
-from ux_dom import XElement, Htmx, Csp
+from ux_dom import XElement, Csp
 from ux_dom.dom import div, h1
 
 document = Document(head=[], body=[]).use(
-    XElement(), Htmx(), Csp.auto()
+    XElement(), Csp.auto()
 )
 html = document(div(h1("Hi"))).__render__()
 ```

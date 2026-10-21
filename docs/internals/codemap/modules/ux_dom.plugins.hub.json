@@ -1,7 +1,6 @@
 {
  "ux_dom.plugins.hub": {
   "consumers": [
-   "examples/ux_kit/app/main.py",
    "examples/xelement_kit/app/document.py",
    "examples/xelement_kit/app/main.py",
    "tests/02_document_plugins/test_app_composition.py",
@@ -52,7 +51,6 @@
   },
   "imports_internal": {
    "function_level": [
-    "ux_dom.plugins.control",
     "ux_dom.plugins.csp",
     "ux_dom.plugins.dedupe",
     "ux_dom.plugins.runtime",
@@ -98,11 +96,6 @@
      },
      "csp": {
       "doc": "CSP nonces via middleware — see ``docs/security/CSP.md``.",
-      "kind": "function",
-      "signature": "(self, **kwargs: Any) -> 'App'"
-     },
-     "htmx": {
-      "doc": "",
       "kind": "function",
       "signature": "(self, **kwargs: Any) -> 'App'"
      },

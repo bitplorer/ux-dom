@@ -15,7 +15,6 @@ public_api = [
   "ux_dom:Fragment",
   "ux_dom:ReactiveComponent",
   "ux_dom:XElement",
-  "ux_dom:Htmx",
   "ux_dom:Csp",
   "ux_dom:Channel",
   "ux_dom.dom",
@@ -85,6 +84,14 @@ concept = "package-static"
 modules = ["ux_dom.plugins.safe_static", "ux_dom.plugins.package_static"]
 symbols = ["ux_dom.plugins.safe_static:install_safe_static"]
 
+# HTMX / Alpine support is attribute rendering only. The hx_* / x_* kwarg
+# dialect is part of serialization; Alpine merge helpers are opt-in
+# (ux_dom.alpinejs, never imported by ux_dom).
+[[owns]]
+concept = "htmx-alpine-attributes"
+modules = ["ux_dom.dom.src.ext", "ux_dom.alpinejs.dataset"]
+symbols = ["ux_dom.dom.src.ext:Tags.clean_attribute", "ux_dom.alpinejs.dataset:DataSet"]
+
 [[owns]]
 concept = "ui-kit"
 modules = ["ux_dom.ui", "ux_dom.ui.catalog"]
@@ -108,6 +115,13 @@ keywords = ["intent", "cap"]
 concept = "wire-codecs"
 owner = "ux-channel"
 keywords = ["codec", "wire"]
+
+# A second transport / control plane: htmx script shipping, request middleware,
+# route helpers, WebSocket adapters or RPC client JS.
+[[non_goals]]
+concept = "transport"
+owner = "ux-channel"
+keywords = ["websocket", "rpc", "transport"]
 
 [[non_goals]]
 concept = "morph-state"

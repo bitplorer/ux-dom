@@ -8,11 +8,11 @@
 ```python
 from fastapi import FastAPI
 from ux_dom import Document
-from ux_dom import XElement, Htmx, Csp
+from ux_dom import XElement, Csp
 from ux_dom.dom import div, h1
 
 document = Document(ensure_csrf_token=False).use(
-    XElement(), Htmx(), Csp.auto()
+    XElement(), Csp.auto()
 )
 app = FastAPI()
 document.mount(app)
@@ -33,7 +33,7 @@ cd shop && uxcompose build && uxcompose serve dev app:asgi --port 8080
 
 ```python
 button("Load", hx_get="/htmx_demo/partial", hx_target="#panel", hx_swap="innerHTML")
-# HtmxDemo.partial (classmethod in htmx_demo.py) returns the fragment only — see reference/ROUTING.md (product routes: ux-compose)
+# ux-dom renders the hx-* attrs only; your app loads htmx and serves the partial route (product routes: ux-compose)
 ```
 
 ## XElement light DOM

@@ -24,7 +24,7 @@ Control helpers stay useful for pure Document trees:
 
 | Package | Role |
 |---------|------|
-| `ux_dom.plugins.control` | HtmxControl / NullControl |
+| `ux_dom.plugins.control` | ChannelControl / NullControl |
 
 Product host, product routing, Tailwind compiler, HotReload, and app asset
 folders are **not** taught from this package. They fail closed or redirect:

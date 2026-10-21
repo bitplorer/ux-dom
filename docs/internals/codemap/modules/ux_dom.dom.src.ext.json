@@ -4,6 +4,7 @@
    "docs/internals/ARCHITECTURE.md",
    "docs/internals/CORE.md",
    "docs/internals/MODULE_MAP.md",
+   "docs/reference/HYPERMEDIA.md",
    "tests/01_core/test_async_render_parity.py",
    "tests/01_core/test_attr_dialects.py",
    "tests/01_core/test_full_mro_behaviour_integration.py",
@@ -28,6 +29,7 @@
   "doc": "Tag render pipeline: ``Tags`` + single/double/style/template variants.",
   "exported_as": [],
   "features": [
+   "htmx",
    "pretty-render",
    "raw-text-safety",
    "renderer",

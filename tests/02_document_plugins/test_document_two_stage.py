@@ -7,7 +7,8 @@ import unittest
 from ux_dom import Document
 from ux_dom.dom import div, meta, script, title
 from ux_dom.plugins.csp import reset_nonce, set_nonce
-from ux_dom import Htmx, XElement
+from helpers import BodyScript
+from ux_dom import XElement
 from ux_dom.plugins.runtime import XELEMENT_JS_URL
 
 
@@ -25,13 +26,13 @@ class TestTwoStageOrder(unittest.TestCase):
         self.assertLess(i_title, i_xel)
 
     def test_common_body_after_content(self):
-        doc = Document(body=[]).use(Htmx(cdn=True, version="2.0.4"))
+        doc = Document(body=[]).use(BodyScript())
         tree = doc(div(id="content", **{"data-marker": "1"}))
         html = str(tree)
         i_content = html.find('id="content"')
-        i_htmx = html.find("htmx.org")
+        i_script = html.find("cdn.example/lib.js")
         self.assertGreater(i_content, 0)
-        self.assertGreater(i_htmx, i_content)
+        self.assertGreater(i_script, i_content)
 
     def test_callable_in_common_head_gets_nonce(self):
         doc = Document(

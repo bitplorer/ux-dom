@@ -4,7 +4,7 @@ from __future__ import annotations
 import unittest
 
 from ux_dom.dom import div, style
-from ux_dom.plugins.control import HtmxControl, NullControl
+from ux_dom.plugins.control import NullControl
 from ux_dom.plugins.dedupe import dedupe_dom_nodes, extract_script_srcs
 from ux_dom.ui.tokens import cn, focus_ring, variants
 
@@ -32,18 +32,7 @@ class TestDedupe(unittest.TestCase):
         self.assertIsInstance(srcs, (list, set, tuple))
 
 
-class TestHtmxControlSse(unittest.TestCase):
-    def test_sse_script_included_when_enabled(self):
-        h = HtmxControl(version="2.0.4", sse=True, idiomorph=True)
-        rendered = "".join(str(x) for x in h.document_body())
-        self.assertIn("htmx.org", rendered)
-        self.assertIn("htmx-ext-sse", rendered)
-
-    def test_sse_off_by_default(self):
-        h = HtmxControl(version="2.0.4", sse=False)
-        rendered = "".join(str(x) for x in h.document_body())
-        self.assertNotIn("htmx-ext-sse", rendered)
-
+class TestNullControl(unittest.TestCase):
     def test_null_control_wire_is_noop(self):
         n = NullControl()
         self.assertEqual(n.wire(x=1), {})

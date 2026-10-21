@@ -328,33 +328,29 @@ docs = ["docs/ship/CAPABILITIES.md"]
 
 [[feature]]
 id = "htmx"
-purpose = "htmx integration: the Htmx Document control, request details middleware and HtmxRoutes events."
-modules = ["ux_dom.htmx", "ux_dom.htmx.middleware", "ux_dom.plugins.control.htmx", "ux_dom.web_io._events"]
-symbols = [
-  "ux_dom.htmx:HtmxRoutes",
-  "ux_dom.htmx.middleware:HtmxMiddleware",
-  "ux_dom.htmx.middleware:HtmxDetails",
-  "ux_dom.plugins.control.htmx:HtmxControl",
-  "ux_dom:Htmx",
-]
+purpose = "htmx attribute rendering only: hx_* kwargs serialize as hx-* attributes. No htmx script, middleware, routes or transport (ux-channel owns transport)."
+modules = ["ux_dom.dom.src.ext"]
+symbols = ["ux_dom.dom.src.ext:Tags.clean_attribute"]
 tests = [
-  "tests/02_document_plugins/test_htmx_route_and_partial.py",
-  "tests/02_document_plugins/test_htmx_ws_stream.py",
-  "tests/07_resilience/test_htmx_routes_single_name.py",
+  "tests/02_document_plugins/test_hypermedia_surface.py",
+  "tests/07_resilience/test_htmx_alpine_opt_in.py",
 ]
 docs = ["docs/reference/HYPERMEDIA.md"]
 
 [[feature]]
 id = "alpine"
-purpose = "Alpine.js integration: AlpineElement/AlpineComponent and data-attribute merging helpers."
+purpose = "Alpine.js attribute rendering: AlpineElement/AlpineComponent and the opt-in ux_dom.alpinejs merge helpers (not imported by ux_dom)."
 modules = ["ux_dom.alpinejs", "ux_dom.alpinejs.dataset", "ux_dom.dom.htmlelement"]
 symbols = [
   "ux_dom.alpinejs.dataset:DataSet",
   "ux_dom.alpinejs.dataset:MergeAlpineAttributes",
   "ux_dom.dom.htmlelement:AlpineComponent",
 ]
-tests = ["tests/01_core/test_alpine_dataset_merge.py"]
-docs = ["docs/reference/XELEMENT.md"]
+tests = [
+  "tests/01_core/test_alpine_dataset_merge.py",
+  "tests/07_resilience/test_htmx_alpine_opt_in.py",
+]
+docs = ["docs/reference/XELEMENT.md", "docs/reference/HYPERMEDIA.md"]
 
 [[feature]]
 id = "channel-bridge"
@@ -367,18 +363,6 @@ symbols = [
 ]
 tests = ["tests/02_document_plugins/test_document_runtimes_create.py"]
 docs = ["docs/reference/STACK.md", "docs/reference/UI.md"]
-
-[[feature]]
-id = "web-io"
-purpose = "Low-level WebSocket adapter, client handler and event managers."
-modules = ["ux_dom.web_io", "ux_dom.web_io._adapter", "ux_dom.web_io._events", "ux_dom.web_io._protocol", "ux_dom.dom.src.ws_rpc"]
-symbols = [
-  "ux_dom.web_io._adapter:WebSocketAdapter",
-  "ux_dom.web_io._adapter:WebSocketClientHandler",
-  "ux_dom.web_io._protocol:WebSocketProtocol",
-]
-tests = ["tests/01_core/test_web_io_client_handler.py"]
-docs = ["docs/internals/MODULE_MAP.md"]
 
 [[feature]]
 id = "concurrency"

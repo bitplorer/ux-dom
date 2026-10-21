@@ -1,5 +1,3 @@
-import asyncio
-import typing as t
 import unittest
 from dataclasses import dataclass
 from textwrap import dedent
@@ -10,7 +8,6 @@ from ux_dom import Document, __version__
 from ux_dom.alpinejs import DataSet
 from ux_dom.dom import *
 from ux_dom.dom.src.dom_tag import attr
-from ux_dom.web_io._events import BaseEventManager
 
 
 class TestVersion(unittest.TestCase):
@@ -609,76 +606,6 @@ class TestJinja(unittest.TestCase):
             self.jinja_for_loop_template.__render__(), self.jinja_for_loop_result
         )
         self.assertIn(JinjaBaseTag, nav(ul(self.jinja_for_loop_template)))
-
-
-class TestEventManager(unittest.TestCase):
-    def setUp(self) -> None:
-        class ClickEvents(BaseEventManager):
-            def on_press(self, event: t.Union[str, t.Callable]) -> t.Callable:
-                return self.set_event(activity="click", event_name_or_method=event)
-
-            def on_mouseover(self, event: t.Union[str, t.Callable]):
-                return self.set_event(activity="mouse", event_name_or_method=event)
-
-            def on_mousedown(self, event: t.Union[str, t.Callable]) -> t.Callable:
-                return self.set_event(activity="mouse", event_name_or_method=event)
-
-            @property
-            def mouse_events(self):
-                return self.get_events(activity="mouse")
-
-            @property
-            def click_events(self):
-                return self.get_events(activity="click")
-
-        class ClickCounter:
-            events = ClickEvents()
-
-            def __init__(self):
-                self.clicks = 0
-
-            @events.on_press("increment")
-            def increment(self, count):
-                self.clicks += count
-                return self.clicks
-
-            @events.on_mouseover
-            @events.on_press
-            def decrement(self, count):
-                if self.clicks - count >= 0:
-                    self.clicks -= count
-                return self.clicks
-
-            def to_dict(self):
-                return {
-                    "clicks": self.clicks,
-                }
-
-        self.counter = ClickCounter()
-
-    def test_click_events(self):
-        async def main():
-            for callback in self.counter.events.click_events["increment"]:
-                await callback(self.counter, count=3)
-                self.assertEqual(self.counter.clicks, 3)
-
-            for callback in self.counter.events.click_events["decrement"]:
-                await callback(self.counter, count=2)
-                self.assertEqual(self.counter.clicks, 1)
-
-            for callback in self.counter.events.mouse_events["decrement"]:
-                await callback(self.counter, count=1)
-                self.assertEqual(self.counter.clicks, 0)
-
-        # here only one method is added thats why both list can be equal
-        # but its not necessary as any activity in EventManager can add
-        #
-        self.assertEqual(
-            self.counter.events.click_events["increment"],
-            self.counter.events["increment"],
-        )
-
-        asyncio.run(main())
 
 
 class TestFragments(unittest.TestCase):

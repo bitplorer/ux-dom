@@ -16,7 +16,6 @@ from ux_dom.dom.htmlelement import (
     WebComponent,
 )
 from ux_dom.dom.src.jinjatags import For, If, Var
-from ux_dom.htmx.middleware import HtmxDetails
 from ux_dom.slots import Slots
 
 KIT = Path(__file__).resolve().parents[2] / "examples" / "xelement_kit"
@@ -76,19 +75,6 @@ class TestHtmxAttrs(unittest.TestCase):
         self.assertIn("hx-get", s)
         self.assertIn("hx-target", s)
         self.assertIn("hx-swap", s)
-
-    def test_htmx_details_headers(self):
-        scope = {
-            "type": "http",
-            "headers": [
-                (b"hx-request", b"true"),
-                (b"hx-target", b"panel"),
-            ],
-        }
-        d = HtmxDetails(scope)
-        self.assertTrue(d)
-        # attribute access variants
-        self.assertTrue(getattr(d, "request", True) or d)
 
 
 class TestSlotsAndWebComponent(unittest.TestCase):

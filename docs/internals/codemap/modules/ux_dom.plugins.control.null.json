@@ -4,9 +4,7 @@
    "tests/01_core/test_surface_coverage.py",
    "tests/02_document_plugins/test_app_host_composition.py",
    "tests/02_document_plugins/test_public_api_and_plugins.py",
-   "tests/04_production/test_intent_battery.py",
-   "tests/05_chaos/test_enterprise_full_battery.py",
-   "tests/05_chaos/test_production_trust.py"
+   "tests/05_chaos/test_enterprise_full_battery.py"
   ],
   "doc": "NullControl — no-op control plugin for tests and minimal shells.",
   "exported_as": [],

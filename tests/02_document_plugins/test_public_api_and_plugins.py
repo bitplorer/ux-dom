@@ -11,7 +11,7 @@ from ux_dom import (
     __version__,
 )
 from ux_dom.plugins import App, PluginHub, get_hub, set_hub
-from ux_dom.plugins.control import HtmxControl, NullControl
+from ux_dom.plugins.control import ChannelControl, NullControl
 
 
 class TestPublicAPI(unittest.TestCase):
@@ -46,29 +46,10 @@ class TestPluginHub(unittest.TestCase):
     def test_hub_register_control(self):
         hub = PluginHub()
         hub.add_control(NullControl())
-        hub.add_control(HtmxControl(cdn=False))
+        hub.add_control(ChannelControl())
         self.assertIn("null", hub.controls)
-        self.assertIn("htmx", hub.controls)
-        self.assertEqual(hub.summary()[-1], "control:htmx")
-
-    def test_htmx_partial_policy(self):
-        ctl = HtmxControl()
-
-        class Req:
-            headers = {"hx-request": "true"}
-
-        self.assertEqual(ctl.partial_policy(Req()), "partial")
-
-        class Req2:
-            headers = {}
-
-        self.assertEqual(ctl.partial_policy(Req2()), "full")
-
-    def test_htmx_body_scripts(self):
-        body = HtmxControl(idiomorph=True).document_body()
-        self.assertTrue(len(body) >= 1)
-        rendered = "".join(str(x) for x in body)
-        self.assertIn("htmx.org", rendered)
+        self.assertIn("channel", hub.controls)
+        self.assertEqual(hub.summary()[-1], "control:channel")
 
     def test_app_use_null(self):
         app = App(debug=True).use(NullControl())

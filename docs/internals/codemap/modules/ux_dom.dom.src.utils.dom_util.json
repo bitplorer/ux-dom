@@ -53,8 +53,7 @@
     "ux_dom.dom.src.html_string",
     "ux_dom.dom.src.htmltags",
     "ux_dom.dom.src.parse_html",
-    "ux_dom.dom.src.utils",
-    "ux_dom.dom.src.ws_rpc"
+    "ux_dom.dom.src.utils"
    ],
    "type_checking": []
   },

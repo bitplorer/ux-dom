@@ -1,6 +1,8 @@
 {
  "ux_dom.plugins.control.channel": {
-  "consumers": [],
+  "consumers": [
+   "tests/02_document_plugins/test_public_api_and_plugins.py"
+  ],
   "doc": "ChannelControl — stack-native control plane (semantic data-ux-* attrs).",
   "exported_as": [],
   "features": [

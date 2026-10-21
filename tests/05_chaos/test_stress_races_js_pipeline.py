@@ -4,22 +4,18 @@ from __future__ import annotations
 
 import asyncio
 import concurrent.futures
-import random
 import threading
 import unittest
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
 from ux_dom import Component
 from ux_dom.dom import div, span, button
 from ux_dom.dom.src.dom_tag import get_current
-from ux_dom.dom.src.ws_rpc import ws_rpc
 from ux_dom.dom.uniqueid import uniqueid
-from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.response.starlette import StreamingResponse
-from ux_dom.web_io import WebSocketAdapter, WebSocketEvents
 
 
 class Card(Component):
@@ -143,49 +139,7 @@ class TestDeadlockGuards(unittest.TestCase):
             self.assertIn(f"root{i}", h)
 
 
-class TestWsAndJsPipeline(unittest.TestCase):
-    def test_ws_adapter_isolation(self):
-        events = WebSocketEvents()
-
-        class Box:
-            def __init__(self):
-                self.n = 0
-                self.hist = []
-
-        adapter = WebSocketAdapter(Box, events)
-
-        class Fake:
-            pass
-
-        async def run():
-            socks = [Fake() for _ in range(50)]
-            await asyncio.gather(*[adapter.ensure_instance(s) for s in socks])
-
-            async def bump(i):
-                inst = adapter._instance_for(socks[i])
-                for _ in range(10):
-                    inst.n += 1
-                    inst.hist.append(i)
-                return inst.n
-
-            ns = await asyncio.gather(*[bump(i) for i in range(50)])
-            self.assertTrue(all(n == 10 for n in ns))
-            for i in range(50):
-                inst = adapter._instance_for(socks[i])
-                self.assertTrue(all(x == i for x in inst.hist))
-            for s in socks:
-                adapter.release_instance(s)
-            self.assertEqual(len(adapter._instances), 0)
-
-        asyncio.run(run())
-
-    def test_ws_rpc_js_asset(self):
-        js = ws_rpc().__render__(pretty=False)
-        self.assertIn("WebSocket", js)
-        self.assertIn("addEventListener", js)
-        self.assertNotIn("def ", js)
-        self.assertNotIn("self.", js)
-
+class TestJsPipeline(unittest.TestCase):
     def test_py_attrs_to_html_js_hooks(self):
         h = div(
             button(
@@ -220,26 +174,18 @@ class TestWsAndJsPipeline(unittest.TestCase):
 
 
 class TestHttpChaos(unittest.TestCase):
-    def test_stream_and_htmx_concurrent(self):
+    def test_stream_concurrent(self):
         app = FastAPI()
-        app.add_middleware(HtmxMiddleware)
 
         @app.get("/s")
         def s():
             return StreamingResponse(div(*[Card(n=i) for i in range(20)], id="d"))
 
-        @app.get("/h")
-        def h(request: Request):
-            return {"hx": bool(request.state.htmx)}
-
         client = TestClient(app)
 
         def hit(_):
-            if random.random() > 0.5:
-                r = client.get("/s")
-                return r.status_code == 200 and "c0" in r.text
-            r = client.get("/h", headers={"HX-Request": "true"})
-            return r.status_code == 200 and r.json().get("hx") is True
+            r = client.get("/s")
+            return r.status_code == 200 and "c0" in r.text
 
         with concurrent.futures.ThreadPoolExecutor(16) as ex:
             res = list(ex.map(hit, range(150)))

@@ -1,10 +1,12 @@
 {
  "ux_dom.alpinejs": {
   "consumers": [
+   "docs/reference/HYPERMEDIA.md",
    "docs/ship/CAPABILITIES.md",
    "tests/01_core/test_alpine_dataset_merge.py",
    "tests/01_core/test_ux_dom.py",
    "tests/07_resilience/test_attr_escape_isolation.py",
+   "tests/07_resilience/test_htmx_alpine_opt_in.py",
    "tests/07_resilience/test_no_deprecations.py"
   ],
   "doc": "Alpine sample widgets (demos). Prefer AlpineComponent + your markup.",

@@ -1,6 +1,6 @@
 """StreamingResponse coercion and HTML attribute edge cases.
 
-Includes dunder/control attrs, HtmxRoutes event names, shadowroot attribute value.
+Includes dunder/control attrs and the shadowroot attribute value.
 """
 from __future__ import annotations
 
@@ -45,45 +45,6 @@ class TestShadowrootTrue(unittest.TestCase):
         html = div(shadowroot=True).__render__(pretty=False)
         self.assertIn('shadowroot="true"', html)
         self.assertNotIn('shadowroot="shadowroot"', html)
-
-
-class TestHtmxEventName(unittest.TestCase):
-    def test_event_name_from_callable(self):
-        from ux_dom.htmx import HtmxRoutes
-
-        class FakeAPI:
-            def __init__(self):
-                self.paths = []
-
-            def get(self, path):
-                self.paths.append(("get", path))
-
-                def deco(fn):
-                    return fn
-
-                return deco
-
-            def post(self, path):
-                self.paths.append(("post", path))
-
-                def deco(fn):
-                    return fn
-
-                return deco
-
-        api = FakeAPI()
-        h = HtmxRoutes(api=api, prefix="/actions")
-
-        @h.get
-        def counter():
-            return "ok"
-
-        @h.get
-        def other():
-            return "ok"
-
-        self.assertEqual(api.paths[0], ("get", "/actions/counter"))
-        self.assertEqual(api.paths[1], ("get", "/actions/other"))
 
 
 if __name__ == "__main__":

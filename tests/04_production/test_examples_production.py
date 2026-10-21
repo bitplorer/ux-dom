@@ -14,16 +14,12 @@ class TestRealtimeKit(unittest.TestCase):
 
         cls.client = TestClient(app)
 
-    def test_pages_sse_ws_stream(self):
+    def test_pages_sse_stream(self):
         self.assertTrue(self.client.get("/health").json()["ok"])
         self.assertIn("Realtime", self.client.get("/").text)
         body = self.client.get("/api/sse/market?n=3").text
         self.assertIn("event: message", body)
         self.assertIn("market:0", body)
-        with self.client.websocket_connect("/ws/counter") as ws:
-            self.assertEqual(ws.receive_json()["event"], "hello")
-            ws.send_json({"event": "bump", "data": {"delta": 3}})
-            self.assertEqual(ws.receive_json()["data"]["n"], 3)
         self.assertIn("Streamed", self.client.get("/stream").text)
 
 

@@ -5,7 +5,6 @@ from fastapi import FastAPI, Request
 
 from ux_dom import Component, Document
 from ux_dom.dom import div, span, button, form, input_
-from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.response.starlette import HTMLResponse, StreamingResponse
 
 
@@ -34,7 +33,6 @@ class ResultList(Component):
 
 def create_app() -> FastAPI:
     app = FastAPI(title="ux_dom-htmx-stream")
-    app.add_middleware(HtmxMiddleware)
     doc = Document(ensure_csrf_token=False)
 
     @app.get("/")
@@ -44,7 +42,7 @@ def create_app() -> FastAPI:
     @app.get("/search")
     def search(request: Request, q: str = ""):
         # HTMX partial: only results fragment
-        if getattr(request.state, "htmx", False):
+        if request.headers.get("HX-Request") == "true":
             return StreamingResponse(ResultList(q=q, n=30))
         return HTMLResponse(doc(SearchBox(q=q)))
 

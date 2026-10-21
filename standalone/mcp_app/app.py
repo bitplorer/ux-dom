@@ -13,7 +13,6 @@ from fastapi.responses import JSONResponse
 
 from ux_dom import Component
 from ux_dom.dom import div, span, ul, li, h2
-from ux_dom.htmx.middleware import HtmxMiddleware
 from ux_dom.response.starlette import HTMLResponse
 
 
@@ -85,7 +84,6 @@ def run_tool(name: str, arguments: dict[str, Any]) -> dict[str, Any]:
 
 def create_app() -> FastAPI:
     app = FastAPI(title="ux_dom-mcp")
-    app.add_middleware(HtmxMiddleware)
 
     @app.get("/")
     def home():

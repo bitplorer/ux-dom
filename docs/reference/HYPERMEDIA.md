@@ -11,7 +11,7 @@ Honest map of what ux-dom provides, how to use it, and how thoroughly it is test
 |------|-------------|----------|------------|------------------|
 | **XElement / CustomElement / WebComponent** | ✓ | ✓ xelement_kit light/shadow | ✓ strong | ✓ Playwright |
 | **AlpineComponent** | ✓ | ✓ `/alpine` | ✓ attr matrix + browser toggle | ✓ |
-| **HTMX attrs + middleware + partials** | ✓ | ✓ shop, showcase, kit | ✓ strong | partial (afterSwap in harness) |
+| **HTMX attrs** | ✓ | ✓ kit `/htmx` | ✓ strong | partial (afterSwap in harness) |
 | **HTML `<slot>` + shadow projection** | ✓ tags + WebComponent demos | ✓ shadow gallery | ✓ browser slotAssigned | ✓ |
 | **`Slots` / `WebComponentSlot` helpers** | ✓ `ux_dom.slots` | ✓ kit `/slots` | ✓ render smoke | limited |
 | **Jinja tags (`For`/`If`/`Block`/…) ** | ✓ `ux_dom.dom.src.jinjatags` | ✓ kit `/jinja` | ✓ `TestJinja` + kit | n/a (server HTML) |
@@ -22,6 +22,9 @@ Honest map of what ux-dom provides, how to use it, and how thoroughly it is test
 **Python:** `AlpineElement` (requires `x-data`), `AlpineComponent` (`x-data` + `x-tagname`).
 
 **Browser:** load Alpine CDN **and** `x_element.js`. Runtime calls `Alpine.initTree` after upgrade.
+
+**Opt-in helpers:** `ux_dom.alpinejs` (`DataSet`, `dataset_*`) merge `x-data` / `@…` / `:…`
+attributes onto children. `import ux_dom` does not load it.
 
 ```python
 from ux_dom.dom import div, template
@@ -42,9 +45,11 @@ class Toggle(AlpineComponent):
 
 ## HTMX
 
-**Python attrs:** `hx_get`, `hx_post`, `hx_target`, `hx_swap`, `hx_trigger`, `hx_on_*` → cleaned to HTMX dialect.
+**Python attrs:** `hx_get`, `hx_post`, `hx_target`, `hx_swap`, `hx_trigger`, `hx_on_*` → cleaned to HTMX dialect by `Tags.clean_attribute` (`ux_dom.dom.src.ext`).
 
-**Middleware:** `HtmxMiddleware` / plugin `HtmxControl` → `request.state.htmx`.
+**Attributes only:** ux-dom ships no htmx script, request middleware or route helpers.
+Load htmx yourself and branch on the `HX-Request` header in your route; live
+transport is ux-channel.
 
 **With XElement:** after swap, `x_element.js` listens for `htmx:afterSwap` and scans new `x-tagname` definitions.
 
@@ -52,8 +57,8 @@ class Toggle(AlpineComponent):
 button("Load", hx_get="/partial", hx_target="#panel", hx_swap="innerHTML")
 ```
 
-**See:** showcase cart, hypermedia shop, `examples/xelement_kit/.../htmx.py`,  
-`ux_dom/htmx/middleware.py`, HTMX tests under `tests/`.
+**See:** `examples/xelement_kit/app/routes/htmx.py`,
+`tests/02_document_plugins/test_hypermedia_surface.py`.
 
 ## Jinja
 

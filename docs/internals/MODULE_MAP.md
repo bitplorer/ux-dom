@@ -34,7 +34,6 @@ ux-dom ships no file router (its routing module was removed, F-18).
 | `ux_dom/dom/src/htmltags.py` / `csstags.py` / `jinjatags.py` / `svgtags.py` | Tag classes | via `ux_dom.dom` |
 | `ux_dom/dom/src/html_string.py` | defHTML parse + sanitize | **Public** via dom |
 | `ux_dom/dom/uniqueid.py` | Unique id generator for trees | Semi |
-| `ux_dom/dom/src/ws_rpc.py` | Optional WS helpers (uses document.ux_domMessageHandler) | Advanced |
 | **`ux_dom/settings/`** | Document | **Public** |
 | **`ux_dom/plugins/`** | Hub, contributions, CSP, control, package static | Semi / **Public** facades |
 | `ux_dom/plugins/runtime.py` | XElementRuntime, UxChannelRuntime — package static | Semi |
@@ -45,9 +44,7 @@ ux-dom ships no file router (its routing module was removed, F-18).
 | **`ux_dom/ui/`** | Optional Tailwind UI kit (copy-in) | Optional public |
 | **`ux_dom/slots/`** | Slot helpers for WebComponent | Semi |
 | **`ux_dom/elements/`** | Typed form field components | Semi |
-| **`ux_dom/htmx/`** | HTMX-oriented helpers | Semi |
-| **`ux_dom/alpinejs/`** | Alpine sample widgets | Semi / demos |
-| `ux_dom/web_io/` | Low-level web I/O helpers if present | Private |
+| **`ux_dom/alpinejs/`** | Opt-in Alpine attribute helpers (`DataSet`, `dataset_*`); not imported by `ux_dom` | Semi |
 
 ## Docs layout
 

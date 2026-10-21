@@ -9,7 +9,6 @@ import unittest
 
 from ux_dom.dom import div, span
 from ux_dom.dom.uniqueid import uniqueid
-from ux_dom.web_io import WebSocketAdapter, WebSocketEvents
 
 
 class TestSafePatterns(unittest.TestCase):
@@ -57,38 +56,6 @@ class TestSafePatterns(unittest.TestCase):
         with concurrent.futures.ThreadPoolExecutor(10) as ex:
             list(ex.map(gen, range(10)))
         self.assertEqual(len(bag), len(set(bag)))
-
-    def test_ws_per_connection_isolation(self):
-        class Box:
-            def __init__(self):
-                self.n = 0
-                self.hist = []
-
-        ad = WebSocketAdapter(Box, WebSocketEvents())
-
-        class Fake:
-            pass
-
-        async def run():
-            socks = [Fake() for _ in range(20)]
-            await asyncio.gather(*[ad.ensure_instance(s) for s in socks])
-
-            async def bump(i):
-                inst = ad._instance_for(socks[i])
-                for _ in range(10):
-                    inst.n += 1
-                    inst.hist.append(i)
-
-            await asyncio.gather(*[bump(i) for i in range(20)])
-            for i in range(20):
-                inst = ad._instance_for(socks[i])
-                self.assertEqual(inst.n, 10)
-                self.assertTrue(all(x == i for x in inst.hist))
-            for s in socks:
-                ad.release_instance(s)
-            self.assertEqual(len(ad._instances), 0)
-
-        asyncio.run(run())
 
     def test_local_build_plus_shared_read(self):
         shared = div("frozen", id="shared")

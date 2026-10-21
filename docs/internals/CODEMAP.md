@@ -140,7 +140,7 @@ demand.
   - a dotted `ux_dom.a.b.c` token resolves to its longest known module prefix,
     so a `monkeypatch` target counts;
   - `from ux_dom.a import b` counts `ux_dom.a.b` when that is a module;
-  - a symbol reached through a re-export (`from ux_dom import Htmx`,
+  - a symbol reached through a re-export (`from ux_dom import XElement`,
     `ux_dom.dom.div`) also counts for the module that defines it, using the
     same resolution as `public_api`;
   - a path `ux_dom/a/b.py` counts;

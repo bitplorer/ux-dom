@@ -113,10 +113,10 @@ class TestCodeMap(unittest.TestCase):
 
     def test_consumers_follow_reexports_to_defining_module(self):
         mods = self.data["modules"]
-        # ``from ux_dom import Htmx`` -> plugins.control.htmx defines Htmx.
+        # ``from ux_dom import XElement`` -> plugins.runtime defines XElementRuntime.
         self.assertIn(
             "tests/02_document_plugins/test_document_runtimes_create.py",
-            mods["ux_dom.plugins.control.htmx"]["consumers"],
+            mods["ux_dom.plugins.runtime"]["consumers"],
         )
         # ``from ux_dom.dom import div`` -> dom.src.htmltags defines the tags.
         self.assertGreater(len(mods["ux_dom.dom.src.htmltags"]["consumers"]), 50)
@@ -129,10 +129,10 @@ class TestCodeMap(unittest.TestCase):
         unknown = [n for n in names if layer_of(self.cfg, n) == "unknown"]
         self.assertEqual(unknown, [])
         cfg = self.codemap.load_config(ROOT)
-        del cfg.layers["ux_dom.web_io"]
+        del cfg.layers["ux_dom.alpinejs"]
         with self.assertRaises(SystemExit) as ctx:
             self.codemap.CodeMap(cfg).build()
-        self.assertIn("ux_dom.web_io", str(ctx.exception))
+        self.assertIn("ux_dom.alpinejs", str(ctx.exception))
 
     def test_untracked_files_are_not_consumers(self):
         scratch = ROOT / "tests" / "_codemap_untracked_scratch.py"

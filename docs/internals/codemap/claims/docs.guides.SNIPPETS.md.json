@@ -64,6 +64,11 @@
    {
     "kind": "import",
     "resolved": true,
+    "text": "ux_dom.dom:script"
+   },
+   {
+    "kind": "import",
+    "resolved": true,
     "text": "ux_dom.dom:section"
    },
    {
@@ -120,11 +125,6 @@
     "kind": "import",
     "resolved": true,
     "text": "ux_dom:Fragment"
-   },
-   {
-    "kind": "import",
-    "resolved": true,
-    "text": "ux_dom:Htmx"
    },
    {
     "kind": "import",

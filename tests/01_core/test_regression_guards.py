@@ -1,6 +1,6 @@
 """Guards against regressions in the Component DOM API and control attrs.
 
-Covers Component DOM methods, HtmxEvents, App composition edge paths that
+Covers Component DOM methods and App composition edge paths that
 broke once and must stay fixed.
 """
 from __future__ import annotations
@@ -12,7 +12,6 @@ import unittest
 
 from ux_dom import Component, Document, Fragment, ReactiveComponent
 from ux_dom.dom import div, span
-from ux_dom.web_io import HtmxEvents
 
 
 class Routed(Component):
@@ -67,13 +66,6 @@ class TestGetattributeRegressions(unittest.TestCase):
 
         with concurrent.futures.ThreadPoolExecutor(8) as ex:
             self.assertTrue(all(ex.map(make, range(30))))
-
-
-class TestRouterAndEventsRegressions(unittest.TestCase):
-    def test_htmx_events_get_events_is_callable(self):
-        h = HtmxEvents()
-        self.assertTrue(callable(h.get_events))
-        self.assertEqual(h.get_events("hx-get"), {})
 
 
 if __name__ == "__main__":

@@ -25,9 +25,7 @@ Version: **0.2.0** (ux-dom production line).
 
 ## Control (CTRL)
 
-- [x] HTMX attrs via Tags dialect (`hx_*`)
-- [x] `HtmxControl` plugin: scripts, partial policy, optional middleware
-- [x] `HtmxRoutes` decorator class + `HtmxMiddleware` (module paths stable in 0.1)
+- [x] HTMX attrs via Tags dialect (`hx_*`); no htmx script, middleware or routes (transport is ux-channel)
 - [x] `data-channel-*` attrs for ux-channel peer plane (no core import of channel)
 - [x] `NullControl` for tests
 
@@ -40,7 +38,7 @@ Version: **0.2.0** (ux-dom production line).
 ## Feature packs (optional import)
 
 - [x] `ux_dom.elements` + ux-valio
-- [x] `ux_dom.alpinejs`
+- [x] `ux_dom.alpinejs` (Alpine attribute helpers, opt-in)
 - [x] `ux_dom.slots`
 - [x] Jinja / Markdown element paths
 

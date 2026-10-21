@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import unittest
 
+from helpers import BodyScript
 from ux_dom import Document
 from ux_dom.dom import meta, title
 from ux_dom.plugins import App
@@ -14,10 +15,10 @@ from ux_dom.plugins.runtime import XELEMENT_JS_URL
 class TestDocumentPluginMerge(unittest.TestCase):
     def test_plugins_go_to_head_and_body(self):
         set_hub(PluginHub())
-        App().xelement().htmx(cdn=True, version="2.0.4")  # no build needed for hub
+        App().xelement().use(BodyScript())  # no build needed for hub
         # manually publish hub — App.use already on builder.hub but get_hub empty
         # use builder.hub
-        b = App().xelement().htmx(cdn=True, version="2.0.4")
+        b = App().xelement().use(BodyScript())
         set_hub(b.hub)
 
         doc = Document(
@@ -29,12 +30,12 @@ class TestDocumentPluginMerge(unittest.TestCase):
         head_html = "".join(str(x) for x in doc.resolved_head())
         body_html = "".join(str(x) for x in doc.resolved_body())
         self.assertIn(XELEMENT_JS_URL, head_html)
-        self.assertIn("htmx.org", body_html)
+        self.assertIn("cdn.example/lib.js", body_html)
         # page content path
         tree = doc("hello")
         html = str(tree)
         self.assertIn(XELEMENT_JS_URL, html)
-        self.assertIn("htmx.org", html)
+        self.assertIn("cdn.example/lib.js", html)
 
     def test_plugins_false_pure_shell(self):
         b = App().xelement()
