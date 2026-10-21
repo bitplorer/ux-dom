@@ -107,14 +107,21 @@ def _delegates_to_render(cls) -> bool:
 # Elements the UA stylesheet lays out as block-level boxes (block, list-item,
 # table parts). A newline next to one sits at a line edge, where a browser drops
 # it. Everything else is inline: the spec's phrasing content, elements that are
-# not displayed, ``legend`` (a fieldset lifts it out of the flow), and unknown or
-# custom elements (the safe default).
+# not displayed, ``legend`` (a fieldset lifts it out of the flow), ``dialog``
+# (hidden until open, then positioned out of the flow) and unknown or custom
+# elements (the safe default).
 _BLOCK_ELEMENTS = frozenset(
     """address article aside blockquote body caption center col colgroup dd
     details dir div dl dt fieldset figcaption figure footer form h1 h2 h3 h4 h5
     h6 header hgroup hr html li listing main menu nav ol p plaintext pre search
     section summary table tbody td tfoot th thead tr ul xmp""".split()
 )
+
+# Bodies that render flat by tag name. Whitespace in a raw text or preformatted
+# body is content (#88). An ``option`` displays its label, which joins its text
+# with one space for each whitespace run, and ``ruby`` lays out everything in it
+# inline (#94).
+_FLAT_BODIES = VERBATIM_ELEMENTS | {"option", "ruby"}
 
 # How a node sits among its siblings. A wrapper takes its children's max.
 _EMPTY, _BLOCK, _INLINE = 0, 1, 2
@@ -123,10 +130,13 @@ _EMPTY, _BLOCK, _INLINE = 0, 1, 2
 # (``<li><li>``, ``<p><div>``), and what follows lands in the parent. Each such
 # descendant is a bit. A node passes up the bits found inside it, minus the ones
 # it stops (a ``ul`` ends the search for a nested ``li``).
-_ANY_BLOCK, _LI, _DT_DD, _HEADING, _A, _BUTTON, _FORM = (1 << n for n in range(7))
-_ALL_BITS = (1 << 7) - 1
+_ANY_BLOCK, _LI, _DT_DD, _HEADING, _A, _BUTTON, _FORM, _NOBR, _TABLE_PART = (
+    1 << n for n in range(9)
+)
+_ALL_BITS = (1 << 9) - 1
 _LIST = (_ANY_BLOCK, _ANY_BLOCK | _LI, 0)
 _HEADING_TAG = (_ANY_BLOCK | _HEADING, _ANY_BLOCK, _HEADING)
+_PART = _ANY_BLOCK | _TABLE_PART
 # name -> (bits it is, bits it stops, bits that close it)
 _PARSER_CLOSE = {
     "p": (_ANY_BLOCK, _ANY_BLOCK, _ANY_BLOCK),
@@ -137,14 +147,24 @@ _PARSER_CLOSE = {
     "dt": (_ANY_BLOCK | _DT_DD, _ANY_BLOCK, _DT_DD),
     "dd": (_ANY_BLOCK | _DT_DD, _ANY_BLOCK, _DT_DD),
     "dl": (_ANY_BLOCK, _ANY_BLOCK | _DT_DD, 0),
+    "dialog": (_ANY_BLOCK, 0, 0),
     "a": (_A, 0, _A),
+    "nobr": (_NOBR, 0, _NOBR),
     "button": (_BUTTON, 0, _BUTTON),
     "form": (_ANY_BLOCK | _FORM, _ANY_BLOCK, _FORM),
     **dict.fromkeys(("h1", "h2", "h3", "h4", "h5", "h6"), _HEADING_TAG),
+    # A table part in a cell or caption closes it, unless a nested table holds it.
+    "table": (_ANY_BLOCK, _TABLE_PART, 0),
+    **dict.fromkeys(("caption", "td", "th"), (_PART, 0, _TABLE_PART)),
+    **dict.fromkeys("colgroup col tbody thead tfoot tr".split(), (_PART, 0, 0)),
 }
-# Table parts are dropped outside their parent; inline content in a table is
-# moved out in front of it.
-_TABLE_PARENTS = {
+# Elements the parser drops outside their parent (their content stays where it
+# is): table parts, and ``html``/``head``/``body`` anywhere but the top of the
+# document. Inline content in a table is moved out in front of it.
+_PARENTS = {
+    "html": (None,),
+    "head": (None, "html"),
+    "body": (None, "html"),
     "caption": ("table",),
     "colgroup": ("table",),
     "col": ("colgroup", "table"),
@@ -196,7 +216,8 @@ def _scan(node, memo: dict, context: str | None) -> tuple[int, int, bool]:
         )
         moved = (
             bool(inside & closers)
-            or (name in _TABLE_PARENTS and context not in _TABLE_PARENTS[name])
+            or (name in _PARENTS and context not in _PARENTS[name])
+            or (node.is_single and bool(node.children))  # no end tag holds them
             or (name in _TABLE_ROWS and kind == _INLINE)
         )
         block = name in _BLOCK_ELEMENTS and not moved
@@ -219,11 +240,11 @@ def _inline_neighbours(node) -> bool:
     if memo is None:
         memo = {}
     name = _html_name(node)
-    if name == "head":
-        return False  # nothing in it is displayed
     kind, _, moved = _scan(node, memo, None)
     if moved:
         return True
+    if name == "head":
+        return False  # nothing in it is displayed
     edge = _INLINE if name is not None and kind == _INLINE else _EMPTY
     prev = edge
     for child in node.children:
@@ -580,8 +601,7 @@ class Tags(dom_tag, dom1core):
         self.open_tag = self._markup_control(Tags.OPEN_TAG)
         self.close_tag = self._markup_control(Tags.CLOSE_TAG)
         pretty = pretty and self.is_pretty and not self.is_inline
-        # Whitespace in a raw text or preformatted body is content (#88).
-        pretty = pretty and _element_name(self) not in VERBATIM_ELEMENTS
+        pretty = pretty and _element_name(self) not in _FLAT_BODIES
         # Inline neighbours render flat: ``<b>a</b><i>b</i>`` must not show as
         # ``a b``, nor ``a&#39;b`` as ``a ' b``.
         pretty = pretty and not _inline_neighbours(self)

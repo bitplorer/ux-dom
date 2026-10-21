@@ -1,4 +1,4 @@
-"""Live Chromium: pretty and flat renders display the same text (#79, #89)."""
+"""Live Chromium: pretty and flat renders display the same text (#79, #89, #94)."""
 
 from __future__ import annotations
 
@@ -42,17 +42,22 @@ CORPUS = [
     div(li(li(), "y"), "x"),
     div("x", p(span(div("y"))), "z"),
     div(td("1"), "w"),
+    div(tags.option(tags.dd(tags.header("x"), "a&#39;b"))),
+    div(tags.ruby(div("a"), div("b"))),
+    div("x", tags.body("y")),
+    div(tags.head("x", "y")),
+    div(tags.hr("x"), "y"),
+    div("x", tags.table(tags.tbody(tags.tr(td(tags.tbody("y")))))),
 ]
 
 TEXT = ["x", "a&#39;b", "AT&T", "y z", " ", "", "w\n  v"]
-ELEMENTS = (
-    [
-        getattr(tags, name)
-        for name in """div p section ul ol li h2 blockquote dl dt dd details summary
-    fieldset legend span b i a em code label strong q button""".split()
-    ]
-    + [type("my_el", (html_tag,), {})]
-)  # an unknown tag
+ELEMENTS = [
+    getattr(tags, name, None) or type(name, (html_tag,), {})  # no class: by name
+    for name in """div p section ul ol li h2 blockquote dl dt dd details summary
+    fieldset legend span b i a em code label strong q button form header hr
+    option optgroup select dialog nobr ruby rt rp search hgroup menu datalist
+    template html head body caption tr td my_el""".split()
+]  # my_el: an unknown tag
 LEAVES = [
     lambda: tags.br(),
     lambda: tags.img(alt="I"),
@@ -61,6 +66,7 @@ LEAVES = [
     lambda: lazy(lambda: div("d")),
     lambda: Fragment(),
     lambda: tags.select(tags.option("o1"), tags.option("o2")),
+    lambda: tags.textarea("ta"),
 ]
 
 
@@ -84,7 +90,7 @@ def random_tree(rng: random.Random, depth: int):
     return rng.choice(ELEMENTS)(*kids)
 
 
-def fuzz_corpus(n=1200, seed=89):
+def fuzz_corpus(n=1800, seed=89):
     rng = random.Random(seed)
     return [
         div(*(random_tree(rng, rng.choice([3, 4, 5])) for _ in range(3)))
@@ -97,7 +103,9 @@ class TestPrettyInnerTextBrowser(unittest.TestCase):
         self.assertSameText(CORPUS)
 
     def test_random_trees_display_the_same_text(self):
-        self.assertSameText(fuzz_corpus())
+        for seed in (89, 94, 9302):
+            with self.subTest(seed=seed):
+                self.assertSameText(fuzz_corpus(seed=seed))
 
     def assertSameText(self, corpus):
         require_browser()

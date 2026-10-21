@@ -126,8 +126,8 @@ class dom_string(basestring):
 
 class dom_tag(object):
     is_single = False  # Tag does not require matching end tag (ex. <hr/>)
-    is_pretty = True  # False renders the subtree flat. Raw text and <pre>
-    # bodies are flat by tag name (``VERBATIM_ELEMENTS``, #88).
+    is_pretty = True  # False renders the subtree flat. Raw text, <pre>,
+    # <option> and <ruby> bodies are flat by tag name (``ext._FLAT_BODIES``).
     is_inline = False
     escape_string = True
     # Raw text element name ("script" / "style"): string children are stored
