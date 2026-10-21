@@ -244,7 +244,7 @@ class animateTransform(svg_tag):
     animations to control translation, scaling, rotation, and/or skewing.
     """
 
-    is_single = True
+    pass
 
 
 class circle(svg_tag):
