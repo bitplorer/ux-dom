@@ -1,4 +1,4 @@
-"""ADR 0003 rule 4 absence lock: uxdom doctor and build check no product rows.
+"""ADR 0003 rule 4 absence lock: uxdom doctor checks no product rows.
 
 Rule 3 scope: no port, ``DEBUG``, ``.env`` or scaffold marker. Product readiness is
 ``uxcompose doctor --prod [--port N]`` (ux-compose #128); scaffolding is
@@ -13,7 +13,6 @@ import pytest
 from typer.testing import CliRunner
 
 from helpers import ScaffoldOptions, create_app
-from ux_dom.cli.build import run_build
 from ux_dom.cli.cli import app
 from ux_dom.cli.doctor import run_doctor
 
@@ -58,9 +57,3 @@ def test_doctor_reads_no_scaffold_marker(debug_app: Path, tmp_path: Path):
     (bare / ".ux_dom-scaffold.json").write_text(marker, encoding="utf-8")
     assert run_doctor(cwd=bare).project_root is None
 
-
-def test_build_has_no_debug_note(debug_app: Path):
-    rep = run_build(cwd=debug_app, skip_import=True)
-    names = {s.name for s in rep.steps}
-    assert "doctor" in names
-    assert not {n for n in names if n.startswith("prod:")}, names

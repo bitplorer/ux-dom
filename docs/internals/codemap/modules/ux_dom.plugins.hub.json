@@ -14,8 +14,6 @@
    "tests/02_document_plugins/test_public_api_and_plugins.py",
    "tests/02_document_plugins/test_safe_static.py",
    "tests/02_document_plugins/test_script_dedupe.py",
-   "tests/03_routing_cli/test_build_honest_steps.py",
-   "tests/03_routing_cli/test_build_package.py",
    "tests/04_production/test_production_readiness.py",
    "tests/07_resilience/test_dead_surface_removed.py",
    "tests/07_resilience/test_f18_directory_router_absent.py",
@@ -26,7 +24,6 @@
   ],
   "imported_by": {
    "function_level": [
-    "ux_dom.cli.static_assets",
     "ux_dom.settings.document"
    ],
    "module_level": [
@@ -44,7 +41,6 @@
     "ux_dom.plugins.safe_static"
    ],
    "module_level": [
-    "ux_dom.plugins.contribution",
     "ux_dom.plugins.protocols"
    ],
    "type_checking": []
@@ -53,8 +49,6 @@
   "path": "src/ux_dom/plugins/hub.py",
   "public": [
    "App",
-   "MaterializeReport",
-   "MaterializedFile",
    "PluginHub",
    "ProductHostMoved",
    "get_hub",

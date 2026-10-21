@@ -2,17 +2,14 @@
 from __future__ import annotations
 
 import importlib
-import os
 import unittest
-from pathlib import Path
-from tempfile import TemporaryDirectory
 
 from typer.testing import CliRunner
 
 from ux_dom.cli.cli import app as cli_app
 
 
-_PRODUCT = ("create-app", "serve", "dev", "start", "deploy", "templates")
+_PRODUCT = ("create-app", "build", "serve", "dev", "start", "deploy", "templates")
 
 
 class TestProductCliAbsent(unittest.TestCase):
@@ -27,7 +24,7 @@ class TestProductCliAbsent(unittest.TestCase):
 
     def test_product_invocations_rejected(self):
         runner = CliRunner()
-        for name in ("create-app", "serve", "deploy"):
+        for name in ("create-app", "build", "serve", "deploy"):
             r = runner.invoke(cli_app, [name, "--help"])
             self.assertNotEqual(r.exit_code, 0, name)
 
@@ -42,26 +39,9 @@ class TestProductCliAbsent(unittest.TestCase):
             with self.assertRaises(ImportError):
                 importlib.import_module(mod)
 
-    def test_help_points_product_build_at_uxcompose(self):
+    def test_help_points_product_lifecycle_at_uxcompose(self):
         out = CliRunner().invoke(cli_app, ["--help"]).output
-        self.assertIn("uxcompose", out)
-        self.assertIn("build", out)
-
-
-class TestProductBuildRedirect(unittest.TestCase):
-    def test_product_app_py_teaches_uxcompose_build(self):
-        runner = CliRunner()
-        with TemporaryDirectory() as td:
-            (Path(td) / "app.py").write_text("# product composition root\n", encoding="utf-8")
-            prev = os.getcwd()
-            try:
-                os.chdir(td)
-                r = runner.invoke(cli_app, ["build"])
-            finally:
-                os.chdir(prev)
-        self.assertEqual(r.exit_code, 2, r.output)
-        joined = (r.output or "") + (getattr(r, "stderr", None) or "")
-        self.assertIn("uxcompose build", joined)
+        self.assertIn("Product lifecycle: uxcompose", out)
 
 
 class TestScaffoldFailClosed(unittest.TestCase):

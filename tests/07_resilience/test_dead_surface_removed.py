@@ -1,7 +1,6 @@
 """Dead surface stays gone (ux-dom is unpublished, so removed with no shims)."""
 from __future__ import annotations
 
-import inspect
 import unittest
 
 
@@ -16,12 +15,18 @@ class DeadSurfaceRemoved(unittest.TestCase):
 
         self.assertIsNone(importlib.util.find_spec("ux_dom.assets"))
 
-    def test_sync_runtime_assets_has_no_ignored_params(self):
-        from ux_dom.cli.static_assets import sync_runtime_assets
+    def test_asset_writers_removed_with_uxdom_build(self):
+        # Their only callers were ux_dom.cli.build / static_assets (#109).
+        from ux_dom.plugins import hub
 
-        params = inspect.signature(sync_runtime_assets).parameters
-        self.assertNotIn("vendor", params)
-        self.assertNotIn("force", params)
+        for name in ("materialize", "served_static_files", "all_artifacts"):
+            self.assertFalse(hasattr(hub.PluginHub, name), name)
+        self.assertFalse(hasattr(hub.App, "materialize_assets"))
+        self.assertFalse(hasattr(hub, "MaterializeReport"))
+        self.assertFalse(hasattr(hub, "MaterializedFile"))
+        from ux_dom.plugins.contribution import StaticArtifact
+
+        self.assertFalse(hasattr(StaticArtifact, "bytes"))
 
 
 if __name__ == "__main__":

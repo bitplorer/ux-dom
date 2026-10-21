@@ -100,16 +100,12 @@ from ux_dom.scripts import x_element_js
 
 document = Document(...).use(XElement())  # package mount — preferred
 
-# Escape hatch only (edge hosts / offline dual-copy):
-# script(src="/assets/js/x_element.js", defer=None)
-# x_element_js().save(file_or_dir=assets_js_dir)
-
 # Or emit inline:
 # script(x_element_js())
 ```
 
-`create-app` wires `XElement()` via Document — it does **not** dual-copy library
-JS into app assets by default. See [WHY_JS_URL.md](../security/WHY_JS_URL.md).
+`create-app` wires `XElement()` via Document — it does **not** copy library
+JS into app assets. See [WHY_JS_URL.md](../security/WHY_JS_URL.md).
 
 ## Class hierarchy
 

@@ -140,7 +140,6 @@ class TestContributionExplicitFiles(unittest.TestCase):
                         public_name="init.py",
                     )
                 ],
-                serve="package_mount",
                 public_url_prefix="/ux-pkg/bad/static",
             ).served_files()
 

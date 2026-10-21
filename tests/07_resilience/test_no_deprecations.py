@@ -25,15 +25,19 @@ class TestDeprecatedModulesRemoved(unittest.TestCase):
 
 
 class TestDeprecatedAliasesRemoved(unittest.TestCase):
-    def test_webassets_serve_alias_rejected(self):
+    def test_serve_modes_removed(self):
+        # webassets alias (0.2.0), then dual_copy (#109): package mount is the only path.
         from ux_dom.plugins import package_static, runtime
 
         for mod in (package_static, runtime):
-            self.assertNotIn("webassets", mod.ServeMode.__args__)
-        with self.assertRaises(ValueError):
-            runtime.XElementRuntime(serve="webassets")
-        with self.assertRaises(ValueError):
-            package_static.PackageStaticContribution(name="x", files=(), serve="webassets")
+            self.assertFalse(hasattr(mod, "ServeMode"))
+        for mode in ("webassets", "dual_copy", "package_mount"):
+            with self.assertRaises(TypeError):
+                runtime.XElementRuntime(serve=mode)
+            with self.assertRaises(TypeError):
+                package_static.PackageStaticContribution(name="x", files=(), serve=mode)
+            with self.assertRaises(TypeError):
+                package_static.static_from_package("x", "ux_dom.scripts", [], serve=mode)
 
     def test_carousel_default_alias_removed(self):
         from ux_dom.ui.carousel import Carousel

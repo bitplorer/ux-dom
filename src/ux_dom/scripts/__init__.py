@@ -61,5 +61,5 @@ class x_element_js(Component):
 
 
 def x_element_js_text() -> str:
-    """Raw ``x_element.js`` source (scaffolding / static copy)."""
+    """Raw ``x_element.js`` source."""
     return _runtime_source()

@@ -4,8 +4,7 @@ Guarantees:
 
 * doctor / lint / ui — read-only
 * add — refuse overwrite without ``--force``
-* product create-app / deploy / serve live on uxcompose (not exercised here)
-* build (default) — no dual-copy of x_element.js into assets/ (single-copy model)
+* product create-app / build / deploy / serve live on uxcompose (not exercised here)
 """
 from __future__ import annotations
 
@@ -16,10 +15,8 @@ from tempfile import TemporaryDirectory
 
 from helpers import ScaffoldOptions, available_templates, create_app
 from ux_dom.cli.adders import AddError, add_component
-from ux_dom.cli.build import run_build
 from ux_dom.cli.doctor import run_doctor
 from ux_dom.cli.lint import lint_project
-from ux_dom.cli.static_assets import sync_runtime_assets
 
 
 def _snapshot(root: Path) -> dict[str, int]:
@@ -31,7 +28,7 @@ def _snapshot(root: Path) -> dict[str, int]:
 
 
 class TestReadOnlyDxCommands(unittest.TestCase):
-    def test_doctor_lint_sync_no_writes(self):
+    def test_doctor_lint_no_writes(self):
         with TemporaryDirectory() as td:
             root = create_app(
                 ScaffoldOptions(
@@ -41,8 +38,6 @@ class TestReadOnlyDxCommands(unittest.TestCase):
             before = _snapshot(root)
             run_doctor(cwd=root)
             lint_project(root)
-            rep = sync_runtime_assets(root)
-            self.assertEqual(rep.files, [])
             after = _snapshot(root)
             self.assertEqual(before, after)
 
@@ -65,28 +60,6 @@ class TestAddDeployForceGates(unittest.TestCase):
             with self.assertRaises(AddError):
                 add_component("Notice", root=root, force=False)
             add_component("Notice", root=root, force=True)
-
-
-class TestBuildNoUnintendedWrites(unittest.TestCase):
-    def test_default_build_no_asset_dual_copy_or_dist(self):
-        with TemporaryDirectory() as td:
-            root = create_app(
-                ScaffoldOptions(
-                    "bd", dest=Path(td) / "bd", force=True, with_tailwind=False
-                )
-            )
-            before = _snapshot(root)
-            rep = run_build(
-                cwd=root,
-                skip_import=True,
-            )
-            self.assertTrue(rep.ok, rep.to_dict())
-            after = _snapshot(root)
-            self.assertEqual(before, after)
-            self.assertFalse((root / "dist").exists())
-            # no dual-copy of x_element under assets/js from build
-            xe = list((root / "assets").rglob("x_element.js")) if (root / "assets").exists() else []
-            self.assertEqual(xe, [])
 
 
 if __name__ == "__main__":

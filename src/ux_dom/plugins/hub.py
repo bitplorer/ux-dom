@@ -8,12 +8,9 @@ from __future__ import annotations
 
 import threading
 
-import hashlib
 from dataclasses import dataclass, field
-from pathlib import Path
 from typing import Any, Optional, Sequence
 
-from ux_dom.plugins.contribution import StaticArtifact
 from ux_dom.plugins.protocols import (
     AssetsPlugin,
     ControlPlugin,
@@ -22,28 +19,6 @@ from ux_dom.plugins.protocols import (
     ResponsePlugin,
     StylePlugin,
 )
-
-
-@dataclass
-class MaterializedFile:
-    plugin: str
-    key: str
-    disk_path: str
-    public_path: str
-    path: Path
-    sha256: str
-    action: str
-    size: int
-
-
-@dataclass
-class MaterializeReport:
-    root: Path
-    files: list[MaterializedFile] = field(default_factory=list)
-
-    @property
-    def ok(self) -> bool:
-        return all(f.path.is_file() for f in self.files)
 
 
 @dataclass
@@ -119,16 +94,6 @@ class PluginHub:
             if n in self.contributions
         ]
 
-    def all_artifacts(self) -> list[tuple[str, StaticArtifact]]:
-        out: list[tuple[str, StaticArtifact]] = []
-        for plugin in self.iter_contributions():
-            arts = getattr(plugin, "artifacts", None)
-            if arts is None:
-                continue
-            for a in arts() or ():
-                out.append((plugin.name, a))
-        return out
-
     def shell_fragments(self, *, dedupe: bool = True) -> tuple[list[Any], list[Any]]:
         """Ordered head/body nodes for the HTML shell.
 
@@ -163,45 +128,6 @@ class PluginHub:
             head = dedupe_dom_nodes(head)
             body = dedupe_dom_nodes(body)
         return head, body
-
-    def served_static_files(self) -> list:
-        """Validated SafeStaticFile list from contributions."""
-        from ux_dom.plugins.safe_static import collect_served_files
-
-        return collect_served_files(self)
-
-
-    def materialize(self, root: Path | str) -> MaterializeReport:
-        """Write all contribution artifacts under app root (build / deploy)."""
-        root = Path(root).resolve()
-        report = MaterializeReport(root=root)
-        for plugin_name, art in self.all_artifacts():
-            data = art.bytes()
-            path = root / art.disk_path
-            path.parent.mkdir(parents=True, exist_ok=True)
-            if path.is_file():
-                if path.read_bytes() == data:
-                    action = "unchanged"
-                else:
-                    path.write_bytes(data)
-                    action = "updated"
-            else:
-                path.write_bytes(data)
-                action = "wrote"
-            report.files.append(
-                MaterializedFile(
-                    plugin=plugin_name,
-                    key=art.key,
-                    disk_path=art.disk_path,
-                    public_path=art.public_path,
-                    path=path,
-                    sha256=hashlib.sha256(data).hexdigest(),
-                    action=action,
-                    size=len(data),
-                )
-            )
-        return report
-
 
 _default_hub: Optional[PluginHub] = None
 _HUB_LOCK = threading.Lock()
@@ -396,9 +322,6 @@ class App:
     def runtime_tags(self) -> tuple[list[Any], list[Any]]:
         """Alias of ``shell_fragments`` — clearer name (head, body)."""
         return self.hub.shell_fragments()
-
-    def materialize_assets(self, root: Path | str) -> MaterializeReport:
-        return self.hub.materialize(root)
 
     def build(self, asgi: Any = None) -> Any:
         """Publish hub → leftover asgi → Document.mount (if any) → controls.

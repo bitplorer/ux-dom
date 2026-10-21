@@ -21,7 +21,6 @@ import sys
 class TestSingleCopyXElement(unittest.TestCase):
     def test_no_artifacts_by_default(self):
         xe = XElementRuntime()
-        self.assertEqual(list(xe.artifacts()), [])
         files = list(xe.served_files())
         self.assertEqual(len(files), 1)
         self.assertEqual(files[0].url, XELEMENT_JS_URL)
@@ -38,14 +37,6 @@ class TestSingleCopyXElement(unittest.TestCase):
         r = c.get(XELEMENT_JS_URL)
         self.assertEqual(r.status_code, 200, r.text[:100])
         self.assertIn("x-tagname", r.text)
-
-    def test_materialize_writes_nothing_for_package_mount(self):
-        hub = PluginHub()
-        hub.add_contribution(XElementRuntime())
-        with TemporaryDirectory() as td:
-            rep = hub.materialize(Path(td))
-            self.assertEqual(rep.files, [])
-            self.assertFalse((Path(td) / "assets/js/x_element.js").exists())
 
 
 class TestScaffoldSingleCopy(unittest.TestCase):
@@ -95,7 +86,6 @@ class TestUxChannelSingleCopy(unittest.TestCase):
         rt = UxChannelRuntime.optional()
         if rt is None:
             self.skipTest("uxchannel not installed")
-        self.assertEqual(list(rt.artifacts()), [])
         # default: tags only; channel host serves bytes
         self.assertEqual(list(rt.served_files()), [])
         html = "".join(str(x) for x in rt.document_head())

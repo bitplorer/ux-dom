@@ -72,53 +72,6 @@ def lint_cmd(path: str = Option(None, "--path")):
     raise SystemExit(1 if errors else 0)
 
 
-_PRODUCT_BUILD = (
-    "this is a product app (app.py from uxcompose). "
-    "Use: uxcompose build   "
-    "(uxdom build is Document/static verify for app/main.py trees; "
-    "it does not compile CSS). "
-    "XElement is served from the installed package at /ux-dom/static/x_element.js"
-)
-
-
-@app.command("build")
-def build_cmd(
-    skip_import: bool = Option(False, "--skip-import"),
-    skip_static_sync: bool = Option(False, "--skip-static-sync"),
-    json_out: bool = Option(False, "--json"),
-):
-    """Document/static verify for pure-dom ``app/main.py`` trees.
-
-    Product apps (``app.py`` from uxcompose): use ``uxcompose build``.
-    This command does not compile CSS. Product CSS is ``uxcompose build``
-    (``ux_compose.tailwind``).
-    XElement is served from the installed package at
-    ``/ux-dom/static/x_element.js`` (no app copy).
-    """
-    import json as _json
-
-    cwd = Path.cwd()
-    if (cwd / "app.py").is_file() and not (cwd / "app" / "main.py").is_file():
-        ux_dom_logger.error(_PRODUCT_BUILD)
-        raise SystemExit(2)
-
-    from ux_dom.cli.build import format_build_report, run_build
-
-    try:
-        report = run_build(
-            skip_import=skip_import,
-            skip_static_sync=skip_static_sync,
-        )
-    except FileNotFoundError as e:
-        ux_dom_logger.error(str(e))
-        raise SystemExit(1) from e
-    if json_out:
-        print(_json.dumps(report.to_dict(), indent=2))
-    else:
-        print(format_build_report(report))
-    raise SystemExit(0 if report.ok else 1)
-
-
 @app.command("profile")
 def profile_cmd(
     out: Path = Option(None, "--out"),
