@@ -18,7 +18,6 @@ import pytest
 
 from ux_dom.dom import Fragment
 from ux_dom.dom.htmlelement import HTMLElement
-from ux_dom.dom.src import html_string
 from ux_dom.dom.src.html_string import StringToHTML, _sanitized_html, defHTML
 from ux_dom.dom.src.parse_html import tokenize_html
 from ux_dom.dom.src.utils.dom_util import safe_attr_value
@@ -206,6 +205,14 @@ def test_document_style_with_markup_is_refused(src):
         ("<blockquote cite='javascript:alert(1)'>x</blockquote>", "cite"),
         ("<video poster='javascript:alert(1)'></video>", "poster"),
         ("<img srcset='/a.png 1x, javascript:alert(1) 2x'>", "srcset"),
+        # Not executable, but the renderer's allowlist refuses them (#126).
+        ("<a href='ftp://host/a'>x</a>", "href"),
+        ("<a href='//evil.example/x'>x</a>", "href"),
+        ("<a href='blob:https://a.example/1'>x</a>", "href"),
+        ("<a href='web+app:x'>x</a>", "href"),
+        ("<img src='data:image/svg+xml,<svg onload=alert(1)>'>", "src"),
+        ("<img srcset='/a.png 1x, ftp://host/b.png 2x'>", "srcset"),
+        ("<img srcset='//evil.example/b.png'>", "srcset"),
     ],
 )
 def test_dangerous_scheme_is_dropped_from_parsed_attributes(src, attr):
@@ -223,20 +230,21 @@ def test_safe_urls_survive_parsing():
 
 
 @pytest.mark.parametrize(
-    "value",
+    "src,attr,value",
     [
-        "javascript:alert(1)",
-        " javascript:alert(1)",
-        "\x00javascript:alert(1)",
-        "java\tscript:alert(1)",
-        "java script:alert(1)",
-        "JAVASCRIPT:alert(1)",
-        "vbscript:x",
-        "data:text/html,x",
+        ("<a href='/next?a=1'>x</a>", "href", "/next?a=1"),
+        ("<a href='https://a.example/x'>x</a>", "href", "https://a.example/x"),
+        ("<a href='mailto:a@b.example'>x</a>", "href", "mailto:a@b.example"),
+        ("<a href='sms:+1'>x</a>", "href", "sms:+1"),
+        ("<img src='data:image/png;base64,AA=='>", "src", "data:image/png;base64,AA=="),
+        ("<img srcset='/a.png 1x, /b.png 2x'>", "srcset", "/a.png 1x, /b.png 2x"),
     ],
 )
-def test_scheme_is_dangerous_on_decoded_values(value):
-    assert html_string._scheme_is_dangerous(value)
+def test_kept_urls_render_as_written(src, attr, value):
+    """One URL policy (#126): what the sanitizer keeps, the renderer does not rewrite."""
+    node = StringToHTML(src).parse()
+    assert node.attributes[attr] == value
+    assert safe_attr_value(attr, value) == value
 
 
 def _walk(node):

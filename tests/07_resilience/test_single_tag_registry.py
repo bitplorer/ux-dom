@@ -132,6 +132,18 @@ def test_svg_registry_is_the_listed_elements():
     assert svgtags.__all__ == SVG_ELEMENTS
 
 
+def test_html_registry_is_every_tag_class():
+    """#126: ``figcaption`` and ``sub`` were defined but not exported."""
+    defined = {
+        name
+        for name, obj in vars(htmltags).items()
+        if isinstance(obj, type)
+        and obj.__module__ == htmltags.__name__
+        and not name.startswith("_")
+    }
+    assert sorted(htmltags.__all__) == sorted(defined - {"html_tag"})
+
+
 @pytest.mark.parametrize("name", sorted(HTML_VOID))
 def test_html_void_has_no_end_tag(name):
     void = getattr(htmltags, "input_" if name == "input" else name)
