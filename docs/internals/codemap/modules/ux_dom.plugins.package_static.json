@@ -113,7 +113,7 @@
     "signature": "(name: str, package: str, resources: Sequence[str | tuple[str, Inject]], *, public_url_prefix: str='', inject_default: Inject='head', resource_prefix: str='static/') -> PackageStaticContribution"
    },
    "ux_channel_static": {
-    "doc": "Mirror ``ch.scripts()`` — single copy from installed ux_channel package.",
+    "doc": "ux-channel client tags, served from the one copy in the installed package.",
     "kind": "function",
     "public": true,
     "signature": "(*, path: str='/ux-channel', bridge: bool=False, inspector: bool=False) -> PackageStaticContribution"
