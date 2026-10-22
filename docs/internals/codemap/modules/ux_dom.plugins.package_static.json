@@ -3,6 +3,7 @@
   "consumers": [
    "docs/security/ASSETS.md",
    "tests/01_core/test_host_path_coverage.py",
+   "tests/02_document_plugins/test_channel_bridge_opt_in.py",
    "tests/02_document_plugins/test_package_static.py",
    "tests/02_document_plugins/test_package_static_fields.py",
    "tests/02_document_plugins/test_safe_static.py",
@@ -112,10 +113,10 @@
     "signature": "(name: str, package: str, resources: Sequence[str | tuple[str, Inject]], *, public_url_prefix: str='', inject_default: Inject='head', resource_prefix: str='static/') -> PackageStaticContribution"
    },
    "ux_channel_static": {
-    "doc": "Mirror ``ch.scripts()`` — single copy from installed ux_channel package.",
+    "doc": "ux-channel client tags, served from the one copy in the installed package.",
     "kind": "function",
     "public": true,
-    "signature": "(*, path: str='/ux-channel', bridge: bool=True, inspector: bool=False) -> PackageStaticContribution"
+    "signature": "(*, path: str='/ux-channel', bridge: bool=False, inspector: bool=False) -> PackageStaticContribution"
    }
   }
  }

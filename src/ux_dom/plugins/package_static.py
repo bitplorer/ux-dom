@@ -152,10 +152,14 @@ def static_from_package(
 def ux_channel_static(
     *,
     path: str = "/ux-channel",
-    bridge: bool = True,
+    bridge: bool = False,
     inspector: bool = False,
 ) -> PackageStaticContribution:
-    """Mirror ``ch.scripts()`` — single copy from installed ux_channel package."""
+    """ux-channel client tags, served from the one copy in the installed package.
+
+    ``ux-bridge.js`` lets ``bridge.call`` ops run any method of a bridged widget,
+    so it ships only when the app opts in with ``bridge=True``.
+    """
     resources: list[str | tuple[str, Inject]] = [("ux-channel.js", "head")]
     if bridge:
         resources.append(("ux-bridge.js", "head"))

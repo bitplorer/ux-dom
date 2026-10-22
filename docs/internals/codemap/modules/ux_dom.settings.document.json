@@ -28,6 +28,7 @@
    "tests/01_core/test_render_phases.py",
    "tests/01_core/test_ux_dom.py",
    "tests/02_document_plugins/test_auto_xelement_definitions.py",
+   "tests/02_document_plugins/test_channel_bridge_opt_in.py",
    "tests/02_document_plugins/test_document_plugins.py",
    "tests/02_document_plugins/test_document_runtimes_create.py",
    "tests/02_document_plugins/test_document_two_stage.py",

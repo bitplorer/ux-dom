@@ -63,13 +63,17 @@ class UxChannelRuntime:
         self,
         *,
         path: str = "/ux-channel",
-        bridge: bool = True,
+        bridge: bool = False,
         inspector: bool = False,
         mount_via_ux_dom: bool = False,
     ) -> None:
         """
         Parameters
         ----------
+        bridge:
+            **False (default)** — no ``ux-bridge.js``. Pass ``True`` only on
+            pages that mount ux-channel bridges (Chart.js, Leaflet, …).
+
         mount_via_ux_dom:
             **False (default)** — channel's own ``attach``/FastAPI mount serves
             ``GET {path}/static/*``. ux-dom only injects the same ``<script>``
